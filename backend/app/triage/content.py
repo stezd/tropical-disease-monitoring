@@ -64,7 +64,7 @@ class RedFlag(BaseModel):
     condition: str
     facility: str
     first_aid: str | None = None
-    # What not to do on the way to hospital (DR no. 20, "DON'T").
+    # What not to do on the way to hospital (DR no. 19, "DON'T").
     dont: str | None = None
 
 
