@@ -8,10 +8,15 @@ import qrcode from "@/lib/qrcode-generator"
 export const SUMMARY_PATH = "/ringkasan"
 const HASH_KEY = "d="
 
+// Packed next to the answers so the staff's page scores the right flow.
+const FLOW_KEY = "_f"
+const FLOW_RE = /^[a-z]{1,20}$/
+
 const ARRAY_KEYS = [
   "red_flags",
   "companion",
   "eco",
+  "vital_proxy",
   "body",
   "findings",
 ] as const
@@ -23,12 +28,26 @@ const STRING_KEYS = [
   "province",
   "taken_at",
 ] as const
-const NUMBER_KEYS = ["age", "temp", "height_cm", "weight_kg", "pain"] as const
+const NUMBER_KEYS = [
+  "age",
+  "temp",
+  "bp_sys",
+  "bp_dia",
+  "glucose",
+  "height_cm",
+  "weight_kg",
+  "waist_cm",
+  "pain",
+] as const
 
-export function packAnswers(a: Answers): string {
-  const o: Record<string, unknown> = {}
+export type Packed = { flowId: string; answers: Answers }
+
+export function packAnswers(a: Answers, flowId: string): string {
+  const o: Record<string, unknown> = { [FLOW_KEY]: flowId }
   for (const [k, v] of Object.entries(a)) {
-    if (v === null || v === undefined || v === "" || v === false) continue
+    if (v === null || v === undefined || v === "") continue
+    // "Not pregnant" is an answer; other false flags are the default.
+    if (v === false && k !== "pregnant") continue
     if (Array.isArray(v) && !v.length) continue
     o[k] = v
   }
@@ -40,7 +59,7 @@ export function packAnswers(a: Answers): string {
 }
 
 /** Decode and sanitize. Throws on anything malformed. */
-export function unpackAnswers(code: string): Answers {
+export function unpackAnswers(code: string): Packed {
   const bin = atob(code.replace(/-/g, "+").replace(/_/g, "/"))
   const o = JSON.parse(
     new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0))),
@@ -63,11 +82,22 @@ export function unpackAnswers(code: string): Answers {
     a.nutrition_proxy = o.nutrition_proxy
   }
   a.no_thermo = o.no_thermo === true
-  return a
+  a.no_bp = o.no_bp === true
+  if (typeof o.pregnant === "boolean") a.pregnant = o.pregnant
+  // QR codes made before the chronic path existed have no flow key.
+  const flowId =
+    typeof o[FLOW_KEY] === "string" && FLOW_RE.test(o[FLOW_KEY])
+      ? o[FLOW_KEY]
+      : "infection"
+  return { flowId, answers: a }
 }
 
-export function summaryURL(a: Answers, origin = window.location.origin) {
-  return `${origin}${SUMMARY_PATH}#${HASH_KEY}${packAnswers(a)}`
+export function summaryURL(
+  a: Answers,
+  flowId: string,
+  origin = window.location.origin,
+) {
+  return `${origin}${SUMMARY_PATH}#${HASH_KEY}${packAnswers(a, flowId)}`
 }
 
 export function readSummaryHash(hash = window.location.hash): string | null {

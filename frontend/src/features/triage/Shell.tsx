@@ -1,11 +1,10 @@
 import { useNavigate } from "@tanstack/react-router"
-import { type ReactNode, useCallback } from "react"
+import { type ReactNode, useCallback, useEffect } from "react"
 
 import type { FlowPublic } from "@/client"
 import { useFlow } from "./api"
 import { Mascot } from "./components/Art"
 import { ToastHost } from "./components/Ui"
-import { ChronicScreen } from "./screens/Chronic"
 import { HomeScreen } from "./screens/Home"
 import { QuizScreen } from "./screens/Quiz"
 import { RedScreen } from "./screens/Red"
@@ -24,18 +23,26 @@ export function Shell({ children }: { children: ReactNode }) {
   )
 }
 
-function WithFlow({ children }: { children: (flow: FlowPublic) => ReactNode }) {
-  const { flow } = useFlow()
-  if (!flow) {
-    return (
-      <div className="screen bg-quiz">
-        <div className="think" style={{ justifyContent: "center" }}>
-          <Mascot className="m-think" />
-          <p className="footdisc">Kak Tropi sedang bersiap…</p>
-        </div>
+export function Loading() {
+  return (
+    <div className="screen bg-quiz">
+      <div className="think" style={{ justifyContent: "center" }}>
+        <Mascot className="m-think" />
+        <p className="footdisc">Kak Tropi sedang bersiap…</p>
       </div>
-    )
-  }
+    </div>
+  )
+}
+
+function WithFlow({
+  flowId,
+  children,
+}: {
+  flowId: string
+  children: (flow: FlowPublic) => ReactNode
+}) {
+  const { flow } = useFlow(flowId)
+  if (!flow) return <Loading />
   return <>{children(flow)}</>
 }
 
@@ -47,25 +54,22 @@ export function HomePage() {
   )
 }
 
-export function ChronicPage() {
-  return (
-    <Shell>
-      <ChronicScreen />
-    </Shell>
-  )
-}
-
 export function SummaryPage() {
   return (
     <Shell>
-      <WithFlow>{(flow) => <SummaryScreen flow={flow} />}</WithFlow>
+      <SummaryScreen />
     </Shell>
   )
 }
 
-export function ScreeningPage() {
+/** The quiz for one flow: "infection" (/skrining) or "chronic" (/kronis). */
+export function ScreeningPage({ flowId }: { flowId: string }) {
   const navigate = useNavigate()
-  const { phase, answers } = useQuiz()
+  const { phase, answers, flowId: current } = useQuiz()
+  // Answers from the other path must not leak into this one.
+  useEffect(() => {
+    if (current !== flowId) quiz.reset(flowId)
+  }, [current, flowId])
   const restart = useCallback(() => {
     quiz.reset()
   }, [])
@@ -73,9 +77,17 @@ export function ScreeningPage() {
   const toResult = useCallback(() => quiz.set({ phase: "result" }), [])
   const toQuiz = useCallback(() => quiz.set({ phase: "quiz" }), [])
 
+  if (current !== flowId) {
+    return (
+      <Shell>
+        <Loading />
+      </Shell>
+    )
+  }
+
   return (
     <Shell>
-      <WithFlow>
+      <WithFlow flowId={flowId}>
         {(flow) => {
           switch (phase) {
             case "red":

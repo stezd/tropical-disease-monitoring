@@ -16,7 +16,7 @@ export function HomeScreen() {
 
   const start = () => {
     sfx.tap()
-    quiz.reset()
+    quiz.reset("infection")
     navigate({ to: "/skrining" })
   }
 
@@ -61,7 +61,10 @@ export function HomeScreen() {
           <Link
             className="btn btn-purple"
             to="/kronis"
-            onClick={() => sfx.tap()}
+            onClick={() => {
+              sfx.tap()
+              quiz.reset("chronic")
+            }}
           >
             🩺 Cek risiko penyakit jangka panjang
           </Link>
