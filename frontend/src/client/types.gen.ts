@@ -5,6 +5,104 @@ export type ClientOptions = {
 };
 
 /**
+ * Answers
+ *
+ * Everything the patient answered. Never holds a name, NIK, BPJS number, or photo.
+ */
+export type Answers = {
+    /**
+     * Who
+     */
+    who?: string | null;
+    /**
+     * Age
+     */
+    age?: number | null;
+    /**
+     * Sex
+     */
+    sex?: 'L' | 'P' | null;
+    /**
+     * Red Flags
+     */
+    red_flags?: Array<string>;
+    /**
+     * Complaint
+     */
+    complaint?: string | null;
+    /**
+     * Pattern
+     */
+    pattern?: string | null;
+    /**
+     * Companion
+     */
+    companion?: Array<string>;
+    /**
+     * Eco
+     */
+    eco?: Array<string>;
+    /**
+     * Drugs
+     */
+    drugs?: string;
+    /**
+     * Temp
+     */
+    temp?: number | null;
+    /**
+     * No Thermo
+     */
+    no_thermo?: boolean;
+    /**
+     * Height Cm
+     */
+    height_cm?: number | null;
+    /**
+     * Weight Kg
+     */
+    weight_kg?: number | null;
+    /**
+     * Nutrition Proxy
+     */
+    nutrition_proxy?: 'longgar' | 'gemuk' | 'normal' | null;
+    /**
+     * Body
+     */
+    body?: Array<string>;
+    /**
+     * Pain
+     */
+    pain?: number | null;
+    /**
+     * Findings
+     */
+    findings?: Array<string>;
+    /**
+     * Province
+     */
+    province?: string | null;
+    /**
+     * Taken At
+     */
+    taken_at?: string | null;
+};
+
+/**
+ * BodyRegion
+ */
+export type BodyRegion = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
  * Body_login-login_access_token
  */
 export type Body_login_login_access_token = {
@@ -35,6 +133,154 @@ export type Body_login_login_access_token = {
 };
 
 /**
+ * Body_triage-analyze_photo
+ */
+export type Body_triage_analyze_photo = {
+    /**
+     * Photo
+     *
+     * Rash, wound, tongue, or eye
+     */
+    photo: Blob | File;
+};
+
+/**
+ * Cluster
+ */
+export type Cluster = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Emoji
+     */
+    emoji: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Sub
+     */
+    sub: string;
+    /**
+     * Members
+     */
+    members: Array<string>;
+};
+
+/**
+ * DiseasePublic
+ */
+export type DiseasePublic = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Emoji
+     */
+    emoji: string;
+    /**
+     * Route
+     */
+    route: 'green' | 'yellow' | 'special' | 'red';
+};
+
+/**
+ * FlowPublic
+ */
+export type FlowPublic = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Child Age Limit
+     */
+    child_age_limit: number;
+    /**
+     * Stages
+     */
+    stages: Array<Stage>;
+    /**
+     * Who
+     */
+    who: Array<Option>;
+    /**
+     * Sex
+     */
+    sex: Array<Option>;
+    /**
+     * Red Flags
+     */
+    red_flags: Array<RedFlag>;
+    /**
+     * Red Maps
+     */
+    red_maps: {
+        [key: string]: string;
+    };
+    /**
+     * Clusters
+     */
+    clusters: Array<Cluster>;
+    /**
+     * Patterns
+     */
+    patterns: {
+        [key: string]: Question;
+    };
+    /**
+     * Companions
+     */
+    companions: {
+        [key: string]: Question;
+    };
+    /**
+     * Eco
+     */
+    eco: Array<Option>;
+    /**
+     * Drug Chips
+     */
+    drug_chips: Array<string>;
+    /**
+     * Nutrition Proxies
+     */
+    nutrition_proxies: Array<Option>;
+    /**
+     * Body Regions
+     */
+    body_regions: Array<BodyRegion>;
+    /**
+     * Pain Faces
+     */
+    pain_faces: Array<PainFace>;
+    /**
+     * Findings
+     */
+    findings: Array<Option>;
+    /**
+     * Routes
+     */
+    routes: {
+        [key: string]: RouteInfo;
+    };
+    /**
+     * Diseases
+     */
+    diseases: {
+        [key: string]: DiseasePublic;
+    };
+};
+
+/**
  * HTTPValidationError
  */
 export type HTTPValidationError = {
@@ -42,74 +288,6 @@ export type HTTPValidationError = {
      * Detail
      */
     detail?: Array<ValidationError>;
-};
-
-/**
- * ItemCreate
- */
-export type ItemCreate = {
-    /**
-     * Title
-     */
-    title: string;
-    /**
-     * Description
-     */
-    description?: string | null;
-};
-
-/**
- * ItemPublic
- */
-export type ItemPublic = {
-    /**
-     * Title
-     */
-    title: string;
-    /**
-     * Description
-     */
-    description?: string | null;
-    /**
-     * Id
-     */
-    id: string;
-    /**
-     * Owner Id
-     */
-    owner_id: string;
-    /**
-     * Created At
-     */
-    created_at?: string | null;
-};
-
-/**
- * ItemUpdate
- */
-export type ItemUpdate = {
-    /**
-     * Title
-     */
-    title?: string | null;
-    /**
-     * Description
-     */
-    description?: string | null;
-};
-
-/**
- * ItemsPublic
- */
-export type ItemsPublic = {
-    /**
-     * Data
-     */
-    data: Array<ItemPublic>;
-    /**
-     * Count
-     */
-    count: number;
 };
 
 /**
@@ -137,6 +315,80 @@ export type NewPassword = {
 };
 
 /**
+ * Option
+ */
+export type Option = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Emoji
+     */
+    emoji: string;
+    /**
+     * Text
+     */
+    text: string;
+    /**
+     * Detail
+     */
+    detail?: string | null;
+    /**
+     * Reason
+     */
+    reason?: string | null;
+    /**
+     * Disease
+     */
+    disease?: string | null;
+    /**
+     * Child Only
+     */
+    child_only?: boolean;
+    /**
+     * Wide
+     */
+    wide?: boolean;
+};
+
+/**
+ * PainFace
+ */
+export type PainFace = {
+    /**
+     * Value
+     */
+    value: number;
+    /**
+     * Emoji
+     */
+    emoji: string;
+    /**
+     * Label
+     */
+    label: string;
+};
+
+/**
+ * PhotoAnalysis
+ */
+export type PhotoAnalysis = {
+    /**
+     * Available
+     */
+    available: boolean;
+    /**
+     * Findings
+     */
+    findings: Array<string>;
+    /**
+     * Message
+     */
+    message: string;
+};
+
+/**
  * PrivateUserCreate
  */
 export type PrivateUserCreate = {
@@ -156,6 +408,282 @@ export type PrivateUserCreate = {
      * Is Verified
      */
     is_verified?: boolean;
+};
+
+/**
+ * Question
+ */
+export type Question = {
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Options
+     */
+    options: Array<Option>;
+};
+
+/**
+ * RankedDisease
+ */
+export type RankedDisease = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Emoji
+     */
+    emoji: string;
+    /**
+     * Score
+     */
+    score: number;
+    /**
+     * Pct
+     */
+    pct: number;
+};
+
+/**
+ * RedFlag
+ */
+export type RedFlag = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Emoji
+     */
+    emoji: string;
+    /**
+     * Text
+     */
+    text: string;
+    /**
+     * Detail
+     */
+    detail: string;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Condition
+     */
+    condition: string;
+    /**
+     * Facility
+     */
+    facility: string;
+    /**
+     * First Aid
+     */
+    first_aid: string;
+};
+
+/**
+ * RouteInfo
+ */
+export type RouteInfo = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Sub
+     */
+    sub: string;
+    /**
+     * Emoji
+     */
+    emoji: string;
+    /**
+     * Color From
+     */
+    color_from: string;
+    /**
+     * Color To
+     */
+    color_to: string;
+    /**
+     * Place
+     */
+    place: string;
+    /**
+     * Maps Query
+     */
+    maps_query: string;
+    /**
+     * Nav Label
+     */
+    nav_label: string;
+};
+
+/**
+ * ScoreResult
+ */
+export type ScoreResult = {
+    /**
+     * Flow Id
+     */
+    flow_id: string;
+    /**
+     * Route
+     */
+    route: 'green' | 'yellow' | 'special' | 'red';
+    /**
+     * Unknown
+     */
+    unknown: boolean;
+    top: RankedDisease | null;
+    /**
+     * Others
+     */
+    others: Array<RankedDisease>;
+    /**
+     * Meter Candidates
+     */
+    meter_candidates: number;
+    /**
+     * Meter Pct
+     */
+    meter_pct: number;
+    /**
+     * Reasons
+     */
+    reasons: Array<string>;
+    /**
+     * Cross Checks
+     */
+    cross_checks: Array<string>;
+    /**
+     * Warnings
+     */
+    warnings: Array<Warning>;
+    /**
+     * Drug Popups
+     */
+    drug_popups: Array<string>;
+    /**
+     * Todo
+     */
+    todo: Array<string>;
+    /**
+     * Place
+     */
+    place: string;
+    /**
+     * Maps Query
+     */
+    maps_query: string;
+    /**
+     * Nav Label
+     */
+    nav_label: string;
+    /**
+     * Analysis Steps
+     */
+    analysis_steps: Array<string>;
+    /**
+     * Summary
+     */
+    summary: string;
+};
+
+/**
+ * ScreeningCreate
+ */
+export type ScreeningCreate = {
+    /**
+     * Flow Id
+     */
+    flow_id: string;
+    answers: Answers;
+    /**
+     * Consent
+     *
+     * Must be true. The patient agreed to save.
+     */
+    consent: boolean;
+};
+
+/**
+ * ScreeningPublic
+ */
+export type ScreeningPublic = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Flow Id
+     */
+    flow_id: string;
+    /**
+     * Answers
+     */
+    answers: {
+        [key: string]: unknown;
+    };
+    /**
+     * Route
+     */
+    route: string;
+    /**
+     * Unknown
+     */
+    unknown: boolean;
+    /**
+     * Top Disease
+     */
+    top_disease: string | null;
+    /**
+     * Top Score
+     */
+    top_score: number | null;
+    /**
+     * Engine
+     */
+    engine: string;
+    /**
+     * Created At
+     */
+    created_at?: string | null;
+};
+
+/**
+ * ScreeningsPublic
+ */
+export type ScreeningsPublic = {
+    /**
+     * Data
+     */
+    data: Array<ScreeningPublic>;
+    /**
+     * Count
+     */
+    count: number;
+};
+
+/**
+ * Stage
+ */
+export type Stage = {
+    /**
+     * Emoji
+     */
+    emoji: string;
+    /**
+     * Name
+     */
+    name: string;
 };
 
 /**
@@ -340,6 +868,24 @@ export type ValidationError = {
     ctx?: {
         [key: string]: unknown;
     };
+};
+
+/**
+ * Warning
+ */
+export type Warning = {
+    /**
+     * Level
+     */
+    level: 'y' | 'r' | 'b';
+    /**
+     * Icon
+     */
+    icon: string;
+    /**
+     * Text
+     */
+    text: string;
 };
 
 export type loginLoginAccessTokenData = {
@@ -772,7 +1318,67 @@ export type utilsHealthCheckResponses = {
 
 export type utilsHealthCheckResponse = utilsHealthCheckResponses[keyof utilsHealthCheckResponses];
 
-export type itemsReadItemsData = {
+export type triageReadFlowData = {
+    body?: never;
+    path: {
+        /**
+         * Flow Id
+         */
+        flow_id: string;
+    };
+    query?: never;
+    url: '/api/v1/triage/flows/{flow_id}';
+};
+
+export type triageReadFlowErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type triageReadFlowError = triageReadFlowErrors[keyof triageReadFlowErrors];
+
+export type triageReadFlowResponses = {
+    /**
+     * Successful Response
+     */
+    200: FlowPublic;
+};
+
+export type triageReadFlowResponse = triageReadFlowResponses[keyof triageReadFlowResponses];
+
+export type triageScoreFlowData = {
+    body: Answers;
+    path: {
+        /**
+         * Flow Id
+         */
+        flow_id: string;
+    };
+    query?: never;
+    url: '/api/v1/triage/flows/{flow_id}/score';
+};
+
+export type triageScoreFlowErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type triageScoreFlowError = triageScoreFlowErrors[keyof triageScoreFlowErrors];
+
+export type triageScoreFlowResponses = {
+    /**
+     * Successful Response
+     */
+    200: ScoreResult;
+};
+
+export type triageScoreFlowResponse = triageScoreFlowResponses[keyof triageScoreFlowResponses];
+
+export type triageReadScreeningsData = {
     body?: never;
     path?: never;
     query?: {
@@ -785,141 +1391,76 @@ export type itemsReadItemsData = {
          */
         limit?: number;
     };
-    url: '/api/v1/items/';
+    url: '/api/v1/triage/screenings';
 };
 
-export type itemsReadItemsErrors = {
+export type triageReadScreeningsErrors = {
     /**
      * Validation Error
      */
     422: HTTPValidationError;
 };
 
-export type itemsReadItemsError = itemsReadItemsErrors[keyof itemsReadItemsErrors];
+export type triageReadScreeningsError = triageReadScreeningsErrors[keyof triageReadScreeningsErrors];
 
-export type itemsReadItemsResponses = {
+export type triageReadScreeningsResponses = {
     /**
      * Successful Response
      */
-    200: ItemsPublic;
+    200: ScreeningsPublic;
 };
 
-export type itemsReadItemsResponse = itemsReadItemsResponses[keyof itemsReadItemsResponses];
+export type triageReadScreeningsResponse = triageReadScreeningsResponses[keyof triageReadScreeningsResponses];
 
-export type itemsCreateItemData = {
-    body: ItemCreate;
+export type triageCreateScreeningData = {
+    body: ScreeningCreate;
     path?: never;
     query?: never;
-    url: '/api/v1/items/';
+    url: '/api/v1/triage/screenings';
 };
 
-export type itemsCreateItemErrors = {
+export type triageCreateScreeningErrors = {
     /**
      * Validation Error
      */
     422: HTTPValidationError;
 };
 
-export type itemsCreateItemError = itemsCreateItemErrors[keyof itemsCreateItemErrors];
+export type triageCreateScreeningError = triageCreateScreeningErrors[keyof triageCreateScreeningErrors];
 
-export type itemsCreateItemResponses = {
+export type triageCreateScreeningResponses = {
     /**
      * Successful Response
      */
-    200: ItemPublic;
+    200: ScoreResult;
 };
 
-export type itemsCreateItemResponse = itemsCreateItemResponses[keyof itemsCreateItemResponses];
+export type triageCreateScreeningResponse = triageCreateScreeningResponses[keyof triageCreateScreeningResponses];
 
-export type itemsDeleteItemData = {
-    body?: never;
-    path: {
-        /**
-         * Id
-         */
-        id: string;
-    };
+export type triageAnalyzePhotoData = {
+    body: Body_triage_analyze_photo;
+    path?: never;
     query?: never;
-    url: '/api/v1/items/{id}';
+    url: '/api/v1/triage/photo/analyze';
 };
 
-export type itemsDeleteItemErrors = {
+export type triageAnalyzePhotoErrors = {
     /**
      * Validation Error
      */
     422: HTTPValidationError;
 };
 
-export type itemsDeleteItemError = itemsDeleteItemErrors[keyof itemsDeleteItemErrors];
+export type triageAnalyzePhotoError = triageAnalyzePhotoErrors[keyof triageAnalyzePhotoErrors];
 
-export type itemsDeleteItemResponses = {
+export type triageAnalyzePhotoResponses = {
     /**
      * Successful Response
      */
-    200: Message;
+    200: PhotoAnalysis;
 };
 
-export type itemsDeleteItemResponse = itemsDeleteItemResponses[keyof itemsDeleteItemResponses];
-
-export type itemsReadItemData = {
-    body?: never;
-    path: {
-        /**
-         * Id
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/api/v1/items/{id}';
-};
-
-export type itemsReadItemErrors = {
-    /**
-     * Validation Error
-     */
-    422: HTTPValidationError;
-};
-
-export type itemsReadItemError = itemsReadItemErrors[keyof itemsReadItemErrors];
-
-export type itemsReadItemResponses = {
-    /**
-     * Successful Response
-     */
-    200: ItemPublic;
-};
-
-export type itemsReadItemResponse = itemsReadItemResponses[keyof itemsReadItemResponses];
-
-export type itemsUpdateItemData = {
-    body: ItemUpdate;
-    path: {
-        /**
-         * Id
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/api/v1/items/{id}';
-};
-
-export type itemsUpdateItemErrors = {
-    /**
-     * Validation Error
-     */
-    422: HTTPValidationError;
-};
-
-export type itemsUpdateItemError = itemsUpdateItemErrors[keyof itemsUpdateItemErrors];
-
-export type itemsUpdateItemResponses = {
-    /**
-     * Successful Response
-     */
-    200: ItemPublic;
-};
-
-export type itemsUpdateItemResponse = itemsUpdateItemResponses[keyof itemsUpdateItemResponses];
+export type triageAnalyzePhotoResponse = triageAnalyzePhotoResponses[keyof triageAnalyzePhotoResponses];
 
 export type privateCreateUserData = {
     body: PrivateUserCreate;

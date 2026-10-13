@@ -1,9 +1,10 @@
 import uuid
 from datetime import UTC, datetime
+from typing import Any
 
 from pydantic import EmailStr
-from sqlalchemy import DateTime
-from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy import JSON, DateTime
+from sqlmodel import Field, SQLModel
 
 
 def get_datetime_utc() -> datetime:
@@ -56,7 +57,6 @@ class User(UserBase, table=True):
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
     )
-    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
 
 
 # Properties to return via API, id is always required
@@ -70,45 +70,37 @@ class UsersPublic(SQLModel):
     count: int
 
 
-# Shared properties
-class ItemBase(SQLModel):
-    title: str = Field(min_length=1, max_length=255)
-    description: str | None = Field(default=None, max_length=255)
-
-
-# Properties to receive on item creation
-class ItemCreate(ItemBase):
-    pass
-
-
-# Properties to receive on item update
-class ItemUpdate(SQLModel):
-    title: str | None = Field(default=None, min_length=1, max_length=255)
-    description: str | None = Field(default=None, max_length=255)
-
-
-# Database model, database table inferred from class name
-class Item(ItemBase, table=True):
+# Anonymous screening result, saved only after the patient agrees.
+# No user link, name, NIK, BPJS number, or photo.
+class Screening(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    flow_id: str = Field(max_length=20, index=True)
+    answers: dict[str, Any] = Field(sa_type=JSON)
+    route: str = Field(max_length=10)
+    unknown: bool = False
+    top_disease: str | None = Field(default=None, max_length=20)
+    top_score: float | None = None
+    engine: str = Field(max_length=20)
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
     )
-    owner_id: uuid.UUID = Field(
-        foreign_key="user.id", nullable=False, ondelete="CASCADE"
-    )
-    owner: User | None = Relationship(back_populates="items")
 
 
-# Properties to return via API, id is always required
-class ItemPublic(ItemBase):
+class ScreeningPublic(SQLModel):
     id: uuid.UUID
-    owner_id: uuid.UUID
+    flow_id: str
+    answers: dict[str, Any]
+    route: str
+    unknown: bool
+    top_disease: str | None
+    top_score: float | None
+    engine: str
     created_at: datetime | None = None
 
 
-class ItemsPublic(SQLModel):
-    data: list[ItemPublic]
+class ScreeningsPublic(SQLModel):
+    data: list[ScreeningPublic]
     count: int
 
 
