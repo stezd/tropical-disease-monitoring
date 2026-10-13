@@ -2440,7 +2440,7 @@ details.sum pre {
 }
 
 /* ===== Additions for the React port ===== */
-/* "skor kecocokan" wraps inside the ring instead of being clipped. */
+/* "klasifikasi kecocokan" wraps inside the ring instead of being clipped. */
 .score-ring div small {
   max-width: 56px;
   line-height: 1.1;

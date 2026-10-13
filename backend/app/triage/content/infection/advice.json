@@ -17,9 +17,9 @@
     "chik_chronic": "Nyeri sendi pergelangan berat → **risiko Chikungunya kronis**. Kontrol bila nyeri menetap > 3 bulan.",
     "malaria_obese": "Postur gemuk meningkatkan **risiko malaria berat**. Jangan tunda pemeriksaan darah.",
     "high_fever": "Suhu {temp} °C tergolong **demam tinggi**. Kompres hangat & minum banyak.",
-    "route_upgraded": "Rute dinaikkan ke KUNING karena suhu {temp} °C sangat tinggi.",
-    "no_thermo_fever_pattern": "Suhu tidak diukur. Skor tetap memakai **pola demam** yang kamu pilih tadi.",
-    "no_thermo_other": "Suhu tidak diukur. Skor tetap dihitung dari **jawaban lainnya**.",
+    "route_upgraded": "Rute dinaikkan ke SEDANG karena suhu {temp} °C sangat tinggi.",
+    "no_thermo_fever_pattern": "Suhu tidak diukur. Klasifikasi tetap memakai **pola demam** yang kamu pilih tadi.",
+    "no_thermo_other": "Suhu tidak diukur. Klasifikasi tetap dihitung dari **jawaban lainnya**.",
     "no_bmi": "IMT tidak diisi — AI memakai **proksi kelonggaran pakaian**."
   },
   "todo": {
@@ -57,7 +57,7 @@
     "cross_check": "Validasi silang: {title}",
     "eco": "Memetakan risiko One Health ({count} faktor)",
     "findings": "Menggabungkan temuan foto",
-    "score": "Menghitung skor kecocokan 20 penyakit",
+    "score": "Menghitung klasifikasi kecocokan 20 penyakit",
     "route": "Menentukan rute rujukan & faskes"
   }
 }

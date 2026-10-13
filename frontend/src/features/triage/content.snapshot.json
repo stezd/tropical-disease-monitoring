@@ -878,7 +878,7 @@
     ],
     "routes": {
       "green": {
-        "name": "RUTE HIJAU",
+        "name": "RUTE RINGAN",
         "sub": "Perawatan Mandiri · Apotek",
         "emoji": "🌿",
         "color_from": "#4FDDA0",
@@ -888,7 +888,7 @@
         "nav_label": "Apotek"
       },
       "yellow": {
-        "name": "RUTE KUNING",
+        "name": "RUTE SEDANG",
         "sub": "Puskesmas · Klinik Pratama",
         "emoji": "🏥",
         "color_from": "#FFCB57",
@@ -898,7 +898,7 @@
         "nav_label": "Puskesmas"
       },
       "special": {
-        "name": "RUTE KUNING KHUSUS",
+        "name": "RUTE SEDANG",
         "sub": "Poli Program Nasional Kemenkes",
         "emoji": "🎯",
         "color_from": "#FFA45C",
@@ -908,7 +908,7 @@
         "nav_label": "Puskesmas"
       },
       "red": {
-        "name": "RUTE MERAH",
+        "name": "RUTE DARURAT",
         "sub": "Kedaruratan · IGD Rumah Sakit",
         "emoji": "🚨",
         "color_from": "#FF7280",

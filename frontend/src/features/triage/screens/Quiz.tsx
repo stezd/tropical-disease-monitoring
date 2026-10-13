@@ -113,8 +113,8 @@ const STEP_DEFS: Record<StepId, StepDef> = {
 
 export function noThermoNote(a: { complaint?: string | null }) {
   return a.complaint === "A"
-    ? "Tak apa! Skor tetap memakai **pola demam** yang kamu pilih tadi."
-    : "Tak apa! Skor tetap dihitung dari **jawaban lainnya**."
+    ? "Tak apa! Klasifikasi tetap memakai **pola demam** yang kamu pilih tadi."
+    : "Tak apa! Klasifikasi tetap dihitung dari **jawaban lainnya**."
 }
 
 export function QuizScreen({ flow }: { flow: FlowPublic }) {
@@ -388,7 +388,7 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
                 <span className="meter">
                   <i style={{ width: `${meter.p}%` }} />
                 </span>
-                <span>skor {meter.p}%</span>
+                <span>klasifikasi {meter.p}%</span>
               </div>
             )}
           </div>

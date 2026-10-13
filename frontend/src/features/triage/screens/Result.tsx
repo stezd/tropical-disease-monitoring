@@ -116,10 +116,10 @@ export function ResultScreen({
                     className="score-ring"
                     style={{ ["--p" as string]: pct }}
                     role="img"
-                    aria-label={`Skor kecocokan ${pct} persen`}
+                    aria-label={`Klasifikasi kecocokan ${pct} persen`}
                   >
                     <div>
-                      {pct}%<small>skor kecocokan</small>
+                      {pct}%<small>klasifikasi kecocokan</small>
                     </div>
                   </div>
                 </>

@@ -68,7 +68,7 @@ class Warning(BaseModel):
 class ScoreResult(BaseModel):
     flow_id: str
     route: RouteId
-    # True when the top score is below the threshold: "belum dapat ditentukan", route KUNING.
+    # True when the top score is below the threshold: "belum dapat ditentukan", route SEDANG.
     unknown: bool
     top: RankedDisease | None
     others: list[RankedDisease]
