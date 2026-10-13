@@ -1,5 +1,7 @@
 # FastAPI Project - Deployment
 
+> **TropiCare deploys to Railway.** This file documents the FastAPI Cloud workflow inherited from the template, which we do not use - including `.github/workflows/deploy.yml`, which would fail on every push to `master` and should be disabled or removed. See [deployment-railway.md](./deployment-railway.md).
+
 Deploy the project to [FastAPI Cloud](https://fastapicloud.com) with the included GitHub Actions workflow.
 
 ## Create the FastAPI Cloud Application
