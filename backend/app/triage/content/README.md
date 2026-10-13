@@ -23,30 +23,11 @@ Quiz text, options, and weights live here, not in React. The backend serves them
   snapshot is stale.
 - Run `uv run pytest tests/triage` in `backend/` after any change. The loader validates every ID.
 
-## Open items
+## Source of truth
 
-Scoring (ST):
-- New questions score **0 points** until ST sets weights: no-thermometer and no-BP proxies
-  (`vital_proxies`), blood pressure, blood sugar, waist, pregnancy, chronic risk factors
-  (`chronic/weights.json` `eco: {}`).
-- `chronic/weights.json` copies the generic infection numbers (complaint 10, pattern 40, …).
-- CVD risk score (Blueprint Tahap 7): skeleton `scoring.cvd_risk()` returns None.
-- `weights.province` is empty. DR named endemic provinces (Jawaban no. 10); ST sets weights.
-- `advice.warnings.no_bmi`, `analysis_steps.no_bmi`, and the Amlodipine/Captopril pop-ups
-  (Blueprint text, kept verbatim) say "AI" / "imputasi". Rewrite to match the real method (ST + DR).
-
-Medical text (DR):
-- Chronic: route for `angina` (set to yellow), care for every PTM disease except gout (uses the
-  Blueprint lifestyle line), lab list (same full Blueprint PTM list for all), `no_bp` warning.
-- PTM red flags: `facility` for all four, first aid for `krisis_ht` and `koma_dm` (not in Blueprint).
-- `pregnancy_from_age` (10): from what age to ask about pregnancy?
-- Severe varicella goes to the default Puskesmas place. Jawaban no. 8 says FKRTL/specialist,
-  Blueprint says Puskesmas (AGENTS.md conflict no. 3).
-- Drug names in care text vs. DR's safe list (Jawaban no. 18): Albendazol (`sth`),
-  Klotrimazol (`tinea`), kalamin (`varicella`).
-- Should a fast pulse at rest (no-thermometer proxy, "tanda SIRS") raise the route like ≥ 39.5 °C?
-- Pattern B: is a cough of exactly 14 days ISPA or TBC?
-- Typhoid has no option in cluster A (fever). DR + ST.
-- Cross-check "Tifoid vs DBD" mentions petekie, but no question asks about it. DR + ST.
-- Photo chips: the five DR chips replaced the prototype's nine, so tongue (typhoid), burrows
-  (scabies), and ring rash (tinea) no longer score from the photo step.
+- Medical content (criteria, routes, text, and who approves what):
+  [docs/Acuan-Medis.md](../../../../docs/Acuan-Medis.md). If a JSON file disagrees with it,
+  the document wins.
+- Data formats per step, feature names, and the scoring contract:
+  [docs/Alur-Data.md](../../../../docs/Alur-Data.md).
+- Open items for DR and ST: Acuan-Medis section 1 (K1–K29).

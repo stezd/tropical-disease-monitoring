@@ -1,6 +1,8 @@
 # Jawaban Dokter atas Pertanyaan Terbuka
 
-Jawaban DR untuk daftar "Open questions for the doctor" di [AGENTS.md](../AGENTS.md). Alur lengkap: [Blueprint.md](Blueprint.md).
+> **Diarsipkan.** Acuan yang berlaku: [../Acuan-Medis.md](../Acuan-Medis.md). File ini disimpan apa adanya sebagai sumber, dikutip di sana sebagai `[J…]`. Jangan diedit.
+
+Jawaban DR untuk daftar "Open questions for the doctor" di [AGENTS.md](../../AGENTS.md). Alur lengkap: [Blueprint.md](Blueprint.md).
 Teks medis di sini disalin apa adanya. Perubahan teks medis perlu persetujuan DR; perubahan bobot perlu persetujuan ST.
 
 ## A. Pertanyaan Kuesioner dan Pengukuran
