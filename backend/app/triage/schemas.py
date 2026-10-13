@@ -8,7 +8,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from app.triage.content import Flow, FlowContent, RouteId
+from app.triage.content import Flow, FlowContent, RouteId, WarningLevel
 
 IdList = list[str]
 
@@ -19,7 +19,10 @@ class Answers(BaseModel):
     who: str | None = Field(default=None, max_length=20)
     age: int | None = Field(default=None, ge=0, le=120)
     sex: Literal["L", "P"] | None = None
+    # Asked only for women (flow.pregnancy_from_age). Not scored yet.
+    pregnant: bool | None = None
     red_flags: IdList = Field(default_factory=list, max_length=20)
+    # A cluster ID, or "none" when the flow allows no complaint (chronic risk check).
     complaint: str | None = Field(default=None, max_length=4)
     pattern: str | None = Field(default=None, max_length=20)
     companion: IdList = Field(default_factory=list, max_length=20)
@@ -27,8 +30,15 @@ class Answers(BaseModel):
     drugs: str = Field(default="", max_length=500)
     temp: float | None = Field(default=None, ge=34, le=43)
     no_thermo: bool = False
+    bp_sys: int | None = Field(default=None, ge=50, le=300)
+    bp_dia: int | None = Field(default=None, ge=30, le=200)
+    no_bp: bool = False
+    glucose: float | None = Field(default=None, ge=10, le=1000)
+    # Stand-in answers when there is no thermometer or blood pressure meter.
+    vital_proxy: IdList = Field(default_factory=list, max_length=20)
     height_cm: float | None = Field(default=None, ge=0, le=300)
     weight_kg: float | None = Field(default=None, ge=0, le=500)
+    waist_cm: float | None = Field(default=None, ge=0, le=250)
     nutrition_proxy: Literal["longgar", "gemuk", "normal"] | None = None
     body: IdList = Field(default_factory=list, max_length=20)
     pain: int | None = Field(default=None, ge=0, le=10)
@@ -60,7 +70,7 @@ class RankedDisease(BaseModel):
 
 
 class Warning(BaseModel):
-    level: Literal["y", "r", "b"]
+    level: WarningLevel
     icon: str
     text: str
 
@@ -78,7 +88,8 @@ class ScoreResult(BaseModel):
     reasons: list[str]
     cross_checks: list[str]
     warnings: list[Warning]
-    drug_popups: list[str]
+    # Shown as a pop-up right after the drug step.
+    drug_popups: list[Warning]
     todo: list[str]
     place: str
     maps_query: str

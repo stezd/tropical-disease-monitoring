@@ -65,12 +65,12 @@ Setuju. Angka spesifik ini tervalidasi dengan kriteria reumatologi WHO untuk *Ch
 **15. Demam ≥ 39,5 °C menaikkan rute**
 Setuju. Suhu ≥ 39,5 °C adalah hiperpireksia. Misalnya hasil HIJAU (seperti ISPA ringan): demam setinggi ini pada dewasa membutuhkan auskultasi paru oleh dokter (KUNING) untuk mengeksklusi pneumonia atau sepsis. Terapkan aturan ini secara *cross-cutting*: membatalkan semua rute hijau menjadi minimal kuning.
 
-## G. Pertanyaan Setelah Deploy (UI/UX)
+## E. Pertanyaan Setelah Deploy (UI/UX)
 
-**17. Urutan Q3, Q4, dan Peta Ekologi (ECO)**
+**16. Urutan Q3, Q4, dan Peta Ekologi (ECO)**
 Ubah urutannya. Pindahkan ECO ke awal, setelah Q2. Dalam epidemiologi, lokasi menentukan *pre-test probability*. Jika pasien menginput lokasi Danau Lindu, bobot probabilitas Skistosomiasis sudah melonjak sebelum gejala ditanyakan, sehingga pertanyaan Q3 dan Q4 lebih efisien.
 
-**18. Pilihan Temuan Visual di UI (Kamera AI)**
+**17. Pilihan Temuan Visual di UI (Kamera AI)**
 Buat chip/button di bawah area upload foto:
 - [ Ruam Kemerahan / Bintik ]
 - [ Lenting Berair / Lepuh ]
@@ -78,26 +78,26 @@ Buat chip/button di bawah area upload foto:
 - [ Luka Borok / Bernanah ]
 - [ Mata Kuning / Mata Merah ]
 
-**19. Rekomendasi Obat Bebas di Halaman Hasil**
+**18. Rekomendasi Obat Bebas di Halaman Hasil**
 Boleh, tetapi sangat dibatasi hanya obat bersimbol Lingkaran Hijau/Biru Kemenkes.
 - Aman disebut: Paracetamol, Oralit, Zinc, Krim Permethrin 5% (Skabies), Krim Miconazole (Tinea).
 - Dilarang: Antibiotik (Amoxicillin, Cefixime) atau Antivirus. Obat keras harus melalui rute KUNING (Resep Dokter).
 
-**20. Tampilan Rute MERAH (Pertolongan Pertama)**
+**19. Tampilan Rute MERAH (Pertolongan Pertama)**
 Sertakan panduan DOs and DON'Ts yang taktis:
 - Suspek Syok Dengue — DO: Minum oralit bertahap jika pasien sadar. DON'T: Beri makan/minum jika pasien mulai mengantuk/penurunan kesadaran (risiko tersedak/aspirasi).
 - Suspek Rabies — DO: Cuci luka gigitan di air mengalir dengan SABUN selama minimal 15 menit tanpa henti sebelum ke RS.
 
-**21. Teks Care (Tindakan Pasien)**
+**20. Teks Care (Tindakan Pasien)**
 - TBC: Pakai masker medis di dalam rumah, pisahkan alat makan, dan buka jendela kamar agar sinar matahari masuk (kuman TB mati oleh UV).
 - Skabies: Cuci semua sprei, selimut, dan handuk dengan air panas. Jemur kasur di bawah terik matahari. Seluruh anggota keluarga serumah HARUS diobati bersamaan.
 
-**22. Daftar Lab (di QR Code Dokter)**
+**21. Daftar Lab (di QR Code Dokter)**
 Berorientasi pada kompetensi Puskesmas:
 - DBD: Darah Rutin (Trombosit/Hematokrit), NS1/IgM/IgG Dengue.
 - Malaria: Apusan Darah Tebal (Giemsa) / RDT Malaria.
 - Tifoid: Widal / Tubex TF.
 - TBC: Tes Cepat Molekuler (TCM) / BTA Sputum.
 
-**23. Teks "Belum Dapat Ditentukan" & Disclaimer Mediko-legal**
+**22. Teks "Belum Dapat Ditentukan" & Disclaimer Mediko-legal**
 Disclaimer wajib (letakkan di bawah hasil): "Peringatan: Aplikasi ini adalah alat bantu triase awal berbasis AI dan pemetaan epidemiologi. Hasil ini BUKAN merupakan diagnosis medis final dan tidak menggantikan pemeriksaan langsung oleh Dokter."

@@ -29,14 +29,14 @@ export function useFlow(flowId = FLOW_ID) {
 
 export async function scoreAnswers(
   answers: Answers,
-  flowId = FLOW_ID,
+  flowId: string,
 ): Promise<ScoreResult> {
   return (
     await TriageService.scoreFlow({ path: { flow_id: flowId }, body: answers })
   ).data
 }
 
-export const scoreKey = (answers: Answers, flowId = FLOW_ID) => [
+export const scoreKey = (answers: Answers, flowId: string) => [
   "triage",
   "score",
   flowId,
@@ -54,14 +54,14 @@ function useDebounced<T>(value: T, ms: number): T {
 
 /** Live score for the mascot meter. Silent when the server is unreachable.
  * Only runs once a complaint is chosen and no red flag is picked. */
-export function useLiveScore(answers: Answers) {
+export function useLiveScore(answers: Answers, flowId: string) {
   const debounced = useDebounced(answers, 250)
   const enabled =
     !!debounced.complaint &&
     !(debounced.red_flags ?? []).some((x) => x !== "none")
   return useQuery({
-    queryKey: scoreKey(debounced),
-    queryFn: () => scoreAnswers(debounced),
+    queryKey: scoreKey(debounced, flowId),
+    queryFn: () => scoreAnswers(debounced, flowId),
     enabled,
     placeholderData: keepPreviousData,
     staleTime: Number.POSITIVE_INFINITY,

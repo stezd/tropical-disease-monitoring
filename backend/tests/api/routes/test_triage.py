@@ -34,8 +34,16 @@ def test_read_flow(client: TestClient) -> None:
     assert "lab" not in data["diseases"]["dbd"]
 
 
+def test_read_chronic_flow(client: TestClient) -> None:
+    r = client.get(f"{API}/flows/chronic")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["vitals"] == ["bp", "glucose"]
+    assert {f["id"] for f in data["red_flags"]} >= {"syok", "stroke"}
+
+
 def test_read_unknown_flow(client: TestClient) -> None:
-    assert client.get(f"{API}/flows/chronic").status_code == 404
+    assert client.get(f"{API}/flows/nope").status_code == 404
 
 
 def test_score(client: TestClient) -> None:
