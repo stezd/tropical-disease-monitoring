@@ -24,7 +24,7 @@ Put these in `frontend/src/index.css` as CSS variables and map them to the shadc
 | `tabbg` | `#EEEBFF` | Card tab |
 | `purple` / `purple2` / `purpleSh` | `#8B4DFF` / `#AE73FF` / `#6427D6` | Primary button, selected state |
 | `teal` / `teal2` / `tealSh` | `#26C4B1` / `#55E2D1` / `#148C7F` | Secondary button |
-| `gold` / `goldSh` | `#FFC531` / `#E09A0E` | Coins, finished stages |
+| `gold` / `goldSh` | `#FFC531` / `#E09A0E` | Finished stages |
 | `green` | `#2CC487` | "Safe / none" option, success |
 | `red` | `#FF4B5C` | Danger option, emergency |
 
@@ -78,7 +78,7 @@ Put these in `frontend/src/index.css` as CSS variables and map them to the shadc
 | **Category box** | Big colored gradient tile (one color per complaint group) |
 | **Speech bubble** | White, rounded 18px, tail pointing to mascot |
 | **Mascot** | SVG, gentle bob + blink + wave animation |
-| **HUD** | Top bar: back button, stage dots with lines, coin counter |
+| **HUD** | Top bar: back button, stage dots with lines |
 | **Stage dots** | Empty = faint white, current = glowing white, done = gold with ✓ |
 | **Input** | `soft` background, big Fredoka number, purple border on focus |
 | **Note** | Yellow dashed box for tips; purple variant for info |
@@ -97,7 +97,7 @@ Put these in `frontend/src/index.css` as CSS variables and map them to the shadc
 ## Motion
 
 - Card enters with a small pop (bounce).
-- Coins fly to the counter, confetti at the end (not on red route).
+- Confetti at the end (not on red route).
 - Mascot bobs, blinks, hops on answer.
 - Respect `prefers-reduced-motion`: turn animations off.
 
@@ -106,15 +106,14 @@ Put these in `frontend/src/index.css` as CSS variables and map them to the shadc
 Don't copy these from the HTML:
 
 - **No disease tags under options.** Remove `.tag` and the "Mode Presentasi" toggle.
-- **Pain scale = VAS:** plain horizontal line, labels "Tidak nyeri" and "Nyeri terburuk" at the ends. No numbers, no ticks, no faces, no handle until touched.
-- **No "+10 coins" per answer.** Coins only at the end (finish, follow-up). No coin animations during the quiz.
-- **Red route:** no coins, no confetti, no badge. Big call 119 button, plus 119 and 112 as copyable text.
+- **Pain scale = faces 0–10:** vertical, next to the body map. Buttons 0–10 (0 on top), colored green to red. On 0, 2, 4, 6, 8, 10: label on the left ("Tidak sakit" to "Sakit sekali"), face on the right. Numbers and faces can both be tapped. Nothing selected at start. The prototype is already updated (`painScale()`), so copy this one as is.
+- **Red route:** no confetti. Big call 119 button, plus 119 and 112 as copyable text.
 - **No "XGBoost" or "probability"** wording. Show "skor kecocokan".
 - **New screens** (not in prototype), built in the same style:
   - Home: choose path ("Saya sedang sakit" / "Cek risiko penyakit jangka panjang").
   - First step: age + sex.
   - Result: "Buat janji dokter (Mobile JKN)" button.
-  - Login / register / profile / history.
+  - Login / register / profile (no saved results or history).
   - Photo upload step (infection path).
 
 ## Accessibility

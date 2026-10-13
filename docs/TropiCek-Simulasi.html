@@ -47,18 +47,13 @@ button{font:inherit;color:inherit}
 .hud{position:relative;z-index:3;display:flex;align-items:center;gap:8px;padding:10px 14px 4px;padding-top:max(10px,env(safe-area-inset-top));width:100%;max-width:1120px;margin:0 auto}
 .icon-btn{width:40px;height:40px;flex:none;border:0;border-radius:13px;background:rgba(255,255,255,.22);color:#fff;font-size:22px;font-weight:800;display:grid;place-items:center;cursor:pointer;box-shadow:inset 0 -3px 0 rgba(0,0,0,.15);backdrop-filter:blur(4px)}
 .icon-btn:active{transform:translateY(2px)}
-.coins{display:flex;align-items:center;gap:7px;background:rgba(28,18,80,.38);border-radius:999px;padding:5px 5px 5px 10px;color:#fff;font-family:var(--fh);font-weight:600;font-size:15px;cursor:pointer;flex:none}
-.coin{width:17px;height:17px;border-radius:4px;transform:rotate(45deg);background:linear-gradient(135deg,#FFF0A8,#FFC531 55%,#F0A000);box-shadow:inset 0 0 0 2.5px #FFD75E,0 0 0 1.5px #C77F00;display:inline-block;flex:none}
-.coins .plus{width:24px;height:24px;border-radius:8px;background:#3DDC84;display:grid;place-items:center;font-weight:800;box-shadow:inset 0 -2px 0 #1FA65B}
-.coins.bump{animation:bump .4s}
-@keyframes bump{40%{transform:scale(1.18)}}
 .stages{flex:1;display:flex;align-items:center;min-width:0}
 .st{width:21px;height:21px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:11px;background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.25)}
 .st.done{background:linear-gradient(#FFE27A,#FFB800);border-color:#fff;color:#8A4B00;font-size:13px;font-weight:900}
 .st.cur{background:#fff;border-color:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.3),0 0 16px #fff;transform:scale(1.15)}
 .sl{flex:1;height:3px;min-width:3px;background:rgba(255,255,255,.3);border-radius:2px}
 .sl.done{background:#FFD24A}
-@media (max-width:370px){.st{width:18px;height:18px;font-size:9.5px}.hud{gap:6px;padding-left:10px;padding-right:10px}.coins .plus{display:none}}
+@media (max-width:370px){.st{width:18px;height:18px;font-size:9.5px}.hud{gap:6px;padding-left:10px;padding-right:10px}}
 .htitle{flex:1;text-align:center;color:#fff;font-family:var(--fh);font-weight:600;font-size:17px;letter-spacing:.5px}
 
 /* buttons */
@@ -134,6 +129,7 @@ button{font:inherit;color:inherit}
 .opt:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
 .opt .oe{flex:none;width:36px;height:36px;border-radius:12px;background:#fff;display:grid;place-items:center;font-size:19px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.05)}
 .opt .ot{flex:1;min-width:0;font-weight:700;font-size:13.5px;line-height:1.3}
+.opt .od{display:block;margin-top:2px;font-size:11.5px;font-weight:700;line-height:1.3;color:var(--muted)}
 .tag{display:block;width:fit-content;max-width:100%;margin-top:3px;font-size:10px;font-weight:900;color:#7B5BD6;background:#ECE4FF;border-radius:999px;padding:1px 7px;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .opt .ck{flex:none;width:22px;height:22px;border-radius:50%;border:2.5px solid #D6CFFA;background:#fff;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:900}
 /* tiles: ikon di atas, teks di bawah — 2 kolom di HP */
@@ -225,17 +221,23 @@ button{font:inherit;color:inherit}
 .sel-list{display:flex;flex-wrap:wrap;gap:6px}
 .sel-list span{background:#FFE7EA;color:#D63650;font-weight:900;font-size:11.5px;border-radius:999px;padding:4px 9px}
 .empty{color:var(--muted);font-weight:800;font-size:12.5px}
-.pain{margin-top:10px;background:var(--soft);border-radius:16px;padding:10px 12px}
+.pain{margin-top:10px;background:var(--soft);border-radius:16px;padding:10px 8px}
 .pain .pq{font-weight:900;font-size:12.5px;color:var(--ink2);margin:0 0 6px}
-/* VAS: garis polos, tanpa angka/tick/wajah, tanpa handle sebelum disentuh */
-.vas input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:32px;margin:0;background:transparent;cursor:pointer;touch-action:pan-y}
-.vas input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:#C9BFF0}
-.vas input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:#C9BFF0}
-.vas input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--purple);border:3px solid #fff;box-shadow:0 2px 0 var(--purpleSh);margin-top:-8px}
-.vas input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--purple);border:3px solid #fff}
-.vas.untouched input[type=range]::-webkit-slider-thumb{opacity:0}
-.vas.untouched input[type=range]::-moz-range-thumb{opacity:0}
-.vas-lab{display:flex;justify-content:space-between;gap:8px;font-weight:900;font-size:12px;color:var(--ink2)}
+/* Skala wajah 0–10, vertikal (0 di atas): label | angka | wajah. Wajah & label di angka genap. Tanpa nilai awal. */
+.fscale{display:grid;grid-template-columns:auto 34px 40px;grid-template-rows:repeat(11,30px);column-gap:8px;row-gap:4px;justify-content:center;align-items:center}
+.fscale .fnum{grid-column:2;width:100%;height:100%;padding:0;border:2px solid var(--line);border-radius:9px;background:#fff;font-family:var(--fh);font-weight:600;font-size:13.5px;color:var(--ink);cursor:pointer;box-shadow:0 2px 0 var(--line);transition:transform .1s,background .15s,border-color .15s}
+.fscale .fnum:active{transform:translateY(2px);box-shadow:none}
+.fscale .fnum.on{background:var(--fc);border-color:var(--fc);color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.fscale .fnum.on.dk{color:var(--ink)}
+.fscale .fface{grid-column:3;justify-self:center;width:38px;height:38px;border:0;border-radius:50%;background:var(--fc);font-size:22px;line-height:38px;padding:0;cursor:pointer;opacity:.72;transition:transform .15s,opacity .15s}
+.fscale .fface.on{opacity:1;transform:scale(1.08);box-shadow:0 0 0 3px #fff,0 0 0 5px var(--fc)}
+.fscale .flab{grid-column:1;justify-self:end;max-width:64px;font-size:10.5px;font-weight:900;line-height:1.15;color:var(--ink2);text-align:right}
+@media (min-width:640px){
+  .fscale{grid-template-columns:auto 44px 48px;grid-template-rows:repeat(11,34px);column-gap:12px}
+  .fscale .fnum{font-size:15px}
+  .fscale .fface{width:46px;height:46px;font-size:27px;line-height:46px}
+  .fscale .flab{max-width:none;font-size:12px;white-space:nowrap}
+}
 .nums{display:flex;flex-direction:column;gap:6px;margin-top:6px}
 .numcard{display:flex;align-items:center;gap:10px;background:var(--soft);border:2.5px solid var(--line);border-radius:16px;padding:8px 12px}
 .numcard b{font-family:var(--fh);font-weight:600;font-size:24px;color:var(--ink);min-width:48px}
@@ -243,6 +245,7 @@ button{font:inherit;color:inherit}
 .numcard button{border:0;border-radius:12px;background:var(--purple);color:#fff;font-family:var(--fh);font-weight:600;font-size:13px;padding:8px 12px;min-height:40px;cursor:pointer}
 .vrow{display:flex;gap:10px}
 .fld .inp.age input{font-size:26px}
+.frow .inp.age{height:58px;box-sizing:border-box}
 .numcard b{user-select:all;-webkit-user-select:all}
 .btn-jkn{background:linear-gradient(180deg,#5AA5FF,#2F73E6);box-shadow:0 5px 0 #1B4DAA,0 10px 20px rgba(30,80,200,.3)}
 .row-links{display:flex;gap:10px}
@@ -256,6 +259,12 @@ button{font:inherit;color:inherit}
 .photo .ph div{font-size:30px}
 .photorow .btn{width:auto;flex:none;flex-direction:column;gap:2px;font-size:14px;padding:10px 14px;cursor:pointer}
 .photorow .btn span{font-size:26px}
+.frow{display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.frow .fld.age{flex:0 0 112px}
+.seg{display:flex;gap:4px;height:58px;padding:4px;background:var(--soft);border:2.5px solid var(--line);border-radius:16px}
+.seg button{flex:1;min-width:0;border:0;border-radius:11px;background:transparent;font-family:var(--fh);font-weight:600;font-size:15px;color:var(--ink2);cursor:pointer}
+.seg button:active{transform:scale(.97)}
+.seg button.on{background:var(--purple);color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.18)}
 .subq{font-family:var(--fh);font-weight:600;font-size:14.5px;margin:12px 0 8px}
 .scanline{position:absolute;left:0;right:0;height:4px;background:#5BF5E2;box-shadow:0 0 18px 6px rgba(91,245,226,.7);animation:scan 1.1s ease-in-out infinite alternate}
 @keyframes scan{from{top:4%}to{top:94%}}
@@ -281,9 +290,6 @@ button{font:inherit;color:inherit}
 .tgl.on::after{left:26px}
 .setsec{background:var(--soft);border-radius:16px;padding:12px;text-align:center;font-weight:900;color:var(--ink2);font-size:13px}
 .pill-teal{display:block;margin:6px auto 12px;max-width:180px;background:linear-gradient(var(--teal2),var(--teal));color:#fff;border-radius:12px;padding:8px;font-family:var(--fh);font-weight:600;box-shadow:0 4px 0 var(--tealSh)}
-.howlist{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
-.howlist li{display:flex;gap:10px;align-items:center;background:var(--soft);border-radius:14px;padding:8px 10px;font-size:13px}
-.howlist li b{font-size:20px}
 
 /* thinking */
 .think{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;padding:20px 22px 24px;overflow-y:auto}
@@ -341,36 +347,22 @@ button{font:inherit;color:inherit}
 .todo{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
 .todo li{display:flex;gap:9px;font-size:13.5px;font-weight:700;line-height:1.4}
 .todo li::before{content:'✔';flex:none;width:20px;height:20px;border-radius:7px;background:#E2F9EE;color:#1A9A66;font-size:11px;font-weight:900;display:grid;place-items:center;margin-top:1px}
-.labs{display:flex;flex-wrap:wrap;gap:6px}
-.labs span{font-size:11.5px;font-weight:900;padding:5px 10px;border-radius:999px;background:#F1EEFA;color:#8A84B5}
-.labs span.hot{background:#FFE9C2;color:#B26B00;box-shadow:0 0 0 2px #FFC56B}
 .place{display:flex;gap:10px;align-items:center;background:var(--soft);border-radius:16px;padding:10px 12px;margin:12px 0;font-weight:800;font-size:13px}
 .place .pe{font-size:26px}
 .place small{display:block;color:var(--muted);font-weight:800}
-.ping{margin-top:12px;border-radius:16px;padding:12px;background:#EAF6FF;border:2px solid #BFE3FF;font-weight:800;font-size:13px;color:#1F5F8F;display:flex;gap:10px;align-items:center}
-.ping .pr{width:34px;height:34px;flex:none;border-radius:50%;background:#2F9BFF;display:grid;place-items:center;font-size:17px;position:relative}
-.ping .pr::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:3px solid #2F9BFF;animation:ripple 1.2s infinite}
-.ping.done .pr::after{display:none}
-.ping.done{background:#E2F9EE;border-color:#9FE3C3;color:#16784F}
-.ping.done .pr{background:#2CC487}
-@keyframes ripple{to{transform:scale(1.7);opacity:0}}
-.qrbox{display:flex;gap:14px;align-items:center;background:var(--soft);border-radius:18px;padding:12px;margin-top:12px}
-.qrbox canvas{width:112px;height:112px;flex:none;border-radius:12px;background:#fff;box-shadow:0 3px 0 var(--line)}
-.qrbox div{font-size:12.5px;font-weight:800;color:var(--ink2);line-height:1.4}
-.qrbox b{display:block;font-family:var(--fh);font-weight:600;font-size:15px;color:var(--ink);margin-bottom:2px}
 .warn{display:flex;gap:10px;border-radius:16px;padding:11px 12px;font-size:13px;font-weight:800;line-height:1.4;margin-top:10px}
 .warn .wi{font-size:20px;flex:none}
 .warn.y{background:#FFF6DB;border:2px solid #FFD873;color:#8A5A00}
 .warn.r{background:#FFEDEF;border:2px solid #FFB3BC;color:#B3122E}
 .warn.b{background:#EEF0FF;border:2px solid #CFD3FF;color:#3E44A8}
-.reward{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#FFF4D1,#FFE0EC);border-radius:22px;padding:14px;box-shadow:0 5px 0 #F3C8A8}
-.reward .badge{width:62px;height:62px;flex:none;border-radius:20px;display:grid;place-items:center;font-size:36px;background:linear-gradient(#FFE37A,#FFB800);box-shadow:0 4px 0 #D98A00;animation:bump 1.2s 1s}
-.reward b{display:block;font-family:var(--fh);font-weight:600;font-size:17px}
-.reward span{font-weight:800;font-size:13px;color:var(--ink2)}
 .btnrow{display:flex;flex-direction:column;gap:14px;margin-top:22px}
+.qrbox{margin-top:12px;background:var(--soft);border-radius:18px;padding:12px;text-align:center;font-size:12.5px;font-weight:800;color:var(--ink2);line-height:1.4}
+.qrbox canvas{display:block;margin:0 auto 8px;width:100%;max-width:230px;aspect-ratio:1;image-rendering:pixelated;border-radius:12px;background:#fff;box-shadow:0 3px 0 var(--line)}
+.qrbox b{display:block;font-family:var(--fh);font-weight:600;font-size:15px;color:var(--ink);margin-bottom:2px}
 details.sum{margin-top:12px;background:var(--soft);border-radius:16px;padding:10px 12px}
 details.sum summary{cursor:pointer;font-weight:900;font-size:13px;color:var(--ink2)}
 details.sum pre{white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,Consolas,monospace;font-size:11.5px;margin:10px 0 0;color:var(--ink)}
+.scanpre{white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,Consolas,monospace;font-size:12px;line-height:1.5;margin:0;color:var(--ink)}
 .footdisc{margin:20px 6px 0;text-align:center;color:#fff;font-size:11.5px;font-weight:800;line-height:1.5;text-shadow:0 1px 2px rgba(0,0,0,.25)}
 
 /* red */
@@ -388,11 +380,8 @@ details.sum pre{white-space:pre-wrap;word-break:break-word;font-family:ui-monosp
 /* misc */
 #toast{position:absolute;left:50%;bottom:96px;transform:translate(-50%,20px);z-index:60;background:rgba(30,20,80,.92);color:#fff;font-weight:800;font-size:13.5px;padding:10px 16px;border-radius:14px;opacity:0;pointer-events:none;transition:all .3s;max-width:88%;text-align:center}
 #toast.show{opacity:1;transform:translate(-50%,0)}
-.flycoin{position:fixed;z-index:999;pointer-events:none;transition:transform .7s cubic-bezier(.5,-0.3,.6,1),opacity .7s}
 .conf{position:absolute;top:-14px;width:9px;height:14px;border-radius:3px;z-index:40;pointer-events:none;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
-.plus-pop{position:absolute;z-index:30;color:#FFE27A;font-family:var(--fh);font-weight:700;font-size:20px;text-shadow:0 2px 0 #B66F00;pointer-events:none;animation:rise 1s forwards}
-@keyframes rise{to{transform:translateY(-40px);opacity:0}}
 /* ===== Layout kolom hasil (HP: menumpuk) ===== */
 .rcols,.redcols{width:100%;max-width:600px;margin:0 auto}
 .rcol + .rcol{margin-top:30px}
@@ -459,6 +448,11 @@ details.sum pre{white-space:pre-wrap;word-break:break-word;font-family:ui-monosp
   <div id="toast"></div>
 </div>
 
+<script>
+/* qrcode-generator 1.4.4, (c) Kazuhiko Arase, MIT License. https://github.com/kazuhikoarase/qrcode-generator
+   Disematkan langsung supaya aplikasi tidak bergantung pada server lain. */
+var qrcode=function(){function i(t,r){function a(t,r){g=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(l=4*u+17),e(0,0),e(l-7,0),e(0,l-7),i(),o(),v(t,r),7<=u&&h(t),null==n&&(n=w(u,f,c)),d(n,r)}var u=t,f=y[r],g=null,l=0,n=null,c=[],s={},e=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||l<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||l<=r+n||(g[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},o=function(){for(var t=8;t<l-8;t+=1)null==g[t][6]&&(g[t][6]=t%2==0);for(var r=8;r<l-8;r+=1)null==g[6][r]&&(g[6][r]=r%2==0)},i=function(){for(var t=B.getPatternPosition(u),r=0;r<t.length;r+=1)for(var e=0;e<t.length;e+=1){var n=t[r],o=t[e];if(null==g[n][o])for(var i=-2;i<=2;i+=1)for(var a=-2;a<=2;a+=1)g[n+i][o+a]=-2==i||2==i||-2==a||2==a||0==i&&0==a}},h=function(t){for(var r=B.getBCHTypeNumber(u),e=0;e<18;e+=1){var n=!t&&1==(r>>e&1);g[Math.floor(e/3)][e%3+l-8-3]=n}for(e=0;e<18;e+=1){n=!t&&1==(r>>e&1);g[e%3+l-8-3][Math.floor(e/3)]=n}},v=function(t,r){for(var e=f<<3|r,n=B.getBCHTypeInfo(e),o=0;o<15;o+=1){var i=!t&&1==(n>>o&1);o<6?g[o][8]=i:o<8?g[o+1][8]=i:g[l-15+o][8]=i}for(o=0;o<15;o+=1){i=!t&&1==(n>>o&1);o<8?g[8][l-o-1]=i:o<9?g[8][15-o-1+1]=i:g[8][15-o-1]=i}g[l-8][8]=!t},d=function(t,r){for(var e=-1,n=l-1,o=7,i=0,a=B.getMaskFunction(r),u=l-1;0<u;u-=2)for(6==u&&(u-=1);;){for(var f=0;f<2;f+=1)if(null==g[n][u-f]){var c=!1;i<t.length&&(c=1==(t[i]>>>o&1)),a(n,u-f)&&(c=!c),g[n][u-f]=c,-1==(o-=1)&&(i+=1,o=7)}if((n+=e)<0||l<=n){n-=e,e=-e;break}}},w=function(t,r,e){for(var n=b.getRSBlocks(t,r),o=M(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=C(i[u],l.getLength()-1).mod(l);a[u]=new Array(l.getLength()-1);for(g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=0<=s?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};s.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=x(t);break;case"Alphanumeric":e=m(t);break;case"Byte":e=L(t);break;case"Kanji":e=D(t);break;default:throw"mode:"+r}c.push(e),n=null},s.isDark=function(t,r){if(t<0||l<=t||r<0||l<=r)throw t+","+r;return g[t][r]},s.getModuleCount=function(){return l},s.make=function(){if(u<1){for(var t=1;t<40;t++){for(var r=b.getRSBlocks(t,f),e=M(),n=0;n<c.length;n++){var o=c[n];e.put(o.getMode(),4),e.put(o.getLength(),B.getLengthInBits(o.getMode(),t)),o.write(e)}var i=0;for(n=0;n<r.length;n++)i+=r[n].dataCount;if(e.getLengthInBits()<=8*i)break}u=t}a(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){a(!0,e);var n=B.getLostPoint(s);(0==e||n<t)&&(t=n,r=e)}return r}())},s.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<s.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<s.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=s.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},s.createSvgTag=function(t,r,e,n){var o={};"object"==typeof t&&(t=(o=t).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,f,c=s.getModuleCount()*t+2*r,g="";for(f="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",g+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',g+=o.scalable?"":' width="'+c+'px" height="'+c+'px"',g+=' viewBox="0 0 '+c+" "+c+'" ',g+=' preserveAspectRatio="xMinYMin meet"',g+=n.text||e.text?' role="img" aria-labelledby="'+p([n.id,e.id].join(" ").trim())+'"':"",g+=">",g+=n.text?'<title id="'+p(n.id)+'">'+p(n.text)+"</title>":"",g+=e.text?'<description id="'+p(e.id)+'">'+p(e.text)+"</description>":"",g+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',g+='<path d="',a=0;a<s.getModuleCount();a+=1)for(u=a*t+r,i=0;i<s.getModuleCount();i+=1)s.isDark(a,i)&&(g+="M"+(i*t+r)+","+u+f);return g+='" stroke="transparent" fill="black"/>',g+="</svg>"},s.createDataURL=function(o,t){o=o||2,t=void 0===t?4*o:t;var r=s.getModuleCount()*o+2*t,i=t,a=r-t;return I(r,r,function(t,r){if(i<=t&&t<a&&i<=r&&r<a){var e=Math.floor((t-i)/o),n=Math.floor((r-i)/o);return s.isDark(n,e)?0:1}return 1})},s.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=s.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=s.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=p(e),o+='"'),o+="/>"};var p=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return s.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*s.getModuleCount()+2*t,u=t,f=a-t,c={"██":"█","█ ":"▀"," █":"▄","  ":" "},g={"██":"▀","█ ":"▀"," █":" ","  ":" "},l="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<f&&u<=r&&r<f&&s.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<f&&u<=r+1&&r+1<f&&s.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",l+=t<1&&f<=r+1?g[i]:c[i];l+="\n"}return a%2&&0<t?l.substring(0,l.length-a-1)+Array(1+a).join("▀"):l.substring(0,l.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=s.getModuleCount()*t+2*r,u=r,f=a-r,c=Array(t+1).join("██"),g=Array(t+1).join("  "),l="",h="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),h="",n=0;n<a;n+=1)i=1,u<=n&&n<f&&u<=e&&e<f&&s.isDark(o,Math.floor((n-u)/t))&&(i=0),h+=i?c:g;for(o=0;o<t;o+=1)l+=h+"\n"}return l.substring(0,l.length-1)},s.renderTo2dContext=function(t,r){r=r||2;for(var e=s.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=s.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},s}i.stringToBytes=(i.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,i.createStringToBytes=function(u,f){var i=function(){function t(){var t=r.read();if(-1==t)throw"eof";return t}for(var r=S(u),e=0,n={};;){var o=r.read();if(-1==o)break;var i=t(),a=t()<<8|t();n[String.fromCharCode(o<<8|i)]=a,e+=1}if(e!=f)throw e+" != "+f;return n}(),a="?".charCodeAt(0);return function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);if(n<128)r.push(n);else{var o=i[t.charAt(e)];"number"==typeof o?(255&o)==o?r.push(o):(r.push(o>>>8),r.push(255&o)):r.push(a)}}return r}};var r,t,a=1,u=2,o=4,f=8,y={L:1,M:0,Q:3,H:2},e=0,n=1,c=2,g=3,l=4,h=5,s=6,v=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],(t={}).getBCHTypeInfo=function(t){for(var r=t<<10;0<=d(r)-d(1335);)r^=1335<<d(r)-d(1335);return 21522^(t<<10|r)},t.getBCHTypeNumber=function(t){for(var r=t<<12;0<=d(r)-d(7973);)r^=7973<<d(r)-d(7973);return t<<12|r},t.getPatternPosition=function(t){return r[t-1]},t.getMaskFunction=function(t){switch(t){case e:return function(t,r){return(t+r)%2==0};case n:return function(t,r){return t%2==0};case c:return function(t,r){return r%3==0};case g:return function(t,r){return(t+r)%3==0};case l:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case h:return function(t,r){return t*r%2+t*r%3==0};case s:return function(t,r){return(t*r%2+t*r%3)%2==0};case v:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},t.getErrorCorrectPolynomial=function(t){for(var r=C([1],0),e=0;e<t;e+=1)r=r.multiply(C([1,w.gexp(e)],0));return r},t.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case o:case f:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case o:return 16;case f:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case o:return 16;case f:return 12;default:throw"mode:"+t}}},t.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);5<i&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},t);function d(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r}var w=function(){for(var r=new Array(256),e=new Array(256),t=0;t<8;t+=1)r[t]=1<<t;for(t=8;t<256;t+=1)r[t]=r[t-4]^r[t-5]^r[t-6]^r[t-8];for(t=0;t<255;t+=1)e[r[t]]=t;var n={glog:function(t){if(t<1)throw"glog("+t+")";return e[t]},gexp:function(t){for(;t<0;)t+=255;for(;256<=t;)t-=255;return r[t]}};return n}();function C(n,o){if(void 0===n.length)throw n.length+"/"+o;var r=function(){for(var t=0;t<n.length&&0==n[t];)t+=1;for(var r=new Array(n.length-t+o),e=0;e<n.length-t;e+=1)r[e]=n[e+t];return r}(),i={getAt:function(t){return r[t]},getLength:function(){return r.length},multiply:function(t){for(var r=new Array(i.getLength()+t.getLength()-1),e=0;e<i.getLength();e+=1)for(var n=0;n<t.getLength();n+=1)r[e+n]^=w.gexp(w.glog(i.getAt(e))+w.glog(t.getAt(n)));return C(r,0)},mod:function(t){if(i.getLength()-t.getLength()<0)return i;for(var r=w.glog(i.getAt(0))-w.glog(t.getAt(0)),e=new Array(i.getLength()),n=0;n<i.getLength();n+=1)e[n]=i.getAt(n);for(n=0;n<t.getLength();n+=1)e[n]^=w.gexp(w.glog(t.getAt(n))+r);return C(e,0).mod(t)}};return i}function p(){var e=[],o={writeByte:function(t){e.push(255&t)},writeShort:function(t){o.writeByte(t),o.writeByte(t>>>8)},writeBytes:function(t,r,e){r=r||0,e=e||t.length;for(var n=0;n<e;n+=1)o.writeByte(t[n+r])},writeString:function(t){for(var r=0;r<t.length;r+=1)o.writeByte(t.charCodeAt(r))},toByteArray:function(){return e},toString:function(){var t="";t+="[";for(var r=0;r<e.length;r+=1)0<r&&(t+=","),t+=e[r];return t+="]"}};return o}var k,A,b=(k=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],(A={}).getRSBlocks=function(t,r){var e=function(t,r){switch(r){case y.L:return k[4*(t-1)+0];case y.M:return k[4*(t-1)+1];case y.Q:return k[4*(t-1)+2];case y.H:return k[4*(t-1)+3];default:return}}(t,r);if(void 0===e)throw"bad rs block @ typeNumber:"+t+"/errorCorrectionLevel:"+r;for(var n,o,i=e.length/3,a=[],u=0;u<i;u+=1)for(var f=e[3*u+0],c=e[3*u+1],g=e[3*u+2],l=0;l<f;l+=1)a.push((n=g,o=void 0,(o={}).totalCount=c,o.dataCount=n,o));return a},A),M=function(){var e=[],n=0,o={getBuffer:function(){return e},getAt:function(t){var r=Math.floor(t/8);return 1==(e[r]>>>7-t%8&1)},put:function(t,r){for(var e=0;e<r;e+=1)o.putBit(1==(t>>>r-e-1&1))},getLengthInBits:function(){return n},putBit:function(t){var r=Math.floor(n/8);e.length<=r&&e.push(0),t&&(e[r]|=128>>>n%8),n+=1}};return o},x=function(t){var r=a,n=t,e={getMode:function(){return r},getLength:function(t){return n.length},write:function(t){for(var r=n,e=0;e+2<r.length;)t.put(o(r.substring(e,e+3)),10),e+=3;e<r.length&&(r.length-e==1?t.put(o(r.substring(e,e+1)),4):r.length-e==2&&t.put(o(r.substring(e,e+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return e},m=function(t){var r=u,n=t,e={getMode:function(){return r},getLength:function(t){return n.length},write:function(t){for(var r=n,e=0;e+1<r.length;)t.put(45*o(r.charAt(e))+o(r.charAt(e+1)),11),e+=2;e<r.length&&t.put(o(r.charAt(e)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return e},L=function(t){var r=o,e=i.stringToBytes(t),n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=0;r<e.length;r+=1)t.put(e[r],8)}};return n},D=function(t){var r=f,e=i.stringToBytesFuncs.SJIS;if(!e)throw"sjis not supported.";!function(){var t=e("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=e(t),n={getMode:function(){return r},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return n},S=function(t){var e=t,n=0,o=0,i=0,r={read:function(){for(;i<8;){if(n>=e.length){if(0==i)return-1;throw"unexpected end of file./"+i}var t=e.charAt(n);if(n+=1,"="==t)return i=0,-1;t.match(/^\s$/)||(o=o<<6|a(t.charCodeAt(0)),i+=6)}var r=o>>>i-8&255;return i-=8,r}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return r},I=function(t,r,e){for(var n=function(t,r){var n=t,o=r,l=new Array(t*r),e={setPixel:function(t,r,e){l[r*n+t]=e},write:function(t){t.writeString("GIF87a"),t.writeShort(n),t.writeShort(o),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(n),t.writeShort(o),t.writeByte(0);var r=i(2);t.writeByte(2);for(var e=0;255<r.length-e;)t.writeByte(255),t.writeBytes(r,e,255),e+=255;t.writeByte(r.length-e),t.writeBytes(r,e,r.length-e),t.writeByte(0),t.writeString(";")}},i=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,o=h(),i=0;i<r;i+=1)o.add(String.fromCharCode(i));o.add(String.fromCharCode(r)),o.add(String.fromCharCode(e));var a=p(),u=function(t){var e=t,n=0,o=0,r={write:function(t,r){if(t>>>r!=0)throw"length over";for(;8<=n+r;)e.writeByte(255&(t<<n|o)),r-=8-n,t>>>=8-n,n=o=0;o|=t<<n,n+=r},flush:function(){0<n&&e.writeByte(o)}};return r}(a);u.write(r,n);var f=0,c=String.fromCharCode(l[f]);for(f+=1;f<l.length;){var g=String.fromCharCode(l[f]);f+=1,o.contains(c+g)?c+=g:(u.write(o.indexOf(c),n),o.size()<4095&&(o.size()==1<<n&&(n+=1),o.add(c+g)),c=g)}return u.write(o.indexOf(c),n),u.write(e,n),u.flush(),a.toByteArray()},h=function(){var r={},e=0,n={add:function(t){if(n.contains(t))throw"dup key:"+t;r[t]=e,e+=1},size:function(){return e},indexOf:function(t){return r[t]},contains:function(t){return void 0!==r[t]}};return n};return e}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=p();n.write(a);for(var u=function(){function e(t){a+=String.fromCharCode(r(63&t))}var n=0,o=0,i=0,a="",t={},r=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return t.writeByte=function(t){for(n=n<<8|255&t,o+=8,i+=1;6<=o;)e(n>>>o-6),o-=6},t.flush=function(){if(0<o&&(e(n<<6-o),o=n=0),i%3!=0)for(var t=3-i%3,r=0;r<t;r+=1)a+="="},t.toString=function(){return a},t}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return i}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||57344<=n?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}(function(){return qrcode});
+</script>
 <script>
 /* =========================================================
    DATA — 20 penyakit tropis & NTD (sesuai Blueprint)
@@ -553,17 +547,21 @@ const WHO = [
   {id:'other',emo:'🧑‍🤝‍🧑',t:'Keluarga lain'}
 ];
 
+// t = judul singkat, det = rincian sesuai teks Blueprint Q1 (tanpa nama penyakit).
+// TODO DR: setujui judul singkat & rincian (pertanyaan terbuka #17).
 const RED = [
-  {id:'syok',emo:'🥶',t:'Muntah hebat / tangan-kaki dingin',tag:'Syok Dengue',dx:'Syok Dengue (DSS)',fac:'Resusitasi / ICU',aid:'Baringkan dengan kaki sedikit ditinggikan; beri minum bila sadar.'},
-  {id:'darah',emo:'🩸',t:'Pendarahan tak berhenti / batuk darah',tag:'Pendarahan / TBC lanjut',dx:'Pendarahan masif / TBC batuk darah masif',fac:'ICU & Transfusi Darah',aid:'Mimisan: duduk condong ke depan, tekan cuping hidung 10 menit.'},
-  {id:'ginjal',emo:'🚱',t:'Tidak kencing > 6–8 jam',tag:'Gagal ginjal',dx:'Gagal ginjal akut (Leptospirosis/Malaria)',fac:'Hemodialisa',aid:'Jangan minum obat anti-nyeri sembarangan; segera berangkat.'},
-  {id:'napas',emo:'💨',t:'Sesak berat, sulit bicara, bibir membiru',tag:'Gagal napas',dx:'Gagal napas / Pneumonia berat',fac:'Oksigen & ICU',aid:'Posisikan setengah duduk, longgarkan pakaian.'},
-  {id:'otak',emo:'😵',t:'Kejang, mengigau, tak sadar, leher kaku',tag:'Ensefalopati',dx:'Ensefalopati / Malaria serebral / Tifoid toksik',fac:'ICU',aid:'Saat kejang: miringkan tubuh, jangan masukkan apa pun ke mulut.'},
-  {id:'dehidrasi',emo:'🏜️',t:'Lemas, mata cekung, tanpa air mata',tag:'Dehidrasi berat',dx:'Dehidrasi berat',fac:'Resusitasi cairan IGD',aid:'Beri oralit sedikit-sedikit tapi sering selama perjalanan.'},
-  {id:'rabies',emo:'🐕',t:'Digigit anjing/kera/kucing liar, atau takut air',tag:'Rabies',dx:'Rabies / gigitan hewan penular rabies',fac:'Rabies Center (Vaksin Anti-Rabies)',aid:'Cuci luka dengan sabun di air mengalir selama 15 menit.'}
+  {id:'syok',emo:'🥶',t:'Muntah hebat / tangan-kaki dingin',det:'Muntah hebat, atau tangan dan kaki teraba sangat dingin/basah saat badan sedang demam',tag:'Syok Dengue',dx:'Syok Dengue (DSS)',fac:'Resusitasi / ICU',aid:'Baringkan dengan kaki sedikit ditinggikan; beri minum bila sadar.'},
+  {id:'darah',emo:'🩸',t:'Pendarahan sulit berhenti / batuk darah banyak',det:'Mimisan parah, gusi berdarah, muntah darah, BAB hitam seperti aspal, atau batuk mengeluarkan darah dalam jumlah banyak',tag:'Pendarahan / TBC lanjut',dx:'Pendarahan masif / TBC batuk darah masif',fac:'ICU & Transfusi Darah',aid:'Mimisan: duduk condong ke depan, tekan cuping hidung 10 menit.'},
+  {id:'ginjal',emo:'🚱',t:'Tidak kencing > 6–8 jam',det:'Tidak buang air kecil sama sekali lebih dari 6–8 jam terakhir',tag:'Gagal ginjal',dx:'Gagal ginjal akut (Leptospirosis/Malaria)',fac:'Hemodialisa',aid:'Jangan minum obat anti-nyeri sembarangan; segera berangkat.'},
+  {id:'napas',emo:'💨',t:'Sesak napas sangat berat',det:'Sampai sulit bicara, dada tampak tertarik ke dalam saat bernapas, atau bibir membiru',tag:'Gagal napas',dx:'Gagal napas / Pneumonia berat',fac:'Oksigen & ICU',aid:'Posisikan setengah duduk, longgarkan pakaian.'},
+  {id:'otak',emo:'😵',t:'Penurunan kesadaran / kejang',det:'Penurunan kesadaran, mengigau, kejang, atau leher kaku tidak bisa ditekuk',tag:'Ensefalopati',dx:'Ensefalopati / Malaria serebral / Tifoid toksik',fac:'ICU',aid:'Saat kejang: miringkan tubuh, jangan masukkan apa pun ke mulut.'},
+  {id:'dehidrasi',emo:'🏜️',t:'Sangat lemas, mata sangat cekung',det:'Sangat lemas (letargi), mata sangat cekung, anak menangis tanpa air mata',tag:'Dehidrasi berat',dx:'Dehidrasi berat',fac:'Resusitasi cairan IGD',aid:'Beri oralit sedikit-sedikit tapi sering selama perjalanan.'},
+  {id:'rabies',emo:'🐕',t:'Luka gigitan hewan / takut air',det:'Luka robek berdarah akibat digigit anjing, kera, atau kucing liar, atau mendadak sangat takut melihat air/cahaya dan air liur menetes terus',tag:'Rabies',dx:'Rabies / gigitan hewan penular rabies',fac:'Rabies Center (Vaksin Anti-Rabies)',aid:'Cuci luka dengan sabun di air mengalir selama 15 menit.'}
 ];
 
 const Q3 = {
+  // TODO DR+ST: Tifoid tidak ada di klaster A, jadi pasien tifoid yang memilih "Demam" hanya dapat poin kecil
+  // (suhu & peta nyeri). Perlu pilihan/pertanyaan tambahan? Celah ini ada di Blueprint.
   A:{title:'Seperti apa pola demamnya?',opts:[
     {id:'dbd',emo:'📉',t:'Tinggi mendadak, turun hari ke-3/4, tapi makin lemas',tag:'Pola DBD',r:'Demam pelana kuda (saddleback): turun di hari ke-3/4 lalu lemas'},
     {id:'chik',emo:'⚡',t:'Singkat 1–3 hari + ruam merah',tag:'Pola Chikungunya',r:'Demam singkat 1–3 hari dengan ruam merah'},
@@ -572,8 +570,10 @@ const Q3 = {
     {id:'skisto',emo:'🏊',t:'Menetap + sakit perut, gatal usai berenang di danau',tag:'Pola Skistosomiasis',r:'Demam menetap + gatal setelah berenang di danau'},
     {id:'x',emo:'🤔',t:'Tidak ada yang cocok'}]},
   B:{title:'Sudah berapa lama batuknya?',opts:[
-    {id:'ispa',emo:'🤧',t:'Kurang dari 2 minggu, pilek & bersin',tag:'Pola ISPA',r:'Batuk < 14 hari dengan pilek & bersin'},
-    {id:'tbc',emo:'📆',t:'Lebih dari 2 minggu berturut-turut',tag:'Pola TBC',r:'Batuk lebih dari 2 minggu berturut-turut'}]},
+    // TODO DR: batuk tepat 14 hari masuk ISPA atau TBC? Blueprint: ISPA < 14 hari, TBC > 2 minggu.
+    {id:'ispa',emo:'🤧',t:'Kurang dari 2 minggu, hidung tersumbat, bersin, tenggorokan gatal',tag:'Pola ISPA',r:'Batuk < 14 hari dengan hidung tersumbat, bersin, tenggorokan gatal'},
+    {id:'tbc',emo:'📆',t:'Lebih dari 2 minggu berturut-turut',tag:'Pola TBC',r:'Batuk lebih dari 2 minggu berturut-turut'},
+    {id:'x',emo:'🤔',t:'Tidak ada yang cocok'}]},
   C:{title:'Seperti apa gangguan perutnya?',opts:[
     {id:'diare',emo:'💧',t:'Mencret >3x sehari, tanpa darah',tag:'Diare Akut',r:'BAB cair > 3x/hari tanpa darah'},
     {id:'amoeba',emo:'🩸',t:'BAB berdarah & berlendir, perih saat mengejan',tag:'Amebiasis',r:'BAB berdarah-lendir dengan tenesmus'},
@@ -648,12 +648,11 @@ const BODY = [
 ];
 
 const ROUTES = {
-  green:{name:'RUTE HIJAU',sub:'Perawatan Mandiri · Telemedisin · Apotek',c1:'#4FDDA0',c2:'#1FA86E',emo:'🌿',place:'Apotek terdekat',q:'apotek terdekat'},
+  green:{name:'RUTE HIJAU',sub:'Perawatan Mandiri · Apotek',c1:'#4FDDA0',c2:'#1FA86E',emo:'🌿',place:'Apotek terdekat',q:'apotek terdekat'},
   yellow:{name:'RUTE KUNING',sub:'Puskesmas · Klinik Pratama',c1:'#FFCB57',c2:'#F59B0B',emo:'🏥',place:'Poli Umum Puskesmas dengan laboratorium',q:'puskesmas terdekat'},
   special:{name:'RUTE KUNING KHUSUS',sub:'Poli Program Nasional Kemenkes',c1:'#FFA45C',c2:'#E8662A',emo:'🎯',place:'Puskesmas dengan Poli DOTS / Program Eradikasi NTD',q:'puskesmas terdekat'},
   red:{name:'RUTE MERAH',sub:'Kedaruratan · IGD Rumah Sakit',c1:'#FF7280',c2:'#E0283F',emo:'🚨'}
 };
-const ALL_LABS = ['NS1','Apusan Darah','Widal/Tubex','Fungsi Hati','Cek Feses','TCM Dahak'];
 
 const STAGES = [
   {e:'🚨',n:'Darurat'},{e:'🧭',n:'Keluhan'},{e:'🔍',n:'Gejala'},
@@ -665,12 +664,9 @@ const STAGE_OF = {who:0,q1:0,q2:1,q3:2,q4:2,q5:3,q6:3,q7:4,q8:4,q9:4,q10:4};
    STATE
    ========================================================= */
 const blankAns = () => ({who:null,age:'',sex:null,q1:[],q2:null,q3:null,q4:[],q5:[],q6:'',temp:'',noThermo:false,h:'',w:'',proxy:null,body:[],pain:null,photo:null,scanned:false,findings:[]});
-const S = {i:0, ans:blankAns(), coins:0, awarded:new Set(), user:null, settings:{sound:true,vib:true}};
-try{ S.coins = parseInt(localStorage.getItem('tropicek_coins')||'120',10)||120; }catch(e){ S.coins=120; }
+const S = {i:0, ans:blankAns(), user:null, settings:{sound:true,vib:true}};
 // Login simulasi: hanya nama yang disimpan. Tidak ada email, kata sandi, NIK, atau nomor BPJS.
 try{ const u = JSON.parse(localStorage.getItem('tropicek_user')||'null'); if(u && u.name) S.user = {name:String(u.name).slice(0,40)}; }catch(e){}
-const getHistory = () => { try{ return JSON.parse(localStorage.getItem('tropicek_history')||'[]'); }catch(e){ return []; } };
-const saveHistory = h => { try{ localStorage.setItem('tropicek_history', JSON.stringify(h)); }catch(e){} };
 
 const $ = s => document.querySelector(s);
 const screen = $('#screen');
@@ -696,7 +692,7 @@ function tone(seq){
 }
 const SFX = {
   tap:()=>tone([[660,.06,'triangle',.05]]),
-  coin:()=>tone([[988,.08,'square',.025],[1319,.2,'square',.025]]),
+  ding:()=>tone([[988,.08,'square',.025],[1319,.2,'square',.025]]),
   win:()=>tone([[523,.13],[659,.13],[784,.13],[1047,.35]]),
   alert:()=>tone([[440,.22,'sawtooth',.04],[330,.22,'sawtooth',.04],[440,.22,'sawtooth',.04],[330,.3,'sawtooth',.04]]),
   think:()=>tone([[392,.1,'triangle',.03],[494,.1,'triangle',.03]])
@@ -711,34 +707,6 @@ function sparkles(n=16){
   let h = '<div class="spk">';
   for(let i=0;i<n;i++) h += `<i style="left:${Math.random()*100}%;top:${Math.random()*70}%;animation-delay:${(Math.random()*3).toFixed(2)}s;transform:scale(${(.5+Math.random()).toFixed(2)})"></i>`;
   return h + '</div>';
-}
-function coinPill(){ return `<div class="coins" data-act="coininfo" id="coinPill"><span class="coin" id="coinIcon"></span><b id="coinNum">${S.coins}</b><span class="plus">+</span></div>`; }
-function saveCoins(){ try{ localStorage.setItem('tropicek_coins', S.coins); }catch(e){} }
-function addCoins(n, fromEl){
-  S.coins += n; saveCoins();
-  const target = $('#coinIcon');
-  const update = () => { const c=$('#coinNum'); if(c) c.textContent = S.coins; const p=$('#coinPill'); if(p){ p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); } };
-  if(!fromEl || !target){ update(); return; }
-  const a = fromEl.getBoundingClientRect(), b = target.getBoundingClientRect();
-  const k = Math.min(6, Math.max(3, Math.round(n/5)));
-  for(let i=0;i<k;i++){
-    const c = document.createElement('span');
-    c.className = 'coin flycoin';
-    c.style.left = (a.left + a.width/2 + (Math.random()*60-30)) + 'px';
-    c.style.top = (a.top + a.height/2) + 'px';
-    document.body.appendChild(c);
-    setTimeout(()=>{ c.style.transform = `translate(${b.left - parseFloat(c.style.left)}px,${b.top - parseFloat(c.style.top)}px) rotate(45deg) scale(.8)`; }, 20 + i*70);
-    setTimeout(()=>{ c.remove(); if(i===k-1){ update(); SFX.coin(); } }, 760 + i*70);
-  }
-  const p = document.createElement('div');
-  p.className = 'plus-pop'; p.textContent = '+' + n;
-  const ph = $('#phone').getBoundingClientRect();
-  p.style.left = (a.left - ph.left + a.width/2 - 14) + 'px'; p.style.top = (a.top - ph.top - 10) + 'px';
-  $('#phone').appendChild(p); setTimeout(()=>p.remove(), 1000);
-}
-function award(id, n, el){
-  if(S.awarded.has(id)) return;
-  S.awarded.add(id); addCoins(n, el);
 }
 function confetti(){
   const cols = ['#FFC531','#FF7E9A','#8B4DFF','#26C4B1','#FF8F3D','#7AA2FF','#3DDC84'];
@@ -875,6 +843,18 @@ function bodySVG(){
 </svg>`;
 }
 
+/* Skala nyeri 0–10 dengan wajah. Disimpan sebagai angka bulat 0–10. Label wajah disetujui DR. */
+const PAIN_C = ['#3BB54A','#8DC63F','#F2D21B','#F7B733','#F4A340','#F08A2E','#EC7B2C','#E8622C','#E2532E','#DC3B2E','#D62B2B'];
+const PAIN_FACES = {0:['😄','Tidak sakit'],2:['🙂','Sedikit sakit'],4:['😐','Agak sakit'],6:['🙁','Lebih sakit'],8:['😣','Sangat sakit'],10:['😭','Sakit sekali']};
+function painScale(v){
+  const face = v==null ? null : Math.ceil(v/2)*2;
+  return `<div class="fscale" role="radiogroup" aria-label="Skala nyeri 0 sampai 10, dari tidak sakit sampai sakit sekali">
+    ${PAIN_C.map((c,n)=>`<button class="fnum ${n<7?'dk':''} ${v===n?'on':''}" style="grid-row:${n+1};--fc:${c}" role="radio" aria-checked="${v===n}" aria-label="${n} dari 10${PAIN_FACES[n]?', '+PAIN_FACES[n][1]:''}" data-act="pain" data-v="${n}">${n}</button>`).join('')}
+    ${Object.entries(PAIN_FACES).map(([n,[e,t]])=>`<span class="flab" style="grid-row:${+n+1}">${t}</span>
+      <button class="fface ${face===+n?'on':''}" style="grid-row:${+n+1};--fc:${PAIN_C[n]}" tabindex="-1" aria-hidden="true" data-act="pain" data-v="${n}">${e}</button>`).join('')}
+  </div>`;
+}
+
 /* =========================================================
    INFERENCE ENGINE (simulasi Tahap 6)
    ========================================================= */
@@ -911,8 +891,8 @@ function compute(a=S.ans){
     add('tbc',10,r); add('kusta',6,r); add('sth',10,r); }
   if(nut==='obes') add('malaria',5,'Postur gemuk (prediktor malaria berat)');
 
-  const b = new Set(a.body), pain = a.pain==null ? 0 : +a.pain; // VAS 0-100. TODO ST: konfirmasi ambang VAS (dulu skala 0-10)
-  if(['wrist_r','wrist_l','ankle_r','ankle_l'].some(x=>b.has(x))) add('chik', pain>=60?18:10, `Nyeri sendi pergelangan (VAS ${pain}/100)`);
+  const b = new Set(a.body), pain = a.pain==null ? 0 : +a.pain; // Skala 0-10. TODO ST: konfirmasi ambang (dulu VAS >=60/100)
+  if(['wrist_r','wrist_l','ankle_r','ankle_l'].some(x=>b.has(x))) add('chik', pain>=6?18:10, `Nyeri sendi pergelangan (skala ${pain}/10)`);
   if(b.has('ruq')) add('hepa',20,'Peta nyeri: perut kanan atas (area hati)');
   if(b.has('low')){ add('tifoid',12,'Peta nyeri: perut tengah/bawah'); add('amoeba',12,'Peta nyeri: perut tengah/bawah'); }
   if(b.has('luq')) add('tifoid',4,'Peta nyeri: ulu hati');
@@ -939,7 +919,8 @@ function drugFlags(a=S.ans){
   const anti = /lopera|imodium|lodia|motilex|diatab|entrostop|attapulg|lomotil|diphenox/i.test(t);
   const nsaid = /ibupro|proris|aspirin|asetosal|aspilet|mefenam|ponstan|diklofenak|diclofenac|voltaren|piroxicam|naproxen|ketoprofen/i.test(t);
   return {
-    anti: anti && (a.q2==='C' || ['diare','amoeba'].includes(a.q3)),
+    // Blueprint Q6: hanya untuk dugaan diare/amebiasis. TODO DR: konfirmasi cakupan (pertanyaan terbuka #18).
+    anti: anti && ['diare','amoeba'].includes(a.q3),
     nsaid: nsaid && a.q2==='A'
   };
 }
@@ -953,6 +934,7 @@ function decide(r){
 }
 function crossVal(r){
   const out = [], a = S.ans, sc = r.sc;
+  // TODO DR+ST: Blueprint membandingkan petekie (DBD), tetapi belum ada pertanyaan tentang petekie.
   if(a.q2==='A' || a.q2==='C' || (sc.tifoid>0 && sc.dbd>0)){
     const w = sc.tifoid > sc.dbd ? 'Tifoid' : 'DBD';
     out.push(`Tifoid vs DBD: demam stepladder + nyeri perut vs demam pelana kuda + petekie → condong ke <b>${w}</b>`);
@@ -991,7 +973,7 @@ function opts(key, list, multi, layout=''){
     const on = multi ? v.includes(o.id) : v===o.id;
     return `<button class="opt ${o.cls||''} ${on?'on':''} ${multi?'multi':''}" data-act="opt" data-key="${key}" data-id="${o.id}" data-multi="${multi?1:0}">
       <span class="oe">${o.emo}</span>
-      <span class="ot">${o.t}</span>
+      <span class="ot">${o.t}${o.det?`<span class="od">${o.det}</span>`:''}</span>
       <span class="ck"></span></button>`;
   }).join('')}</div>`;
 }
@@ -1000,8 +982,10 @@ const STEPS = {
   who:{tab:'MULAI · DATA DIRI',
     say:()=>'Halo, aku <b>Kak Tropi</b>! 👋 Kenalan dulu, yuk.',
     body:()=>`<h2 class="qt">Siapa yang sedang sakit?</h2><p class="qh">Pilih satu</p>${opts('who',WHO,false,'tiles')}
-      <label class="fld" style="margin-top:14px"><span>Usia (tahun)</span><div class="inp age"><input id="age" inputmode="numeric" maxlength="3" placeholder="25" value="${esc(S.ans.age)}"><em>th</em></div></label>
-      <h3 class="subq">Jenis kelamin</h3>${opts('sex',SEX,false,'tiles')}`,
+      <div class="frow">
+        <label class="fld age"><span>Usia (tahun)</span><div class="inp age"><input id="age" inputmode="numeric" maxlength="3" placeholder="25" value="${esc(S.ans.age)}"><em>th</em></div></label>
+        <div class="fld"><span id="sexLbl">Jenis kelamin</span><div class="seg" role="radiogroup" aria-labelledby="sexLbl">${SEX.map(o=>`<button type="button" role="radio" aria-checked="${S.ans.sex===o.id}" class="${S.ans.sex===o.id?'on':''}" data-act="opt" data-key="sex" data-id="${o.id}" data-multi="0">${o.t}</button>`).join('')}</div></div>
+      </div>`,
     bind:()=>{ $('#age').addEventListener('input', e => { S.ans.age = e.target.value.replace(/\D/g,'').slice(0,3); e.target.value = S.ans.age; pruneByAge(); refresh(); }); },
     valid:()=>{ const n = ageOf(S.ans); return !!S.ans.who && n>=0 && n<=120 && !!S.ans.sex; }},
 
@@ -1009,7 +993,7 @@ const STEPS = {
     say:()=>'Cek <b>tanda bahaya</b> dulu, ya ❤️',
     body:()=>`<h2 class="qt"><span class="alertline">⚠️</span> Ada <u>salah satu</u> kondisi darurat ini?</h2>
       <p class="qh">Pilih semua yang dialami</p>
-      ${opts('q1',[...RED.map(r=>({...r,cls:'danger'})),{id:'none',emo:'✅',t:'Tidak ada, saya aman',cls:'safe'}],true,'tiles')}`,
+      ${opts('q1',[...RED.map(r=>({...r,cls:'danger'})),{id:'none',emo:'✅',t:'Tidak ada, saya aman',cls:'safe'}],true)}`,
     valid:()=>S.ans.q1.length>0,
     nextLabel:()=>S.ans.q1.some(x=>x!=='none') ? '🚨 Lihat Tindakan Darurat' : 'Lanjut ▶',
     nextCls:()=>S.ans.q1.some(x=>x!=='none') ? 'btn-red' : 'btn-purple'},
@@ -1069,7 +1053,7 @@ const STEPS = {
         </div>
       </div>
       <label class="chk"><input type="checkbox" data-act="nothermo" ${dis?'checked':''}> Saya tidak punya termometer</label>
-      ${dis?`<div class="note">🤖 Tak apa! AI memakai <b>kurva demam (Q3)</b> sebagai gantinya.</div>`:''}`;
+      ${dis?`<div class="note">${noThermoNote(S.ans)}</div>`:''}`;
     },
     bind:()=>{ const i = $('#temp'); if(i) i.addEventListener('input', e => { S.ans.temp = e.target.value; updTemp(); refresh(); }); updTemp(); },
     valid:()=>{ const t = num(S.ans.temp); return S.ans.noThermo || (t>=34 && t<=43); }},
@@ -1099,18 +1083,9 @@ const STEPS = {
         <div class="bodysvg">${bodySVG()}</div>
         <div class="bside">
           <div class="sel-list">${sel.length ? sel.map(b=>`<span>${b.n}</span>`).join('') : '<div class="empty">Belum ada. Tidak ada yang sakit? Langsung lanjut.</div>'}</div>
-          ${sel.length ? `<div class="pain"><p class="pq">Seberapa nyeri?</p>
-            <div class="vas ${S.ans.pain==null?'untouched':''}" id="vas">
-              <input type="range" min="0" max="100" step="1" id="pain" value="${S.ans.pain==null?50:S.ans.pain}" aria-label="Skala nyeri, dari tidak nyeri sampai nyeri terburuk">
-              <div class="vas-lab"><span>Tidak nyeri</span><span>Nyeri terburuk</span></div>
-            </div></div>` : ''}
+          ${sel.length ? `<div class="pain"><p class="pq">Seberapa nyeri? Ketuk angka atau wajah</p>${painScale(S.ans.pain)}</div>` : ''}
         </div>
       </div>`;
-    },
-    bind:()=>{
-      const p = $('#pain'); if(!p) return;
-      const touch = () => { S.ans.pain = +p.value; $('#vas').classList.remove('untouched'); refresh(); };
-      p.addEventListener('input', touch); p.addEventListener('click', touch);
     },
     valid:()=>!S.ans.body.length || S.ans.pain!==null,
     nextLabel:()=>S.ans.body.length ? 'Lanjut ▶' : 'Tidak ada nyeri, lanjut ▶'},
@@ -1142,6 +1117,12 @@ const STEPS = {
     nextLabel:()=>'🔮 Lihat Tebakan AI'}
 };
 
+// Tanpa termometer, poin suhu dilewati (tidak ada perkiraan suhu). Pola demam hanya ada di Q3 klaster A.
+// TODO ST: sesuaikan teks dengan cara hitung akhir. TODO DR: pertanyaan terbuka #1 untuk klaster selain demam.
+function noThermoNote(a){
+  return a.q2==='A' ? 'Tak apa! Skor tetap memakai <b>pola demam</b> yang kamu pilih tadi.'
+    : 'Tak apa! Skor tetap dihitung dari <b>jawaban lainnya</b>.';
+}
 function updTemp(){
   const t = num(S.ans.temp), st = $('#tstat'), fl = $('#tfill');
   if(!st) return;
@@ -1171,9 +1152,10 @@ function updBMI(){
    RENDER: HOME
    ========================================================= */
 function renderHome(){
+  if(location.hash.startsWith('#ringkasan=')) history.replaceState(null, '', location.pathname + location.search);
   screen.className = 'screen bg-home';
   screen.innerHTML = `<div class="scene">${sceneSVG()}</div>${sparkles(14)}
-  <div class="hud"><button class="icon-btn" data-act="settings" aria-label="Pengaturan">⚙</button><div style="flex:1"></div>${coinPill()}</div>
+  <div class="hud"><button class="icon-btn" data-act="settings" aria-label="Pengaturan">⚙</button><div style="flex:1"></div></div>
   <div class="home">
     <div class="ribbon"><b>Tropi<span>Cek</span></b><small>Skrining Awal Penyakit Tropis</small></div>
     <div class="hero">${mascotSVG('m-hero')}<div class="bubble"><p>Halo! Aku <b>Kak Tropi</b> 🌺 Yuk main tebak-tebakan kesehatan bareng aku. Cuma ±3 menit!</p></div></div>
@@ -1182,7 +1164,6 @@ function renderHome(){
       <button class="btn btn-teal" data-act="chronic">🩺 Cek risiko penyakit jangka panjang</button>
       <div class="row-links">
         ${S.user ? `<button class="btn btn-ghost" data-act="profile">👤 ${esc(S.user.name)}</button>` : `<button class="btn btn-ghost" data-act="login">🔑 Masuk</button>`}
-        <button class="btn btn-ghost" data-act="howto">Cara Bermain</button>
       </div>
     </div>
     <p class="disc">🩺 Skrining awal · masuk akun bersifat opsional</p>
@@ -1200,7 +1181,7 @@ function renderQuiz(){
   const id = cur(), st = STEPS[id];
   screen.className = 'screen bg-quiz';
   screen.innerHTML = `${sparkles(18)}
-  <div class="hud"><button class="icon-btn" data-act="back" aria-label="Kembali">‹</button>${stageMap(STAGE_OF[id])}${coinPill()}</div>
+  <div class="hud"><button class="icon-btn" data-act="back" aria-label="Kembali">‹</button>${stageMap(STAGE_OF[id])}</div>
   <div class="qlayout">
     <div class="mrow">${mascotSVG('m-sm')}<div class="bubble"><p>${st.say()}</p>
       <div class="cand" id="cand"></div></div></div>
@@ -1251,7 +1232,6 @@ function next(){
 }
 function proceed(){
   const id = cur(), a = S.ans;
-  // Koin tidak diberikan per jawaban. Koin hanya saat skrining selesai (renderResult).
   if(id==='who') pruneByAge();
   if(id==='q1' && a.q1.some(x=>x!=='none')) return setTimeout(renderRed, 150);
   const f = flow();
@@ -1268,7 +1248,7 @@ function back(){
 function renderThinking(){
   const r = compute(), a = S.ans;
   const steps = ['Membaca seluruh jawaban kuesioner'];
-  if(a.noThermo) steps.push('Imputasi suhu dari kurva demam (Q3)');
+  if(a.noThermo) steps.push(a.q2==='A' ? 'Suhu tidak diukur: memakai pola demam' : 'Suhu tidak diukur: dihitung tanpa suhu');
   if(!bmiOf()) steps.push('Imputasi gizi dari proksi kelonggaran baju');
   if(!a.noThermo && bmiOf()) steps.push('Data vital lengkap — tanpa imputasi');
   crossVal(r).forEach(x => steps.push('Validasi silang: ' + x.split(':')[0]));
@@ -1306,9 +1286,71 @@ function renderThinking(){
   setTimeout(renderResult, lis.length*T + 1300);
 }
 
+/* QR rangkuman. Isi QR = alamat aplikasi + jawaban pasien dalam kode ringkas (tanpa nama, NIK, atau foto).
+   Tidak ada server: petugas yang memindai membuka halaman rangkuman yang dihitung di browsernya sendiri. */
+const QR_ARR = ['q1','q4','q5','body','findings'];
+const QR_STR = ['who','age','sex','q2','q3','q6','temp','h','w','proxy'];
+function packAns(a){
+  const o = {};
+  [...QR_ARR, ...QR_STR, 'noThermo', 'pain', 'ts'].forEach(k => {
+    const v = a[k];
+    if(v===null || v==='' || v===false || (Array.isArray(v) && !v.length)) return;
+    o[k] = v;
+  });
+  let bin = ''; new TextEncoder().encode(JSON.stringify(o)).forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function unpackAns(t){
+  const bin = atob(t.replace(/-/g,'+').replace(/_/g,'/'));
+  const o = JSON.parse(new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))));
+  if(!o || typeof o !== 'object') throw new Error('bad');
+  const a = blankAns();
+  QR_ARR.forEach(k => { if(Array.isArray(o[k])) a[k] = o[k].filter(x => typeof x==='string').slice(0,40); });
+  QR_STR.forEach(k => { if(typeof o[k]==='string') a[k] = o[k].slice(0,200); });
+  a.noThermo = o.noThermo === true;
+  a.pain = Number.isInteger(o.pain) && o.pain>=0 && o.pain<=10 ? o.pain : null;
+  if(Number.isFinite(o.ts)) a.ts = o.ts;
+  return a;
+}
+const SCAN_HASH = '#ringkasan=';
+function scanURL(){ return location.href.split('#')[0] + SCAN_HASH + packAns(S.ans); }
+function drawQR(cv, text){
+  let qr = null;
+  try{ qr = qrcode(0, 'L'); qr.addData(text); qr.make(); }catch(e){ qr = null; }
+  if(!qr) return false;
+  const n = qr.getModuleCount(), q = 4, m = Math.max(2, Math.floor(460/(n+2*q)));
+  cv.width = cv.height = (n+2*q)*m;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.fillStyle = '#1C1250';
+  for(let y=0;y<n;y++) for(let x=0;x<n;x++) if(qr.isDark(y,x)) ctx.fillRect((x+q)*m,(y+q)*m,m,m);
+  return true;
+}
+
 /* =========================================================
    RENDER: RESULT (Tahap 7)
    ========================================================= */
+/* Saran penanganan + catatan penting. Dipakai halaman hasil dan halaman rangkuman (QR).
+   TODO DR: setujui teks saran penanganan. */
+function adviceFor(r, d){
+  const a = S.ans, top = r.ranked[0], R = ROUTES[d.route], D = d.unknown ? null : DIS[top.id];
+  const df = drugFlags(), nut = nutrition(), t = num(a.temp), b = new Set(a.body);
+  const warns = [];
+  if(df.anti) warns.push(['y','💊','<b>Hentikan obat mampat.</b> Infeksi usus butuh dikeluarkan. Ganti dengan Oralit & Zinc.']);
+  if(df.nsaid) warns.push(['y','💊','<b>Hindari Ibuprofen/Aspirin</b> pada suspek DBD. Gunakan Paracetamol.']);
+  if(['wrist_r','wrist_l','ankle_r','ankle_l'].some(x=>b.has(x)) && a.pain!=null && a.pain>=7 && r.sc.chik>=20) warns.push(['y','🦴','Nyeri sendi pergelangan berat → <b>risiko Chikungunya kronis</b>. Kontrol bila nyeri menetap > 3 bulan.']);
+  if(nut==='obes' && r.sc.malaria>=40) warns.push(['r','⚠️','Postur gemuk meningkatkan <b>risiko malaria berat</b>. Jangan tunda pemeriksaan darah.']);
+  if(!a.noThermo && t>=39.5) warns.push(['r','🌡️',`Suhu ${t.toFixed(1)} °C tergolong <b>demam tinggi</b>. Kompres hangat & minum banyak.`]);
+  d.notes.forEach(n => warns.push(['b','⬆️',n]));
+  if(a.noThermo) warns.push(['b','🌡️','Suhu tidak diukur. ' + noThermoNote(a).replace(/^Tak apa! /,'')]);
+  if(!bmiOf()) warns.push(['b','🤖','IMT tidak diisi — AI memakai <b>proksi kelonggaran pakaian</b>.']);
+
+  let todo = [];
+  if(d.route==='green') todo = ['Isolasi mandiri & istirahat cukup di rumah','Perbaiki sanitasi kamar/asrama: cuci sprei, jemur kasur, buka ventilasi', ...(D?D.care:[])];
+  else if(d.route==='yellow') todo = [...(D?D.care:['Datang ke Poli Umum Puskesmas untuk pemeriksaan langsung','Minum cukup dan istirahat']), 'Tunjukkan QR rangkuman ke petugas pendaftaran'];
+  else todo = ['Navigasi eksklusif: hanya ke Puskesmas dengan layanan program nasional', ...(D?D.care:[])];
+  return {todo, warns};
+}
 function summary(r, d){
   const a = S.ans, top = r.ranked[0];
   const o3 = a.q2 && Q3[a.q2].opts.find(o=>o.id===a.q3);
@@ -1317,7 +1359,7 @@ function summary(r, d){
   const b = bmiOf();
   const L = [
     'TROPICEK – RANGKUMAN SKRINING (SIMULASI)',
-    'Tanggal   : ' + new Date().toLocaleString('id-ID'),
+    'Tanggal   : ' + new Date(a.ts || Date.now()).toLocaleString('id-ID'),
     'Pasien    : ' + (WHO.find(w=>w.id===a.who)?.t || '-') + ' · ' + (a.age ? a.age + ' th' : '-') + ' · ' + (SEX.find(x=>x.id===a.sex)?.t || '-'),
     'Tanda bahaya: tidak ada',
     'Keluhan   : ' + (a.q2 ? CL[a.q2].name : '-'),
@@ -1325,33 +1367,15 @@ function summary(r, d){
     'Penyerta  : ' + (q4.length ? q4.join('; ') : '-'),
     'Ekologi   : ' + (eco.length ? eco.join('; ') : 'tidak ada'),
     'Obat      : ' + (a.q6.trim() || '-'),
-    'Suhu      : ' + (a.noThermo ? 'tidak diukur (imputasi dari kurva demam)' : num(a.temp).toFixed(1) + ' °C'),
+    'Suhu      : ' + (a.noThermo ? 'tidak diukur (tidak punya termometer)' : num(a.temp).toFixed(1) + ' °C'),
     'Gizi      : ' + (b ? `IMT ${b.toFixed(1)} (TB ${a.h} cm, BB ${a.w} kg)` : 'proksi: ' + a.proxy),
-    'Peta nyeri: ' + (a.body.length ? BODY.filter(x=>a.body.includes(x.id)).map(x=>x.n).join(', ') + (a.pain!=null ? ` (VAS ${a.pain}/100)` : '') : '-'),
+    'Peta nyeri: ' + (a.body.length ? BODY.filter(x=>a.body.includes(x.id)).map(x=>x.n).join(', ') + (a.pain!=null ? ` (nyeri ${a.pain}/10)` : '') : '-'),
     'Foto AI   : ' + (a.findings.filter(x=>x!=='none').map(id=>FIND.find(f=>f.id===id).t).join(', ') || '-'),
+    'Lab       : ' + (!d.unknown && DIS[top.id].lab.length ? DIS[top.id].lab.join('; ') : '-'),
     'Dugaan    : ' + (d.unknown ? 'belum dapat ditentukan' : `${DIS[top.id].name} (${Math.round(top.p*100)}%)`),
     'Rute      : ' + ROUTES[d.route].name + ' – ' + ROUTES[d.route].sub
   ];
   return L.join('\n');
-}
-function hash(s){ let h = 2166136261; for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h>>>0; }
-function drawQR(cv, text){
-  const N = 29, ctx = cv.getContext('2d'), px = cv.width, m = px/(N+4);
-  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,px,px);
-  let seed = hash(text);
-  const rnd = () => { seed = (seed + 0x6D2B79F5)|0; let t = Math.imul(seed ^ seed>>>15, 1|seed); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296; };
-  const inF = (x,y) => (x<8&&y<8)||(x>N-9&&y<8)||(x<8&&y>N-9);
-  ctx.fillStyle = '#3A2E6E';
-  for(let y=0;y<N;y++) for(let x=0;x<N;x++){
-    if(inF(x,y)) continue;
-    const on = (x===6||y===6) ? (x+y)%2===0 : rnd()<.48;
-    if(on) ctx.fillRect((x+2)*m,(y+2)*m,m+.3,m+.3);
-  }
-  [[0,0],[N-7,0],[0,N-7]].forEach(([x,y])=>{
-    ctx.fillStyle='#3A2E6E'; ctx.fillRect((x+2)*m,(y+2)*m,7*m,7*m);
-    ctx.fillStyle='#fff'; ctx.fillRect((x+3)*m,(y+3)*m,5*m,5*m);
-    ctx.fillStyle='#8B4DFF'; ctx.fillRect((x+4)*m,(y+4)*m,3*m,3*m);
-  });
 }
 function mapsURL(q){ return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
 
@@ -1359,33 +1383,20 @@ function renderResult(){
   const r = compute(), d = decide(r), a = S.ans;
   const top = r.ranked[0], R = ROUTES[d.route], D = d.unknown ? null : DIS[top.id];
   const others = r.ranked.slice(d.unknown ? 0 : 1, d.unknown ? 3 : 4);
-  const xv = crossVal(r), df = drugFlags(), nut = nutrition(), t = num(a.temp);
-  const b = new Set(a.body);
-  const warns = [];
-  if(df.anti) warns.push(['y','💊','<b>Hentikan obat mampat.</b> Infeksi usus butuh dikeluarkan. Ganti dengan Oralit & Zinc.']);
-  if(df.nsaid) warns.push(['y','💊','<b>Hindari Ibuprofen/Aspirin</b> pada suspek DBD. Gunakan Paracetamol.']);
-  if(['wrist_r','wrist_l','ankle_r','ankle_l'].some(x=>b.has(x)) && a.pain!=null && a.pain>=70 && r.sc.chik>=20) warns.push(['y','🦴','Nyeri sendi pergelangan berat → <b>risiko Chikungunya kronis</b>. Kontrol bila nyeri menetap > 3 bulan.']);
-  if(nut==='obes' && r.sc.malaria>=40) warns.push(['r','⚠️','Postur gemuk meningkatkan <b>risiko malaria berat</b>. Jangan tunda pemeriksaan darah.']);
-  if(!a.noThermo && t>=39.5) warns.push(['r','🌡️',`Suhu ${t.toFixed(1)} °C tergolong <b>demam tinggi</b>. Kompres hangat & minum banyak.`]);
-  d.notes.forEach(n => warns.push(['b','⬆️',n]));
-  if(a.noThermo) warns.push(['b','🤖','Suhu tidak diukur — AI memakai <b>kurva demam (Q3)</b> sebagai proksi.']);
-  if(!bmiOf()) warns.push(['b','🤖','IMT tidak diisi — AI memakai <b>proksi kelonggaran pakaian</b>.']);
+  const xv = crossVal(r);
 
   const isTBC = !d.unknown && top.id==='tbc';
-  const ping = !d.unknown && (top.id==='tbc' || top.id==='campak');
   const mapsQ = d.unknown ? 'puskesmas terdekat' : isTBC ? 'puskesmas poli DOTS TBC terdekat' : R.q;
   const place = isTBC ? 'Puskesmas dengan Poli DOTS (TCM untuk TBC)' : (d.route==='special' ? 'Puskesmas dengan Program Eradikasi NTD' : R.place);
+  a.ts = a.ts || Date.now();
   const sum = summary(r, d);
+  const {todo, warns} = adviceFor(r, d);
   const pct = d.unknown ? 0 : Math.round(top.p*100);
 
-  let todo = [];
-  if(d.route==='green') todo = ['Isolasi mandiri & istirahat cukup di rumah','Perbaiki sanitasi kamar/asrama: cuci sprei, jemur kasur, buka ventilasi', ...(D?D.care:[])];
-  else if(d.route==='yellow') todo = [...(D?D.care:['Datang ke Poli Umum Puskesmas untuk pemeriksaan langsung','Minum cukup dan istirahat']), 'Tunjukkan QR rangkuman ke petugas pendaftaran'];
-  else todo = ['Navigasi eksklusif: hanya ke Puskesmas dengan layanan program nasional', ...(D?D.care:[])];
 
   screen.className = 'screen bg-result';
   screen.innerHTML = `${sparkles(18)}
-  <div class="hud"><button class="icon-btn" data-act="home" aria-label="Beranda">⌂</button><div class="htitle">Hasil Triase</div>${coinPill()}</div>
+  <div class="hud"><button class="icon-btn" data-act="home" aria-label="Beranda">⌂</button><div class="htitle">Hasil Triase</div></div>
   <div class="rscroll">
     <div class="banner" style="background:linear-gradient(${R.c1},${R.c2})">✨ SKRINING SELESAI! ✨</div>
 
@@ -1416,23 +1427,15 @@ function renderResult(){
       <div class="rbody">
         <h4>Yang perlu dilakukan</h4>
         <ul class="todo">${todo.map(x=>`<li>${x}</li>`).join('')}</ul>
-        ${d.route!=='green' ? `<h4>Pemeriksaan lab yang disiapkan</h4>
-          <div class="labs">${(D && D.lab.length ? D.lab : []).map(l=>`<span class="hot">${l}</span>`).join('')}${ALL_LABS.map(l=>`<span>${l}</span>`).join('')}</div>` : ''}
-        <div class="place"><span class="pe">📍</span><div>${place}<small>GPS mengunci rute ke faskes yang sesuai</small></div></div>
+        <div class="place"><span class="pe">📍</span><div>${place}<small>Dibuka di Google Maps</small></div></div>
         <a class="btn ${d.route==='green'?'btn-teal':'btn-purple'}" href="${mapsURL(mapsQ)}" target="_blank" rel="noopener">🧭 Navigasi ke ${d.route==='green'?'Apotek':'Puskesmas'} Terdekat</a>
         <a class="btn btn-jkn" style="margin-top:14px" href="${jknURL()}" target="_blank" rel="noopener">📅 Buat janji dokter (Mobile JKN)</a>
-        ${d.route==='green' ? `<button class="btn btn-purple" style="margin-top:14px" data-act="tele">💬 Konsultasi Telemedisin</button>` : ''}
-        ${ping ? `<div class="ping" id="ping"><span class="pr">📡</span><span id="pingTxt">Mengirim notifikasi ke faskes: siapkan <b>Ruang Isolasi Airborne</b>…</span></div>` : ''}
-        ${d.route!=='green' ? `<div class="qrbox"><canvas id="qr" width="232" height="232"></canvas><div><b>QR Rangkuman Wawancara</b>Tunjukkan ke petugas — data terkirim ke SATUSEHAT & FKTP <i>(simulasi)</i>.</div></div>` : ''}
+        ${d.route!=='green' ? `<div class="qrbox"><canvas id="qr" width="232" height="232" aria-label="QR rangkuman untuk petugas"></canvas><b>QR Rangkuman</b>Tunjukkan ke petugas. Petugas yang memindai melihat rangkuman kondisimu dan saran penanganan. Datanya ada di QR ini, tidak dikirim atau disimpan di server.</div>` : ''}
         <details class="sum"><summary>📄 Lihat rangkuman lengkap</summary><pre>${esc(sum)}</pre></details>
       </div>
     </div>
 
     ${warns.length ? `<div class="card"><div class="tab">CATATAN PENTING</div>${warns.map(w=>`<div class="warn ${w[0]}"><span class="wi">${w[1]}</span><span>${w[2]}</span></div>`).join('')}</div>` : ''}
-
-    <div class="card" id="savecard" style="margin-top:34px">${saveCardHTML()}</div>
-
-    <div class="reward" style="margin-top:26px"><div class="badge">🏅</div><div><b>Lencana "Pahlawan Sehat"</b><span>+50 Koin Sehat karena menyelesaikan skrining. Terima kasih sudah peduli kesehatan! 💜</span></div></div>
 
     <div class="btnrow">
       <button class="btn btn-teal" data-act="copy">📋 Salin Rangkuman</button>
@@ -1443,12 +1446,42 @@ function renderResult(){
   </div>`;
 
   S.lastSummary = sum;
-  S.lastSaved = false; S.lastResult = {route:R.name, label: d.unknown ? 'Belum dapat ditentukan' : D.name};
-  const cv = $('#qr'); if(cv) drawQR(cv, sum);
+  const cv = $('#qr'); if(cv && !drawQR(cv, scanURL())){ cv.closest('.qrbox').remove(); }
   setTimeout(()=>document.querySelectorAll('.bar .bt i').forEach(i=>i.style.width = i.dataset.w + '%'), 60);
-  if(ping) setTimeout(()=>{ const p = $('#ping'); if(p){ p.classList.add('done'); p.querySelector('.pr').textContent='✓'; $('#pingTxt').innerHTML = '<b>Faskes telah dinotifikasi.</b> Ruang Isolasi Airborne disiapkan sebelum Anda tiba (simulasi).'; SFX.coin(); } }, 2600);
   SFX.win(); confetti(); vib([30,40,30]);
-  setTimeout(()=>award('finish', 50, document.querySelector('.reward .badge')), 900);
+}
+
+/* =========================================================
+   RENDER: HALAMAN RANGKUMAN (hasil pindai QR, untuk petugas)
+   ========================================================= */
+function renderScan(){
+  let a = null;
+  try{ a = unpackAns(location.hash.slice(SCAN_HASH.length)); }catch(e){ a = null; }
+  if(!a){
+    screen.className = 'screen bg-result';
+    screen.innerHTML = `<div class="hud"><button class="icon-btn" data-act="home" aria-label="Beranda">⌂</button><div class="htitle">Rangkuman Pasien</div></div>
+    <div class="rscroll"><div class="card" style="margin-top:34px"><div class="tab">TIDAK BISA DIBACA</div><p class="saveinfo">Kode QR ini tidak lengkap atau rusak. Minta pasien menampilkan QR dari halaman hasil sekali lagi.</p></div></div>`;
+    return;
+  }
+  S.ans = a;
+  const r = compute(), d = decide(r), R = ROUTES[d.route];
+  const sum = summary(r, d), {todo, warns} = adviceFor(r, d);
+  screen.className = 'screen bg-result';
+  screen.innerHTML = `${sparkles(10)}
+  <div class="hud"><button class="icon-btn" data-act="home" aria-label="Beranda">⌂</button><div class="htitle">Rangkuman Pasien</div></div>
+  <div class="rscroll">
+    <div class="banner" style="background:linear-gradient(${R.c1},${R.c2})">${R.emo} ${R.name}</div>
+    <div class="rcols"><div class="rcol">
+    <div class="card" style="margin-top:34px"><div class="tab">KONDISI PASIEN</div><pre class="scanpre">${esc(sum)}</pre></div>
+    </div><div class="rcol">
+    <div class="card"><div class="tab">SARAN PENANGANAN</div>
+      <ul class="todo">${todo.filter(x=>!/QR rangkuman/.test(x)).map(x=>`<li>${x}</li>`).join('')}</ul>
+    </div>
+    ${warns.length ? `<div class="card"><div class="tab">CATATAN PENTING</div>${warns.map(w=>`<div class="warn ${w[0]}"><span class="wi">${w[1]}</span><span>${w[2]}</span></div>`).join('')}</div>` : ''}
+    <div class="btnrow"><button class="btn btn-teal" data-act="home">Buka TropiCek</button></div>
+    </div></div>
+    <p class="footdisc">⚠️ Ini hasil skrining awal dari jawaban pasien (simulasi untuk demonstrasi), bukan diagnosis dokter.</p>
+  </div>`;
 }
 
 /* =========================================================
@@ -1456,7 +1489,7 @@ function renderResult(){
    ========================================================= */
 function renderRed(){
   const flags = RED.filter(r => S.ans.q1.includes(r.id));
-  vib([220,100,220,100,220]); // layar merah: tenang, tanpa koin/animasi/suara game
+  vib([220,100,220,100,220]); // layar merah: tenang, tanpa animasi/suara game
   const onlyRabies = flags.length===1 && flags[0].id==='rabies';
   const q = onlyRabies ? 'rabies center terdekat' : flags.some(f=>f.id==='ginjal') ? 'rumah sakit IGD hemodialisa terdekat' : 'IGD rumah sakit terdekat';
   const facs = [...new Set(flags.map(f=>f.fac))];
@@ -1482,8 +1515,8 @@ function renderRed(){
     <div class="card" style="margin-top:34px"><div class="tab" style="background:#FFD6DA;color:#C8102E;box-shadow:0 4px 0 #FFAAB3">TERDETEKSI</div>
       ${flags.map(f=>`<div class="rflag"><span class="oe">${f.emo}</span><div><b>${f.dx}</b><span>${f.tag}</span><em>🩹 Sambil menuju RS: ${f.aid}</em></div></div>`).join('')}
     </div>
-    <div class="card"><div class="tab" style="background:#FFD6DA;color:#C8102E;box-shadow:0 4px 0 #FFAAB3">FASILITAS DIKUNCI</div>
-      <p style="margin:0 0 10px;font-weight:800;font-size:13px;color:var(--ink2)">Routing membatalkan klinik. GPS hanya menampilkan RS yang terverifikasi memiliki:</p>
+    <div class="card"><div class="tab" style="background:#FFD6DA;color:#C8102E;box-shadow:0 4px 0 #FFAAB3">FASILITAS YANG DICARI</div>
+      <p style="margin:0 0 10px;font-weight:800;font-size:13px;color:var(--ink2)">Jangan ke klinik biasa. Cari rumah sakit yang punya:</p>
       <div class="fac">${facs.map(f=>`<span>✔ ${f}</span>`).join('')}</div>
     </div>
     <div class="btnrow">
@@ -1519,20 +1552,6 @@ function openSettings(){
 
     <div class="setsec">Bahasa<span class="pill-teal">Indonesia</span>Wilayah<span class="pill-teal" style="margin-bottom:0">Indonesia</span></div>`});
 }
-function openHowTo(){
-  modal({tab:'CARA BERMAIN', body:`
-    <h3>Jawab, kumpulkan koin, dan biarkan Kak Tropi menebak! 🔮</h3>
-    <ul class="howlist">
-      <li><b>🚨</b>Tahap 1 — Cek tanda bahaya. Jika ada, langsung diarahkan ke IGD.</li>
-      <li><b>🧭</b>Tahap 2 — Pilih keluhan utama (5 klaster organ).</li>
-      <li><b>🔍</b>Tahap 3 — Pertanyaan menyesuaikan jawabanmu, seperti Akinator.</li>
-      <li><b>🌴</b>Tahap 4 — Riwayat lingkungan, perjalanan & obat.</li>
-      <li><b>📏</b>Tahap 5 — Suhu, IMT, peta nyeri & kamera AI.</li>
-      <li><b>🏁</b>Tahap 6–7 — AI menebak & memberi rute rujukan.</li>
-      <li><span class="coin"></span>&nbsp;Koin didapat saat menyelesaikan skrining, kontrol setelah berobat, atau cek rutin.</li>
-    </ul>`,
-    actions:[{label:'▶ Ayo Mulai!',cls:'btn-purple',fn:()=>{closeModal();start();}}]});
-}
 function openLogin(){
   modal({tab:'MASUK / DAFTAR', body:`
     <p class="saveinfo">Masuk itu <b>opsional</b>, kamu tetap bisa skrining tanpa akun. Ini simulasi: data tidak dikirim ke mana pun dan hanya nama yang diingat di perangkat ini.</p>
@@ -1548,21 +1567,10 @@ function openLogin(){
       {label:'Lanjut tanpa akun',cls:'btn-teal',fn:closeModal}]});
 }
 function openProfile(){
-  const h = getHistory().slice(-5).reverse();
-  modal({tab:'PROFIL', body:`<h3>Halo, ${esc(S.user.name)}! 👋</h3>
-    <p class="saveinfo">Riwayat skrining tersimpan di perangkat ini (simulasi).</p>
-    ${h.length ? h.map(x=>`<div class="setrow"><span>${esc(x.date)}<br><small style="font-weight:700;color:var(--ink2)">${esc(x.label)}</small></span><b>${esc(x.route)}</b></div>`).join('') : '<div class="empty">Belum ada riwayat.</div>'}`,
+  modal({tab:'PROFIL', body:`<h3>Halo, ${esc(S.user.name)}! 👋</h3>`,
     actions:[{label:'Keluar',cls:'btn-teal',fn:()=>{ S.user = null; try{ localStorage.removeItem('tropicek_user'); }catch(e){} closeModal(); refreshAuthUI(); toast('Kamu sudah keluar'); }}]});
 }
-function saveCardHTML(){
-  const tab = '<div class="tab">SIMPAN HASIL</div>';
-  if(!S.user) return tab + `<p class="saveinfo">Masuk untuk menyimpan riwayat skrining. Ini opsional, hasil di atas tetap bisa dipakai tanpa akun.</p><button class="btn btn-purple" data-act="login">🔑 Masuk / Daftar</button>`;
-  if(S.lastSaved) return tab + `<p class="saveinfo">✓ Tersimpan di riwayat ${esc(S.user.name)}.</p>`;
-  return tab + `<label class="chk"><input type="checkbox" data-act="saveconsent"> Saya setuju hasil skrining ini disimpan di akun saya</label>
-    <button class="btn btn-purple" id="saveBtn" data-act="savehist" style="margin-top:12px" disabled>💾 Simpan ke Riwayat</button>`;
-}
 function refreshAuthUI(){
-  const sc = $('#savecard'); if(sc) sc.innerHTML = saveCardHTML();
   if(screen.classList.contains('bg-home')) renderHome();
 }
 function openProxy(){
@@ -1577,21 +1585,20 @@ function openProxy(){
 /* =========================================================
    EVENTS
    ========================================================= */
-function start(){ S.i = 0; S.ans = blankAns(); S.awarded = new Set(); renderQuiz(); }
+function start(){ S.i = 0; S.ans = blankAns(); renderQuiz(); }
 
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-act]'); if(!el) return;
   const act = el.dataset.act;
   switch(act){
     case 'start': SFX.tap(); start(); break;
-    case 'howto': SFX.tap(); openHowTo(); break;
     case 'settings': SFX.tap(); openSettings(); break;
-    case 'coininfo': SFX.tap(); toast(`🪙 ${S.coins} Koin Sehat — didapat saat menyelesaikan skrining`); break;
     case 'opt': pick(el.dataset.key, el.dataset.id, el.dataset.multi==='1'); break;
     case 'next': next(); break;
     case 'back': SFX.tap(); if(screen.classList.contains('bg-red')) renderQuiz(); else back(); break;
     case 'home': SFX.tap(); renderHome(); break;
     case 'restart': SFX.tap(); start(); break;
+    case 'pain': S.ans.pain = +el.dataset.v; SFX.tap(); vib(); refreshBody(); break;
     case 'bp': {
       const id = el.dataset.id, arr = S.ans.body;
       S.ans.body = arr.includes(id) ? arr.filter(x=>x!==id) : [...arr,id];
@@ -1612,23 +1619,17 @@ document.addEventListener('click', e => {
     case 'login': SFX.tap(); openLogin(); break;
     case 'profile': SFX.tap(); openProfile(); break;
     case 'copynum': { const n = el.dataset.n; copyText(n, () => toast(`Nomor ${n} tersalin`)); break; }
-    case 'savehist': {
-      if(!S.user || S.lastSaved || !S.lastResult) break;
-      const h = getHistory(); h.push({date:new Date().toLocaleDateString('id-ID'), route:S.lastResult.route, label:S.lastResult.label});
-      saveHistory(h.slice(-20)); S.lastSaved = true; SFX.tap(); toast('Tersimpan di riwayat'); refreshAuthUI(); break; }
     case 'mclose': closeModal(); break;
     case 'mfn': { const f = MODAL_FNS[+el.dataset.i]; f && f(); break; }
-    case 'tele': SFX.tap(); toast('💬 Menghubungkan ke dokter telemedisin… (simulasi)'); break;
     case 'copy': {
       const txt = S.lastSummary || '';
-      const done = () => { SFX.coin(); toast('📋 Rangkuman tersalin!'); };
+      const done = () => { SFX.ding(); toast('📋 Rangkuman tersalin!'); };
       if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(done, ()=>fallbackCopy(txt, done));
       else fallbackCopy(txt, done);
       break; }
   }
 });
 document.addEventListener('change', e => {
-  if(e.target.matches('[data-act="saveconsent"]')){ const b = $('#saveBtn'); if(b) b.disabled = !e.target.checked; return; }
   if(e.target.matches('[data-act="nothermo"]')){
     S.ans.noThermo = e.target.checked; SFX.tap(); refreshBody();
   }
@@ -1644,7 +1645,9 @@ function fallbackCopy(txt, done){
   ta.remove();
 }
 
-renderHome();
+function route(){ if(location.hash.startsWith(SCAN_HASH)) renderScan(); else renderHome(); }
+window.addEventListener('hashchange', route);
+route();
 </script>
 </body>
 </html>
