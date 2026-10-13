@@ -93,7 +93,7 @@ incl. `tests/triage.spec.ts`) at 390 / 768 / 1440 px.
 | Disclaimer wording: removed "simulasi"; "Belum dapat ditentukan" on low score (question no. 23) | DR |
 | Option text still names diseases: eco `mr` ("campak"), eco `kontak` ("TBC") | DR |
 | `no_bmi` warning and thinking step still say "AI" / "imputasi" | ST |
-| New patient-facing copy: photo consent, save consent ("BANTU TROPICEK"), chronic placeholder, offline error | DR (review) |
+| New patient-facing copy: photo consent, save consent ("BANTU TROPICARE"), chronic placeholder, offline error | DR (review) |
 
 ### Copy changed from the prototype (honesty, AGENTS "Jujur soal AI")
 

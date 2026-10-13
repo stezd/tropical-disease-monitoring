@@ -297,7 +297,7 @@ def summary(
         dugaan = "-"
 
     lines = [
-        "TROPICEK – RANGKUMAN SKRINING",
+        "TROPICARE – RANGKUMAN SKRINING",
         f"Tanggal   : {when}",
         "Pasien    : "
         + " · ".join(

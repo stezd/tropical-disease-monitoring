@@ -7,7 +7,7 @@ interface AuthLayoutProps {
   children: React.ReactNode
 }
 
-// Login, sign up, password reset in the TropiCek look: purple sky, white card.
+// Login, sign up, password reset in the TropiCare look: purple sky, white card.
 export function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <div className="flex min-h-svh flex-col items-center bg-[linear-gradient(180deg,#4B44C4_0%,#6E4FDB_34%,#A85ED0_64%,#F07F9A_88%,#FFAE7E_100%)] px-4 py-6">

@@ -1,8 +1,8 @@
-# TropiCek
+# TropiCare
 
 Kuis bergaya permainan untuk skrining penyakit tropis dan penyakit jangka panjang. Hasilnya berupa rute: MERAH (IGD), KUNING KHUSUS (poli program), KUNING (Puskesmas), atau HIJAU (perawatan mandiri).
 
-TropiCek adalah alat skrining, bukan pengganti diagnosis dokter.
+TropiCare adalah alat skrining, bukan pengganti diagnosis dokter.
 
 - Backend: FastAPI + SQLModel + PostgreSQL (`backend/`)
 - Frontend: React + Vite + Tailwind + shadcn/ui (`frontend/`)
@@ -70,7 +70,7 @@ bun run dev
 
 | Alamat                        | Isi                                  |
 | ----------------------------- | ------------------------------------ |
-| <http://localhost:5173>       | Aplikasi TropiCek                    |
+| <http://localhost:5173>       | Aplikasi TropiCare                    |
 | <http://localhost:8000/docs>  | Dokumentasi API (Swagger)            |
 | <http://localhost:8025>       | Mailpit, kotak masuk email lokal     |
 

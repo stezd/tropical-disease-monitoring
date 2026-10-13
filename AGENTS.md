@@ -1,4 +1,4 @@
-# AGENTS.md — TropiCek
+# AGENTS.md — TropiCare
 
 Short guide for AI agents and developers. Team plan: [docs/RENCANA-KERJA.md](docs/RENCANA-KERJA.md) (suggestions, not strict rules).
 

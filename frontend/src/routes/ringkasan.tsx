@@ -4,5 +4,5 @@ import { SummaryPage } from "@/features/triage/Shell"
 
 export const Route = createFileRoute("/ringkasan")({
   component: SummaryPage,
-  head: () => ({ meta: [{ title: "Rangkuman Pasien – TropiCek" }] }),
+  head: () => ({ meta: [{ title: "Rangkuman Pasien – TropiCare" }] }),
 })

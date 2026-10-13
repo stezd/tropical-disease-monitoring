@@ -41,7 +41,7 @@ export function HomeScreen() {
       <div className="home">
         <div className="ribbon">
           <b>
-            Tropi<span>Cek</span>
+            Tropi<span>Care</span>
           </b>
           <small>Skrining Awal Penyakit Tropis</small>
         </div>

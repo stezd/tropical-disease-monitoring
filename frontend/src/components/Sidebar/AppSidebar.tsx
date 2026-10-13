@@ -12,7 +12,7 @@ import { type Item, Main } from "./Main"
 import { User } from "./User"
 
 const baseItems: Item[] = [
-  { icon: Home, title: "TropiCek", path: "/" },
+  { icon: Home, title: "TropiCare", path: "/" },
   { icon: Settings, title: "Pengaturan akun", path: "/settings" },
 ]
 

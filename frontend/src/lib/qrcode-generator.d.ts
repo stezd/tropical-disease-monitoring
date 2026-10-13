@@ -1,4 +1,4 @@
-// Types for the vendored qrcode-generator (only what TropiCek uses).
+// Types for the vendored qrcode-generator (only what TropiCare uses).
 interface QRCode {
   addData(data: string, mode?: string): void
   make(): void

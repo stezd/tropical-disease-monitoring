@@ -16,7 +16,7 @@ function Wordmark({ className }: { className?: string }) {
         className,
       )}
     >
-      Tropi<span className="text-[#FF8A5C]">Cek</span>
+      Tropi<span className="text-[#FF8A5C]">Care</span>
     </span>
   )
 }
@@ -25,7 +25,7 @@ function Icon({ className }: { className?: string }) {
   return (
     <img
       src="/favicon.svg"
-      alt="TropiCek"
+      alt="TropiCare"
       className={cn("size-8", className)}
     />
   )

@@ -1,4 +1,4 @@
-# Rencana Kerja TropiCek
+# Rencana Kerja TropiCare
 
 **Tenggat:** Jumat, 16 Okt 2026, **23:50 WIB**. Usahakan unggah beberapa jam sebelumnya.
 

@@ -1,4 +1,4 @@
-# DESIGN.md — TropiCek
+# DESIGN.md — TropiCare
 
 Visual guide for the React app. Source: [docs/TropiCek-Simulasi.html](docs/TropiCek-Simulasi.html). Open it next to this file.
 

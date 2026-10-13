@@ -857,7 +857,7 @@ function StepPhoto({
         <h3>Foto adalah data kesehatan 🔒</h3>
         <p className="saveinfo">
           {analyze ? (
-            <Rich text="Foto akan dikirim ke server TropiCek untuk dianalisis, lalu langsung dihapus. Foto **tidak disimpan** dan tidak dibagikan." />
+            <Rich text="Foto akan dikirim ke server TropiCare untuk dianalisis, lalu langsung dihapus. Foto **tidak disimpan** dan tidak dibagikan." />
           ) : (
             <Rich text="Foto hanya ditampilkan di layar ini untuk membantumu memilih temuan. Foto **tidak dikirim** dan **tidak disimpan**." />
           )}

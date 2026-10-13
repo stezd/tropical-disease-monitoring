@@ -14,7 +14,7 @@ import { SummaryScreen } from "./screens/Summary"
 import { ThinkingScreen } from "./screens/Thinking"
 import { quiz, useQuiz } from "./store"
 
-/** Full-screen frame for every TropiCek screen (replaces the prototype's #phone). */
+/** Full-screen frame for every TropiCare screen (replaces the prototype's #phone). */
 export function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="tc-app">

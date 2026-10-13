@@ -44,7 +44,7 @@ def test_score(client: TestClient) -> None:
     data = r.json()
     assert data["top"]["id"] == "malaria"
     assert data["route"] == "yellow"
-    assert data["summary"].startswith("TROPICEK")
+    assert data["summary"].startswith("TROPICARE")
 
 
 def test_score_rejects_bad_pain(client: TestClient) -> None:

@@ -46,7 +46,7 @@ export function SummaryScreen({ flow }: { flow: FlowPublic }) {
           <Card tab="TIDAK BISA DIBACA" style={{ marginTop: 34 }}>
             <p className="saveinfo">
               {answers
-                ? "Server TropiCek tidak bisa dihubungi. Coba muat ulang halaman ini."
+                ? "Server TropiCare tidak bisa dihubungi. Coba muat ulang halaman ini."
                 : "Kode QR ini tidak lengkap atau rusak. Minta pasien menampilkan QR dari halaman hasil sekali lagi."}
             </p>
           </Card>
@@ -72,7 +72,7 @@ export function SummaryScreen({ flow }: { flow: FlowPublic }) {
                 <AdviceCards r={r} />
                 <div className="btnrow">
                   <Link className="btn btn-teal" to="/">
-                    Buka TropiCek
+                    Buka TropiCare
                   </Link>
                 </div>
               </div>

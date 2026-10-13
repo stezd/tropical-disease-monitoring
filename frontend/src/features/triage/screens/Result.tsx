@@ -313,7 +313,7 @@ function SaveCard({ answers }: { answers: ReturnType<typeof toApi> }) {
     }
   }
   return (
-    <Card tab="BANTU TROPICEK">
+    <Card tab="BANTU TROPICARE">
       {state === "saved" ? (
         <p className="saveinfo">
           ✔ Jawaban tersimpan tanpa nama. Terima kasih!
@@ -322,7 +322,7 @@ function SaveCard({ answers }: { answers: ReturnType<typeof toApi> }) {
         <>
           <p className="saveinfo">
             Boleh kami simpan jawabanmu <b>tanpa nama</b> untuk menguji dan
-            memperbaiki TropiCek? Tidak ada nama, NIK, nomor BPJS, atau foto
+            memperbaiki TropiCare? Tidak ada nama, NIK, nomor BPJS, atau foto
             yang disimpan. Boleh dilewati.
           </p>
           {state === "error" && (
