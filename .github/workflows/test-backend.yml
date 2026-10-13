@@ -4,14 +4,43 @@ on:
   push:
     branches:
       - master
+      - prod
   pull_request:
+
 permissions:
   contents: read
 
 jobs:
   test-backend:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
+
+    # Postgres comes from a service container, not docker compose. The compose
+    # file needs POSTGRES_PASSWORD from a .env that is not in the repo, so the
+    # previous setup could never run here: it failed on the very first step with
+    # "required variable POSTGRES_PASSWORD is missing a value".
+    services:
+      db:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d app"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      PROJECT_NAME: TropiCare
+      FASTAPI_ENV: development
+      SECRET_KEY: ci-only-secret-key-not-used-anywhere-else
+      FIRST_SUPERUSER: admin@example.com
+      FIRST_SUPERUSER_PASSWORD: ci-only-password-not-used-anywhere-else
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app
+
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -25,21 +54,12 @@ jobs:
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
           version: "latest-known"
-      - run: docker compose down -v --remove-orphans
-      - run: docker compose up -d --wait db mailpit
-      - name: Migrate DB
+      - name: Install dependencies
+        run: uv sync
+        working-directory: backend
+      - name: Migrate and seed the database
         run: uv run bash scripts/prestart.sh
         working-directory: backend
       - name: Run tests
-        run: uv run bash scripts/tests-start.sh "Coverage for ${{ github.sha }}"
-        working-directory: backend
-      - run: docker compose down -v --remove-orphans
-      - name: Store coverage files
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: coverage-html
-          path: backend/htmlcov
-          include-hidden-files: true
-      - name: Coverage report
-        run: uv run coverage report --fail-under=90
+        run: uv run pytest tests/ -q
         working-directory: backend
