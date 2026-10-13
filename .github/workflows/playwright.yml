@@ -19,7 +19,10 @@ jobs:
     timeout-minutes: 5
     # Set job outputs to values from filter step
     outputs:
-      changed: ${{ steps.filter.outputs.changed }}
+      # A manual dispatch has no diff for paths-filter to inspect, so `changed`
+      # stays empty, the test job is skipped, and the run reports green without
+      # running a single test. Force it true on dispatch.
+      changed: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.changed }}
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
