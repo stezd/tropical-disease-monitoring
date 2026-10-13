@@ -1,297 +1,92 @@
-# Rencana Kerja Hackathon TropiCek
+# Rencana Kerja TropiCek
 
-**Tenggat luaran:** Jumat, 16 Oktober 2026, 23:50 WIB
-**Tenggat internal:** Jumat, 16 Oktober 2026, **21:00 WIB** (sisa ±3 jam sebagai cadangan kalau unggahan gagal atau ada yang mendadak rusak)
+**Tenggat:** Jumat, 16 Okt 2026, **23:50 WIB**. Usahakan unggah beberapa jam sebelumnya.
 
-**Luaran:** source code GitHub · prototipe (URL yang bisa dibuka) · proposal · pitch deck · video
-
-| Kode         | Peran      |
-| ------------ | ---------- |
-| **FE** | Frontend   |
-| **BE** | Backend    |
-| **ST** | Statistika |
-| **DR** | Dokter     |
+**Yang dikumpulkan:** kode di GitHub · link aplikasi · proposal · slide pitch · video
 
 ---
 
-## 1. Keputusan yang dipakai
+## 1. Siapa mengerjakan apa
 
-### Teknologi
+| Siapa                     | Tugas utama                                                                                                                |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Dokter (DR)**     | Tentukan jalur kronis dan buat kartu kasus (vignette) untuk testing                                                       |
+| **Statistika (ST)** | Cara menghitung skor, koordinasi uji coba aplikasi, visualisasi dan olah hasil uji coba. Fitur analisis foto (lihat bawah) |
+| **Backend (BE)**    | Server dan database, simpan hasil skrining, akun pengguna, aplikasi online, README                                         |
+| **Frontend (FE)**   | Semua tampilan aplikasi, sambungkan ke server                                                                              |
 
-Repo memakai **Full Stack FastAPI Template**: FastAPI + PostgreSQL di backend, React + TypeScript di frontend. Fitur **registrasi, login, dan profil sudah tersedia** di template, jadi tidak perlu dibuat dari nol. File [TropiCek-Simulasi.html](TropiCek-Simulasi.html) menjadi acuan tampilan dan dipindahkan ke React, dengan koreksi dari bagian 7.
+**Fitur foto (jalur infeksi, prioritas rendah):** pengguna diminta mengunggah foto (misalnya ruam atau bengkak) untuk membantu skrining. ST yang mengembangkan, **target selesai Rabu**. Bebannya bisa besar, jadi kerjakan setelah rumus skor beres. Kalau Rabu belum jadi, pakai tampilan simulasi (pengguna memilih temuan sendiri) dan sebut sebagai rencana pengembangan.
 
-### Isi kuis berbentuk data
+**Luaran akhir:**
 
-Pertanyaan, pilihan jawaban, dan bobot skor disimpan dalam file JSON di `backend/app/triage/content/`. Dengan begitu DR dan ST bisa mengubah isi tanpa menunggu FE mengubah kode. Ini kunci supaya keempat orang bisa bekerja paralel.
-
-### Model skor (ST)
-
-Tidak ada data pasien untuk melatih XGBoost. Melatih model dengan data karangan juga akan mudah dipatahkan juri. Pendekatan yang dipakai:
-
-- **Skor berbobot gaya Bayes:**
-  - Nilai awal tiap penyakit diambil dari prevalensi (SKI 2023 / Profil Kesehatan Kemenkes).
-  - Bobot tiap gejala diambil dari literatur, misalnya sensitivitas/spesifisitas atau likelihood ratio.
-- **Validasi dengan vignette:** DR menulis kasus contoh lengkap dengan jawaban yang benar. ST mengukur seberapa sering aplikasi menebak dengan benar (top-1, top-3, dan ketepatan rute).
-- Angka-angka validasi ini menjadi bahan proposal dan pitch.
-
-### Cara uji coba ke partisipan
-
-Partisipan **tidak memasukkan data kesehatan asli**. Mereka menerima kartu kasus (vignette dari DR), lalu memainkan aplikasi seolah-olah menjadi pasien tersebut. Setelah itu mereka mengisi kuesioner:
-
-- **SUS (System Usability Scale)**
-- 3–5 pertanyaan tambahan
-
-Keuntungannya: tidak ada masalah privasi, dan sekaligus mengukur ketepatan triase.
-
-### Poin sehat
-
-- **Bukan** hadiah per jawaban skrining.
-- Poin diberikan untuk:
-  - menyelesaikan skrining (sekali per keluhan);
-  - kembali melapor setelah berobat;
-  - cek ulang risiko kronis tiap bulan;
-  - menyelesaikan materi edukasi.
-- Yang dibangun di prototipe: **lencana/level**.
-- Voucher mitra (apotek, laboratorium) cukup masuk pitch sebagai model bisnis.
-
-### Prioritas fitur (MoSCoW)
-
-| Prioritas                                                | Fitur                                                                                                                                                                                                         |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Must**                                           | Jalur infeksius versi React; halaman awal memilih jalur; usia; VAS; rute merah dengan telepon dan nomor ambulans; hapus label penyakit di pilihan; tombol Mobile JKN; jalur kronis (maks. 4 penyakit); deploy |
-| **Should**                                         | Login/registrasi, profil, dan riwayat skrining; skor model ST menggantikan bobot prototipe                                                                                                                    |
-| **Could**                                          | Halaman lencana/level dari poin sehat                                                                                                                                                                         |
-| **Won't** (cukup disebut di pitch sebagai rencana) | Model ML yang dilatih data nyata, computer vision sungguhan, database faskes dan GPS nyata, penukaran reward                                                                                                  |
+- **Proposal:** DR (isi medis) + data dibantu yang lain
+- **Slide pitch:** ST + data dibantu yang lain
+- **Cari peserta uji coba:** semua, dikoordinasi ST
 
 ---
 
-## 2. Pembagian tugas (kepemilikan)
+## 2. Urutan kerja (kira-kira)
 
-| Area                                                                                   | Pemilik                                                   | Pendukung                                |
-| -------------------------------------------------------------------------------------- | --------------------------------------------------------- | ---------------------------------------- |
-| Spesifikasi klinis jalur kronis, Blueprint v2, vignette kasus, review semua teks medis | **DR**                                              | ST                                       |
-| Model skor, bobot, validasi vignette, desain survei, analisis feedback, visualisasi    | **ST**                                              | DR                                       |
-| Database, API triase, simpan skrining, profil, deploy, README                          | **BE**                                              | FE                                       |
-| UI React, mesin kuis, semua layar, integrasi API, rekaman demo video                   | **FE**                                              | BE                                       |
-| Proposal                                                                               | **DR** (isi klinis) + **ST** (metode & hasil) | BE (arsitektur)                          |
-| Pitch deck                                                                             | **ST**                                              | DR, FE (screenshot)                      |
-| Video                                                                                  | **FE** (rekam & edit)                               | BE (naskah & narasi), DR (bagian klinis) |
-| Rekrut partisipan                                                                      | **Semua**, dikoordinasi **ST**                | —                                       |
+**Selasa — siapkan dasar**
 
----
+- DR: tentukan penyakit dan alur jalur kronis, lalu mulai tulis kartu kasus untuk testing.
+- ST: mulai rumus skor, buat Google Form survei, mulai cari peserta. Setelah rumus skor jalan, mulai fitur foto.
+- BE: bersihkan kode dan deploy ASAP
+- FE: mulai pindahkan tampilan simulasi HTML ke aplikasi asli.
 
-## 3. Timeline
+**Rabu — jalur kronis, aplikasi online, uji coba mulai**
 
-### Selasa, 13 Okt — fondasi
+- Jalur kronis dibuat.
+- Fitur foto selesai (opsional)
+- Deploy Aplikasi dan dicoba tim sendiri dulu.
+- Setelah itu, bagikan survei.
 
-**Semua — kickoff 30 menit, segera.** Sepakati dokumen ini dan jawab pertanyaan terbuka di bagian 6.
+**Kamis — olah hasil, perbaiki**
 
-**DR**
+- ST olah hasil survei, masukan ke pitchdeck
+- FE/BE revisi app sesuai perbaikan
+- DR selesaikan draf proposal.
+- Malam: berhenti menambah fitur. Mulai susun slide dan naskah video.
 
-1. Pilih maks. 4 penyakit kronis beserta instrumen skrining yang tervalidasi.
-2. Isi spesifikasi di [Blueprint-Kronis.md](Blueprint-Kronis.md): pertanyaan, pilihan, red flag, dan aturan rute.
-3. Putuskan semua poin "Keputusan DR" di bagian 7.2 dan perbarui [Blueprint.md](Blueprint.md) menjadi v2.
-4. Tulis 15 vignette kasus infeksius, masing-masing dengan rute yang benar.
+**Jumat — luaran**
 
-**ST**
-
-1. Kumpulkan data prevalensi dan likelihood ratio gejala dari literatur.
-2. Tulis `scoring.py` beserta unit test. Bobot prototipe dipakai sebagai baseline.
-3. Buat Google Form survei: persetujuan, SUS, dan pertanyaan tambahan.
-4. Sebarkan pendaftaran partisipan (target ≥ 20 orang).
-
-**BE**
-
-1. Bersihkan template: hapus `items`, ganti nama proyek dan README.
-2. Pilih hosting dan **deploy versi kosong ("walking skeleton") malam ini**, supaya masalah deploy ketahuan sejak awal.
-3. Buat model data `Profile` (tanggal lahir, jenis kelamin, kab/kota) dan `Screening` (jalur, jawaban, hasil, rute, waktu).
-4. Pindahkan isi prototipe ke `content/infeksius.json` dan buat endpoint `GET /triage/flows/{flow_id}`.
-
-**FE**
-
-1. Buat token desain dan komponen dasar dari prototipe: kartu ber-tab, tile pilihan, gelembung bicara, maskot, HUD/peta tahap, tombol 3D.
-2. Buat mesin kuis yang membaca JSON.
-3. Kerjakan semua poin FE di bagian 7.1.
-
-**Batas waktu hari ini**
-
-| Jam   | Target                                                                                           |
-| ----- | ------------------------------------------------------------------------------------------------ |
-| 21:00 | **Spesifikasi kronis + Blueprint v2 selesai (DR)** — ini syarat utama pekerjaan hari Rabu |
-| 21:30 | Sinkronisasi 15 menit                                                                            |
-
-### Rabu, 14 Okt — jalur kronis, deploy, uji coba dimulai
-
-**DR**
-
-1. Jawab pertanyaan FE/BE tentang jalur kronis.
-2. Tulis 15 vignette tambahan (infeksius + kronis), total 30.
-3. Mulai menulis proposal: latar belakang dan dasar klinis.
-
-**ST**
-
-1. Masukkan bobot jalur kronis.
-2. Jalankan validasi pada 30 vignette dan catat hasilnya.
-3. Finalkan survei.
-4. Atur jadwal partisipan.
-
-**BE**
-
-1. Buat `content/kronis.json` dan endpoint `POST /triage/flows/{flow_id}/score` yang memakai `scoring.py`.
-2. Buat endpoint `POST /screenings` dan `GET /screenings/me`.
-3. Tambahkan field profil di registrasi.
-
-**FE**
-
-1. Buat UI jalur kronis.
-2. Hubungkan semua layar ke API.
-3. Buat halaman hasil dengan tombol Mobile JKN.
-4. Tata ulang tampilan login/registrasi/profil agar sesuai gaya aplikasi.
-5. Buat halaman riwayat (Should).
-
-**Batas waktu hari ini**
-
-| Jam          | Target                                                    |
-| ------------ | --------------------------------------------------------- |
-| 15:00        | **Deploy v1 (BE + FE)**                             |
-| 15:00–17:00 | QA internal oleh keempat anggota, memakai vignette        |
-| 17:00        | **Uji coba partisipan dibuka** (sampai Kamis 12:00) |
-| 21:30        | Sinkronisasi                                              |
-
-### Kamis, 15 Okt — analisis, perbaikan, persiapan pitch
-
-**ST**
-
-1. 12:00 — tutup survei dan kirim **daftar perbaikan berprioritas** ke FE/BE.
-2. 17:00 — selesaikan analisis:
-   - skor SUS
-   - akurasi vignette
-   - tema-tema feedback
-   - grafik untuk deck
-
-**DR**
-
-1. Selesaikan draf proposal: latar belakang, solusi, metode klinis.
-2. Review semua teks medis di aplikasi.
-
-**FE**
-
-1. Kerjakan perbaikan dari feedback (UI).
-2. Rapikan tampilan.
-3. Siapkan data demo.
-
-**BE**
-
-1. Kerjakan perbaikan dari feedback (API).
-2. Tulis README final: cara menjalankan, arsitektur, screenshot, disclaimer.
-3. Buat diagram arsitektur.
-
-**Semua, malam hari — persiapan untuk Jumat**
-
-- **Kerangka pitch deck**, slide demi slide.
-- **Naskah dan storyboard video.**
-- Isi proposal disesuaikan dengan hasil uji coba.
-
-**Batas waktu hari ini**
-
-| Jam   | Target                                                      |
-| ----- | ----------------------------------------------------------- |
-| 20:00 | **Feature freeze** — setelah ini hanya perbaikan bug |
-| 21:00 | Tag rilis`v1.0` dan deploy final                          |
-
-### Jumat, 16 Okt — luaran
-
-| Jam          | DR                                                            | ST                  | BE                                  | FE                              |
-| ------------ | ------------------------------------------------------------- | ------------------- | ----------------------------------- | ------------------------------- |
-| 08:00–12:00 | Final proposal                                                | Pitch deck          | Cek deploy, README, kebersihan repo | Rekam demo layar (HP & desktop) |
-| 12:00–15:00 | Rekam bagian klinis video                                     | Final deck          | Rekam narasi                        | Edit video                      |
-| 15:00–19:00 | Review semua luaran                                           | Review semua luaran | Bantu edit video                    | Final video                     |
-| 19:00–21:00 | **Semua: cek ulang checklist di bagian 4, lalu unggah** |                     |                                     |                                 |
+- Selesaikan proposal, slide, dan video.
 
 ---
 
-## 4. Checklist luaran
+## 3. implementasi tambahan
 
-- [ ] **GitHub**
-  - README: deskripsi, fitur, screenshot, arsitektur, cara menjalankan, tim, lisensi, disclaimer.
-  - Tidak ada secret asli di repo.
-  - Isi bawaan template sudah dibersihkan.
-- [ ] **Prototipe**
-  - URL yang bisa diakses.
-  - Akun demo.
-  - Sudah dites di HP Android dan iPhone.
-- [ ] **Proposal** — sesuai format panitia.
-- [ ] **Pitch deck**
-  - masalah → solusi → demo → validasi (SUS + akurasi) → model bisnis/keberlanjutan → tim
-- [ ] **Video** — durasi dan format sesuai aturan panitia; sudah ditonton ulang sampai habis.
+Simulasi HTML hanya contoh tampilan. Perubahan ini dibuat di aplikasi asli:
+
+1. **Halaman awal:** pilih "Saya sedang sakit" atau "Cek risiko penyakit jangka panjang".
+2. **Usia dan jenis kelamin** ditanya paling awal.
+3. **Kondisi gawat:** tampilkan tombol telepon 119 dan nomor 119/112 yang bisa disalin. Tanpa koin atau animasi.
+4. **Nama penyakit tidak muncul di pilihan jawaban,** hanya di halaman hasil.
+5. **Skala nyeri** berupa garis polos tanpa angka, dari "Tidak nyeri" sampai "Nyeri terburuk". Penanda belum ada sebelum disentuh.
+6. **Tombol "Buat janji dokter (Mobile JKN)"** di halaman hasil.
+7. **Login opsional.** Orang tetap bisa skrining tanpa akun.
+8. **Koin tidak diberikan per jawaban.** Koin untuk menyelesaikan skrining, kontrol setelah berobat, atau cek rutin.
 
 ---
 
-## 5. Risiko dan mitigasi
+## 4. Pertanyaan untuk Dokter
 
-| Risiko                                                        | Mitigasi                                                                                                                                                     |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Spesifikasi kronis telat, sehingga FE/BE menganggur hari Rabu | Batas waktu Selasa 21:00. Kalau belum siap, FE memakai versi minimal 2 penyakit dulu.                                                                        |
-| Deploy bermasalah di hari terakhir                            | Walking skeleton sudah ter-deploy Selasa malam; deploy v1 Rabu 15:00.                                                                                        |
-| Partisipan kurang                                             | Rekrut sejak Selasa. Uji coba bisa jarak jauh (link + form). Target minimal 15.                                                                              |
-| Juri bertanya "AI-nya di mana?"                               | Jawab jujur: skor Bayes berbasis literatur yang divalidasi vignette, dengan rencana ML setelah ada data. Ini lebih kuat daripada mengaku XGBoost tanpa data. |
-| Waktu Jumat habis                                             | Kerangka deck dan naskah video sudah ada sejak Kamis malam; tenggat internal 21:00.                                                                          |
-
----
-
-## 6. Pertanyaan terbuka (perlu dijawab di kickoff)
-
-1. **"djkn mobile app"** maksudnya aplikasi **Mobile JKN (BPJS Kesehatan)**, kan? (DJKN adalah Direktorat Jenderal Kekayaan Negara, tidak terkait.)
-2. Apa **tema dan kriteria penilaian** hackathon? Apakah jalur kronis sesuai tema, mengingat nama proyeknya "tropical disease"?
-3. Ketentuan luaran: **durasi video**, template proposal, jumlah slide maksimal?
-4. **Hosting**: FastAPI Cloud, VPS (Docker Compose), atau layanan lain? Ada anggaran?
-5. **Data diri** apa saja yang dibutuhkan? Usulan: nama, tanggal lahir, jenis kelamin, kab/kota — **tanpa NIK atau nomor BPJS**.
-6. **Partisipan uji coba** dari mana (mahasiswa, masyarakat umum, tenaga kesehatan) dan berapa target jumlahnya?
-7. Nama masing-masing anggota, dan siapa yang paling longgar waktunya di hari Jumat?
+1. **Suhu tubuh:** kalau pasien tidak punya termometer di keluhan selain demam (napas, perut, kulit, bengkak), cukup tanya "Badan terasa panas?"?
+2. **Tifoid:** di Blueprint ada kurung kosong "( )". Apakah isinya "pola demam naik bertahap"?
+3. **Campak** masuk rute mana?
+4. **"Badan gemuk → malaria berat":** ada sumbernya? Kalau tidak, dihapus.
+5. **Peringatan jangan minum Ibuprofen/Aspirin** untuk dugaan DBD: setuju ditambahkan?
+6. **Cacingan:** pilihan ini hanya untuk anak (batas usia berapa) atau semua umur?
+7. **Bengkak menahun:** perlu pertanyaan tambahan supaya tidak langsung dianggap filariasis?
+8. **Cacar air ringan vs. berat:** apa bedanya, dan yang berat dirujuk ke mana?
+9. apakah ada vignette
+10. **Tulisan "XGBoost"** di Blueprint diganti sesuai cara hitung ST.
 
 ---
 
-## 7. Hasil pengecekan Blueprint.md dan TropiCek-Simulasi.html
+# 5. Ingat
 
-Dicek pada 13 Okt 2026 terhadap masukan tim.
-
-- **Blueprint.md** belum memuat satu pun masukan baru.
-- **TropiCek-Simulasi.html** masih versi sebelum masukan.
-
-Semua perbaikan dikerjakan di versi React, bukan di file HTML.
-
-### 7.1 Masukan tim yang belum ada
-
-| # | Masukan                                      | Kondisi di Blueprint                        | Kondisi di HTML                                               | Yang dikerjakan                                                                                                                                 | Pemilik       |
-| - | -------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
-| 1 | Pilih jalur infeksius/kronis di halaman awal | Tidak ada                                   | Hanya tombol "Mulai Skrining"                                 | Layar pilih jalur dengan kata-kata pasien: "Saya sedang sakit / ada keluhan baru" dan "Cek risiko penyakit jangka panjang"                      | DR (teks), FE |
-| 2 | Usia                                         | Tidak ada                                   | Langkah "Siapa yang sakit?" tanpa usia                        | Usia (tahun; bayi < 1 tahun dalam bulan) dan jenis kelamin di langkah pertama,**sebelum** pertanyaan darurat; terisi otomatis dari profil | DR, FE        |
-| 3 | Telepon atau nomor ambulans di rute merah    | —                                          | Hanya tombol`tel:119`                                       | Tambah nomor 119 dan 112 sebagai teks + tombol salin                                                                                            | FE            |
-| 4 | Hapus label penyakit di pilihan              | Label "(Suspek …)" adalah catatan internal | Tampil karena "Mode Presentasi" aktif secara default          | Hapus di mode pasien. Nama penyakit hanya di halaman hasil                                                                                      | FE            |
-| 5 | VAS                                          | Q9 hanya menyebut "Skala Nyeri"             | Slider angka 0–10 + wajah, posisi awal 5 (bias*anchoring*) | VAS 0–100 tanpa angka dan tanpa posisi awal. Ambang "chikungunya kronis" (di HTML: nyeri ≥ 7) diubah ke skala 0–100                          | FE, ST        |
-| 6 | Mobile JKN                                   | Tahap 7 hanya navigasi GPS                  | Tombol Maps + telemedisin (toast simulasi)                    | Tombol "Buat janji dokter (Mobile JKN)"                                                                                                         | FE            |
-| 7 | Registrasi, login, data diri                 | Tidak ada                                   | Tidak ada                                                     | Pakai auth bawaan template + field profil; mode tamu tetap default                                                                              | BE, FE        |
-| 8 | Poin sehat                                   | Tidak ada                                   | +10 koin per jawaban                                          | Ubah aturan poin sesuai bagian 1                                                                                                                | FE            |
-
-### 7.2 Temuan lain — keputusan DR (paling lambat Selasa 21:00)
-
-1. **Ganti suhu (Q7) untuk klaster B–E.**
-   - Blueprint: kalau pasien tidak punya termometer, suhu diganti dengan kurva demam dari Q3.
-   - Masalahnya, Q3 hanya berisi pola demam di klaster A (Demam). Di klaster B–E (napas, perut, kulit, bengkak), Q3 tidak membahas demam.
-   - HTML tetap menulis "AI memakai kurva demam (Q3)" untuk semua klaster.
-   - **Usulan:** untuk klaster B–E, tanya proksi sederhana: "Badan terasa panas/demam?"
-2. **Tanda kurung kosong di Blueprint (baris 47, pilihan tifoid).** "...lebih panas di malam hari ( )...". HTML mengisinya dengan "pola anak tangga / stepladder". Mohon dikonfirmasi.
-3. **Campak tidak masuk rute mana pun di Tahap 7.** Campak hanya disebut untuk notifikasi ruang isolasi. HTML menaruhnya di rute KUNING. Rute mana yang benar?
-4. **"Postur gemuk → prediktor malaria berat" (Q8) perlu sumber.** HTML memakainya: skor malaria +5 dan muncul peringatan di hasil. Kalau tidak ada sumber yang kuat, sebaiknya dihapus.
-5. **Peringatan Ibuprofen/Aspirin pada suspek DBD.** Ini tambahan di HTML, tidak ada di Blueprint (Blueprint hanya memuat peringatan Loperamide). Disetujui?
-6. **Pilihan cacingan "(Khusus Anak)".** Dengan adanya usia, pilihan ini sebaiknya hanya muncul untuk usia tertentu. Berapa batas usianya? Atau tetap untuk semua umur, karena dewasa juga bisa cacingan?
-7. **Klaster E hanya punya satu pilihan.** Memilih "Pembengkakan kronis" praktis sama dengan menjawab filariasis. Perlu pertanyaan pembeda? Misalnya bengkak satu sisi, atau tinggal di daerah endemis.
-8. **Rute hijau menyebut "Varicella ringan" tanpa kriteria.** Apa batas ringan vs. berat, dan ke rute mana kalau berat?
-9. **Kata "XGBoost".**
-   - Tahap 6 menulis XGBoost; layar "berpikir" di HTML menulis "Model XGBoost menghitung…".
-   - Teks ini diganti sesuai model ST (skor Bayes) — keputusan ST.
-
-### 7.3 Catatan untuk pitch
-
-- **Kamera AI (Q10) di prototipe adalah simulasi:** pengguna memilih sendiri temuannya. Sebutkan dengan jujur sebagai rencana pengembangan.
-- **Navigasi GPS dan "data terkirim ke SATUSEHAT"** juga masih simulasi.
+- **Jujur soal "AI".** Skor dihitung dari data literatur dan diuji dengan kartu kasus dokter. Fitur foto (kalau belum selesai), GPS, dan kirim data ke SATUSEHAT masih simulasi, jadi sebut sebagai rencana.
+- **Uji coba pakai kartu kasus,** bukan data kesehatan asli peserta. Peserta mengisi survei kemudahan pakai (SUS).
+- **Jangan pakai kata "diagnosis"** di aplikasi. Pakai "skrining" atau "perkiraan".
+- **Jangan minta NIK atau nomor BPJS.**

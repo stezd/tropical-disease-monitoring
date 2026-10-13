@@ -1,97 +1,77 @@
 # AGENTS.md — TropiCek
 
-Guide for AI coding agents (Claude Code, Codex, Cursor, etc.) and developers working in this repo.
-Team plan, owners and deadlines live in [docs/RENCANA-KERJA.md](docs/RENCANA-KERJA.md) — read it before picking up work.
+Short guide for AI agents and developers. Team plan: [docs/RENCANA-KERJA.md](docs/RENCANA-KERJA.md) (suggestions, not strict rules).
 
-## What this project is
+## The app
 
-**TropiCek** is a hackathon prototype: a warm, gamified (Quizizz/Akinator-style) **self-screening and triage app** for Indonesian patients.
+Gamified quiz that screens Indonesian patients and tells them where to go.
 
-- **Infectious path** — adaptive triage for 20 tropical infections & NTDs (DBD, malaria, TBC, kusta, filariasis, …). Clinical flow: [docs/Blueprint.md](docs/Blueprint.md).
-- **Chronic path** (new) — risk screening for a small set of chronic diseases. Spec: [docs/Blueprint-Kronis.md](docs/Blueprint-Kronis.md) (written by the team doctor).
-- Output is a **referral route**: MERAH (IGD) · KUNING KHUSUS (program poli) · KUNING (Puskesmas) · HIJAU (self-care/apotek), plus a link to **Mobile JKN** to book a doctor.
+- **Infection path** — 20 tropical diseases. Flow: [docs/Blueprint.md](docs/Blueprint.md)
+  - **Photo step (low priority):** the infection path asks the user for a photo (e.g. rash, swelling). ST builds the analysis; if not ready, keep the prototype's simulated step. Photos are health data: ask consent, don't commit real photos to the repo.
+- **Chronic path** — Flow: [docs/Blueprint-Kronis.md](docs/Blueprint-Kronis.md)
+- **Result** — a route: MERAH (IGD) · KUNING KHUSUS (program poli) · KUNING (Puskesmas) · HIJAU (self-care), plus a Mobile JKN button.
 
-### Reference prototype
+**Visual reference:** [docs/TropiCek-Simulasi.html](docs/TropiCek-Simulasi.html). Copy its look into React. Don't copy its known mistakes. Section 3 of the plan lists the changes.
 
-[docs/TropiCek-Simulasi.html](docs/TropiCek-Simulasi.html) is a single-file HTML prototype of the full infectious flow. It is the **visual and UX reference** (colors, card-with-tab, 3D buttons, mascot "Kak Tropi", coins, stage map, layouts for <640px / ≥640px / ≥960px). Port it to React; do not keep developing the HTML file except for quick demos.
+## Where things are
 
-Known deviations of the prototype from the agreed design (fix them in the React port, not by copying the prototype): see section 7 of [docs/RENCANA-KERJA.md](docs/RENCANA-KERJA.md). In particular its scoring in `compute()` is a hand-tuned baseline, its "XGBoost" label is not true, it shows disease labels on options, and its pain slider is a 0–10 numeric scale, not a VAS.
+| What                                  | Where                             |
+| ------------------------------------- | --------------------------------- |
+| Backend (FastAPI, SQLModel)           | `backend/app`                   |
+| Frontend (React, Tailwind, shadcn/ui) | `frontend/src`                  |
+| Questions, options, weights (JSON)    | `backend/app/triage/content/`   |
+| Scoring (owned by ST)                 | `backend/app/triage/scoring.py` |
+| API client — generated, don't edit   | `frontend/src/client`           |
 
-## Stack and layout
-
-Based on the Full Stack FastAPI Template.
-
-| Part                     | Tech                                                                                  | Path                              |
-| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------- |
-| Backend                  | FastAPI, SQLModel, PostgreSQL, Alembic, JWT auth (Python ≥3.14,`uv`)               | `backend/app`                   |
-| Frontend                 | React 19, TypeScript, Vite, TanStack Router + Query, Tailwind v4, shadcn/ui (`bun`) | `frontend/src`                  |
-| API client               | Generated from OpenAPI —**never edit by hand**                                 | `frontend/src/client`           |
-| Triage content & weights | JSON, single source of truth for questions, options, weights                          | `backend/app/triage/content/`   |
-| Scoring model            | Python module owned by the statistician                                               | `backend/app/triage/scoring.py` |
-
-Template leftovers (`Item` model, `items` routes/pages, template README/release notes) should be removed or replaced, not extended.
+Template leftovers (`items`, template README): delete, don't build on them.
 
 ## Commands
 
 ```bash
-# services
-docker compose up -d db mailpit
+docker compose up -d db mailpit          # database + mail
 
 # backend (from backend/)
 uv sync
-uv run bash scripts/prestart.sh        # migrations + initial data
-uv run fastapi dev                     # http://localhost:8000, docs at /docs
-uv run bash scripts/test.sh            # pytest
-uv run bash scripts/lint.sh            # mypy + ruff
-uv run alembic revision --autogenerate -m "msg"   # after model changes
+uv run bash scripts/prestart.sh          # migrations + seed
+uv run fastapi dev                       # localhost:8000/docs
+uv run bash scripts/test.sh              # tests
+uv run bash scripts/lint.sh              # lint
 
 # frontend (from repo root)
 bun install
-bun run dev                            # http://localhost:5173
-bun run lint                           # biome
-bash scripts/generate-client.sh        # regenerate API client after backend API changes
+bun run dev                              # localhost:5173
+bash scripts/generate-client.sh          # after API changes
 ```
 
-## Architecture rules
+## How it fits together
 
-1. **Content is data, not code.** Questions, options, flow order, and scoring weights live in `backend/app/triage/content/<flow>.json`. The doctor and statistician must be able to change wording/weights without touching React. Option IDs are the contract between frontend, backend, and the model — never rename an ID without updating all three.
-2. **Endpoints** (prefix `/api/v1`):
-   - `GET /triage/flows/{flow_id}` → questions for `infeksius` or `kronis` (no weights).
-   - `POST /triage/flows/{flow_id}/score` → ranked results, route, reasons.
-   - `POST /screenings` / `GET /screenings/me` → save and list a user's sessions (login optional).
-3. **Emergency check is client-side and first.** A question marked `"emergency": true` routes to MERAH in the frontend as soon as any non-"none" option is chosen — no network call, no model, no login. Never make the red route depend on the backend being up.
-4. **Login never blocks triage.** Guest mode is the default. Offer login/register on the result page to save history. Profile data pre-fills age/sex when logged in.
-5. **Age and sex are asked first** (step "Siapa yang sakit?", before the emergency question), because they change which options are shown (e.g. child-only options) and the chronic risk scores.
-6. **Scoring output is a "skor kecocokan", not a probability or diagnosis.** If the score is below threshold, return "belum dapat ditentukan" and route KUNING.
+- **Quiz content lives in JSON**, not React. DR and ST edit it without FE. Option IDs are shared by FE, BE, and scoring; rename all three together.
+- **API** (`/api/v1`): `GET /triage/flows/{flow_id}` · `POST /triage/flows/{flow_id}/score` · `POST /screenings` · `GET /screenings/me`
+- **Emergency check runs in the browser.** Any danger sign → MERAH screen right away, even if the server is down.
+- **Login is optional.** Guests can do the whole quiz. Offer login on the result page.
+- **Ask age and sex first.** They change which questions and options appear.
+- **Low score** → "belum dapat ditentukan" + route KUNING.
 
-## Clinical-safety and UX rules (non-negotiable)
+## Must not break
 
-- UI copy is **Bahasa Indonesia**, warm and plain. Use "skrining", "perkiraan", "kemungkinan" — **never "diagnosis"** in patient-facing text.
-- **No disease labels on answer options** in patient mode (they cause fear). Disease names appear only on the result page.
-- The **red route shows no gamification** (no coins, confetti, badges). It shows: call 119 (`tel:119`), the numbers 119 and 112 as copyable text (desktop cannot dial), navigation to the nearest IGD, and first-aid tips.
-- Pain/severity uses a **Visual Analogue Scale**: continuous 0–100 line, anchors "Tidak nyeri" and "Nyeri terburuk", no numbers or ticks shown, no default position until touched (avoid anchoring at the middle). Store the 0–100 value.
-- Every result page carries the disclaimer that this is a screening and not a doctor's diagnosis.
-- Points/coins reward **completion and healthy follow-up actions**, never specific answers, and never repeated screening of the same complaint.
-- Clinical content and weights change only with approval from the doctor (content) or statistician (weights).
+- Never say "diagnosis" to patients. Use "skrining" or "perkiraan".
+- No disease names on answer options. Only on the result page.
+- Red route: no coins or animation. Show a call 119 button, plus 119 and 112 as text that can be copied.
+- Pain scale: plain line from "Tidak nyeri" to "Nyeri terburuk". No numbers, no starting position. Save 0–100.
+- Every result page has a disclaimer: this is screening, not a doctor's diagnosis.
+- Coins reward finishing and follow-up. Never specific answers.
+- Medical text changes need DR's OK. Weight changes need ST's OK.
+- **Privacy:** ask consent before saving. Never collect NIK or BPJS numbers. No real patient data in the repo. No real secrets in git.
 
-## Privacy
+## Mobile JKN button
 
-- Health data is "data pribadi spesifik" under UU PDP No. 27/2022: ask explicit consent before saving, collect the minimum (name, birth date or age, sex, kab/kota). **Do not collect NIK or BPJS card numbers.**
-- No real patient data in the repo, seeds, screenshots, or tests. Use the doctor's clinical vignettes.
-- `.env` in the repo contains placeholder values only (`changethis`). Real secrets go in the deployment environment, never in git.
+- Android: `intent://#Intent;package=app.bpjs.mobile;S.browser_fallback_url=<Play Store URL>;end`
+- Otherwise: `https://play.google.com/store/apps/details?id=app.bpjs.mobile`
+- Test on a real Android phone before the demo.
 
-## Mobile JKN hand-off
+## Tips
 
-Result page CTA "Buat janji dokter (Mobile JKN)":
-
-- Android: `intent://#Intent;package=app.bpjs.mobile;S.browser_fallback_url=<Play Store URL>;end` (opens the app if installed, else Play Store).
-- Fallback / desktop: `https://play.google.com/store/apps/details?id=app.bpjs.mobile`.
-- The package ID must be verified on a real Android phone before the demo.
-
-## Working conventions
-
-- Default branch on GitHub is `master`. Branch from it: `fe/<topic>`, `be/<topic>`, `stat/<topic>`, `content/<topic>`. Small PRs, merge often; no half-done work on `master` after Wednesday's deploy.
-- After changing backend models: write an Alembic migration. After changing the API: regenerate the frontend client in the same PR.
-- Backend: type hints everywhere, mypy strict passes, pytest for scoring and routing logic (test each route color with at least one vignette).
-- Frontend: mobile-first (360–430px), then ≥640px and ≥960px layouts. Reuse shadcn/ui primitives, style them to match the prototype tokens.
-- Feature freeze: **Thursday 15 Oct, 20:00 WIB**. After that only bug fixes, copy fixes, and README.
+- Branch from `master`, keep PRs small, keep `master` working.
+- Model changed → add an Alembic migration. API changed → regenerate the client.
+- Design for phones first, then tablet (≥640px) and desktop (≥960px).
+- Near the deadline: fix bugs instead of adding features.
