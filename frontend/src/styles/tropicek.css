@@ -678,6 +678,24 @@
   line-height: 1.3;
   color: var(--tc-muted);
 }
+/* "Lihat ciri-ciri": details stay hidden until asked, to keep lists short. */
+.dtoggle {
+  display: inline-block;
+  margin: -4px 0 10px;
+  padding: 5px 12px;
+  border: 2px solid var(--tc-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--tc-purple);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.dtoggle[aria-expanded="true"] {
+  background: #f3ebff;
+  border-color: #cdb5ff;
+}
 .opt .ck {
   flex: none;
   width: 22px;

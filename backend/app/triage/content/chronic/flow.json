@@ -33,6 +33,7 @@
     { "id": "P", "emoji": "👧", "text": "Perempuan" }
   ],
   "pregnancy_from_age": 10,
+  "red_flag_first": ["jantung", "stroke", "krisis_ht", "koma_dm"],
   "clusters": [
     {
       "id": "F",
