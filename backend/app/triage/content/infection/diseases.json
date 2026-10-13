@@ -3,14 +3,14 @@
     "name": "Demam Berdarah Dengue (DBD)",
     "emoji": "🦟",
     "route": "yellow",
-    "lab": ["NS1 / Antigen Dengue", "Darah lengkap (trombosit & hematokrit)"],
+    "lab": ["Darah Rutin (Trombosit/Hematokrit)", "NS1/IgM/IgG Dengue"],
     "care": ["Minum banyak cairan: air, oralit, jus, sup", "Gunakan Paracetamol untuk demam — HINDARI Ibuprofen/Aspirin", "Waspadai fase kritis hari ke-3 s/d 5 walau demam turun"]
   },
   "malaria": {
     "name": "Malaria",
     "emoji": "🦟",
     "route": "yellow",
-    "lab": ["Apusan darah tebal-tipis", "RDT Malaria"],
+    "lab": ["Apusan Darah Tebal (Giemsa) / RDT Malaria"],
     "care": ["Periksa darah HARI INI — malaria bisa memburuk cepat", "Obat malaria (ACT) hanya dari tenaga kesehatan", "Tidur memakai kelambu"]
   },
   "chik": {
@@ -45,8 +45,8 @@
     "name": "Tuberkulosis (TBC)",
     "emoji": "🫁",
     "route": "special",
-    "lab": ["TCM (Tes Cepat Molekuler) dahak", "Rontgen dada"],
-    "care": ["Pakai masker, terutama di dekat keluarga", "Buka jendela — ventilasi rumah yang baik", "Pengobatan TBC GRATIS 6 bulan di Poli DOTS"],
+    "lab": ["Tes Cepat Molekuler (TCM) / BTA Sputum"],
+    "care": ["Pakai masker medis di dalam rumah, pisahkan alat makan, dan buka jendela kamar agar sinar matahari masuk (kuman TB mati oleh UV)", "Pengobatan TBC GRATIS 6 bulan di Poli DOTS"],
     "place": "Puskesmas dengan Poli DOTS (TCM untuk TBC)",
     "maps_query": "puskesmas poli DOTS TBC terdekat"
   },
@@ -61,7 +61,7 @@
     "name": "Demam Tifoid (Tipes)",
     "emoji": "🍲",
     "route": "yellow",
-    "lab": ["Widal / Tubex TF", "Kultur darah"],
+    "lab": ["Widal / Tubex TF"],
     "care": ["Istirahat total, makan lunak", "Antibiotik hanya dengan resep dokter", "Jaga kebersihan makanan & air minum"]
   },
   "amoeba": {
@@ -90,7 +90,7 @@
     "emoji": "🐛",
     "route": "green",
     "lab": [],
-    "care": ["Krim Permethrin 5% dioles seluruh tubuh malam hari", "Obati SEMUA penghuni kamar bersamaan", "Cuci sprei/handuk dengan air panas & jemur"]
+    "care": ["Krim Permethrin 5% dioles seluruh tubuh malam hari", "Cuci semua sprei, selimut, dan handuk dengan air panas. Jemur kasur di bawah terik matahari", "Seluruh anggota keluarga serumah HARUS diobati bersamaan"]
   },
   "tinea": {
     "name": "Tinea (Jamur Kulit)",
@@ -102,9 +102,10 @@
   "campak": {
     "name": "Campak (Measles)",
     "emoji": "🔴",
-    "route": "yellow",
+    "route": "special",
     "lab": ["Pemeriksaan klinis", "Serologi Campak IgM"],
-    "care": ["Isolasi di rumah — sangat menular lewat udara", "Vitamin A sesuai anjuran tenaga kesehatan", "Lengkapi imunisasi MR anggota keluarga"]
+    "care": ["Isolasi di rumah — sangat menular lewat udara", "Vitamin A sesuai anjuran tenaga kesehatan", "Lengkapi imunisasi MR anggota keluarga"],
+    "place": "Puskesmas dengan Ruang Isolasi / Poli DOTS"
   },
   "varicella": {
     "name": "Varicella (Cacar Air)",

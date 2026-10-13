@@ -64,7 +64,7 @@ Ketik nama obat yang SUDAH atau RUTIN Anda minum (Opsional): [ _________________
 
 ## TAHAP 5: ANAMNESIS MENDALAM DINAMIS (DEEP-DIVE HPI)
 
-Sistem HANYA memunculkan satu kelompok pertanyaan sesuai klaster yang dipilih di Tahap 4
+Sistem HANYA memunculkan satu kelompok pertanyaan sesuai klaster yang dipilih di Tahap 2
 
 **KLASTER 1 (Demam Vektor):**
 
@@ -133,7 +133,7 @@ Lingkar Perut / Pinggang: [ _____ ] cm (Parameter wajib Sindrom Metabolik).
   - (Proksi Berat Badan / Penurunan BB Drastis): Pakaian/celana sangat longgar dalam 1-2 bulan terakhir (Indikator penurunan berat badan drastis, IMT <18.5 / Prediktor kuat TBC, Cacingan STH, dan DM Tipe Katabolik).
   - Celana terasa makin sempit di perut / Postur Kelebihan Berat Badan (Obesitas) (Prediktor infeksi berat P. falciparum, Hipertensi, dan DM).
 
-**Q8. KAMERA DETEKSI (COMPUTER VISION FITZPATRICK CALIBRATED)**
+**Q8. KAMERA DETEKSI (MEDGEMMA MULTIMODAL, ANALISIS FOTO)**
 
 Pilih kelainan yang terlihat dan fotokan:
 
@@ -147,9 +147,9 @@ Pilih kelainan yang terlihat dan fotokan:
 
 ## TAHAP 7: INFERENSI KECERDASAN BUATAN (BACKEND)
 
-Berjalan di milidetik dalam Edge AI ponsel
+Berjalan di server sendiri: **MedGemma** (large multimodal model, bobot terbuka) + **RAG** atas sumber literatur yang disetujui DR. Model tidak dipanggil lewat API pihak luar, dan tidak ada data yang dikirim keluar server kita. Pemeriksaan tanda bahaya (Tahap 3) tetap berjalan di browser.
 
-- **Imputasi Proksi (XGBoost):** Memproses proksi baju longgar/celana sempit menjadi bobot diagnostik pengganti IMT.
+- **Proksi IMT (MedGemma + RAG):** Proksi baju longgar/celana sempit diberikan ke model sebagai konteks pengganti IMT. Cara menggabungkan keluaran model dengan skor aturan ditetapkan ST.
 - **CVD Risk Score (Framingham Adaptasi):** Khusus pasien Opsi B (PTM), AI menghitung persentase risiko serangan jantung/stroke dalam 10 tahun ke depan berdasarkan Usia, Lingkar Perut, BMI, dan Merokok.
 - **Cross-Validation & Eskalasi (Override Aturan):** Jika Suhu ≥ 39,5 °C (Hiperpireksia) atau Tensi Sistolik > 160 mmHg, AI otomatis membatalkan Rute Hijau dan menaikkan prioritas pasien ke RUTE KUNING untuk keharusan dieksklusi oleh dokter.
 
@@ -189,14 +189,14 @@ Siklus tertutup dengan QR Code terintegrasi FKTP & Algoritma Pemisahan Jalur Inf
 
 **Diagnosis AI (PTM):** Sindrom Koroner Akut (STEMI), Stroke Akut (Iskemik/Hemoragik), Krisis Hipertensi Ekstrem (Ensefalopati Hipertensif), Koma Diabetik (Ketoasidosis Diabetik / HHS / Hipoglikemia Berat).
 
-**Tindakan UI & Target Time-to-Treatment:** Layar UI berubah MERAH PEKAT berkedip dengan sirene audio. Navigasi biasa dibatalkan, langsung mengunci rute GPS tercepat ke IGD RS Terfasilitasi lengkap dengan Pre-Arrival Alert otomatis ke sistem SIMRS target. Target Waktu Penanganan Kritis: Door-to-Needle < 30 menit (Trombolisis Stroke Akut dalam Golden Hour <4.5 jam), Door-to-Balloon / EKG < 10 menit (STEMI), Resusitasi Cairan Segera < 15 menit (Syok Dengue/DSS).
+**Tindakan UI & Target Time-to-Treatment:** Layar UI berubah MERAH tenang, tanpa animasi, tanpa berkedip, dan tanpa suara. Navigasi biasa dibatalkan, langsung mengunci rute GPS tercepat ke IGD RS Terfasilitasi lengkap dengan Pre-Arrival Alert otomatis ke sistem SIMRS target. Target Waktu Penanganan Kritis: Door-to-Needle < 30 menit (Trombolisis Stroke Akut dalam Golden Hour <4.5 jam), Door-to-Balloon / EKG < 10 menit (STEMI), Resusitasi Cairan Segera < 15 menit (Syok Dengue/DSS).
 
 **Care (First Aid & Escalation Red Flag):** (Rabies): Cuci gigitan sabun air mengalir 15 menit tanpa henti. (Suspek Syok/Stroke): Jangan beri minum/makanan apa pun bila kesadaran turun/ngantuk untuk cegah aspirasi paru. Posisikan pasien berbaring dengan kaki ditinggikan (Syok) atau kepala agak ditinggikan 30° (Stroke/Nyeri Dada).
 
 **Prosedur Aktivasi Ambulans & Layanan Darurat 119 (Red Flag Trigger):**
 
 - **Integrasi Sistem & Akses Cepat:** Saat input pasien mengaktifkan salah satu indikator Red Flag di Tahap 2 atau Tahap 8 (Rute Merah), aplikasi secara otomatis menampilkan tombol aksi utama [ Panggil Ambulans (119) ]. Tombol ini dapat ditekan langsung oleh pengguna atau pendamping untuk menghubungkan panggilan darurat ke National Command Center (NCC) 119 / PSC 119 terdekat.
-- **Prosedur Koordinasi Otomatis (Infeksi & PTM):** Bersamaan dengan penekanan tombol atau terdeteksinya Rute Merah, Edge AI mengirimkan transmisi data pra-fasilitas (Pre-Arrival Tele-triage Data) yang berisi ringkasan indikator Red Flag, lokasi GPS, dan estimasi waktu tiba pasien langsung ke IGD RS rujukan serta armada Ambulans 119 yang ditugaskan.
+- **Prosedur Koordinasi Otomatis (Infeksi & PTM):** Bersamaan dengan penekanan tombol atau terdeteksinya Rute Merah, sistem mengirimkan transmisi data pra-fasilitas (Pre-Arrival Tele-triage Data) yang berisi ringkasan indikator Red Flag, lokasi GPS, dan estimasi waktu tiba pasien langsung ke IGD RS rujukan serta armada Ambulans 119 yang ditugaskan.
 - **Pencapaian Target Waktu Kritis (Time-Critical Metrics):** Pengiriman data secara real-time ini memastikan tim medis di IGD dapat mempersiapkan fasilitas sebelum pasien sampai, sehingga target waktu kritis dapat terpenuhi secara presisi: Door-to-Needle < 30 menit untuk terapi trombolisis stroke akut (dalam Golden Hour < 4,5 jam), Door-to-Balloon / EKG < 10 menit pada kasus Sindrom Koroner Akut (STEMI), serta Resusitasi Cairan Segera < 15 menit untuk penanganan Syok Dengue (DSS) dan dehidrasi berat.
 - **Live Tracking & Panduan Visual BHD (Bantuan Hidup Dasar):** Selama menunggu kedatangan ambulans, layar aplikasi menampilkan fitur pelacakan posisi ambulans secara real-time (Live Tracking) sekaligus memandu pendamping/pasien dengan instruksi visual Bantuan Hidup Dasar (BHD) yang interaktif (misalnya: tata cara posisi pemulihan/recovery position untuk pasien stroke, atau panduan RJP/CPR untuk henti jantung), memastikan pertolongan pertama yang tepat telah dimulai sebelum tim medis tiba di lokasi.
 

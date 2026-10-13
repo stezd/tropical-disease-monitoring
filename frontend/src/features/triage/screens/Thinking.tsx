@@ -32,8 +32,8 @@ export function ThinkingScreen({
 }) {
   const api = useMemo(() => toApi(answers), [answers])
   const score = useQuery({
-    queryKey: scoreKey(api),
-    queryFn: () => scoreAnswers(api),
+    queryKey: scoreKey(api, flow.id),
+    queryFn: () => scoreAnswers(api, flow.id),
     staleTime: Number.POSITIVE_INFINITY,
     retry: 1,
   })

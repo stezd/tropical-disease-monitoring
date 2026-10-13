@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import { type FlowPublic, type ScoreResult, TriageService } from "@/client"
-import { FLOW_ID, scoreAnswers, scoreKey } from "../api"
+import { scoreAnswers, scoreKey } from "../api"
 import { Sparkles } from "../components/Art"
 import { Card, copyText, Rich, toast, WarnBox } from "../components/Ui"
 import { confetti, sfx, vibrate } from "../fx"
@@ -28,8 +28,8 @@ export function ResultScreen({
 }) {
   const api = useMemo(() => toApi(answers), [answers])
   const score = useQuery({
-    queryKey: scoreKey(api),
-    queryFn: () => scoreAnswers(api),
+    queryKey: scoreKey(api, flow.id),
+    queryFn: () => scoreAnswers(api, flow.id),
     staleTime: Number.POSITIVE_INFINITY,
   })
   const r = score.data
@@ -230,7 +230,9 @@ export function ResultScreen({
                 >
                   📅 Buat janji dokter (Mobile JKN)
                 </a>
-                {r.route !== "green" && <QrBox answers={api} />}
+                {r.route !== "green" && (
+                  <QrBox answers={api} flowId={flow.id} />
+                )}
                 <details className="sum">
                   <summary>📄 Lihat rangkuman lengkap</summary>
                   <pre>{r.summary}</pre>
@@ -246,7 +248,7 @@ export function ResultScreen({
               </Card>
             )}
 
-            <SaveCard answers={api} />
+            <SaveCard answers={api} flowId={flow.id} />
 
             <div className="btnrow">
               <button
@@ -272,12 +274,20 @@ export function ResultScreen({
   )
 }
 
-function QrBox({ answers }: { answers: ReturnType<typeof toApi> }) {
+function QrBox({
+  answers,
+  flowId,
+}: {
+  answers: ReturnType<typeof toApi>
+  flowId: string
+}) {
   const canvas = useRef<HTMLCanvasElement>(null)
   const [ok, setOk] = useState(true)
   useEffect(() => {
-    if (canvas.current) setOk(drawQR(canvas.current, summaryURL(answers)))
-  }, [answers])
+    if (canvas.current) {
+      setOk(drawQR(canvas.current, summaryURL(answers, flowId)))
+    }
+  }, [answers, flowId])
   if (!ok) return null
   return (
     <div className="qrbox">
@@ -296,7 +306,13 @@ function QrBox({ answers }: { answers: ReturnType<typeof toApi> }) {
 }
 
 /** Save the anonymous result only after the patient says yes (AGENTS.md "Privacy"). */
-function SaveCard({ answers }: { answers: ReturnType<typeof toApi> }) {
+function SaveCard({
+  answers,
+  flowId,
+}: {
+  answers: ReturnType<typeof toApi>
+  flowId: string
+}) {
   const [state, setState] = useState<"idle" | "saving" | "saved" | "error">(
     "idle",
   )
@@ -304,7 +320,7 @@ function SaveCard({ answers }: { answers: ReturnType<typeof toApi> }) {
     setState("saving")
     try {
       await TriageService.createScreening({
-        body: { flow_id: FLOW_ID, answers, consent: true },
+        body: { flow_id: flowId, answers, consent: true },
       })
       setState("saved")
       sfx.ding()

@@ -108,7 +108,7 @@ Don't copy these from the HTML:
 - **No disease tags under options.** Remove `.tag` and the "Mode Presentasi" toggle.
 - **Pain scale = faces 0–10:** vertical, next to the body map. Buttons 0–10 (0 on top), colored green to red. On 0, 2, 4, 6, 8, 10: label on the left ("Tidak sakit" to "Sakit sekali"), face on the right. Numbers and faces can both be tapped. Nothing selected at start. The prototype is already updated (`painScale()`), so copy this one as is.
 - **Red route:** no confetti. Big call 119 button, plus 119 and 112 as copyable text.
-- **No "XGBoost" or "probability"** wording. Show "skor kecocokan".
+- **No "XGBoost", model names, or "probability"** wording. Show "skor kecocokan".
 - **New screens** (not in prototype), built in the same style:
   - Home: choose path ("Saya sedang sakit" / "Cek risiko penyakit jangka panjang").
   - First step: age + sex.

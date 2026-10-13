@@ -26,7 +26,7 @@
     "obese": { "malaria": 5 },
     "thin_reason_bmi": "IMT rendah (gizi kurang)",
     "thin_reason_proxy": "Proksi gizi: pakaian longgar / BB turun drastis",
-    "obese_reason": "Postur gemuk (prediktor malaria berat)"
+    "obese_reason": "Kelebihan berat badan / obesitas (prediktor malaria berat)"
   },
   "body": {
     "joints": {
@@ -58,6 +58,7 @@
   "max_display_pct": 97,
   "low_score_threshold": 30.0,
   "high_fever_upgrade": 39.5,
+  "bp_upgrade_above": 160,
   "chik_chronic_warning": { "pain_from": 7, "min_score": 20 },
   "malaria_obese_warning_min_score": 40
 }

@@ -10,6 +10,7 @@ async function startAs(page: Page, age: string) {
   await page.getByText("Saya sendiri").click()
   await page.getByPlaceholder("25").fill(age)
   await page.getByRole("button", { name: "Perempuan" }).click()
+  await page.getByRole("button", { name: "Tidak hamil" }).click()
   await next(page)
 }
 
@@ -65,6 +66,40 @@ test("Red flag opens the red route without the server", async ({ page }) => {
   )
   await expect(page.locator(".numcard b")).toHaveText(["119", "112"])
   await expect(page.locator(".conf")).toHaveCount(0)
+})
+
+test("Guest finishes the chronic risk check", async ({ page }) => {
+  await page.goto("/")
+  await page.getByText("Cek risiko penyakit jangka panjang").click()
+  await page.getByText("Saya sendiri").click()
+  await page.getByPlaceholder("25").fill("55")
+  await page.getByRole("button", { name: "Laki-laki" }).click()
+  await next(page)
+  await page.getByText("Tidak ada, saya aman").click()
+  await next(page)
+  await page.locator(".cbox", { hasText: "Sendi mendadak" }).click()
+  await next(page)
+  await page.getByText(/jempol kaki/).click()
+  await next(page)
+  await page.locator(".opt", { hasText: "Tidak ada" }).click()
+  await next(page)
+  await next(page) // no drugs
+  await page.getByPlaceholder("120").fill("130")
+  await page.getByPlaceholder("80").fill("85")
+  await next(page)
+  await page.getByPlaceholder("160").fill("168")
+  await page.getByPlaceholder("55").fill("80")
+  await next(page)
+  await next(page) // no photo
+
+  await expect(page.getByText("SKRINING SELESAI")).toBeVisible({
+    timeout: 20_000,
+  })
+  await expect(
+    page.getByRole("heading", { name: "Gout Arthritis (Asam Urat)" }),
+  ).toBeVisible()
+  await expect(page.getByText(/BERPUASA/)).toBeVisible()
+  await expect(page.getByText(/bukan diagnosis dokter/)).toBeVisible()
 })
 
 test("Broken summary QR shows a clear message", async ({ page }) => {

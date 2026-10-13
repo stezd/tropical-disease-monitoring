@@ -23,6 +23,10 @@ export type Answers = {
      */
     sex?: 'L' | 'P' | null;
     /**
+     * Pregnant
+     */
+    pregnant?: boolean | null;
+    /**
      * Red Flags
      */
     red_flags?: Array<string>;
@@ -55,6 +59,26 @@ export type Answers = {
      */
     no_thermo?: boolean;
     /**
+     * Bp Sys
+     */
+    bp_sys?: number | null;
+    /**
+     * Bp Dia
+     */
+    bp_dia?: number | null;
+    /**
+     * No Bp
+     */
+    no_bp?: boolean;
+    /**
+     * Glucose
+     */
+    glucose?: number | null;
+    /**
+     * Vital Proxy
+     */
+    vital_proxy?: Array<string>;
+    /**
      * Height Cm
      */
     height_cm?: number | null;
@@ -62,6 +86,10 @@ export type Answers = {
      * Weight Kg
      */
     weight_kg?: number | null;
+    /**
+     * Waist Cm
+     */
+    waist_cm?: number | null;
     /**
      * Nutrition Proxy
      */
@@ -205,6 +233,16 @@ export type FlowPublic = {
      */
     child_age_limit: number;
     /**
+     * Steps
+     */
+    steps: Array<'who' | 'q1' | 'q2' | 'q3' | 'q4' | 'q5' | 'q6' | 'q7' | 'q8' | 'q9' | 'q10'>;
+    /**
+     * Step Text
+     */
+    step_text?: {
+        [key: string]: StepText;
+    };
+    /**
      * Stages
      */
     stages: Array<Stage>;
@@ -216,6 +254,10 @@ export type FlowPublic = {
      * Sex
      */
     sex: Array<Option>;
+    /**
+     * Pregnancy From Age
+     */
+    pregnancy_from_age?: number | null;
     /**
      * Red Flags
      */
@@ -230,6 +272,10 @@ export type FlowPublic = {
      * Clusters
      */
     clusters: Array<Cluster>;
+    /**
+     * Allow No Complaint
+     */
+    allow_no_complaint?: boolean;
     /**
      * Patterns
      */
@@ -247,9 +293,27 @@ export type FlowPublic = {
      */
     eco: Array<Option>;
     /**
+     * Eco Label
+     */
+    eco_label?: string;
+    /**
      * Drug Chips
      */
     drug_chips: Array<string>;
+    /**
+     * Vitals
+     */
+    vitals: Array<'temp' | 'bp' | 'glucose'>;
+    /**
+     * Vital Proxies
+     */
+    vital_proxies?: {
+        [key: string]: Array<Option>;
+    };
+    /**
+     * Measure Waist
+     */
+    measure_waist?: boolean;
     /**
      * Nutrition Proxies
      */
@@ -347,9 +411,25 @@ export type Option = {
      */
     disease?: string | null;
     /**
+     * Diseases
+     */
+    diseases?: Array<string>;
+    /**
      * Child Only
      */
     child_only?: boolean;
+    /**
+     * Age Min
+     */
+    age_min?: number | null;
+    /**
+     * Age Max
+     */
+    age_max?: number | null;
+    /**
+     * Min Route
+     */
+    min_route?: 'green' | 'yellow' | 'special' | 'red' | null;
     /**
      * Wide
      */
@@ -426,6 +506,10 @@ export type Question = {
      * Options
      */
     options: Array<Option>;
+    /**
+     * Patterns
+     */
+    patterns?: Array<string> | null;
 };
 
 /**
@@ -489,7 +573,11 @@ export type RedFlag = {
     /**
      * First Aid
      */
-    first_aid: string;
+    first_aid?: string | null;
+    /**
+     * Dont
+     */
+    dont?: string | null;
 };
 
 /**
@@ -574,7 +662,7 @@ export type ScoreResult = {
     /**
      * Drug Popups
      */
-    drug_popups: Array<string>;
+    drug_popups: Array<Warning>;
     /**
      * Todo
      */
@@ -688,6 +776,30 @@ export type Stage = {
      * Name
      */
     name: string;
+};
+
+/**
+ * StepText
+ *
+ * Per-flow wording for a quiz step. Empty fields keep the front end's default.
+ */
+export type StepText = {
+    /**
+     * Tab
+     */
+    tab?: string | null;
+    /**
+     * Say
+     */
+    say?: string | null;
+    /**
+     * Title
+     */
+    title?: string | null;
+    /**
+     * Hint
+     */
+    hint?: string | null;
 };
 
 /**
