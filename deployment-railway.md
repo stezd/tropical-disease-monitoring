@@ -113,7 +113,9 @@ railway up --service backend
 Notes:
 
 - `railway up` uploads the **local directory**, so Railway never needs GitHub access to the repo. The trade-off: no autodeploy on push, deploys are explicit.
-- `railway up` **exits 0 only if the deployment reaches SUCCESS**, so the exit code is real verification.
+- **Do not trust `railway up`'s exit code.** In a non-interactive shell it returns 0 as soon as the upload finishes, before the build result is known — Railway's docs say it exits 0 only on SUCCESS, but we observed exit 0 while the deployment record said `FAILED`. Confirm with `railway deployment list --service backend`, then `railway logs --build -s backend` if it failed.
+- `railway add --variables KEY=value` **echoes the values** in its output — we leaked two secrets that way and had to rotate them. Create the service first, then use `railway variable set`, which prints only the key names.
+- The CLI **resolves** `${{Postgres.DATABASE_URL}}` to the literal connection string when you set it, so it will not follow a later database password rotation.
 - `railway up` never exposes a service publicly — `railway domain` does that.
 - Variable changes are **staged**; apply them with `railway redeploy`.
 
