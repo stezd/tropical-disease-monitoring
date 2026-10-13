@@ -14,6 +14,16 @@ jobs:
       contents: read
       id-token: write
     timeout-minutes: 5
+    # The generate-frontend-sdk hook imports the FastAPI app to dump its OpenAPI
+    # schema, and Settings requires all five of these. Without them the hook dies
+    # with "ValidationError: 5 validation errors for Settings".
+    env:
+      PROJECT_NAME: TropiCare
+      FASTAPI_ENV: development
+      SECRET_KEY: ci-only-secret-key-not-used-anywhere-else
+      FIRST_SUPERUSER: admin@example.com
+      FIRST_SUPERUSER_PASSWORD: ci-only-password-not-used-anywhere-else
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app
     steps:
       - name: Dump GitHub context
         env:
