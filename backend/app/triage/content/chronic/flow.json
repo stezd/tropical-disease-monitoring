@@ -1,0 +1,122 @@
+{
+  "id": "chronic",
+  "title": "Cek risiko penyakit jangka panjang",
+  "child_age_limit": 18,
+  "steps": ["who", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q10"],
+  "step_text": {
+    "q2": { "say": "Aman! 😊 Ada **keluhan** yang mengganggu?" },
+    "q5": {
+      "tab": "TAHAP 4 · FAKTOR RISIKO",
+      "say": "Kebiasaan & riwayat keluarga juga **petunjuk** 🧬",
+      "title": "Mana yang sesuai denganmu?"
+    },
+    "q7": { "say": "Cek **tensi & gula darah** 🩺" },
+    "q10": { "title": "Foto kulit, luka, atau sendi" }
+  },
+  "stages": [
+    { "emoji": "🚨", "name": "Darurat" },
+    { "emoji": "🧭", "name": "Keluhan" },
+    { "emoji": "🔍", "name": "Gejala" },
+    { "emoji": "🧬", "name": "Risiko" },
+    { "emoji": "📏", "name": "Fisik" },
+    { "emoji": "🤖", "name": "Analisis" },
+    { "emoji": "🏁", "name": "Hasil" }
+  ],
+  "who": [
+    { "id": "self", "emoji": "🙋", "text": "Saya sendiri" },
+    { "id": "child", "emoji": "🧒", "text": "Anak saya" },
+    { "id": "elder", "emoji": "👵", "text": "Orang tua / lansia" },
+    { "id": "other", "emoji": "🧑‍🤝‍🧑", "text": "Keluarga lain" }
+  ],
+  "sex": [
+    { "id": "L", "emoji": "👦", "text": "Laki-laki" },
+    { "id": "P", "emoji": "👧", "text": "Perempuan" }
+  ],
+  "pregnancy_from_age": 10,
+  "clusters": [
+    {
+      "id": "F",
+      "emoji": "🍬",
+      "name": "Gula & Saraf",
+      "sub": "Sering haus, kencing malam, kesemutan, luka sulit sembuh",
+      "members": ["dm", "neuropati"]
+    },
+    {
+      "id": "G",
+      "emoji": "🩺",
+      "name": "Tekanan & Kepala",
+      "sub": "Tengkuk kaku, telinga berdenging, pusing, sesak saat aktivitas",
+      "members": ["hipertensi", "angina", "dislipidemia"]
+    },
+    {
+      "id": "H",
+      "emoji": "🦶",
+      "name": "Sendi",
+      "sub": "Sendi mendadak bengkak, merah, panas, sangat nyeri",
+      "members": ["gout"]
+    }
+  ],
+  "allow_no_complaint": true,
+  "patterns": {
+    "F": {
+      "title": "Keluhan mana yang paling sesuai?",
+      "options": [
+        { "id": "dm", "emoji": "🍽️", "text": "Mudah lapar, mudah haus, sering kencing malam, tapi berat badan turun drastis tanpa sebab", "reason": "Mudah lapar, haus, sering kencing malam + berat badan turun drastis" },
+        { "id": "neuropati", "emoji": "🧦", "text": "Sering kesemutan / kebas seperti pakai kaos kaki", "reason": "Sering kesemutan / kebas seperti pakai kaos kaki" },
+        { "id": "none", "emoji": "🤔", "text": "Tidak ada yang cocok" }
+      ]
+    },
+    "G": {
+      "title": "Keluhan mana yang paling sesuai?",
+      "options": [
+        { "id": "hipertensi", "emoji": "😣", "text": "Tengkuk leher berat, kaku, memburuk saat lelah", "diseases": ["hipertensi", "dislipidemia"], "reason": "Tengkuk leher berat, kaku, memburuk saat lelah" },
+        { "id": "angina", "emoji": "🪜", "text": "Nyeri dada/sesak HANYA muncul saat aktivitas (naik tangga) dan HILANG jika istirahat", "reason": "Nyeri dada/sesak hanya saat aktivitas, hilang saat istirahat" },
+        { "id": "none", "emoji": "🤔", "text": "Tidak ada yang cocok" }
+      ]
+    },
+    "H": {
+      "title": "Seperti apa nyeri sendinya?",
+      "options": [
+        { "id": "gout", "emoji": "🔥", "text": "Sendi (terutama jempol kaki) mendadak bengkak, kemerahan, panas, dan luar biasa nyeri ditekan", "reason": "Sendi (terutama jempol kaki) mendadak bengkak, merah, panas, sangat nyeri" },
+        { "id": "none", "emoji": "🤔", "text": "Bukan seperti itu" }
+      ]
+    }
+  },
+  "companions": {},
+  "eco": [
+    { "id": "keturunan", "emoji": "👨‍👩‍👧", "text": "Orang tua/saudara kandung punya riwayat kencing manis, darah tinggi, atau stroke di usia muda", "reason": "Riwayat keluarga: kencing manis, darah tinggi, atau stroke usia muda" },
+    { "id": "rokok", "emoji": "🚬", "text": "Merokok aktif atau mantan perokok (>5 tahun)", "reason": "Merokok aktif / mantan perokok" },
+    { "id": "metabolik", "emoji": "🍖", "text": "Jarang olahraga, rutin makan jeroan, hidangan laut, emping, daging berlemak, atau makanan bersantan", "reason": "Jarang olahraga + pola makan berisiko sindrom metabolik" },
+    { "id": "none", "emoji": "🙅", "text": "Tidak ada", "wide": true }
+  ],
+  "eco_label": "Faktor risiko",
+  "drug_chips": ["Metformin", "Glibenklamid", "Amlodipine", "Captopril", "Allopurinol", "Simvastatin"],
+  "vitals": ["bp", "glucose"],
+  "vital_proxies": {
+    "bp": [
+      { "id": "nadi", "emoji": "💓", "text": "Nadi terasa sangat cepat saat istirahat", "detail": "Pegang pergelangan tangan, apakah denyut nadi Anda terasa sangat cepat/berdebar keras saat istirahat?", "reason": "Nadi sangat cepat saat istirahat" },
+      { "id": "tengkuk", "emoji": "😖", "text": "Tengkuk terasa sangat tegang", "reason": "Tengkuk sangat tegang" },
+      { "id": "none", "emoji": "🙅", "text": "Tidak ada keduanya" }
+    ]
+  },
+  "measure_waist": true,
+  "nutrition_proxies": [
+    { "id": "longgar", "emoji": "👕", "text": "Pakaian/celana sangat longgar dalam 1-2 bulan terakhir" },
+    { "id": "gemuk", "emoji": "🧸", "text": "Celana terasa makin sempit di perut / Postur Kelebihan Berat Badan (Obesitas)" },
+    { "id": "normal", "emoji": "🙂", "text": "Normal" }
+  ],
+  "body_regions": [],
+  "pain_faces": [],
+  "findings": [
+    { "id": "borok", "emoji": "🩹", "text": "Luka borok / bernanah / menghitam", "disease": "dm", "reason": "Foto: luka borok / bernanah / menghitam" },
+    { "id": "tofus", "emoji": "🦴", "text": "Benjolan keras di sendi", "disease": "gout", "reason": "Foto: benjolan keras di sendi" },
+    { "id": "leher", "emoji": "🟤", "text": "Lipatan leher hitam menebal", "disease": "dm", "reason": "Foto: lipatan leher hitam menebal" },
+    { "id": "none", "emoji": "🙅", "text": "Tidak ada temuan", "wide": true }
+  ],
+  "routes": {
+    "green": { "name": "RUTE RINGAN", "sub": "Perawatan Mandiri · Apotek", "emoji": "🌿", "color_from": "#4FDDA0", "color_to": "#1FA86E", "place": "Apotek terdekat", "maps_query": "apotek terdekat", "nav_label": "Apotek" },
+    "yellow": { "name": "RUTE SEDANG", "sub": "Puskesmas · Klinik Pratama", "emoji": "🏥", "color_from": "#FFCB57", "color_to": "#F59B0B", "place": "Poli Umum Puskesmas dengan laboratorium", "maps_query": "puskesmas terdekat", "nav_label": "Puskesmas" },
+    "special": { "name": "RUTE SEDANG", "sub": "Poli Program Nasional Kemenkes", "emoji": "🎯", "color_from": "#FFA45C", "color_to": "#E8662A", "place": "Puskesmas dengan program nasional", "maps_query": "puskesmas terdekat", "nav_label": "Puskesmas" },
+    "red": { "name": "RUTE DARURAT", "sub": "Kedaruratan · IGD Rumah Sakit", "emoji": "🚨", "color_from": "#FF7280", "color_to": "#E0283F", "place": "IGD rumah sakit terdekat", "maps_query": "IGD rumah sakit terdekat", "nav_label": "IGD" }
+  }
+}
