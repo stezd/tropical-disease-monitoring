@@ -8,6 +8,8 @@ import { blankAnswers, type QuizAnswers } from "./model"
 export type Phase = "quiz" | "red" | "thinking" | "result"
 
 export type QuizState = {
+  // Which flow these answers belong to ("infection" or "chronic").
+  flowId: string
   answers: QuizAnswers
   step: number
   phase: Phase
@@ -16,7 +18,8 @@ export type QuizState = {
 const KEY = "tropicek_quiz"
 const listeners = new Set<() => void>()
 
-const fresh = (): QuizState => ({
+const fresh = (flowId = "infection"): QuizState => ({
+  flowId,
   answers: blankAnswers(),
   step: 0,
   phase: "quiz",
@@ -50,7 +53,7 @@ export const quiz = {
   set: (patch: Partial<QuizState>) => write({ ...state, ...patch }),
   answer: (fn: (a: QuizAnswers) => QuizAnswers) =>
     write({ ...state, answers: fn(state.answers) }),
-  reset: () => write(fresh()),
+  reset: (flowId = state.flowId) => write(fresh(flowId)),
 }
 
 export function useQuiz(): QuizState {

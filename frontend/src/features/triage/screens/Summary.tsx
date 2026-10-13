@@ -5,16 +5,15 @@ import { useQuery } from "@tanstack/react-query"
 import { Link, useRouterState } from "@tanstack/react-router"
 import { useMemo } from "react"
 
-import type { FlowPublic } from "@/client"
-import { scoreAnswers } from "../api"
+import { scoreAnswers, useFlow } from "../api"
 import { Sparkles } from "../components/Art"
 import { Card } from "../components/Ui"
 import { readSummaryHash, unpackAnswers } from "../qr"
 import { AdviceCards } from "./Result"
 
-export function SummaryScreen({ flow }: { flow: FlowPublic }) {
+export function SummaryScreen() {
   const hash = useRouterState({ select: (s) => s.location.hash })
-  const answers = useMemo(() => {
+  const packed = useMemo(() => {
     const code = readSummaryHash(hash)
     if (!code) return null
     try {
@@ -23,14 +22,17 @@ export function SummaryScreen({ flow }: { flow: FlowPublic }) {
       return null
     }
   }, [hash])
+  const answers = packed?.answers ?? null
+  const flowId = packed?.flowId ?? "infection"
+  const { flow } = useFlow(flowId)
   const score = useQuery({
-    queryKey: ["triage", "summary", answers],
-    queryFn: () => scoreAnswers(answers!),
+    queryKey: ["triage", "summary", flowId, answers],
+    queryFn: () => scoreAnswers(answers!, flowId),
     enabled: !!answers,
     staleTime: Number.POSITIVE_INFINITY,
   })
   const r = score.data
-  const route = r ? flow.routes[r.route] : null
+  const route = r && flow ? flow.routes[r.route] : null
 
   return (
     <div className="screen bg-result">

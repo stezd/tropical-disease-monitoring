@@ -870,6 +870,26 @@
   background: linear-gradient(160deg, #8d9bff, #5b5be6);
   box-shadow: 0 5px 0 #3e3db8;
 }
+.cF {
+  background: linear-gradient(160deg, #7ee0a1, #2fb27a);
+  box-shadow: 0 5px 0 #1e8a5c;
+}
+.cG {
+  background: linear-gradient(160deg, #ff8fa3, #e0485f);
+  box-shadow: 0 5px 0 #b8304a;
+}
+.cH {
+  background: linear-gradient(160deg, #8d9bff, #5b5be6);
+  box-shadow: 0 5px 0 #3e3db8;
+}
+.cnone {
+  background: linear-gradient(160deg, #b9b3d6, #8b84b3);
+  box-shadow: 0 5px 0 #6b6494;
+}
+/* Even number of boxes: no wide last box. */
+.cgrid.even .cbox:last-child {
+  grid-column: auto;
+}
 
 /* inputs */
 .fld {
@@ -2174,6 +2194,10 @@ details.sum pre {
   border-radius: 10px;
   padding: 6px 8px;
   margin-top: 6px;
+}
+.rflag em.dont {
+  color: #b3122e;
+  background: #ffe3e6;
 }
 .fac {
   display: flex;

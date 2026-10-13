@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
 
-import { ChronicPage } from "@/features/triage/Shell"
+import { ScreeningPage } from "@/features/triage/Shell"
 
 export const Route = createFileRoute("/kronis")({
-  component: ChronicPage,
+  component: () => <ScreeningPage flowId="chronic" />,
   head: () => ({ meta: [{ title: "Risiko Jangka Panjang – TropiCare" }] }),
 })
