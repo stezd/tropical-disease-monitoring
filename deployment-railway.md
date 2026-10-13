@@ -243,14 +243,25 @@ Re-measure with `docker images backend:latest --format "{{.Size}}"`.
 
 ## 12. Production deploys require human approval
 
-Development deploys are automatic. **Production is gated**: nothing reaches production without an explicit human go-ahead.
+The gate is **branch-based**, not a toggle:
 
-Railway has no per-environment approval role outside Enterprise, so the gate is procedural and deliberate:
+| Environment | Source branch | Trigger |
+| --- | --- | --- |
+| `development` | `master` | every push to `master` deploys automatically |
+| `production` | `prod` | only a push to `prod` deploys |
 
-1. Deploy to `development` first and verify it - endpoints, a real quiz run, and the red route.
-2. Get an explicit human approval ("deploy to production") before doing anything to production.
-3. `railway up -e production` is the gate action. It is the only thing that changes production, and it is never run automatically, never as part of a batch, and never as a follow-on from a dev deploy.
+The gate action is therefore **fast-forwarding `master` into `prod`** - explicit, visible, and reviewable:
 
-Railway's staged changes give a second, platform-level checkpoint: variable and configuration edits are staged and must be reviewed and deployed in the dashboard before they take effect, so an accidental variable change does not silently reach production either.
+```bash
+git checkout prod
+git merge --ff-only master
+git push origin prod
+```
 
-If a CI-driven deploy is ever added, gate it with a GitHub Environment that has required reviewers, and keep `railway up -e production` out of every automatic path.
+How the wiring works:
+
+- The `backend` service is connected to `stezd/tropical-disease-monitoring` via the Railway GitHub App.
+- The **branch is per environment** and lives on a Railway **deployment trigger** (one row per environment), not on the service. A `serviceConnect` mutation creates the trigger rows; the branch is then set per environment on those rows. The dashboard exposes the same thing under Service Settings.
+- **Connecting a repo - or changing its source - deploys every environment immediately.** Do it while the branches hold identical commits, or accept that production deploys whatever `prod` points at.
+- `Wait for CI` (`checkSuites`) is **off**. Enabling it requires the repo's GitHub Actions to actually run, which they currently do not (the workflows are unregistered in this repository).
+- `railway up -e production` still works as an emergency path, but it uploads the local working tree rather than a committed revision. Prefer the branch, so what is deployed is always traceable to a commit.
