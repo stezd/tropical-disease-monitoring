@@ -61,6 +61,12 @@ class Settings(BaseSettings):
     def emails_enabled(self) -> bool:
         return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
 
+    # Triage. "rules" = weights in app/triage/content. "model" = ST's trained model (skeleton).
+    TRIAGE_SCORING_ENGINE: Literal["rules", "model"] = "rules"
+    TRIAGE_MODEL_PATH: str | None = None
+    # Photo analysis is a skeleton until ST plugs in a model. "none" = not available.
+    TRIAGE_PHOTO_ANALYZER: Literal["none"] = "none"
+
     EMAIL_TEST_USER: EmailStr = "test@example.com"
     FIRST_SUPERUSER: EmailStr
     FIRST_SUPERUSER_PASSWORD: str

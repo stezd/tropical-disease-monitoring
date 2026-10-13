@@ -1,0 +1,63 @@
+{
+  "drugs": {
+    "antidiarrheal": {
+      "keywords": ["lopera", "imodium", "lodia", "motilex", "diatab", "entrostop", "attapulg", "lomotil", "diphenox"],
+      "patterns": ["diare", "amoeba"],
+      "popup": "**Hentikan obat mampat.** Infeksi usus butuh dikeluarkan. Ganti dengan **Oralit & Zinc**.",
+      "result": "**Hentikan obat mampat.** Infeksi usus butuh dikeluarkan. Ganti dengan Oralit & Zinc."
+    },
+    "nsaid": {
+      "keywords": ["ibupro", "proris", "aspirin", "asetosal", "aspilet", "mefenam", "ponstan", "diklofenak", "diclofenac", "voltaren", "piroxicam", "naproxen", "ketoprofen"],
+      "complaints": ["A"],
+      "popup": "**Hindari Ibuprofen/Aspirin/Asam mefenamat** pada demam yang dicurigai DBD — dapat memicu pendarahan. Gunakan **Paracetamol**.",
+      "result": "**Hindari Ibuprofen/Aspirin** pada suspek DBD. Gunakan Paracetamol."
+    }
+  },
+  "warnings": {
+    "chik_chronic": "Nyeri sendi pergelangan berat → **risiko Chikungunya kronis**. Kontrol bila nyeri menetap > 3 bulan.",
+    "malaria_obese": "Postur gemuk meningkatkan **risiko malaria berat**. Jangan tunda pemeriksaan darah.",
+    "high_fever": "Suhu {temp} °C tergolong **demam tinggi**. Kompres hangat & minum banyak.",
+    "route_upgraded": "Rute dinaikkan ke SEDANG karena suhu {temp} °C sangat tinggi.",
+    "no_thermo_fever_pattern": "Suhu tidak diukur. Klasifikasi tetap memakai **pola demam** yang kamu pilih tadi.",
+    "no_thermo_other": "Suhu tidak diukur. Klasifikasi tetap dihitung dari **jawaban lainnya**.",
+    "no_bmi": "IMT tidak diisi — AI memakai **proksi kelonggaran pakaian**."
+  },
+  "todo": {
+    "green_before": ["Isolasi mandiri & istirahat cukup di rumah", "Perbaiki sanitasi kamar/asrama: cuci sprei, jemur kasur, buka ventilasi"],
+    "yellow_unknown": ["Datang ke Poli Umum Puskesmas untuk pemeriksaan langsung", "Minum cukup dan istirahat"],
+    "yellow_after": ["Tunjukkan QR rangkuman ke petugas pendaftaran"],
+    "special_before": ["Navigasi eksklusif: hanya ke Puskesmas dengan layanan program nasional"]
+  },
+  "cross_checks": {
+    "tifoid_dbd": {
+      "title": "Tifoid vs DBD",
+      "text": "Tifoid vs DBD: demam stepladder + nyeri perut vs demam pelana kuda + petekie → condong ke **{winner}**",
+      "first": "Tifoid",
+      "second": "DBD"
+    },
+    "kusta_tinea": {
+      "title": "Kusta vs Tinea",
+      "text": "Kusta vs Tinea: dipisahkan dari sensasi bercak → condong ke **{winner}**",
+      "first": "Kusta (mati rasa)",
+      "second": "Tinea (gatal saat berkeringat)"
+    },
+    "diare_amoeba": {
+      "title": "Diare vs Amebiasis",
+      "text": "Diare vs Amebiasis: deteksi lendir/darah & tenesmus → condong ke **{winner}**",
+      "first": "Amebiasis (darah-lendir + tenesmus)",
+      "second": "Diare akut (cair tanpa darah)"
+    }
+  },
+  "analysis_steps": {
+    "read": "Membaca seluruh jawaban kuesioner",
+    "no_thermo_fever_pattern": "Suhu tidak diukur: memakai pola demam",
+    "no_thermo_other": "Suhu tidak diukur: dihitung tanpa suhu",
+    "no_bmi": "Imputasi gizi dari proksi kelonggaran baju",
+    "vitals_complete": "Data vital lengkap — tanpa imputasi",
+    "cross_check": "Validasi silang: {title}",
+    "eco": "Memetakan risiko One Health ({count} faktor)",
+    "findings": "Menggabungkan temuan foto",
+    "score": "Menghitung klasifikasi kecocokan 20 penyakit",
+    "route": "Menentukan rute rujukan & faskes"
+  }
+}

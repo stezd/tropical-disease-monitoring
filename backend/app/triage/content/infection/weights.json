@@ -1,0 +1,63 @@
+{
+  "complaint_base": 10,
+  "pattern": 40,
+  "companion": 20,
+  "finding": 25,
+  "eco": {
+    "timur": { "malaria": 15, "frambusia": 15 },
+    "danau": { "skisto": 25 },
+    "banjir": { "lepto": 20 },
+    "padat": { "tbc": 8, "scabies": 12, "tinea": 8, "hepa": 8 },
+    "kontak": { "tbc": 20 },
+    "mr": { "campak": 20 }
+  },
+  "province": {},
+  "complaint_reason": "Keluhan utama: {name}",
+  "fever": {
+    "min_temp": 38.0,
+    "points": { "dbd": 5, "malaria": 5, "chik": 5, "lepto": 5, "skisto": 5, "tifoid": 5, "campak": 5 },
+    "silent_points": { "varicella": 2 },
+    "reason": "Suhu terukur {temp} °C (demam)"
+  },
+  "nutrition": {
+    "bmi_thin_below": 18.5,
+    "bmi_obese_from": 27.0,
+    "thin": { "tbc": 10, "kusta": 6, "sth": 10 },
+    "obese": { "malaria": 5 },
+    "thin_reason_bmi": "IMT rendah (gizi kurang)",
+    "thin_reason_proxy": "Proksi gizi: pakaian longgar / BB turun drastis",
+    "obese_reason": "Postur gemuk (prediktor malaria berat)"
+  },
+  "body": {
+    "joints": {
+      "regions": ["wrist_r", "wrist_l", "ankle_r", "ankle_l"],
+      "disease": "chik",
+      "points": 10,
+      "points_high_pain": 18,
+      "high_pain_from": 6,
+      "reason": "Nyeri sendi pergelangan (skala {pain}/10)"
+    },
+    "rules": [
+      { "any": ["ruq"], "points": { "hepa": 20 }, "reason": "Peta nyeri: perut kanan atas (area hati)" },
+      { "any": ["low"], "points": { "tifoid": 12, "amoeba": 12 }, "reason": "Peta nyeri: perut tengah/bawah" },
+      { "any": ["luq"], "points": { "tifoid": 4 }, "reason": "Peta nyeri: ulu hati" },
+      { "any": ["calf_r", "calf_l"], "points": { "lepto": 12 }, "reason": "Peta nyeri: betis" },
+      { "any": ["chest"], "points": { "tbc": 5, "ispa": 5 }, "reason": "Peta nyeri: dada" },
+      { "any": ["head"], "points": { "dbd": 5 }, "reason": "Peta nyeri: kepala / mata" },
+      { "any": ["head"], "points": { "malaria": 3 }, "reason": "Peta nyeri: kepala" }
+    ],
+    "asymmetry": {
+      "right": ["thigh_r", "calf_r", "ankle_r"],
+      "left": ["thigh_l", "calf_l", "ankle_l"],
+      "points": { "filaria": 20 },
+      "reason": "Peta nyeri: tungkai asimetris (satu sisi)"
+    }
+  },
+  "softmax_temperature": 20.0,
+  "candidate_min_share": 0.05,
+  "max_display_pct": 97,
+  "low_score_threshold": 30.0,
+  "high_fever_upgrade": 39.5,
+  "chik_chronic_warning": { "pain_from": 7, "min_score": 20 },
+  "malaria_obese_warning_min_score": 40
+}

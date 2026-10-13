@@ -9,18 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as LayoutRouteImport } from './routes/_layout'
+import { Route as KronisRouteImport } from './routes/kronis'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as RecoverPasswordRouteImport } from './routes/recover-password'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RingkasanRouteImport } from './routes/ringkasan'
 import { Route as SignupRouteImport } from './routes/signup'
-import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
+import { Route as SkriningRouteImport } from './routes/skrining'
 import { Route as LayoutAdminRouteImport } from './routes/_layout/admin'
-import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
 import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LayoutRoute = LayoutRouteImport.update({
   id: '/_layout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KronisRoute = KronisRouteImport.update({
+  id: '/kronis',
+  path: '/kronis',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -38,24 +50,24 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RingkasanRoute = RingkasanRouteImport.update({
+  id: '/ringkasan',
+  path: '/ringkasan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LayoutIndexRoute = LayoutIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => LayoutRoute,
+const SkriningRoute = SkriningRouteImport.update({
+  id: '/skrining',
+  path: '/skrining',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LayoutAdminRoute = LayoutAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutItemsRoute = LayoutItemsRouteImport.update({
-  id: '/items',
-  path: '/items',
   getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
@@ -65,86 +77,116 @@ const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof LayoutIndexRoute
+  '/': typeof IndexRoute
+  '/kronis': typeof KronisRoute
   '/login': typeof LoginRoute
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/ringkasan': typeof RingkasanRoute
   '/signup': typeof SignupRoute
+  '/skrining': typeof SkriningRoute
   '/admin': typeof LayoutAdminRoute
-  '/items': typeof LayoutItemsRoute
   '/settings': typeof LayoutSettingsRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/kronis': typeof KronisRoute
   '/login': typeof LoginRoute
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/ringkasan': typeof RingkasanRoute
   '/signup': typeof SignupRoute
+  '/skrining': typeof SkriningRoute
   '/admin': typeof LayoutAdminRoute
-  '/items': typeof LayoutItemsRoute
   '/settings': typeof LayoutSettingsRoute
-  '/': typeof LayoutIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_layout': typeof LayoutRouteWithChildren
+  '/kronis': typeof KronisRoute
   '/login': typeof LoginRoute
   '/recover-password': typeof RecoverPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/ringkasan': typeof RingkasanRoute
   '/signup': typeof SignupRoute
+  '/skrining': typeof SkriningRoute
   '/_layout/admin': typeof LayoutAdminRoute
-  '/_layout/items': typeof LayoutItemsRoute
   '/_layout/settings': typeof LayoutSettingsRoute
-  '/_layout/': typeof LayoutIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/kronis'
     | '/login'
     | '/recover-password'
     | '/reset-password'
+    | '/ringkasan'
     | '/signup'
+    | '/skrining'
     | '/admin'
-    | '/items'
     | '/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
+    | '/kronis'
     | '/login'
     | '/recover-password'
     | '/reset-password'
+    | '/ringkasan'
     | '/signup'
+    | '/skrining'
     | '/admin'
-    | '/items'
     | '/settings'
-    | '/'
   id:
     | '__root__'
+    | '/'
     | '/_layout'
+    | '/kronis'
     | '/login'
     | '/recover-password'
     | '/reset-password'
+    | '/ringkasan'
     | '/signup'
+    | '/skrining'
     | '/_layout/admin'
-    | '/_layout/items'
     | '/_layout/settings'
-    | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   LayoutRoute: typeof LayoutRouteWithChildren
+  KronisRoute: typeof KronisRoute
   LoginRoute: typeof LoginRoute
   RecoverPasswordRoute: typeof RecoverPasswordRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  RingkasanRoute: typeof RingkasanRoute
   SignupRoute: typeof SignupRoute
+  SkriningRoute: typeof SkriningRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_layout': {
       id: '/_layout'
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof LayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kronis': {
+      id: '/kronis'
+      path: '/kronis'
+      fullPath: '/kronis'
+      preLoaderRoute: typeof KronisRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -168,6 +210,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ringkasan': {
+      id: '/ringkasan'
+      path: '/ringkasan'
+      fullPath: '/ringkasan'
+      preLoaderRoute: typeof RingkasanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -175,25 +224,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_layout/': {
-      id: '/_layout/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof LayoutIndexRouteImport
-      parentRoute: typeof LayoutRoute
+    '/skrining': {
+      id: '/skrining'
+      path: '/skrining'
+      fullPath: '/skrining'
+      preLoaderRoute: typeof SkriningRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_layout/admin': {
       id: '/_layout/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof LayoutAdminRouteImport
-      parentRoute: typeof LayoutRoute
-    }
-    '/_layout/items': {
-      id: '/_layout/items'
-      path: '/items'
-      fullPath: '/items'
-      preLoaderRoute: typeof LayoutItemsRouteImport
       parentRoute: typeof LayoutRoute
     }
     '/_layout/settings': {
@@ -208,27 +250,27 @@ declare module '@tanstack/react-router' {
 
 interface LayoutRouteChildren {
   LayoutAdminRoute: typeof LayoutAdminRoute
-  LayoutItemsRoute: typeof LayoutItemsRoute
   LayoutSettingsRoute: typeof LayoutSettingsRoute
-  LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutAdminRoute: LayoutAdminRoute,
-  LayoutItemsRoute: LayoutItemsRoute,
   LayoutSettingsRoute: LayoutSettingsRoute,
-  LayoutIndexRoute: LayoutIndexRoute,
 }
 
 const LayoutRouteWithChildren =
   LayoutRoute._addFileChildren(LayoutRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   LayoutRoute: LayoutRouteWithChildren,
+  KronisRoute: KronisRoute,
   LoginRoute: LoginRoute,
   RecoverPasswordRoute: RecoverPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  RingkasanRoute: RingkasanRoute,
   SignupRoute: SignupRoute,
+  SkriningRoute: SkriningRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

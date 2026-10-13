@@ -1,0 +1,266 @@
+{
+  "id": "infection",
+  "title": "Skrining penyakit infeksi tropis",
+  "child_age_limit": 18,
+  "stages": [
+    { "emoji": "🚨", "name": "Darurat" },
+    { "emoji": "🧭", "name": "Keluhan" },
+    { "emoji": "🔍", "name": "Gejala" },
+    { "emoji": "🌴", "name": "Lingkungan" },
+    { "emoji": "📏", "name": "Fisik" },
+    { "emoji": "🤖", "name": "Analisis" },
+    { "emoji": "🏁", "name": "Hasil" }
+  ],
+  "who": [
+    { "id": "self", "emoji": "🙋", "text": "Saya sendiri" },
+    { "id": "child", "emoji": "🧒", "text": "Anak saya" },
+    { "id": "elder", "emoji": "👵", "text": "Orang tua / lansia" },
+    { "id": "other", "emoji": "🧑‍🤝‍🧑", "text": "Keluarga lain" }
+  ],
+  "sex": [
+    { "id": "L", "emoji": "👦", "text": "Laki-laki" },
+    { "id": "P", "emoji": "👧", "text": "Perempuan" }
+  ],
+  "red_flags": [
+    {
+      "id": "syok",
+      "emoji": "🥶",
+      "text": "Muntah hebat / tangan-kaki dingin",
+      "detail": "Muntah hebat, atau tangan dan kaki teraba sangat dingin/basah saat badan sedang demam",
+      "label": "Syok Dengue",
+      "condition": "Syok Dengue (DSS)",
+      "facility": "Resusitasi / ICU",
+      "first_aid": "Baringkan dengan kaki sedikit ditinggikan; beri minum bila sadar."
+    },
+    {
+      "id": "darah",
+      "emoji": "🩸",
+      "text": "Pendarahan sulit berhenti / batuk darah banyak",
+      "detail": "Mimisan parah, gusi berdarah, muntah darah, BAB hitam seperti aspal, atau batuk mengeluarkan darah dalam jumlah banyak",
+      "label": "Pendarahan / TBC lanjut",
+      "condition": "Pendarahan masif / TBC batuk darah masif",
+      "facility": "ICU & Transfusi Darah",
+      "first_aid": "Mimisan: duduk condong ke depan, tekan cuping hidung 10 menit."
+    },
+    {
+      "id": "ginjal",
+      "emoji": "🚱",
+      "text": "Tidak kencing > 6–8 jam",
+      "detail": "Tidak buang air kecil sama sekali lebih dari 6–8 jam terakhir",
+      "label": "Gagal ginjal",
+      "condition": "Gagal ginjal akut (Leptospirosis/Malaria)",
+      "facility": "Hemodialisa",
+      "first_aid": "Jangan minum obat anti-nyeri sembarangan; segera berangkat."
+    },
+    {
+      "id": "napas",
+      "emoji": "💨",
+      "text": "Sesak napas sangat berat",
+      "detail": "Sampai sulit bicara, dada tampak tertarik ke dalam saat bernapas, atau bibir membiru",
+      "label": "Gagal napas",
+      "condition": "Gagal napas / Pneumonia berat",
+      "facility": "Oksigen & ICU",
+      "first_aid": "Posisikan setengah duduk, longgarkan pakaian."
+    },
+    {
+      "id": "otak",
+      "emoji": "😵",
+      "text": "Penurunan kesadaran / kejang",
+      "detail": "Penurunan kesadaran, mengigau, kejang, atau leher kaku tidak bisa ditekuk",
+      "label": "Ensefalopati",
+      "condition": "Ensefalopati / Malaria serebral / Tifoid toksik",
+      "facility": "ICU",
+      "first_aid": "Saat kejang: miringkan tubuh, jangan masukkan apa pun ke mulut."
+    },
+    {
+      "id": "dehidrasi",
+      "emoji": "🏜️",
+      "text": "Sangat lemas, mata sangat cekung",
+      "detail": "Sangat lemas (letargi), mata sangat cekung, anak menangis tanpa air mata",
+      "label": "Dehidrasi berat",
+      "condition": "Dehidrasi berat",
+      "facility": "Resusitasi cairan IGD",
+      "first_aid": "Beri oralit sedikit-sedikit tapi sering selama perjalanan."
+    },
+    {
+      "id": "rabies",
+      "emoji": "🐕",
+      "text": "Luka gigitan hewan / takut air",
+      "detail": "Luka robek berdarah akibat digigit anjing, kera, atau kucing liar, atau mendadak sangat takut melihat air/cahaya dan air liur menetes terus",
+      "label": "Rabies",
+      "condition": "Rabies / gigitan hewan penular rabies",
+      "facility": "Rabies Center (Vaksin Anti-Rabies)",
+      "first_aid": "Cuci luka dengan sabun di air mengalir selama 15 menit."
+    }
+  ],
+  "red_maps": {
+    "default": "IGD rumah sakit terdekat",
+    "ginjal": "rumah sakit IGD hemodialisa terdekat",
+    "rabies": "rabies center terdekat"
+  },
+  "clusters": [
+    {
+      "id": "A",
+      "emoji": "🌡️",
+      "name": "Demam & Badan",
+      "sub": "Demam, linu, menggigil",
+      "members": ["dbd", "malaria", "chik", "lepto", "skisto"]
+    },
+    {
+      "id": "B",
+      "emoji": "😷",
+      "name": "Napas",
+      "sub": "Batuk, pilek, sesak",
+      "members": ["ispa", "tbc"]
+    },
+    {
+      "id": "C",
+      "emoji": "🤢",
+      "name": "Perut",
+      "sub": "Mencret, mual, mata kuning",
+      "members": ["diare", "tifoid", "amoeba", "hepa", "sth"]
+    },
+    {
+      "id": "D",
+      "emoji": "🖐️",
+      "name": "Kulit",
+      "sub": "Gatal, ruam, lenting, luka",
+      "members": ["scabies", "tinea", "campak", "varicella", "kusta", "frambusia"]
+    },
+    {
+      "id": "E",
+      "emoji": "🦵",
+      "name": "Bengkak Kronis",
+      "sub": "Bengkak di kaki/lengan",
+      "members": ["filaria"]
+    }
+  ],
+  "patterns": {
+    "A": {
+      "title": "Seperti apa pola demamnya?",
+      "options": [
+        { "id": "dbd", "emoji": "📉", "text": "Tinggi mendadak, turun hari ke-3/4, tapi makin lemas", "reason": "Demam pelana kuda (saddleback): turun di hari ke-3/4 lalu lemas" },
+        { "id": "chik", "emoji": "⚡", "text": "Singkat 1–3 hari + ruam merah", "reason": "Demam singkat 1–3 hari dengan ruam merah" },
+        { "id": "malaria", "emoji": "🥶", "text": "Menggigil berulang tiap 2–3 hari", "reason": "Demam menggigil berulang teratur tiap 2–3 hari" },
+        { "id": "lepto", "emoji": "🦵", "text": "Naik-turun + betis sangat nyeri", "reason": "Demam tak menentu + nyeri betis hebat" },
+        { "id": "skisto", "emoji": "🏊", "text": "Menetap + sakit perut, gatal usai berenang di danau", "reason": "Demam menetap + gatal setelah berenang di danau" },
+        { "id": "none", "emoji": "🤔", "text": "Tidak ada yang cocok" }
+      ]
+    },
+    "B": {
+      "title": "Sudah berapa lama batuknya?",
+      "options": [
+        { "id": "ispa", "emoji": "🤧", "text": "Kurang dari 2 minggu, hidung tersumbat, bersin, tenggorokan gatal", "reason": "Batuk < 14 hari dengan hidung tersumbat, bersin, tenggorokan gatal" },
+        { "id": "tbc", "emoji": "📆", "text": "Lebih dari 2 minggu berturut-turut", "reason": "Batuk lebih dari 2 minggu berturut-turut" },
+        { "id": "none", "emoji": "🤔", "text": "Tidak ada yang cocok" }
+      ]
+    },
+    "C": {
+      "title": "Seperti apa gangguan perutnya?",
+      "options": [
+        { "id": "diare", "emoji": "💧", "text": "Mencret >3x sehari, tanpa darah", "reason": "BAB cair > 3x/hari tanpa darah" },
+        { "id": "amoeba", "emoji": "🩸", "text": "BAB berdarah & berlendir, perih saat mengejan", "reason": "BAB berdarah-lendir dengan tenesmus" },
+        { "id": "tifoid", "emoji": "🌙", "text": "Demam makin tinggi tiap malam + sakit perut", "reason": "Demam stepladder, lebih panas malam hari + nyeri perut" },
+        { "id": "hepa", "emoji": "🍵", "text": "Kencing seperti teh, perut kanan atas sakit", "reason": "Urin seperti teh + nyeri perut kanan atas" },
+        { "id": "sth", "emoji": "🪱", "text": "Anak: perut buncit, kurus, gatal dubur / ada cacing", "reason": "Perut buncit, kurus, gatal dubur / keluar cacing", "child_only": true },
+        { "id": "none", "emoji": "🤔", "text": "Tidak ada yang cocok" }
+      ]
+    },
+    "D": {
+      "title": "Seperti apa masalah kulitnya?",
+      "options": [
+        { "id": "scabies", "emoji": "🌙", "text": "Gatal hebat malam hari di sela jari/lipatan", "reason": "Gatal hebat malam hari di sela jari & lipatan" },
+        { "id": "tinea", "emoji": "⭕", "text": "Bercak bersisik, gatal saat berkeringat", "reason": "Bercak bersisik, gatal saat berkeringat" },
+        { "id": "campak", "emoji": "🔴", "text": "Ruam merata setelah demam, batuk, pilek, mata merah", "reason": "Ruam merata didahului demam + 3C (batuk, pilek, mata merah)" },
+        { "id": "varicella", "emoji": "🫧", "text": "Lenting berisi air di seluruh tubuh", "reason": "Lenting berisi air menyebar ke seluruh tubuh" },
+        { "id": "kusta", "emoji": "🪡", "text": "Bercak kulit yang mati rasa", "reason": "Bercak kulit yang MATI RASA" },
+        { "id": "frambusia", "emoji": "🍓", "text": "Luka menonjol seperti raspberry, tak sembuh", "reason": "Luka menonjol seperti raspberry yang tak sembuh" },
+        { "id": "none", "emoji": "🤔", "text": "Tidak ada yang cocok" }
+      ]
+    },
+    "E": {
+      "title": "Seperti apa bengkaknya?",
+      "options": [
+        { "id": "filaria", "emoji": "🐘", "text": "Sangat besar, kulit mengeras, menetap, pernah demam berulang", "reason": "Bengkak besar menetap, kulit mengeras, riwayat demam berulang" },
+        { "id": "none", "emoji": "🤔", "text": "Bukan seperti itu" }
+      ]
+    }
+  },
+  "companions": {
+    "A": {
+      "title": "Ada gejala penyerta ini?",
+      "options": [
+        { "id": "dbd", "disease": "dbd", "emoji": "👁️", "text": "Nyeri belakang mata / sakit kepala hebat", "reason": "Nyeri belakang bola mata / sakit kepala hebat" },
+        { "id": "chik", "disease": "chik", "emoji": "🦴", "text": "Nyeri sendi berat, tanpa sakit kepala", "reason": "Nyeri sendi melumpuhkan tanpa sakit kepala" },
+        { "id": "malaria", "disease": "malaria", "emoji": "💦", "text": "Keringat dingin deras & pucat usai demam", "reason": "Keringat dingin deras setelah demam turun, pucat" },
+        { "id": "none", "emoji": "🙅", "text": "Tidak ada" }
+      ]
+    },
+    "B": {
+      "title": "Ada keluhan lain bersama batuk?",
+      "options": [
+        { "id": "bb", "disease": "tbc", "emoji": "⚖️", "text": "Berat badan turun drastis", "reason": "Berat badan turun drastis" },
+        { "id": "kms", "disease": "tbc", "emoji": "🌙", "text": "Keringat basah di malam hari", "reason": "Keringat malam tanpa aktivitas" },
+        { "id": "none", "emoji": "🙅", "text": "Tidak ada" }
+      ]
+    }
+  },
+  "eco": [
+    { "id": "timur", "emoji": "🏝️", "text": "Dari Papua/Maluku/NTT, hutan, atau tambang", "reason": "Riwayat Indonesia Timur / hutan / tambang" },
+    { "id": "danau", "emoji": "🏞️", "text": "Berenang di Danau Lindu/Napu/Bada", "reason": "Riwayat berenang di danau endemis Sulawesi Tengah" },
+    { "id": "banjir", "emoji": "🌊", "text": "Kena banjir / lumpur bertikus", "reason": "Kontak air banjir / selokan bertikus" },
+    { "id": "padat", "emoji": "🏘️", "text": "Tinggal di asrama, pesantren, atau tempat padat", "reason": "Tinggal di lingkungan sangat padat" },
+    { "id": "kontak", "emoji": "🏠", "text": "Keluarga serumah batuk lama / minum obat TBC", "reason": "Kontak serumah dengan penderita TBC" },
+    { "id": "mr", "emoji": "💉", "text": "Imunisasi campak (MR) anak belum lengkap", "reason": "Imunisasi MR/Campak tidak lengkap", "child_only": true },
+    { "id": "none", "emoji": "🙅", "text": "Tidak ada", "wide": true }
+  ],
+  "drug_chips": ["Paracetamol", "Loperamide", "Ibuprofen", "Amoxicillin", "Antasida", "Oralit", "CTM"],
+  "nutrition_proxies": [
+    { "id": "longgar", "emoji": "👕", "text": "Pakaian longgar / BB turun drastis" },
+    { "id": "gemuk", "emoji": "🧸", "text": "Postur cenderung gemuk" },
+    { "id": "normal", "emoji": "🙂", "text": "Normal" }
+  ],
+  "body_regions": [
+    { "id": "head", "name": "Kepala / mata" },
+    { "id": "chest", "name": "Dada" },
+    { "id": "ruq", "name": "Perut kanan atas" },
+    { "id": "luq", "name": "Ulu hati / perut kiri atas" },
+    { "id": "low", "name": "Perut tengah/bawah" },
+    { "id": "arm_r", "name": "Lengan kanan" },
+    { "id": "arm_l", "name": "Lengan kiri" },
+    { "id": "wrist_r", "name": "Pergelangan tangan kanan" },
+    { "id": "wrist_l", "name": "Pergelangan tangan kiri" },
+    { "id": "thigh_r", "name": "Paha kanan" },
+    { "id": "thigh_l", "name": "Paha kiri" },
+    { "id": "calf_r", "name": "Betis kanan" },
+    { "id": "calf_l", "name": "Betis kiri" },
+    { "id": "ankle_r", "name": "Pergelangan kaki kanan" },
+    { "id": "ankle_l", "name": "Pergelangan kaki kiri" }
+  ],
+  "pain_faces": [
+    { "value": 0, "emoji": "😄", "label": "Tidak sakit" },
+    { "value": 2, "emoji": "🙂", "label": "Sedikit sakit" },
+    { "value": 4, "emoji": "😐", "label": "Agak sakit" },
+    { "value": 6, "emoji": "🙁", "label": "Lebih sakit" },
+    { "value": 8, "emoji": "😣", "label": "Sangat sakit" },
+    { "value": 10, "emoji": "😭", "label": "Sakit sekali" }
+  ],
+  "findings": [
+    { "id": "lidah", "emoji": "👅", "text": "Lidah putih, tepi merah", "disease": "tifoid", "reason": "Foto: Typhoid tongue (lidah kotor, tepi hiperemis)" },
+    { "id": "matamerah", "emoji": "👁️", "text": "Mata merah tanpa kotoran", "disease": "lepto", "reason": "Foto: Conjunctival suffusion" },
+    { "id": "sklera", "emoji": "🟡", "text": "Mata kuning", "disease": "hepa", "reason": "Foto: Ikterus (sklera kuning)" },
+    { "id": "kanal", "emoji": "🖐️", "text": "Terowongan di sela jari", "disease": "scabies", "reason": "Foto: Kanalikuli di sela jari" },
+    { "id": "cincin", "emoji": "⭕", "text": "Ruam cincin", "disease": "tinea", "reason": "Foto: Ruam berbentuk cincin" },
+    { "id": "bercak", "emoji": "⚪", "text": "Bercak pucat", "disease": "kusta", "reason": "Foto: Bercak hipopigmentasi" },
+    { "id": "rasp", "emoji": "🍓", "text": "Luka raspberry", "disease": "frambusia", "reason": "Foto: Papiloma seperti raspberi" },
+    { "id": "vesikel", "emoji": "🫧", "text": "Lenting air", "disease": "varicella", "reason": "Foto: Vesikel" },
+    { "id": "koplik", "emoji": "👄", "text": "Bintik putih di mulut", "disease": "campak", "reason": "Foto: Koplik spot" },
+    { "id": "none", "emoji": "🙅", "text": "Tidak ada temuan", "wide": true }
+  ],
+  "routes": {
+    "green": { "name": "RUTE RINGAN", "sub": "Perawatan Mandiri · Apotek", "emoji": "🌿", "color_from": "#4FDDA0", "color_to": "#1FA86E", "place": "Apotek terdekat", "maps_query": "apotek terdekat", "nav_label": "Apotek" },
+    "yellow": { "name": "RUTE SEDANG", "sub": "Puskesmas · Klinik Pratama", "emoji": "🏥", "color_from": "#FFCB57", "color_to": "#F59B0B", "place": "Poli Umum Puskesmas dengan laboratorium", "maps_query": "puskesmas terdekat", "nav_label": "Puskesmas" },
+    "special": { "name": "RUTE SEDANG", "sub": "Poli Program Nasional Kemenkes", "emoji": "🎯", "color_from": "#FFA45C", "color_to": "#E8662A", "place": "Puskesmas dengan Program Eradikasi NTD", "maps_query": "puskesmas terdekat", "nav_label": "Puskesmas" },
+    "red": { "name": "RUTE DARURAT", "sub": "Kedaruratan · IGD Rumah Sakit", "emoji": "🚨", "color_from": "#FF7280", "color_to": "#E0283F", "place": "IGD rumah sakit terdekat", "maps_query": "IGD rumah sakit terdekat", "nav_label": "IGD" }
+  }
+}
