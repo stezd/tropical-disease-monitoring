@@ -58,11 +58,11 @@ export function HomeScreen() {
           <button type="button" className="btn btn-purple big" onClick={start}>
             🤒 Saya sedang sakit
           </button>
-          <Link className="btn btn-teal" to="/kronis" onClick={() => sfx.tap()}>
+          <Link className="btn btn-purple" to="/kronis" onClick={() => sfx.tap()}>
             🩺 Cek risiko penyakit jangka panjang
           </Link>
-          <div className="row-links">
-            {loggedIn ? (
+          {loggedIn && (
+            <div className="row-links">
               <button
                 type="button"
                 className="btn btn-ghost"
@@ -71,12 +71,8 @@ export function HomeScreen() {
               >
                 👤 {user?.full_name || user?.email || "Akun saya"}
               </button>
-            ) : (
-              <Link className="btn btn-ghost" to="/login">
-                🔑 Masuk
-              </Link>
-            )}
-          </div>
+            </div>
+          )}
         </div>
         <p className="disc">🩺 Skrining awal · masuk akun bersifat opsional</p>
       </div>
