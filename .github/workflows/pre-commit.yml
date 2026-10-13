@@ -69,29 +69,18 @@ jobs:
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
-      - name: Get PR Push token
-        id: pr-push
-        if: env.CAN_PUSH == 'true' && steps.changes.outputs.changed == 'true'
-        uses: tiangolo/pr-push@f336b3817f32ea9b8273a8c15f8ecb739ac38167 # 0.0.4
-      - name: Commit and push changes
-        if: env.CAN_PUSH == 'true' && steps.changes.outputs.changed == 'true'
-        env:
-          GH_TOKEN: ${{ steps.pr-push.outputs.token }}
+      # The template pushed formatting fixes back to the PR through the "PR Push"
+      # GitHub App, and for forks through pre-commit-ci/lite-action. That app is
+      # not installed here, so the job died with "PR Push did not issue an
+      # installation token" before it could report which hook was unhappy. Fail
+      # instead, and let the author run the hooks locally.
+      - name: Fail if the hooks changed files
+        if: steps.changes.outputs.changed == 'true'
         run: |
-          git config user.name "pr-push[bot]"
-          git config user.email "pr-push[bot]@users.noreply.github.com"
-          gh auth setup-git
-          git add -A
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "🎨 Auto format and update with pre-commit"
-            git push
-          fi
-      - uses: pre-commit-ci/lite-action@5d6cc0eb514c891a40562a58a8e71576c5c7fb43 # v1.1.0
-        if: env.CAN_PUSH == 'false'
-        with:
-          msg: 🎨 Auto format and update with pre-commit
+          echo "pre-commit modified these files:"
+          git --no-pager diff --stat
+          echo "Run 'uv run prek run --all-files' locally, commit the result, then push."
+          exit 1
       - name: Error out on pre-commit errors
         if: steps.precommit.outcome == 'failure'
         run: exit 1
