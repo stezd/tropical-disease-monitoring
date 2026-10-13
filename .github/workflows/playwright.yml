@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   changes:
@@ -66,6 +67,8 @@ jobs:
       uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
       with:
         version: "latest-known"
+    - name: Create .env so docker compose can interpolate
+      run: cp .env.example .env
     - run: uv sync
       working-directory: backend
     - run: bun ci
