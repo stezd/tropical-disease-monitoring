@@ -160,7 +160,6 @@ button{font:inherit;color:inherit}
 .opt.safe{background:#F0FBF6;border-color:#CDEFDF;box-shadow:0 3px 0 #CDEFDF}
 .opt.safe.on{border-color:var(--green);background:#E2F9EE;box-shadow:0 3px 0 #9FE3C3}
 .opt.safe.on .ck{background:var(--green);border-color:var(--green)}
-#phone:not(.demo) .tag.demo{display:none}
 
 .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .cbox{border:0;border-radius:20px;padding:10px 8px 9px;text-align:center;color:#fff;cursor:pointer;position:relative;transition:transform .12s;text-shadow:0 1px 1px rgba(0,0,0,.18)}
@@ -168,7 +167,6 @@ button{font:inherit;color:inherit}
 .cbox .ce{font-size:30px;display:block;line-height:1.1;filter:drop-shadow(0 3px 0 rgba(0,0,0,.12))}
 .cbox b{font-family:var(--fh);font-weight:600;font-size:15px;display:block;margin-top:4px;line-height:1.15}
 .cbox span.cs{display:block;font-size:11px;font-weight:800;opacity:.95;margin-top:2px;line-height:1.25}
-.cbox .tag{margin:4px auto 0;background:rgba(255,255,255,.28);color:#fff;text-shadow:none}
 .cbox:active{transform:translateY(3px)}
 .cbox.on{transform:scale(1.03);box-shadow:0 0 0 4px #fff,0 0 0 8px var(--purple)!important}
 .cbox.on::after{content:'✓';position:absolute;top:8px;right:10px;width:24px;height:24px;border-radius:50%;background:#fff;color:var(--purple);font-weight:900;display:grid;place-items:center;text-shadow:none}
@@ -227,12 +225,29 @@ button{font:inherit;color:inherit}
 .sel-list{display:flex;flex-wrap:wrap;gap:6px}
 .sel-list span{background:#FFE7EA;color:#D63650;font-weight:900;font-size:11.5px;border-radius:999px;padding:4px 9px}
 .empty{color:var(--muted);font-weight:800;font-size:12.5px}
-.pain{margin-top:10px;background:var(--soft);border-radius:16px;padding:8px 10px}
-.pain .face{font-size:28px;text-align:center;line-height:1}
-.pain .pv{text-align:center;font-weight:900;font-size:12px;color:var(--ink2);margin-top:2px}
-input[type=range]{width:100%;margin-top:4px;accent-color:var(--purple);height:24px}
-.insight{margin-top:8px;display:flex;flex-direction:column;gap:5px}
-.insight div{font-size:11.5px;font-weight:800;color:#5B3FD6;background:#F1EBFF;border-radius:10px;padding:5px 8px;line-height:1.3}
+.pain{margin-top:10px;background:var(--soft);border-radius:16px;padding:10px 12px}
+.pain .pq{font-weight:900;font-size:12.5px;color:var(--ink2);margin:0 0 6px}
+/* VAS: garis polos, tanpa angka/tick/wajah, tanpa handle sebelum disentuh */
+.vas input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:32px;margin:0;background:transparent;cursor:pointer;touch-action:pan-y}
+.vas input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:#C9BFF0}
+.vas input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:#C9BFF0}
+.vas input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--purple);border:3px solid #fff;box-shadow:0 2px 0 var(--purpleSh);margin-top:-8px}
+.vas input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--purple);border:3px solid #fff}
+.vas.untouched input[type=range]::-webkit-slider-thumb{opacity:0}
+.vas.untouched input[type=range]::-moz-range-thumb{opacity:0}
+.vas-lab{display:flex;justify-content:space-between;gap:8px;font-weight:900;font-size:12px;color:var(--ink2)}
+.nums{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.numcard{display:flex;align-items:center;gap:10px;background:var(--soft);border:2.5px solid var(--line);border-radius:16px;padding:8px 12px}
+.numcard b{font-family:var(--fh);font-weight:600;font-size:24px;color:var(--ink);min-width:48px}
+.numcard span{flex:1;font-weight:800;font-size:12.5px;color:var(--ink2)}
+.numcard button{border:0;border-radius:12px;background:var(--purple);color:#fff;font-family:var(--fh);font-weight:600;font-size:13px;padding:8px 12px;min-height:40px;cursor:pointer}
+.vrow{display:flex;gap:10px}
+.fld .inp.age input{font-size:26px}
+.numcard b{user-select:all;-webkit-user-select:all}
+.btn-jkn{background:linear-gradient(180deg,#5AA5FF,#2F73E6);box-shadow:0 5px 0 #1B4DAA,0 10px 20px rgba(30,80,200,.3)}
+.row-links{display:flex;gap:10px}
+.row-links .btn{flex:1}
+.saveinfo{margin:0 0 10px;font-weight:800;font-size:13px;color:var(--ink2);line-height:1.4}
 
 .photorow{display:flex;gap:10px;align-items:stretch}
 .photo{position:relative;flex:1;border-radius:18px;overflow:hidden;background:linear-gradient(135deg,#F3EEFF,#FFE9E0);border:3px dashed #D8C8FF;min-height:96px;display:grid;place-items:center;text-align:center}
@@ -359,8 +374,7 @@ details.sum pre{white-space:pre-wrap;word-break:break-word;font-family:ui-monosp
 .footdisc{margin:20px 6px 0;text-align:center;color:#fff;font-size:11.5px;font-weight:800;line-height:1.5;text-shadow:0 1px 2px rgba(0,0,0,.25)}
 
 /* red */
-.siren{font-size:70px;text-align:center;animation:siren .8s ease-in-out infinite alternate;margin-top:4px}
-@keyframes siren{to{transform:scale(1.15) rotate(-6deg);filter:drop-shadow(0 0 20px #fff)}}
+.siren{font-size:70px;text-align:center;margin-top:4px}
 .redh{margin:4px 0 6px;text-align:center;color:#fff;font-family:var(--fh);font-weight:700;font-size:30px;letter-spacing:2px}
 .redp{margin:0 0 18px;text-align:center;color:#fff;font-weight:800;font-size:14.5px;line-height:1.45}
 .rflag{display:flex;gap:10px;background:#FFF0F1;border-radius:16px;padding:10px;margin-bottom:10px}
@@ -440,7 +454,7 @@ details.sum pre{white-space:pre-wrap;word-break:break-word;font-family:ui-monosp
 </style>
 </head>
 <body>
-<div id="phone" class="demo">
+<div id="phone">
   <div id="screen" class="screen"></div>
   <div id="toast"></div>
 </div>
@@ -518,6 +532,20 @@ const CL = {
   E:{name:'Bengkak Kronis',emo:'🦵',sub:'Bengkak di kaki/lengan',members:['filaria'],tag:'Filariasis'}
 };
 
+const SEX = [
+  {id:'L',emo:'👦',t:'Laki-laki'},
+  {id:'P',emo:'👧',t:'Perempuan'}
+];
+// TODO DR: konfirmasi batas usia "anak" (pertanyaan terbuka #6: cacingan hanya anak atau semua umur?)
+const BATAS_USIA_ANAK = 18;
+const ageOf = a => { const n = parseInt(String(a.age).trim(), 10); return isFinite(n) ? n : NaN; };
+const isChild = a => ageOf(a) < BATAS_USIA_ANAK;
+const PLAY_JKN = 'https://play.google.com/store/apps/details?id=app.bpjs.mobile';
+function jknURL(){
+  if(/android/i.test(navigator.userAgent)) return `intent://#Intent;package=app.bpjs.mobile;S.browser_fallback_url=${encodeURIComponent(PLAY_JKN)};end`;
+  return PLAY_JKN;
+}
+
 const WHO = [
   {id:'self',emo:'🙋',t:'Saya sendiri'},
   {id:'child',emo:'🧒',t:'Anak saya'},
@@ -551,7 +579,7 @@ const Q3 = {
     {id:'amoeba',emo:'🩸',t:'BAB berdarah & berlendir, perih saat mengejan',tag:'Amebiasis',r:'BAB berdarah-lendir dengan tenesmus'},
     {id:'tifoid',emo:'🌙',t:'Demam makin tinggi tiap malam + sakit perut',tag:'Demam Tifoid',r:'Demam stepladder, lebih panas malam hari + nyeri perut'},
     {id:'hepa',emo:'🍵',t:'Kencing seperti teh, perut kanan atas sakit',tag:'Hepatitis A/B',r:'Urin seperti teh + nyeri perut kanan atas'},
-    {id:'sth',emo:'🪱',t:'Anak: perut buncit, kurus, gatal dubur / ada cacing',tag:'Cacingan / STH',r:'Perut buncit, kurus, gatal dubur / keluar cacing'},
+    {id:'sth',emo:'🪱',t:'Anak: perut buncit, kurus, gatal dubur / ada cacing',tag:'Cacingan / STH',show:a=>isChild(a),r:'Perut buncit, kurus, gatal dubur / keluar cacing'},
     {id:'x',emo:'🤔',t:'Tidak ada yang cocok'}]},
   D:{title:'Seperti apa masalah kulitnya?',opts:[
     {id:'scabies',emo:'🌙',t:'Gatal hebat malam hari di sela jari/lipatan',tag:'Skabies',r:'Gatal hebat malam hari di sela jari & lipatan'},
@@ -584,7 +612,7 @@ const ECO = [
   {id:'banjir',emo:'🌊',t:'Kena banjir / lumpur bertikus',tag:'Leptospirosis',pts:{lepto:20},r:'Kontak air banjir / selokan bertikus'},
   {id:'padat',emo:'🏘️',t:'Tinggal di asrama, pesantren, atau tempat padat',tag:'TBC · Skabies · Tinea · HepA',pts:{tbc:8,scabies:12,tinea:8,hepa:8},r:'Tinggal di lingkungan sangat padat'},
   {id:'kontak',emo:'🏠',t:'Keluarga serumah batuk lama / minum obat TBC',tag:'TBC',pts:{tbc:20},r:'Kontak serumah dengan penderita TBC'},
-  {id:'mr',emo:'💉',t:'Imunisasi campak (MR) anak belum lengkap',tag:'Campak',pts:{campak:20},r:'Imunisasi MR/Campak tidak lengkap'},
+  {id:'mr',emo:'💉',t:'Imunisasi campak (MR) anak belum lengkap',tag:'Campak',show:a=>isChild(a),pts:{campak:20},r:'Imunisasi MR/Campak tidak lengkap'},
   {id:'none',emo:'🙅',t:'Tidak ada',cls:'wide'}
 ];
 
@@ -636,9 +664,13 @@ const STAGE_OF = {who:0,q1:0,q2:1,q3:2,q4:2,q5:3,q6:3,q7:4,q8:4,q9:4,q10:4};
 /* =========================================================
    STATE
    ========================================================= */
-const blankAns = () => ({who:null,q1:[],q2:null,q3:null,q4:[],q5:[],q6:'',temp:'',noThermo:false,h:'',w:'',proxy:null,body:[],pain:5,photo:null,scanned:false,findings:[]});
-const S = {i:0, ans:blankAns(), coins:0, awarded:new Set(), settings:{sound:true,vib:true,demo:true}};
+const blankAns = () => ({who:null,age:'',sex:null,q1:[],q2:null,q3:null,q4:[],q5:[],q6:'',temp:'',noThermo:false,h:'',w:'',proxy:null,body:[],pain:null,photo:null,scanned:false,findings:[]});
+const S = {i:0, ans:blankAns(), coins:0, awarded:new Set(), user:null, settings:{sound:true,vib:true}};
 try{ S.coins = parseInt(localStorage.getItem('tropicek_coins')||'120',10)||120; }catch(e){ S.coins=120; }
+// Login simulasi: hanya nama yang disimpan. Tidak ada email, kata sandi, NIK, atau nomor BPJS.
+try{ const u = JSON.parse(localStorage.getItem('tropicek_user')||'null'); if(u && u.name) S.user = {name:String(u.name).slice(0,40)}; }catch(e){}
+const getHistory = () => { try{ return JSON.parse(localStorage.getItem('tropicek_history')||'[]'); }catch(e){ return []; } };
+const saveHistory = h => { try{ localStorage.setItem('tropicek_history', JSON.stringify(h)); }catch(e){} };
 
 const $ = s => document.querySelector(s);
 const screen = $('#screen');
@@ -879,8 +911,8 @@ function compute(a=S.ans){
     add('tbc',10,r); add('kusta',6,r); add('sth',10,r); }
   if(nut==='obes') add('malaria',5,'Postur gemuk (prediktor malaria berat)');
 
-  const b = new Set(a.body), pain = +a.pain;
-  if(['wrist_r','wrist_l','ankle_r','ankle_l'].some(x=>b.has(x))) add('chik', pain>=6?18:10, `Nyeri sendi pergelangan (skala ${pain}/10)`);
+  const b = new Set(a.body), pain = a.pain==null ? 0 : +a.pain; // VAS 0-100. TODO ST: konfirmasi ambang VAS (dulu skala 0-10)
+  if(['wrist_r','wrist_l','ankle_r','ankle_l'].some(x=>b.has(x))) add('chik', pain>=60?18:10, `Nyeri sendi pergelangan (VAS ${pain}/100)`);
   if(b.has('ruq')) add('hepa',20,'Peta nyeri: perut kanan atas (area hati)');
   if(b.has('low')){ add('tifoid',12,'Peta nyeri: perut tengah/bawah'); add('amoeba',12,'Peta nyeri: perut tengah/bawah'); }
   if(b.has('luq')) add('tifoid',4,'Peta nyeri: ulu hati');
@@ -939,6 +971,12 @@ function crossVal(r){
 /* =========================================================
    QUIZ STEPS
    ========================================================= */
+// Usia mengubah opsi yang tampil (item dengan show:). Hapus jawaban yang tidak lagi tampil.
+function pruneByAge(){
+  const a = S.ans;
+  if(a.q2==='C' && a.q3==='sth' && !isChild(a)) a.q3 = null;
+  a.q5 = a.q5.filter(id => { const e = ECO.find(x=>x.id===id); return !(e && e.show) || e.show(a); });
+}
 function flow(){
   const f = ['who','q1','q2','q3'];
   if(Q4[S.ans.q2]) f.push('q4');
@@ -949,20 +987,23 @@ const cur = () => flow()[S.i];
 /* layout: '' = baris, 'tiles' = 2 kolom (HP), 'tiles tiles3' = 3 kolom (HP) */
 function opts(key, list, multi, layout=''){
   const v = S.ans[key];
-  return `<div class="opts ${layout}">${list.map(o => {
+  return `<div class="opts ${layout}">${list.filter(o => !o.show || o.show(S.ans)).map(o => {
     const on = multi ? v.includes(o.id) : v===o.id;
     return `<button class="opt ${o.cls||''} ${on?'on':''} ${multi?'multi':''}" data-act="opt" data-key="${key}" data-id="${o.id}" data-multi="${multi?1:0}">
       <span class="oe">${o.emo}</span>
-      <span class="ot">${o.t}${o.tag?`<span class="tag demo">${o.tag}</span>`:''}</span>
+      <span class="ot">${o.t}</span>
       <span class="ck"></span></button>`;
   }).join('')}</div>`;
 }
 
 const STEPS = {
-  who:{tab:'MULAI',
-    say:()=>'Halo, aku <b>Kak Tropi</b>! 👋 Yuk mulai.',
-    body:()=>`<h2 class="qt">Siapa yang sedang sakit?</h2><p class="qh">Pilih satu</p>${opts('who',WHO,false,'tiles')}`,
-    valid:()=>!!S.ans.who},
+  who:{tab:'MULAI · DATA DIRI',
+    say:()=>'Halo, aku <b>Kak Tropi</b>! 👋 Kenalan dulu, yuk.',
+    body:()=>`<h2 class="qt">Siapa yang sedang sakit?</h2><p class="qh">Pilih satu</p>${opts('who',WHO,false,'tiles')}
+      <label class="fld" style="margin-top:14px"><span>Usia (tahun)</span><div class="inp age"><input id="age" inputmode="numeric" maxlength="3" placeholder="25" value="${esc(S.ans.age)}"><em>th</em></div></label>
+      <h3 class="subq">Jenis kelamin</h3>${opts('sex',SEX,false,'tiles')}`,
+    bind:()=>{ $('#age').addEventListener('input', e => { S.ans.age = e.target.value.replace(/\D/g,'').slice(0,3); e.target.value = S.ans.age; pruneByAge(); refresh(); }); },
+    valid:()=>{ const n = ageOf(S.ans); return !!S.ans.who && n>=0 && n<=120 && !!S.ans.sex; }},
 
   q1:{tab:'TAHAP 1 · TANDA BAHAYA',
     say:()=>'Cek <b>tanda bahaya</b> dulu, ya ❤️',
@@ -977,7 +1018,7 @@ const STEPS = {
     say:()=>'Aman! 😊 Apa <b>keluhan utamanya</b>?',
     body:()=>`<h2 class="qt">Keluhan mana yang paling mengganggu?</h2><p class="qh">Pilih satu</p>
       <div class="cgrid">${Object.entries(CL).map(([k,c])=>`<button class="cbox c${k} ${S.ans.q2===k?'on':''}" data-act="opt" data-key="q2" data-id="${k}" data-multi="0">
-        <span class="ce">${c.emo}</span><b>${c.name}</b><span class="cs">${c.sub}</span><span class="tag demo">${c.tag}</span></button>`).join('')}</div>`,
+        <span class="ce">${c.emo}</span><b>${c.name}</b><span class="cs">${c.sub}</span></button>`).join('')}</div>`,
     valid:()=>!!S.ans.q2},
 
   q3:{tab:'TAHAP 3 · GEJALA',
@@ -1058,14 +1099,20 @@ const STEPS = {
         <div class="bodysvg">${bodySVG()}</div>
         <div class="bside">
           <div class="sel-list">${sel.length ? sel.map(b=>`<span>${b.n}</span>`).join('') : '<div class="empty">Belum ada. Tidak ada yang sakit? Langsung lanjut.</div>'}</div>
-          ${sel.length ? `<div class="pain"><div class="face" id="pface"></div><div class="pv" id="pval"></div>
-            <input type="range" min="0" max="10" step="1" id="pain" value="${S.ans.pain}" aria-label="Skala nyeri"></div>` : ''}
-          <div class="insight" id="insight"></div>
+          ${sel.length ? `<div class="pain"><p class="pq">Seberapa nyeri?</p>
+            <div class="vas ${S.ans.pain==null?'untouched':''}" id="vas">
+              <input type="range" min="0" max="100" step="1" id="pain" value="${S.ans.pain==null?50:S.ans.pain}" aria-label="Skala nyeri, dari tidak nyeri sampai nyeri terburuk">
+              <div class="vas-lab"><span>Tidak nyeri</span><span>Nyeri terburuk</span></div>
+            </div></div>` : ''}
         </div>
       </div>`;
     },
-    bind:()=>{ const p = $('#pain'); if(p) p.addEventListener('input', e => { S.ans.pain = +e.target.value; updPain(); }); updPain(); },
-    valid:()=>true,
+    bind:()=>{
+      const p = $('#pain'); if(!p) return;
+      const touch = () => { S.ans.pain = +p.value; $('#vas').classList.remove('untouched'); refresh(); };
+      p.addEventListener('input', touch); p.addEventListener('click', touch);
+    },
+    valid:()=>!S.ans.body.length || S.ans.pain!==null,
     nextLabel:()=>S.ans.body.length ? 'Lanjut ▶' : 'Tidak ada nyeri, lanjut ▶'},
 
   q10:{tab:'TAHAP 5 · KAMERA AI',
@@ -1087,7 +1134,7 @@ const STEPS = {
         const f = e.target.files && e.target.files[0]; if(!f) return;
         const rd = new FileReader();
         rd.onload = () => { S.ans.photo = rd.result; S.ans.scanned = false; refreshBody(); SFX.think();
-          setTimeout(()=>{ S.ans.scanned = true; if(cur()==='q10' && $('#qbody')){ refreshBody(); SFX.coin(); toast('Pindai selesai! Pilih temuan yang cocok 👇'); } }, 2200); };
+          setTimeout(()=>{ S.ans.scanned = true; if(cur()==='q10' && $('#qbody')){ refreshBody(); SFX.tap(); toast('Pindai selesai! Pilih temuan yang cocok 👇'); } }, 2200); };
         rd.readAsDataURL(f);
       });
     },
@@ -1119,19 +1166,6 @@ function updBMI(){
   el.innerHTML = `<div class="row"><span>IMT · <span style="color:${cat[1]}">${cat[0]}</span></span><b>${b.toFixed(1)}</b></div>
     <div class="gauge"><i style="left:${pos}%"></i></div><div class="glab"><span>Kurus</span><span>Normal</span><span>Lebih</span><span>Obes</span></div>`;
 }
-function updPain(){
-  const p = S.ans.pain, f = $('#pface'), v = $('#pval');
-  if(f){ f.textContent = ['😊','😊','🙂','🙂','😐','😐','😣','😣','😫','😫','😭'][p]; v.textContent = `Skala nyeri: ${p}/10`; }
-  const ins = $('#insight'); if(!ins) return;
-  const b = new Set(S.ans.body), out = [];
-  if(['wrist_r','wrist_l','ankle_r','ankle_l'].some(x=>b.has(x))) out.push(p>=7 ? '🦴 Sendi pergelangan + nyeri berat → risiko Chikungunya kronis' : '🦴 Sendi pergelangan → petunjuk Chikungunya');
-  if(b.has('ruq')) out.push('📍 Perut kanan atas → nyeri organ hati (suspek Hepatitis)');
-  if(b.has('low')) out.push('📍 Perut tengah/bawah → Tifoid / Amebiasis');
-  const R = ['thigh_r','calf_r','ankle_r'].some(x=>b.has(x)), L = ['thigh_l','calf_l','ankle_l'].some(x=>b.has(x));
-  if(R!==L) out.push('📍 Tungkai asimetris → Filariasis limfatik');
-  if(b.has('calf_r')||b.has('calf_l')) out.push('📍 Betis → nyeri otot khas Leptospirosis');
-  ins.innerHTML = S.settings.demo ? out.map(x=>`<div>${x}</div>`).join('') : '';
-}
 
 /* =========================================================
    RENDER: HOME
@@ -1144,10 +1178,14 @@ function renderHome(){
     <div class="ribbon"><b>Tropi<span>Cek</span></b><small>Skrining Awal Penyakit Tropis</small></div>
     <div class="hero">${mascotSVG('m-hero')}<div class="bubble"><p>Halo! Aku <b>Kak Tropi</b> 🌺 Yuk main tebak-tebakan kesehatan bareng aku. Cuma ±3 menit!</p></div></div>
     <div class="home-btns">
-      <button class="btn btn-purple big" data-act="start">▶ Mulai Skrining</button>
-      <button class="btn btn-teal" data-act="howto">Cara Bermain <small>+🪙 tiap soal</small></button>
+      <button class="btn btn-purple big" data-act="start">🤒 Saya sedang sakit</button>
+      <button class="btn btn-teal" data-act="chronic">🩺 Cek risiko penyakit jangka panjang</button>
+      <div class="row-links">
+        ${S.user ? `<button class="btn btn-ghost" data-act="profile">👤 ${esc(S.user.name)}</button>` : `<button class="btn btn-ghost" data-act="login">🔑 Masuk</button>`}
+        <button class="btn btn-ghost" data-act="howto">Cara Bermain</button>
+      </div>
     </div>
-    <p class="disc">🩺 Simulasi edukasi · bukan pengganti diagnosis dokter</p>
+    <p class="disc">🩺 Skrining awal · masuk akun bersifat opsional</p>
   </div>`;
 }
 
@@ -1186,7 +1224,7 @@ function refresh(){
   nb.innerHTML = st.nextLabel ? st.nextLabel() : 'Lanjut ▶';
   nb.className = 'btn big ' + (st.nextCls ? st.nextCls() : 'btn-purple');
   const m = meterInfo(), c = $('#cand');
-  if(c) c.innerHTML = `<span>🔮 ${m.n} kemungkinan</span><span class="meter"><i style="width:${m.p}%"></i></span><span>yakin ${m.p}%</span>`;
+  if(c) c.innerHTML = `<span>🔮 ${m.n} kemungkinan</span><span class="meter"><i style="width:${m.p}%"></i></span><span>skor ${m.p}%</span>`;
 }
 function hopMascot(){ const m = document.querySelector('.mrow .mascot'); if(m){ m.classList.remove('hop'); void m.getBoundingClientRect(); m.classList.add('hop'); setTimeout(()=>m.classList.remove('hop'), 460); } }
 
@@ -1213,12 +1251,8 @@ function next(){
 }
 function proceed(){
   const id = cur(), a = S.ans;
-  let bonus = 0;
-  if(id==='q7' && !a.noThermo) bonus = 5;
-  if(id==='q8' && bmiOf()) bonus = 5;
-  if(id==='q9' && a.body.length) bonus = 5;
-  if(id==='q10' && a.photo) bonus = 10;
-  award(id, 10 + bonus, $('#next'));
+  // Koin tidak diberikan per jawaban. Koin hanya saat skrining selesai (renderResult).
+  if(id==='who') pruneByAge();
   if(id==='q1' && a.q1.some(x=>x!=='none')) return setTimeout(renderRed, 150);
   const f = flow();
   if(S.i < f.length-1){ S.i++; setTimeout(renderQuiz, 120); }
@@ -1240,7 +1274,7 @@ function renderThinking(){
   crossVal(r).forEach(x => steps.push('Validasi silang: ' + x.split(':')[0]));
   steps.push(`Memetakan risiko One Health (${a.q5.filter(x=>x!=='none').length} faktor)`);
   if(a.findings.filter(x=>x!=='none').length) steps.push('Menggabungkan temuan kamera AI');
-  steps.push('Model XGBoost menghitung 20 probabilitas');
+  steps.push('Menghitung skor kecocokan 20 penyakit');
   steps.push('Menentukan rute rujukan & faskes');
 
   screen.className = 'screen bg-think';
@@ -1284,7 +1318,7 @@ function summary(r, d){
   const L = [
     'TROPICEK – RANGKUMAN SKRINING (SIMULASI)',
     'Tanggal   : ' + new Date().toLocaleString('id-ID'),
-    'Pasien    : ' + (WHO.find(w=>w.id===a.who)?.t || '-'),
+    'Pasien    : ' + (WHO.find(w=>w.id===a.who)?.t || '-') + ' · ' + (a.age ? a.age + ' th' : '-') + ' · ' + (SEX.find(x=>x.id===a.sex)?.t || '-'),
     'Tanda bahaya: tidak ada',
     'Keluhan   : ' + (a.q2 ? CL[a.q2].name : '-'),
     'Pola      : ' + (o3 ? o3.t : '-'),
@@ -1293,7 +1327,7 @@ function summary(r, d){
     'Obat      : ' + (a.q6.trim() || '-'),
     'Suhu      : ' + (a.noThermo ? 'tidak diukur (imputasi dari kurva demam)' : num(a.temp).toFixed(1) + ' °C'),
     'Gizi      : ' + (b ? `IMT ${b.toFixed(1)} (TB ${a.h} cm, BB ${a.w} kg)` : 'proksi: ' + a.proxy),
-    'Peta nyeri: ' + (a.body.length ? BODY.filter(x=>a.body.includes(x.id)).map(x=>x.n).join(', ') + ` (skala ${a.pain}/10)` : '-'),
+    'Peta nyeri: ' + (a.body.length ? BODY.filter(x=>a.body.includes(x.id)).map(x=>x.n).join(', ') + (a.pain!=null ? ` (VAS ${a.pain}/100)` : '') : '-'),
     'Foto AI   : ' + (a.findings.filter(x=>x!=='none').map(id=>FIND.find(f=>f.id===id).t).join(', ') || '-'),
     'Dugaan    : ' + (d.unknown ? 'belum dapat ditentukan' : `${DIS[top.id].name} (${Math.round(top.p*100)}%)`),
     'Rute      : ' + ROUTES[d.route].name + ' – ' + ROUTES[d.route].sub
@@ -1330,7 +1364,7 @@ function renderResult(){
   const warns = [];
   if(df.anti) warns.push(['y','💊','<b>Hentikan obat mampat.</b> Infeksi usus butuh dikeluarkan. Ganti dengan Oralit & Zinc.']);
   if(df.nsaid) warns.push(['y','💊','<b>Hindari Ibuprofen/Aspirin</b> pada suspek DBD. Gunakan Paracetamol.']);
-  if(['wrist_r','wrist_l','ankle_r','ankle_l'].some(x=>b.has(x)) && a.pain>=7 && r.sc.chik>=20) warns.push(['y','🦴','Nyeri sendi pergelangan berat → <b>risiko Chikungunya kronis</b>. Kontrol bila nyeri menetap > 3 bulan.']);
+  if(['wrist_r','wrist_l','ankle_r','ankle_l'].some(x=>b.has(x)) && a.pain!=null && a.pain>=70 && r.sc.chik>=20) warns.push(['y','🦴','Nyeri sendi pergelangan berat → <b>risiko Chikungunya kronis</b>. Kontrol bila nyeri menetap > 3 bulan.']);
   if(nut==='obes' && r.sc.malaria>=40) warns.push(['r','⚠️','Postur gemuk meningkatkan <b>risiko malaria berat</b>. Jangan tunda pemeriksaan darah.']);
   if(!a.noThermo && t>=39.5) warns.push(['r','🌡️',`Suhu ${t.toFixed(1)} °C tergolong <b>demam tinggi</b>. Kompres hangat & minum banyak.`]);
   d.notes.forEach(n => warns.push(['b','⬆️',n]));
@@ -1363,7 +1397,7 @@ function renderResult(){
         <p class="lead">Gejalamu belum cocok dengan satu pola. Lebih aman diperiksa langsung, ya!</p>`
       : `<div class="lead">Aku menebak kamu mungkin mengalami…</div>
         <div class="bigemo">${D.emo}</div><h2>${D.name}</h2>
-        <div class="ring" style="--p:${pct}"><div>${pct}%<small>kecocokan</small></div></div>`}
+        <div class="ring" style="--p:${pct}"><div>${pct}%<small>skor kecocokan</small></div></div>`}
       <span class="rtag" style="background:linear-gradient(${R.c1},${R.c2})">${R.emo} ${R.name}</span>
     </div>
 
@@ -1386,6 +1420,7 @@ function renderResult(){
           <div class="labs">${(D && D.lab.length ? D.lab : []).map(l=>`<span class="hot">${l}</span>`).join('')}${ALL_LABS.map(l=>`<span>${l}</span>`).join('')}</div>` : ''}
         <div class="place"><span class="pe">📍</span><div>${place}<small>GPS mengunci rute ke faskes yang sesuai</small></div></div>
         <a class="btn ${d.route==='green'?'btn-teal':'btn-purple'}" href="${mapsURL(mapsQ)}" target="_blank" rel="noopener">🧭 Navigasi ke ${d.route==='green'?'Apotek':'Puskesmas'} Terdekat</a>
+        <a class="btn btn-jkn" style="margin-top:14px" href="${jknURL()}" target="_blank" rel="noopener">📅 Buat janji dokter (Mobile JKN)</a>
         ${d.route==='green' ? `<button class="btn btn-purple" style="margin-top:14px" data-act="tele">💬 Konsultasi Telemedisin</button>` : ''}
         ${ping ? `<div class="ping" id="ping"><span class="pr">📡</span><span id="pingTxt">Mengirim notifikasi ke faskes: siapkan <b>Ruang Isolasi Airborne</b>…</span></div>` : ''}
         ${d.route!=='green' ? `<div class="qrbox"><canvas id="qr" width="232" height="232"></canvas><div><b>QR Rangkuman Wawancara</b>Tunjukkan ke petugas — data terkirim ke SATUSEHAT & FKTP <i>(simulasi)</i>.</div></div>` : ''}
@@ -1395,6 +1430,8 @@ function renderResult(){
 
     ${warns.length ? `<div class="card"><div class="tab">CATATAN PENTING</div>${warns.map(w=>`<div class="warn ${w[0]}"><span class="wi">${w[1]}</span><span>${w[2]}</span></div>`).join('')}</div>` : ''}
 
+    <div class="card" id="savecard" style="margin-top:34px">${saveCardHTML()}</div>
+
     <div class="reward" style="margin-top:26px"><div class="badge">🏅</div><div><b>Lencana "Pahlawan Sehat"</b><span>+50 Koin Sehat karena menyelesaikan skrining. Terima kasih sudah peduli kesehatan! 💜</span></div></div>
 
     <div class="btnrow">
@@ -1402,10 +1439,11 @@ function renderResult(){
       <button class="btn btn-purple big" data-act="restart">↻ Ulangi Skrining</button>
     </div>
     </div></div>
-    <p class="footdisc">⚠️ Ini adalah SIMULASI untuk keperluan demonstrasi. Hasil bukan diagnosis medis.<br>Jika kondisi memburuk, segera ke fasilitas kesehatan atau hubungi 119.</p>
+    <p class="footdisc">⚠️ Ini adalah skrining awal (simulasi untuk demonstrasi), bukan diagnosis dokter.<br>Jika kondisi memburuk, segera ke fasilitas kesehatan atau hubungi 119.</p>
   </div>`;
 
   S.lastSummary = sum;
+  S.lastSaved = false; S.lastResult = {route:R.name, label: d.unknown ? 'Belum dapat ditentukan' : D.name};
   const cv = $('#qr'); if(cv) drawQR(cv, sum);
   setTimeout(()=>document.querySelectorAll('.bar .bt i').forEach(i=>i.style.width = i.dataset.w + '%'), 60);
   if(ping) setTimeout(()=>{ const p = $('#ping'); if(p){ p.classList.add('done'); p.querySelector('.pr').textContent='✓'; $('#pingTxt').innerHTML = '<b>Faskes telah dinotifikasi.</b> Ruang Isolasi Airborne disiapkan sebelum Anda tiba (simulasi).'; SFX.coin(); } }, 2600);
@@ -1418,19 +1456,25 @@ function renderResult(){
    ========================================================= */
 function renderRed(){
   const flags = RED.filter(r => S.ans.q1.includes(r.id));
-  SFX.alert(); vib([220,100,220,100,220]);
+  vib([220,100,220,100,220]); // layar merah: tenang, tanpa koin/animasi/suara game
   const onlyRabies = flags.length===1 && flags[0].id==='rabies';
   const q = onlyRabies ? 'rabies center terdekat' : flags.some(f=>f.id==='ginjal') ? 'rumah sakit IGD hemodialisa terdekat' : 'IGD rumah sakit terdekat';
   const facs = [...new Set(flags.map(f=>f.fac))];
   screen.className = 'screen bg-red';
-  screen.innerHTML = `${sparkles(10)}
-  <div class="hud"><button class="icon-btn" data-act="back" aria-label="Kembali">‹</button><div class="htitle">RUTE MERAH</div>${coinPill()}</div>
+  screen.innerHTML = `
+  <div class="hud"><button class="icon-btn" data-act="back" aria-label="Kembali">‹</button><div class="htitle">RUTE MERAH</div></div>
   <div class="rscroll">
     <div class="redcols"><div class="redcol">
     <div class="siren">🚨</div>
     <h1 class="redh">KONDISI DARURAT</h1>
     <p class="redp">Kuesioner dihentikan. Segera ke <b>IGD Rumah Sakit</b> sekarang — jangan menunggu.</p>
     <a class="btn btn-white big" href="tel:119">📞 Telepon 119 · Ambulans</a>
+    <div class="card" style="margin-top:34px"><div class="tab" style="background:#FFD6DA;color:#C8102E;box-shadow:0 4px 0 #FFAAB3">NOMOR DARURAT</div>
+      <div class="nums">
+        <div class="numcard"><b>119</b><span>Gawat darurat medis / ambulans</span><button data-act="copynum" data-n="119">Salin</button></div>
+        <div class="numcard"><b>112</b><span>Nomor darurat umum</span><button data-act="copynum" data-n="112">Salin</button></div>
+      </div>
+    </div>
     <a class="btn btn-dark" style="margin-top:14px" href="${mapsURL(q)}" target="_blank" rel="noopener">🧭 Navigasi ke ${onlyRabies?'Rabies Center':'IGD'} Terdekat</a>
     ${flags.some(f=>f.id==='rabies') && !onlyRabies ? `<a class="btn btn-dark" style="margin-top:14px" href="${mapsURL('rabies center terdekat')}" target="_blank" rel="noopener">💉 Cari Rabies Center (VAR)</a>` : ''}
     </div><div class="redcol">
@@ -1472,7 +1516,7 @@ function openSettings(){
   modal({tab:'PENGATURAN', body:`
     <div class="setrow"><span>🔊 Suara</span><button class="tgl ${s.sound?'on':''}" data-act="tgl" data-k="sound" aria-label="Suara"></button></div>
     <div class="setrow"><span>📳 Getar</span><button class="tgl ${s.vib?'on':''}" data-act="tgl" data-k="vib" aria-label="Getar"></button></div>
-    <div class="setrow"><span>🧪 Mode Presentasi<br><small style="font-weight:700;color:var(--muted)">tampilkan label logika klinis</small></span><button class="tgl ${s.demo?'on':''}" data-act="tgl" data-k="demo" aria-label="Mode presentasi"></button></div>
+
     <div class="setsec">Bahasa<span class="pill-teal">Indonesia</span>Wilayah<span class="pill-teal" style="margin-bottom:0">Indonesia</span></div>`});
 }
 function openHowTo(){
@@ -1485,15 +1529,47 @@ function openHowTo(){
       <li><b>🌴</b>Tahap 4 — Riwayat lingkungan, perjalanan & obat.</li>
       <li><b>📏</b>Tahap 5 — Suhu, IMT, peta nyeri & kamera AI.</li>
       <li><b>🏁</b>Tahap 6–7 — AI menebak & memberi rute rujukan.</li>
-      <li><span class="coin"></span>&nbsp;+10 koin tiap soal, bonus jika mengisi data fisik!</li>
+      <li><span class="coin"></span>&nbsp;Koin didapat saat menyelesaikan skrining, kontrol setelah berobat, atau cek rutin.</li>
     </ul>`,
     actions:[{label:'▶ Ayo Mulai!',cls:'btn-purple',fn:()=>{closeModal();start();}}]});
+}
+function openLogin(){
+  modal({tab:'MASUK / DAFTAR', body:`
+    <p class="saveinfo">Masuk itu <b>opsional</b>, kamu tetap bisa skrining tanpa akun. Ini simulasi: data tidak dikirim ke mana pun dan hanya nama yang diingat di perangkat ini.</p>
+    <label class="fld"><span>Nama panggilan</span><div class="inp"><input id="lgName" maxlength="40" placeholder="mis. Sari" autocomplete="off"></div></label>
+    <label class="fld" style="margin-top:10px"><span>Email</span><div class="inp"><input id="lgMail" type="email" placeholder="nama@email.com" autocomplete="off"></div></label>
+    <label class="fld" style="margin-top:10px"><span>Kata sandi</span><div class="inp"><input id="lgPass" type="password" placeholder="••••••••" autocomplete="off"></div></label>`,
+    actions:[
+      {label:'Masuk (simulasi)',cls:'btn-purple',fn:()=>{
+        const n = ($('#lgName').value||'').trim().slice(0,40);
+        if(!n){ toast('Isi nama panggilan dulu ya'); return; }
+        S.user = {name:n}; try{ localStorage.setItem('tropicek_user', JSON.stringify(S.user)); }catch(e){}
+        closeModal(); toast(`Halo, ${n}! 👋`); refreshAuthUI(); }},
+      {label:'Lanjut tanpa akun',cls:'btn-teal',fn:closeModal}]});
+}
+function openProfile(){
+  const h = getHistory().slice(-5).reverse();
+  modal({tab:'PROFIL', body:`<h3>Halo, ${esc(S.user.name)}! 👋</h3>
+    <p class="saveinfo">Riwayat skrining tersimpan di perangkat ini (simulasi).</p>
+    ${h.length ? h.map(x=>`<div class="setrow"><span>${esc(x.date)}<br><small style="font-weight:700;color:var(--ink2)">${esc(x.label)}</small></span><b>${esc(x.route)}</b></div>`).join('') : '<div class="empty">Belum ada riwayat.</div>'}`,
+    actions:[{label:'Keluar',cls:'btn-teal',fn:()=>{ S.user = null; try{ localStorage.removeItem('tropicek_user'); }catch(e){} closeModal(); refreshAuthUI(); toast('Kamu sudah keluar'); }}]});
+}
+function saveCardHTML(){
+  const tab = '<div class="tab">SIMPAN HASIL</div>';
+  if(!S.user) return tab + `<p class="saveinfo">Masuk untuk menyimpan riwayat skrining. Ini opsional, hasil di atas tetap bisa dipakai tanpa akun.</p><button class="btn btn-purple" data-act="login">🔑 Masuk / Daftar</button>`;
+  if(S.lastSaved) return tab + `<p class="saveinfo">✓ Tersimpan di riwayat ${esc(S.user.name)}.</p>`;
+  return tab + `<label class="chk"><input type="checkbox" data-act="saveconsent"> Saya setuju hasil skrining ini disimpan di akun saya</label>
+    <button class="btn btn-purple" id="saveBtn" data-act="savehist" style="margin-top:12px" disabled>💾 Simpan ke Riwayat</button>`;
+}
+function refreshAuthUI(){
+  const sc = $('#savecard'); if(sc) sc.innerHTML = saveCardHTML();
+  if(screen.classList.contains('bg-home')) renderHome();
 }
 function openProxy(){
   modal({tone:'yellow', tab:'PROKSI GIZI', body:`<h3>Tidak apa-apa! 😊<br>Secara fisik, apakah Anda merasa:</h3>
     <div class="opts">
-      <button class="opt small ${S.ans.proxy==='longgar'?'on':''}" data-act="proxy" data-v="longgar"><span class="oe">👕</span><span class="ot">Pakaian longgar / BB turun drastis<span class="tag demo">Prediktor TBC, Kusta, Cacingan</span></span><span class="ck"></span></button>
-      <button class="opt small ${S.ans.proxy==='gemuk'?'on':''}" data-act="proxy" data-v="gemuk"><span class="oe">🧸</span><span class="ot">Postur cenderung gemuk<span class="tag demo">Prediktor malaria berat</span></span><span class="ck"></span></button>
+      <button class="opt small ${S.ans.proxy==='longgar'?'on':''}" data-act="proxy" data-v="longgar"><span class="oe">👕</span><span class="ot">Pakaian longgar / BB turun drastis</span><span class="ck"></span></button>
+      <button class="opt small ${S.ans.proxy==='gemuk'?'on':''}" data-act="proxy" data-v="gemuk"><span class="oe">🧸</span><span class="ot">Postur cenderung gemuk</span><span class="ck"></span></button>
       <button class="opt small ${S.ans.proxy==='normal'?'on':''}" data-act="proxy" data-v="normal"><span class="oe">🙂</span><span class="ot">Normal</span><span class="ck"></span></button>
     </div>`});
 }
@@ -1510,7 +1586,7 @@ document.addEventListener('click', e => {
     case 'start': SFX.tap(); start(); break;
     case 'howto': SFX.tap(); openHowTo(); break;
     case 'settings': SFX.tap(); openSettings(); break;
-    case 'coininfo': SFX.coin(); toast(`🪙 ${S.coins} Koin Sehat — kumpulkan dengan menjawab pertanyaan!`); break;
+    case 'coininfo': SFX.tap(); toast(`🪙 ${S.coins} Koin Sehat — didapat saat menyelesaikan skrining`); break;
     case 'opt': pick(el.dataset.key, el.dataset.id, el.dataset.multi==='1'); break;
     case 'next': next(); break;
     case 'back': SFX.tap(); if(screen.classList.contains('bg-red')) renderQuiz(); else back(); break;
@@ -1528,11 +1604,18 @@ document.addEventListener('click', e => {
       const v = S.ans.q6.trim(); S.ans.q6 = v ? v.replace(/[,\s]+$/,'') + ', ' + el.dataset.d : el.dataset.d;
       $('#q6').value = S.ans.q6; SFX.tap(); break; }
     case 'noscale': SFX.tap(); openProxy(); break;
-    case 'proxy': S.ans.proxy = el.dataset.v; SFX.coin(); closeModal(); refreshBody(); break;
+    case 'proxy': S.ans.proxy = el.dataset.v; SFX.tap(); closeModal(); refreshBody(); break;
     case 'tgl': {
       const k = el.dataset.k; S.settings[k] = !S.settings[k]; el.classList.toggle('on', S.settings[k]);
-      if(k==='demo'){ $('#phone').classList.toggle('demo', S.settings.demo); updPain(); }
       SFX.tap(); break; }
+    case 'chronic': break; // TODO: jalur kronis belum ada (menunggu docs/Blueprint-Kronis.md dari DR). Sengaja tidak mengarah ke mana pun.
+    case 'login': SFX.tap(); openLogin(); break;
+    case 'profile': SFX.tap(); openProfile(); break;
+    case 'copynum': { const n = el.dataset.n; copyText(n, () => toast(`Nomor ${n} tersalin`)); break; }
+    case 'savehist': {
+      if(!S.user || S.lastSaved || !S.lastResult) break;
+      const h = getHistory(); h.push({date:new Date().toLocaleDateString('id-ID'), route:S.lastResult.route, label:S.lastResult.label});
+      saveHistory(h.slice(-20)); S.lastSaved = true; SFX.tap(); toast('Tersimpan di riwayat'); refreshAuthUI(); break; }
     case 'mclose': closeModal(); break;
     case 'mfn': { const f = MODAL_FNS[+el.dataset.i]; f && f(); break; }
     case 'tele': SFX.tap(); toast('💬 Menghubungkan ke dokter telemedisin… (simulasi)'); break;
@@ -1545,10 +1628,15 @@ document.addEventListener('click', e => {
   }
 });
 document.addEventListener('change', e => {
+  if(e.target.matches('[data-act="saveconsent"]')){ const b = $('#saveBtn'); if(b) b.disabled = !e.target.checked; return; }
   if(e.target.matches('[data-act="nothermo"]')){
     S.ans.noThermo = e.target.checked; SFX.tap(); refreshBody();
   }
 });
+function copyText(txt, done){
+  if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(done, ()=>fallbackCopy(txt, done));
+  else fallbackCopy(txt, done);
+}
 function fallbackCopy(txt, done){
   const ta = document.createElement('textarea'); ta.value = txt; ta.style.position='fixed'; ta.style.opacity='0';
   document.body.appendChild(ta); ta.select();
