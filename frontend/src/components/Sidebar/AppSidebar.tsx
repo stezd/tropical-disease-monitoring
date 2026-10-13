@@ -1,6 +1,5 @@
-import { Briefcase, Home, Users } from "lucide-react"
+import { Home, Settings, Users } from "lucide-react"
 
-import { SidebarAppearance } from "@/components/Common/Appearance"
 import { Logo } from "@/components/Common/Logo"
 import {
   Sidebar,
@@ -13,8 +12,8 @@ import { type Item, Main } from "./Main"
 import { User } from "./User"
 
 const baseItems: Item[] = [
-  { icon: Home, title: "Dashboard", path: "/" },
-  { icon: Briefcase, title: "Items", path: "/items" },
+  { icon: Home, title: "TropiCek", path: "/" },
+  { icon: Settings, title: "Pengaturan akun", path: "/settings" },
 ]
 
 export function AppSidebar() {
@@ -33,7 +32,6 @@ export function AppSidebar() {
         <Main items={items} />
       </SidebarContent>
       <SidebarFooter>
-        <SidebarAppearance />
         <User user={currentUser} />
       </SidebarFooter>
     </Sidebar>

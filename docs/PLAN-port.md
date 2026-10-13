@@ -78,3 +78,31 @@ drug_warnings[], todo[], place, maps_query, analysis_steps[], summary`.
 - `vision.py`: `PhotoAnalyzer` protocol, `UnavailableAnalyzer`; ST plugs a real one.
 - Location: `Answers.province` + empty `weights.province`; FE `lib/location.ts` stub. No UI step yet (⏳ DR/ST).
 - Chronic path: `/kronis` placeholder; backend 404 until content exists.
+
+## Status (2026-10-13)
+
+Done: phases 1–8. Checked with backend tests (72), a parity run against the prototype's
+`compute()`/`decide()` (2000 random answer sets, 0 differences), and Playwright (53 tests,
+incl. `tests/triage.spec.ts`) at 390 / 768 / 1440 px.
+
+### Needs a decision or approval
+
+| Item | Who |
+| --- | --- |
+| QR page calls `POST /score` on our server (AGENTS says "tanpa server"). Nothing is stored. | Team |
+| Disclaimer wording: removed "simulasi"; "Belum dapat ditentukan" on low score (question no. 23) | DR |
+| Option text still names diseases: eco `mr` ("campak"), eco `kontak` ("TBC") | DR |
+| `no_bmi` warning and thinking step still say "AI" / "imputasi" | ST |
+| New patient-facing copy: photo consent, save consent ("BANTU TROPICEK"), chronic placeholder, offline error | DR (review) |
+
+### Copy changed from the prototype (honesty, AGENTS "Jujur soal AI")
+
+- Photo step: "KAMERA AI" → "FOTO"; no fake scanning while `photo_analysis=false`; consent first.
+- "🔮 Lihat Tebakan AI" → "🔮 Lihat Tebakan Kak Tropi"; "Menggabungkan temuan kamera AI" → "… temuan foto".
+- "Hasil Triase" → "Hasil Skrining". BMI proxy label "Proksi:" → "Jawaban pengganti:".
+
+### Not done
+
+- Login / sign-up forms are still in English (template e2e tests depend on the labels).
+- Location step (`location.ts`, `weights.province`) and chronic path are skeletons only.
+- Mobile JKN button: test on a real Android phone.

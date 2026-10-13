@@ -1,0 +1,954 @@
+import { useQueryClient } from "@tanstack/react-query"
+import { useNavigate } from "@tanstack/react-router"
+import { type ReactNode, useMemo, useRef, useState } from "react"
+
+import { type FlowPublic, type ScoreResult, TriageService } from "@/client"
+import { scoreAnswers, scoreKey, useLiveScore } from "../api"
+import { hop, Mascot, Sparkles } from "../components/Art"
+import { BodyMap, PainScale } from "../components/Body"
+import {
+  Card,
+  type Choice,
+  Modal,
+  Options,
+  Rich,
+  StageMap,
+  toast,
+  WarnBox,
+} from "../components/Ui"
+import { sfx, vibrate } from "../fx"
+import {
+  ageOf,
+  bmiOf,
+  hasRedFlag,
+  type MultiKey,
+  NONE,
+  nowWithOffset,
+  num,
+  pruneByAge,
+  type QuizAnswers,
+  STAGE_OF,
+  type StepId,
+  steps,
+  tempValid,
+  toApi,
+  visible,
+} from "../model"
+import { quiz, useQuiz } from "../store"
+
+type StepDef = {
+  tab: string
+  say: string
+  valid: (a: QuizAnswers) => boolean
+  nextLabel?: (a: QuizAnswers) => string
+  nextCls?: (a: QuizAnswers) => string
+}
+
+const STEP_DEFS: Record<StepId, StepDef> = {
+  who: {
+    tab: "MULAI · DATA DIRI",
+    say: "Halo, aku **Kak Tropi**! 👋 Kenalan dulu, yuk.",
+    valid: (a) => {
+      const n = ageOf(a)
+      return !!a.who && n >= 0 && n <= 120 && !!a.sex
+    },
+  },
+  q1: {
+    tab: "TAHAP 1 · TANDA BAHAYA",
+    say: "Cek **tanda bahaya** dulu, ya ❤️",
+    valid: (a) => a.red_flags.length > 0,
+    nextLabel: (a) =>
+      hasRedFlag(a) ? "🚨 Lihat Tindakan Darurat" : "Lanjut ▶",
+    nextCls: (a) => (hasRedFlag(a) ? "btn-red" : "btn-purple"),
+  },
+  q2: {
+    tab: "TAHAP 2 · KELUHAN UTAMA",
+    say: "Aman! 😊 Apa **keluhan utamanya**?",
+    valid: (a) => !!a.complaint,
+  },
+  q3: {
+    tab: "TAHAP 3 · GEJALA",
+    say: "Aku mulai punya **tebakan** 🔍",
+    valid: (a) => !!a.pattern,
+  },
+  q4: {
+    tab: "TAHAP 3 · GEJALA PENYERTA",
+    say: "Ini membedakan penyakit yang **mirip** 🧩",
+    valid: (a) => a.companion.length > 0,
+  },
+  q5: {
+    tab: "TAHAP 4 · PETA EKOLOGI",
+    say: "Lingkungan juga memberi **petunjuk** 🌴",
+    valid: (a) => a.eco.length > 0,
+  },
+  q6: {
+    tab: "TAHAP 4 · RIWAYAT OBAT",
+    say: "Boleh dikosongkan kalau belum 💊",
+    valid: () => true,
+  },
+  q7: {
+    tab: "TAHAP 5 · TANDA VITAL",
+    say: "Cek **suhu tubuh** 🌡️",
+    valid: (a) => a.no_thermo || tempValid(num(a.temp)),
+  },
+  q8: {
+    tab: "TAHAP 5 · KALKULATOR RISIKO",
+    say: "Untuk hitung **risiko keparahan** ⚖️",
+    valid: (a) => !!bmiOf(a) || !!a.nutrition_proxy,
+  },
+  q9: {
+    tab: "TAHAP 5 · PETA NYERI",
+    say: "Tunjukkan bagian yang **sakit** 👆",
+    valid: (a) => !a.body.length || a.pain !== null,
+    nextLabel: (a) =>
+      a.body.length ? "Lanjut ▶" : "Tidak ada nyeri, lanjut ▶",
+  },
+  q10: {
+    tab: "TAHAP 5 · FOTO",
+    say: "Terakhir! Foto bisa bantu aku 📸",
+    valid: () => true,
+    nextLabel: () => "🔮 Lihat Tebakan Kak Tropi",
+  },
+}
+
+export function noThermoNote(a: { complaint?: string | null }) {
+  return a.complaint === "A"
+    ? "Tak apa! Skor tetap memakai **pola demam** yang kamu pilih tadi."
+    : "Tak apa! Skor tetap dihitung dari **jawaban lainnya**."
+}
+
+export function QuizScreen({ flow }: { flow: FlowPublic }) {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const { answers: a, step } = useQuiz()
+  const ids = steps(a, flow)
+  const id = ids[Math.min(step, ids.length - 1)]
+  const def = STEP_DEFS[id]
+  const api = useMemo(() => toApi(a), [a])
+  const live = useLiveScore(api)
+  const mascot = useRef<SVGSVGElement>(null)
+  const [modal, setModal] = useState<ReactNode>(null)
+  const [busy, setBusy] = useState(false)
+
+  const set = (patch: Partial<QuizAnswers>) =>
+    quiz.answer((prev) => ({ ...prev, ...patch }))
+
+  const pick = (
+    key: MultiKey | "who" | "sex" | "complaint" | "pattern",
+    id: string,
+    multi: boolean,
+  ) => {
+    quiz.answer((prev) => {
+      if (multi) {
+        const k = key as MultiKey
+        let arr = prev[k]
+        if (id === NONE) arr = arr.includes(NONE) ? [] : [NONE]
+        else {
+          arr = arr.filter((x) => x !== NONE)
+          arr = arr.includes(id) ? arr.filter((x) => x !== id) : [...arr, id]
+        }
+        return { ...prev, [k]: arr }
+      }
+      if (key === "complaint" && prev.complaint !== id) {
+        return { ...prev, complaint: id, pattern: null, companion: [] }
+      }
+      return { ...prev, [key]: id }
+    })
+    sfx.tap()
+    vibrate()
+    hop(mascot.current)
+    if (key === "red_flags" && id !== NONE) vibrate([60, 40, 60])
+  }
+
+  const proceed = () => {
+    const cur = quiz.get().answers
+    if (id === "who") set(pruneByAge(cur, flow))
+    if (id === "q1" && hasRedFlag(cur)) {
+      quiz.set({ phase: "red" })
+      return
+    }
+    const list = steps(quiz.get().answers, flow)
+    if (step < list.length - 1) quiz.set({ step: step + 1 })
+    else {
+      set({ taken_at: nowWithOffset() })
+      quiz.set({ phase: "thinking" })
+    }
+  }
+
+  const next = async () => {
+    if (!def.valid(a) || busy) return
+    sfx.tap()
+    if (id === "q6") {
+      // Drug warnings come from the server (advice.json). If it is down, carry on.
+      setBusy(true)
+      let r: ScoreResult | undefined
+      try {
+        r = await queryClient.fetchQuery({
+          queryKey: scoreKey(api),
+          queryFn: () => scoreAnswers(api),
+          staleTime: Number.POSITIVE_INFINITY,
+        })
+      } catch {
+        r = undefined
+      }
+      setBusy(false)
+      if (r?.drug_popups.length) {
+        sfx.alert()
+        vibrate([80, 60, 80])
+        setModal(
+          <Modal
+            tone="yellow"
+            tab="PERINGATAN OBAT"
+            onClose={() => setModal(null)}
+            actions={
+              <button
+                type="button"
+                className="btn btn-purple"
+                onClick={() => {
+                  setModal(null)
+                  proceed()
+                }}
+              >
+                Mengerti, lanjut ▶
+              </button>
+            }
+          >
+            <h3>Kak Tropi menemukan sesuatu! 🧐</h3>
+            {r.drug_popups.map((t) => (
+              <WarnBox key={t} level="y" icon="⚠️" text={t} />
+            ))}
+          </Modal>,
+        )
+        return
+      }
+    }
+    proceed()
+  }
+
+  const back = () => {
+    sfx.tap()
+    if (step > 0) quiz.set({ step: step - 1 })
+    else navigate({ to: "/" })
+  }
+
+  let meter: { n: number; p: number } | null
+  if (!a.complaint) meter = { n: a.red_flags.includes(NONE) ? 19 : 20, p: 5 }
+  else if (live.data)
+    meter = { n: live.data.meter_candidates, p: live.data.meter_pct }
+  else meter = null
+
+  const body = (() => {
+    switch (id) {
+      case "who":
+        return <StepWho flow={flow} a={a} pick={pick} set={set} />
+      case "q1":
+        return (
+          <>
+            <h2 className="qt">
+              <span className="alertline">⚠️</span> Ada <u>salah satu</u> kondisi
+              darurat ini?
+            </h2>
+            <p className="qh">Pilih semua yang dialami</p>
+            <Options
+              multi
+              selected={a.red_flags}
+              onPick={(i) => pick("red_flags", i, true)}
+              options={[
+                ...flow.red_flags.map((r) => ({
+                  id: r.id,
+                  emoji: r.emoji,
+                  text: r.text,
+                  detail: r.detail,
+                  cls: "danger",
+                })),
+                {
+                  id: NONE,
+                  emoji: "✅",
+                  text: "Tidak ada, saya aman",
+                  cls: "safe",
+                },
+              ]}
+            />
+          </>
+        )
+      case "q2":
+        return (
+          <>
+            <h2 className="qt">Keluhan mana yang paling mengganggu?</h2>
+            <p className="qh">Pilih satu</p>
+            <div className="cgrid">
+              {flow.clusters.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  aria-pressed={a.complaint === c.id}
+                  className={`cbox c${c.id} ${a.complaint === c.id ? "on" : ""}`}
+                  onClick={() => pick("complaint", c.id, false)}
+                >
+                  <span className="ce" aria-hidden="true">
+                    {c.emoji}
+                  </span>
+                  <b>{c.name}</b>
+                  <span className="cs">{c.sub}</span>
+                </button>
+              ))}
+            </div>
+          </>
+        )
+      case "q3": {
+        const q = flow.patterns[a.complaint ?? ""]
+        return (
+          <>
+            <h2 className="qt">{q.title}</h2>
+            <p className="qh">Pilih yang paling mirip</p>
+            <Options
+              selected={a.pattern ? [a.pattern] : []}
+              onPick={(i) => pick("pattern", i, false)}
+              options={q.options.filter((o) => visible(o, a, flow))}
+            />
+          </>
+        )
+      }
+      case "q4": {
+        const q = flow.companions[a.complaint ?? ""]
+        return (
+          <>
+            <h2 className="qt">{q.title}</h2>
+            <p className="qh">Pilih semua yang sesuai</p>
+            <Options
+              multi
+              selected={a.companion}
+              onPick={(i) => pick("companion", i, true)}
+              options={q.options}
+            />
+          </>
+        )
+      }
+      case "q5":
+        return (
+          <>
+            <h2 className="qt">Dalam 1–4 bulan terakhir, pernah…?</h2>
+            <p className="qh">Pilih semua yang sesuai</p>
+            <Options
+              multi
+              layout="tiles"
+              selected={a.eco}
+              onPick={(i) => pick("eco", i, true)}
+              options={flow.eco
+                .filter((o) => visible(o, a, flow))
+                .map((o) => ({ ...o, cls: o.wide ? "wide" : "" }))}
+            />
+          </>
+        )
+      case "q6":
+        return <StepDrugs flow={flow} a={a} set={set} />
+      case "q7":
+        return <StepTemp a={a} set={set} />
+      case "q8":
+        return <StepBmi flow={flow} a={a} set={set} setModal={setModal} />
+      case "q9":
+        return <StepBody flow={flow} a={a} set={set} />
+      case "q10":
+        return (
+          <StepPhoto
+            flow={flow}
+            a={a}
+            pick={(i) => pick("findings", i, true)}
+            set={set}
+            setModal={setModal}
+          />
+        )
+    }
+  })()
+
+  return (
+    <div className="screen bg-quiz">
+      <Sparkles n={18} />
+      <div className="hud">
+        <button
+          type="button"
+          className="icon-btn"
+          onClick={back}
+          aria-label="Kembali"
+        >
+          ‹
+        </button>
+        <StageMap stages={flow.stages} current={STAGE_OF[id]} />
+      </div>
+      <div className="qlayout">
+        <div className="mrow">
+          <Mascot ref={mascot} className="m-sm" />
+          <div className="bubble">
+            <p>
+              <Rich text={def.say} />
+            </p>
+            {meter && (
+              <div className="cand" aria-live="polite">
+                <span>🔮 {meter.n} kemungkinan</span>
+                <span className="meter">
+                  <i style={{ width: `${meter.p}%` }} />
+                </span>
+                <span>skor {meter.p}%</span>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="qmain">
+          <div className="qwrap">
+            <Card tab={def.tab} className="pop" key={id}>
+              {body}
+            </Card>
+          </div>
+          <div className="foot">
+            <button
+              type="button"
+              className={`btn big ${def.nextCls?.(a) ?? "btn-purple"}`}
+              disabled={!def.valid(a) || busy}
+              onClick={next}
+            >
+              {busy ? "Sebentar…" : (def.nextLabel?.(a) ?? "Lanjut ▶")}
+            </button>
+          </div>
+        </div>
+      </div>
+      {modal}
+    </div>
+  )
+}
+
+type Setter = (patch: Partial<QuizAnswers>) => void
+
+function StepWho({
+  flow,
+  a,
+  pick,
+  set,
+}: {
+  flow: FlowPublic
+  a: QuizAnswers
+  pick: (key: "who" | "sex", id: string, multi: boolean) => void
+  set: Setter
+}) {
+  return (
+    <>
+      <h2 className="qt">Siapa yang sedang sakit?</h2>
+      <p className="qh">Pilih satu</p>
+      <Options
+        layout="tiles"
+        selected={a.who ? [a.who] : []}
+        onPick={(i) => pick("who", i, false)}
+        options={flow.who}
+      />
+      <div className="frow">
+        <label className="fld age">
+          <span>Usia (tahun)</span>
+          <div className="inp age">
+            <input
+              inputMode="numeric"
+              maxLength={3}
+              placeholder="25"
+              value={a.age}
+              onChange={(e) => {
+                const age = e.target.value.replace(/\D/g, "").slice(0, 3)
+                set(pruneByAge({ ...a, age }, flow))
+              }}
+            />
+            <em>th</em>
+          </div>
+        </label>
+        <div className="fld">
+          <span id="sexLbl">Jenis kelamin</span>
+          <fieldset className="seg" aria-labelledby="sexLbl">
+            {flow.sex.map((o) => (
+              <button
+                key={o.id}
+                type="button"
+                aria-pressed={a.sex === o.id}
+                className={a.sex === o.id ? "on" : ""}
+                onClick={() => pick("sex", o.id, false)}
+              >
+                {o.text}
+              </button>
+            ))}
+          </fieldset>
+        </div>
+      </div>
+    </>
+  )
+}
+
+function StepDrugs({
+  flow,
+  a,
+  set,
+}: {
+  flow: FlowPublic
+  a: QuizAnswers
+  set: Setter
+}) {
+  return (
+    <>
+      <h2 className="qt">Obat apa yang sudah diminum?</h2>
+      <p className="qh">Opsional · ketuk atau ketik</p>
+      <div className="inp">
+        <textarea
+          aria-label="Obat yang sudah diminum"
+          placeholder="mis. Paracetamol, Loperamide…"
+          maxLength={500}
+          value={a.drugs}
+          onChange={(e) => set({ drugs: e.target.value })}
+        />
+      </div>
+      <div className="chips">
+        {flow.drug_chips.map((d) => (
+          <button
+            key={d}
+            type="button"
+            className="chip"
+            onClick={() => {
+              const v = a.drugs.trim()
+              set({ drugs: v ? `${v.replace(/[,\s]+$/, "")}, ${d}` : d })
+              sfx.tap()
+            }}
+          >
+            + {d}
+          </button>
+        ))}
+      </div>
+    </>
+  )
+}
+
+function tempStatus(t: number): [string, string, string] {
+  if (Number.isNaN(t)) return ["Masukkan suhu", "#EEE", "#777"]
+  if (t < 34 || t > 43) return ["Angka tidak wajar", "#FFE3E6", "#C8102E"]
+  if (t < 37.5) return ["😊 Normal", "#E2F9EE", "#1A9A66"]
+  if (t < 38) return ["🙂 Subfebris", "#FFF6DB", "#8A5A00"]
+  if (t < 39.5) return ["🤒 Demam", "#FFE8D6", "#C2570C"]
+  return ["🥵 Demam tinggi", "#FFE3E6", "#C8102E"]
+}
+
+function StepTemp({ a, set }: { a: QuizAnswers; set: Setter }) {
+  const t = num(a.temp)
+  const pct = Number.isNaN(t)
+    ? 30
+    : Math.max(5, Math.min(100, ((t - 34) / 9) * 100))
+  const [txt, bg, color] = tempStatus(t)
+  const stepBy = (d: number) => {
+    let v = num(a.temp)
+    if (Number.isNaN(v)) v = 37
+    v = Math.max(34, Math.min(43, Math.round((v + d) * 10) / 10))
+    set({ temp: v.toFixed(1).replace(".", ",") })
+    sfx.tap()
+  }
+  return (
+    <>
+      <h2 className="qt">Berapa suhu tubuhmu?</h2>
+      <p className="qh">Dalam °C</p>
+      <div
+        className="thermo"
+        style={a.no_thermo ? { opacity: 0.45, pointerEvents: "none" } : {}}
+      >
+        <div className="tbar" aria-hidden="true">
+          <div className="tube">
+            <div className="tfill" style={{ height: `${pct}%` }} />
+          </div>
+          <div className="bulb" />
+        </div>
+        <div className="tctl">
+          <div className="tval">
+            <button
+              type="button"
+              className="rbtn"
+              onClick={() => stepBy(-0.1)}
+              aria-label="Kurangi"
+            >
+              −
+            </button>
+            <div className="inp">
+              <input
+                inputMode="decimal"
+                placeholder="37,0"
+                aria-label="Suhu tubuh dalam derajat Celsius"
+                value={a.temp}
+                disabled={a.no_thermo}
+                onChange={(e) => set({ temp: e.target.value.slice(0, 5) })}
+              />
+            </div>
+            <button
+              type="button"
+              className="rbtn"
+              onClick={() => stepBy(0.1)}
+              aria-label="Tambah"
+            >
+              +
+            </button>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <span className="tstat" style={{ background: bg, color }}>
+              {txt}
+            </span>
+          </div>
+        </div>
+      </div>
+      <label className="chk">
+        <input
+          type="checkbox"
+          checked={a.no_thermo}
+          onChange={(e) => {
+            set({ no_thermo: e.target.checked })
+            sfx.tap()
+          }}
+        />{" "}
+        Saya tidak punya termometer
+      </label>
+      {a.no_thermo && (
+        <div className="note">
+          <Rich text={noThermoNote(a)} />
+        </div>
+      )}
+    </>
+  )
+}
+
+const BMI_LABELS = (
+  <div className="glab">
+    <span>Kurus</span>
+    <span>Normal</span>
+    <span>Lebih</span>
+    <span>Obes</span>
+  </div>
+)
+
+function StepBmi({
+  flow,
+  a,
+  set,
+  setModal,
+}: {
+  flow: FlowPublic
+  a: QuizAnswers
+  set: Setter
+  setModal: (m: ReactNode) => void
+}) {
+  const b = bmiOf(a)
+  const proxy = flow.nutrition_proxies.find((p) => p.id === a.nutrition_proxy)
+  const cat: [string, string] | null = b
+    ? b < 18.5
+      ? ["Kurus", "#3B9BE0"]
+      : b < 25
+        ? ["Normal", "#1A9A66"]
+        : b < 27
+          ? ["Berat lebih", "#C98A00"]
+          : ["Obesitas", "#D63650"]
+    : null
+  const openProxy = () => {
+    sfx.tap()
+    const close = () => setModal(null)
+    setModal(
+      <Modal tone="yellow" tab="PROKSI GIZI" onClose={close}>
+        <h3>
+          Tidak apa-apa! 😊
+          <br />
+          Secara fisik, apakah Anda merasa:
+        </h3>
+        <Options
+          selected={a.nutrition_proxy ? [a.nutrition_proxy] : []}
+          options={flow.nutrition_proxies}
+          onPick={(id) => {
+            set({ nutrition_proxy: id as QuizAnswers["nutrition_proxy"] })
+            sfx.tap()
+            close()
+          }}
+        />
+      </Modal>,
+    )
+  }
+  return (
+    <>
+      <h2 className="qt">Tinggi & berat badanmu?</h2>
+      <p className="qh">Untuk menghitung IMT</p>
+      <div className="two">
+        <label className="fld">
+          <span>Tinggi Badan</span>
+          <div className="inp">
+            <input
+              inputMode="decimal"
+              placeholder="160"
+              maxLength={5}
+              value={a.height}
+              onChange={(e) => set({ height: e.target.value })}
+            />
+            <em>cm</em>
+          </div>
+        </label>
+        <label className="fld">
+          <span>Berat Badan</span>
+          <div className="inp">
+            <input
+              inputMode="decimal"
+              placeholder="55"
+              maxLength={5}
+              value={a.weight}
+              onChange={(e) => set({ weight: e.target.value })}
+            />
+            <em>kg</em>
+          </div>
+        </label>
+      </div>
+      <div className="bmi">
+        <div className="row">
+          <span>
+            IMT
+            {cat && (
+              <>
+                {" · "}
+                <span style={{ color: cat[1] }}>{cat[0]}</span>
+              </>
+            )}
+          </span>
+          <b>{b ? b.toFixed(1) : "–"}</b>
+        </div>
+        <div className="gauge">
+          <i
+            style={
+              b
+                ? {
+                    left: `${Math.max(2, Math.min(98, ((b - 13) / (37 - 13)) * 100))}%`,
+                  }
+                : { left: -10, opacity: 0 }
+            }
+          />
+        </div>
+        {BMI_LABELS}
+      </div>
+      <button
+        type="button"
+        className={`opt ${a.nutrition_proxy && !b ? "on" : ""}`}
+        style={{ marginTop: 10 }}
+        onClick={openProxy}
+      >
+        <span className="oe" aria-hidden="true">
+          🤷
+        </span>
+        <span className="ot">
+          Tidak tahu / tak punya timbangan
+          {proxy && (
+            <span className="od">Jawaban pengganti: {proxy.text} · ubah</span>
+          )}
+        </span>
+        <span className="ck" />
+      </button>
+    </>
+  )
+}
+
+function StepBody({
+  flow,
+  a,
+  set,
+}: {
+  flow: FlowPublic
+  a: QuizAnswers
+  set: Setter
+}) {
+  const sel = flow.body_regions.filter((b) => a.body.includes(b.id))
+  return (
+    <>
+      <h2 className="qt">Ketuk bagian yang sakit/bengkak</h2>
+      <p className="qh">Boleh lebih dari satu</p>
+      <div className="bodywrap">
+        <div className="bodysvg">
+          <BodyMap
+            regions={flow.body_regions}
+            selected={a.body}
+            onToggle={(id) => {
+              const body = a.body.includes(id)
+                ? a.body.filter((x) => x !== id)
+                : [...a.body, id]
+              set({ body, pain: body.length ? a.pain : null })
+              sfx.tap()
+              vibrate()
+            }}
+          />
+        </div>
+        <div className="bside">
+          <div className="sel-list">
+            {sel.length ? (
+              sel.map((b) => <span key={b.id}>{b.name}</span>)
+            ) : (
+              <div className="empty">
+                Belum ada. Tidak ada yang sakit? Langsung lanjut.
+              </div>
+            )}
+          </div>
+          {sel.length > 0 && (
+            <div className="pain">
+              <p className="pq">Seberapa nyeri? Ketuk angka atau wajah</p>
+              <PainScale
+                faces={flow.pain_faces}
+                value={a.pain}
+                onPick={(v) => {
+                  set({ pain: v })
+                  sfx.tap()
+                  vibrate()
+                }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  )
+}
+
+// Photo step. Photos are health data: ask first, keep them on the device unless the
+// server has a real analyzer (flow.photo_analysis), and never store them.
+let photoConsent = false
+
+function StepPhoto({
+  flow,
+  a,
+  pick,
+  set,
+  setModal,
+}: {
+  flow: FlowPublic
+  a: QuizAnswers
+  pick: (id: string) => void
+  set: Setter
+  setModal: (m: ReactNode) => void
+}) {
+  const input = useRef<HTMLInputElement>(null)
+  const [photo, setPhoto] = useState<string | null>(null)
+  const [scanning, setScanning] = useState(false)
+  const analyze = flow.photo_analysis
+
+  const askConsent = () => {
+    sfx.tap()
+    if (photoConsent) {
+      input.current?.click()
+      return
+    }
+    const close = () => setModal(null)
+    setModal(
+      <Modal
+        tab="IZIN FOTO"
+        onClose={close}
+        actions={
+          <>
+            <button
+              type="button"
+              className="btn btn-purple"
+              onClick={() => {
+                photoConsent = true
+                close()
+                input.current?.click()
+              }}
+            >
+              Saya setuju, buka kamera
+            </button>
+            <button type="button" className="btn btn-teal" onClick={close}>
+              Tidak, pilih temuan saja
+            </button>
+          </>
+        }
+      >
+        <h3>Foto adalah data kesehatan 🔒</h3>
+        <p className="saveinfo">
+          {analyze ? (
+            <Rich text="Foto akan dikirim ke server TropiCek untuk dianalisis, lalu langsung dihapus. Foto **tidak disimpan** dan tidak dibagikan." />
+          ) : (
+            <Rich text="Foto hanya ditampilkan di layar ini untuk membantumu memilih temuan. Foto **tidak dikirim** dan **tidak disimpan**." />
+          )}
+        </p>
+      </Modal>,
+    )
+  }
+
+  const onFile = async (file: File) => {
+    if (photo) URL.revokeObjectURL(photo)
+    setPhoto(URL.createObjectURL(file))
+    if (!analyze) return
+    setScanning(true)
+    sfx.think()
+    try {
+      const r = (await TriageService.analyzePhoto({ body: { photo: file } }))
+        .data
+      if (r.available && r.findings.length) {
+        set({
+          findings: [
+            ...new Set([
+              ...a.findings.filter((x) => x !== NONE),
+              ...r.findings,
+            ]),
+          ],
+        })
+        toast("Pindai selesai! Cek temuan di bawah 👇")
+      } else toast("Tidak ada temuan otomatis. Pilih sendiri, ya 👇")
+    } catch {
+      toast("Analisis foto gagal. Pilih temuan sendiri, ya 👇")
+    } finally {
+      setScanning(false)
+    }
+  }
+
+  const options: Choice[] = flow.findings.map((o) => ({
+    ...o,
+    cls: o.wide ? "wide" : "",
+  }))
+
+  return (
+    <>
+      <h2 className="qt">Foto ruam, luka, lidah, atau mata</h2>
+      <p className="qh">
+        {analyze
+          ? "Opsional · foto dianalisis lalu dihapus"
+          : "Opsional · foto tidak dikirim ke mana pun"}
+      </p>
+      <div className="photorow">
+        <div className="photo">
+          {photo ? (
+            <>
+              <img src={photo} alt="Foto yang dipilih" />
+              {scanning && (
+                <>
+                  <div className="scanline" />
+                  <span className="scanbadge">🔎 Memindai…</span>
+                </>
+              )}
+            </>
+          ) : (
+            <div className="ph">
+              <div aria-hidden="true">🖼️</div>Belum ada foto
+            </div>
+          )}
+        </div>
+        <button type="button" className="btn btn-teal" onClick={askConsent}>
+          <span aria-hidden="true">📸</span>
+          {photo ? "Ganti" : "Kamera"}
+        </button>
+        <input
+          ref={input}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          hidden
+          onChange={(e) => {
+            const f = e.target.files?.[0]
+            if (f) void onFile(f)
+            e.target.value = ""
+          }}
+        />
+      </div>
+      <h3 className="subq">Pilih temuan yang terlihat:</h3>
+      <Options
+        multi
+        layout="tiles tiles3"
+        selected={a.findings}
+        onPick={pick}
+        options={options}
+      />
+    </>
+  )
+}

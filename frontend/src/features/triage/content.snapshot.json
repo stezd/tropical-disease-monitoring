@@ -1019,6 +1019,7 @@
         "emoji": "🐕",
         "route": "red"
       }
-    }
+    },
+    "photo_analysis": false
   }
 }

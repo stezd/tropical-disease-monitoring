@@ -9,6 +9,8 @@
       "!**/src/routeTree.gen.ts",
       "!**/src/client/**/*",
       "!**/src/components/ui/**/*",
+      "!**/src/lib/qrcode-generator.js",
+      "!**/src/features/triage/content.snapshot.json",
       "!**/playwright-report",
       "!**/playwright.config.ts"
     ]
@@ -44,6 +46,15 @@
     }
   },
   "overrides": [
+    {
+      "includes": ["**/src/styles/tropicek.css"],
+      "linter": {
+        "rules": {
+          "style": { "noDescendingSpecificity": "off" },
+          "complexity": { "noImportantStyles": "off" }
+        }
+      }
+    },
     {
       "includes": ["**/*.svg"],
       "linter": {

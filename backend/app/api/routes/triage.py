@@ -41,7 +41,7 @@ def score_answers(flow_id: str, answers: Answers) -> ScoreResult:
 @router.get("/flows/{flow_id}")
 def read_flow(flow_id: str) -> FlowPublic:
     """Questions and options for a flow. Weights are not included."""
-    return flow_public(_content(flow_id))
+    return flow_public(_content(flow_id), photo_analysis=get_analyzer().available)
 
 
 @router.post("/flows/{flow_id}/score")

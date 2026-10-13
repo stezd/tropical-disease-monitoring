@@ -278,6 +278,10 @@ export type FlowPublic = {
     diseases: {
         [key: string]: DiseasePublic;
     };
+    /**
+     * Photo Analysis
+     */
+    photo_analysis: boolean;
 };
 
 /**

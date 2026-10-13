@@ -47,6 +47,8 @@ class DiseasePublic(BaseModel):
 
 class FlowPublic(Flow):
     diseases: dict[str, DiseasePublic]
+    # False = photo stays on the device and the patient picks findings (simulated step).
+    photo_analysis: bool
 
 
 class RankedDisease(BaseModel):
@@ -97,7 +99,7 @@ class PhotoAnalysis(BaseModel):
     message: str
 
 
-def flow_public(content: FlowContent) -> FlowPublic:
+def flow_public(content: FlowContent, photo_analysis: bool = False) -> FlowPublic:
     """What the front end gets: questions and public disease info. No weights or lab."""
     return FlowPublic(
         **content.flow.model_dump(),
@@ -105,4 +107,5 @@ def flow_public(content: FlowContent) -> FlowPublic:
             k: DiseasePublic(name=d.name, emoji=d.emoji, route=d.route)
             for k, d in content.diseases.items()
         },
+        photo_analysis=photo_analysis,
     )
