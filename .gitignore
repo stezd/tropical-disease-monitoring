@@ -1,8 +1,74 @@
-.vscode/*
-!.vscode/extensions.json
+# Environment variables & Secrets
+.env
+.env.*
+.env.local
+!.env.example
+!.env.*.example
+
+# Python & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+env/
+venv/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.cache/
+
+# Node & Frontend
 node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.turbo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 backend/app/frontend/
+openapi.json
+
+# Testing & Reports
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+/playwright/.auth/
+
+# IDE & OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.sw?
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Graphify
+graphify-out/*
+!graphify-out/GRAPH_REPORT.md
