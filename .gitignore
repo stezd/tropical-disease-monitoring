@@ -72,3 +72,7 @@ Thumbs.db
 # Graphify
 graphify-out/*
 !graphify-out/GRAPH_REPORT.md
+
+# TanStack Router generated
+frontend/.tanstack/
+frontend/src/routeTree.gen.ts
