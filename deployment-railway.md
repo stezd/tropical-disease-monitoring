@@ -219,3 +219,23 @@ Rates: RAM $10/GB/month, CPU $20/vCPU/month, egress $0.05/GB. **Builds are free.
 - Nothing is sent outside our own server.
 
 See `AGENTS.md` for the full "Must not break" list.
+
+## 11. Image size (measured 2026-10-13)
+
+The first Railway image was **2.45 GB**, which is why its build/export phase took about 20 minutes. After the size work it is **358 MB** - 85% smaller.
+
+| Component | Before | After | Why |
+| --- | --- | --- | --- |
+| Base OS | `python:3.14` (~1.05 GB of apt layers) | `python:3.14-slim` | buildpack-deps (compilers, git, headers) is not needed: every dependency ships a wheel |
+| uv download cache | 250 MB | 0 | `UV_NO_CACHE=1`, and the multi-stage split discards the build stage |
+| uv + uvx binaries | 53 MB | 0 | they now live only in the build stage. Deleting them in a later `RUN` would NOT have shrunk anything - the layer that copied them keeps the bytes |
+| Dev tooling (pytest, mypy + a 36 MB mypyc .so, ruff, pygments) | ~90 MB | 0 | `uv sync --no-dev` |
+| Python venv | 297 MB | 134 MB | the above, applied |
+| The React app | 1.1 MB | 1.1 MB | it was never the problem |
+
+Two consequences worth knowing:
+
+- **The runtime image has no `curl`**, so the backend healthcheck in `compose.yml` now uses a Python one-liner instead. Railway runs its own HTTP healthcheck, so nothing changes there.
+- The Dockerfile is three stages: frontend build -> Python build (which owns `uv`) -> runtime (copies only `/app/.venv`). Keep `uv` out of the runtime stage.
+
+Re-measure with `docker images backend:latest --format "{{.Size}}"`.
