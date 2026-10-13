@@ -1,88 +1,112 @@
-# Full Stack FastAPI Template
+# TropiCek
 
-[![Test Docker Compose](../../actions/workflows/test-docker-compose.yml/badge.svg)](../../actions/workflows/test-docker-compose.yml)
-[![Test Backend](../../actions/workflows/test-backend.yml/badge.svg)](../../actions/workflows/test-backend.yml)
+Kuis bergaya permainan untuk skrining penyakit tropis dan penyakit jangka panjang. Hasilnya berupa rute: MERAH (IGD), KUNING KHUSUS (poli program), KUNING (Puskesmas), atau HIJAU (perawatan mandiri).
 
-## Technology Stack and Features
+TropiCek adalah alat skrining, bukan pengganti diagnosis dokter.
 
-- ⚡ [**FastAPI**](https://fastapi.tiangolo.com) for the Python backend API.
-  - 🧰 [SQLModel](https://sqlmodel.tiangolo.com) for the Python SQL database interactions (ORM).
-  - 🔍 [Pydantic](https://docs.pydantic.dev), used by FastAPI, for the data validation and settings management.
-  - 💾 [PostgreSQL](https://www.postgresql.org) as the SQL database.
-- 🚀 [React](https://react.dev) for the frontend.
-  - 🧩 Built into the backend application and served by FastAPI on the same domain as the API.
-  - 💃 Using TypeScript, hooks, [Vite](https://vitejs.dev), and other parts of a modern frontend stack.
-  - 🎨 [Tailwind CSS](https://tailwindcss.com) and [shadcn/ui](https://ui.shadcn.com) for the frontend components.
-  - 🤖 An automatically generated frontend client.
-  - 🧪 [Playwright](https://playwright.dev) for end-to-end testing.
-  - 🦇 Dark mode support.
-- ☁️ [FastAPI Cloud](https://fastapicloud.com) for deployment.
-- 🐋 [Docker Compose](https://www.docker.com) for local services and self-hosted deployment.
-  - 📞 [Traefik](https://traefik.io) as a reverse proxy with automatic HTTPS.
-- 🔒 Secure password hashing by default.
-- 🔑 JWT (JSON Web Token) authentication.
-- 📫 Email-based password recovery.
-- ✉️ [React Email](https://react.email) for email templates.
-- 📬 [Mailpit](https://mailpit.axllent.org) for local email testing during development.
-- ✅ Tests with [Pytest](https://pytest.org).
-- 🏭 CI (continuous integration) and CD (continuous deployment) based on GitHub Actions.
+- Backend: FastAPI + SQLModel + PostgreSQL (`backend/`)
+- Frontend: React + Vite + Tailwind + shadcn/ui (`frontend/`)
+- Panduan untuk pengembang dan agen AI: [AGENTS.md](./AGENTS.md)
 
-### Dashboard Login
+## Menjalankan di komputer sendiri
 
-![Dashboard login screenshot](img/login.png)
+### 1. Yang perlu dipasang
 
-### Dashboard - Admin
+| Alat                                                       | Untuk                          |
+| ---------------------------------------------------------- | ------------------------------ |
+| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | Database PostgreSQL dan Mailpit |
+| [uv](https://docs.astral.sh/uv/getting-started/installation/)     | Python dan paket backend       |
+| [Bun](https://bun.sh)                                       | Paket dan server frontend      |
+| Git (di Windows: [Git for Windows](https://git-scm.com/download/win), sudah termasuk Git Bash) | Kode dan skrip `.sh` |
 
-![Admin dashboard screenshot](img/dashboard.png)
+Python 3.14 tidak perlu dipasang manual. `uv` akan mengunduhnya sendiri.
 
-### Dashboard - Items
+### 2. Ambil kode
 
-![Items dashboard screenshot](img/dashboard-items.png)
+```bash
+git clone <url-repo>
+cd tropical-disease-monitoring
+```
 
-### Dashboard - Dark Mode
+File `.env` (backend) dan `frontend/.env` sudah ada di repo dan berisi nilai bawaan untuk lokal. Tidak perlu diubah untuk mulai.
 
-![Dark mode dashboard screenshot](img/dashboard-dark.png)
+### 3. Nyalakan database dan Mailpit
 
-### React Email Templates
+Pastikan Docker Desktop sudah berjalan, lalu dari folder utama repo:
 
-![Email templates screenshot](img/react-email.png)
+```bash
+docker compose up -d db mailpit
+```
 
-### Mailpit - Local Email Testing
+### 4. Jalankan backend
 
-![Mailpit screenshot](img/mailpit.png)
+Dari folder `backend/`:
 
-### Interactive API Documentation
+```bash
+uv sync                           # pasang paket
+uv run bash scripts/prestart.sh   # migrasi database + data awal
+uv run fastapi dev                # server di localhost:8000
+```
 
-![API docs](img/docs.png)
+Di Windows, jalankan perintah di atas dari Git Bash. Kalau memakai PowerShell, ganti baris kedua dengan:
 
-## How to Use It
+```powershell
+uv run alembic upgrade head
+uv run python app/initial_data.py
+```
 
-Click the **Use this template** button at the top of this page to create a new repository.
+Biarkan terminal ini tetap terbuka.
 
-## Backend Development
+### 5. Jalankan frontend
 
-Backend docs: [backend/README.md](./backend/README.md).
+Buka terminal baru. Dari folder utama repo (bukan `frontend/`):
 
-## Frontend Development
+```bash
+bun install
+bun run dev
+```
 
-Frontend docs: [frontend/README.md](./frontend/README.md).
+### 6. Buka aplikasi
 
-## Deployment
+| Alamat                        | Isi                                  |
+| ----------------------------- | ------------------------------------ |
+| <http://localhost:5173>       | Aplikasi TropiCek                    |
+| <http://localhost:8000/docs>  | Dokumentasi API (Swagger)            |
+| <http://localhost:8025>       | Mailpit, kotak masuk email lokal     |
 
-FastAPI Cloud deployment: [deployment.md](./deployment.md).
+Akun admin lokal ada di `.env`: `admin@example.com` / `changethis`. Login tidak wajib; tamu bisa mengisi kuis sampai selesai.
 
-Self-hosted deployment with Docker Compose: [deployment-docker-compose.md](./deployment-docker-compose.md).
+## Sehari-hari
 
-## Development
+Setelah pemasangan pertama, cukup:
 
-General development docs: [development.md](./development.md).
+```bash
+docker compose up -d db mailpit   # folder utama
+cd backend && uv run fastapi dev  # terminal 1
+bun run dev                       # terminal 2, folder utama
+```
 
-This includes the local FastAPI and Vite workflow, Docker Compose services, `.env` configuration, and more.
+Jalankan `uv sync`, `bun install`, atau `prestart.sh` lagi kalau ada perubahan paket atau migrasi baru setelah `git pull`.
 
-## Release Notes
+| Perintah                           | Dari mana     | Kapan                                           |
+| ---------------------------------- | ------------- | ----------------------------------------------- |
+| `uv run bash scripts/test.sh`      | `backend/`    | Menjalankan tes backend                         |
+| `uv run bash scripts/lint.sh`      | `backend/`    | Cek kode backend                                |
+| `bash scripts/generate-client.sh`  | folder utama  | Setelah API atau isi kuis (`backend/app/triage/content/`) berubah |
+| `bun run test`                     | folder utama  | Tes frontend (Playwright)                       |
+| `docker compose down`              | folder utama  | Mematikan database dan Mailpit                  |
 
-Check the file [release-notes.md](./release-notes.md).
+## Kalau ada masalah
 
-## License
+- **`port 5432 is already allocated`**: ada PostgreSQL lain yang berjalan. Matikan dulu, atau hentikan container lama dengan `docker compose down`.
+- **Backend gagal tersambung ke database**: cek `docker compose ps`. Service `db` harus berstatus `healthy`.
+- **Frontend tampil tapi data kuis tidak muncul**: pastikan backend berjalan di <http://localhost:8000>. Tanda bahaya tetap dicek di browser walau server mati.
+- **`bash: command not found` di Windows**: jalankan dari Git Bash, atau pakai versi PowerShell di langkah 4.
 
-The Full Stack FastAPI Template is licensed under the terms of the MIT license.
+## Dokumen lain
+
+- [AGENTS.md](./AGENTS.md): struktur kode, aturan yang tidak boleh dilanggar, daftar fitur
+- [DESIGN.md](./DESIGN.md): warna, huruf, komponen
+- [docs/Blueprint.md](./docs/Blueprint.md) dan [docs/Blueprint-Kronis.md](./docs/Blueprint-Kronis.md): alur kuis
+- [development.md](./development.md): menjalankan seluruh aplikasi dengan Docker Compose, pre-commit hooks
+- [deployment.md](./deployment.md) dan [deployment-docker-compose.md](./deployment-docker-compose.md): deploy
