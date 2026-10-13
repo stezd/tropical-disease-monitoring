@@ -48,6 +48,11 @@ Then create the app service:
 
 > If you skip step 5, the first build fails. Railway looks for `Dockerfile` at the **root of the source directory** and there isn't one — it will try Railpack auto-detection on the monorepo root and fail. `RAILWAY_DOCKERFILE_PATH` is what fixes it, and it must be set before the build runs.
 
+> [!warning] Railway's builder supports **only** `--mount=type=cache`
+> Any other mount type is rejected before the build even starts:
+> `dockerfile invalid: flag '--mount=type=bind,...' is missing a type=cache argument (other mount types are not supported)`.
+> Cache mounts additionally require `id=s/<service-id>-<target-path>`, which can't be baked into a committed Dockerfile. `backend/Dockerfile` therefore uses **no `--mount` flags at all** — it copies `uv.lock` and `pyproject.toml` into the image and runs `uv sync` against them.
+
 ---
 
 ## 3. Variables
