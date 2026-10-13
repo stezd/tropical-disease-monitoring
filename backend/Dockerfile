@@ -51,7 +51,7 @@ COPY ./backend/pyproject.toml ./backend/alembic.ini /app/backend/
 
 COPY ./backend/app /app/backend/app
 
-COPY --from=frontend-build /app/backend/app/frontend /app/backend/app/frontend
+COPY --from=frontend-build /app/frontend/dist /app/backend/app/frontend
 
 # Sync the project
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
@@ -62,4 +62,4 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 WORKDIR /app/backend/
 
-CMD ["fastapi", "run", "--workers", "4"]
+CMD ["bash", "scripts/start.sh"]
