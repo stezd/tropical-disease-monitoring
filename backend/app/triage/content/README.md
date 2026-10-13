@@ -42,7 +42,7 @@ Medical text (DR):
 - `pregnancy_from_age` (10): from what age to ask about pregnancy?
 - Severe varicella goes to the default Puskesmas place. Jawaban no. 8 says FKRTL/specialist,
   Blueprint says Puskesmas (AGENTS.md conflict no. 3).
-- Drug names in care text vs. DR's safe list (Jawaban no. 19): Albendazol (`sth`),
+- Drug names in care text vs. DR's safe list (Jawaban no. 18): Albendazol (`sth`),
   Klotrimazol (`tinea`), kalamin (`varicella`).
 - Should a fast pulse at rest (no-thermometer proxy, "tanda SIRS") raise the route like ≥ 39.5 °C?
 - Pattern B: is a cough of exactly 14 days ISPA or TBC?
