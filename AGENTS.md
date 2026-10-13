@@ -8,7 +8,7 @@ Gamified quiz that screens Indonesian patients and tells them where to go.
 
 - **Infection path** — 20 tropical diseases. Flow: [docs/Blueprint.md](docs/Blueprint.md)
   - **Photo step (low priority):** the infection path asks the user for a photo (e.g. rash, swelling). ST builds the analysis; if not ready, keep the prototype's simulated step. Photos are health data: ask consent, don't commit real photos to the repo.
-- **Chronic path** — Flow: [docs/Blueprint-Kronis.md](docs/Blueprint-Kronis.md)
+- **Chronic path (PTM)** — same file: [docs/Blueprint.md](docs/Blueprint.md) (Tahap 2 clusters 6–8, CVD score, PTM routes)
 - **Result** — a route: MERAH (IGD) · KUNING KHUSUS (program poli) · KUNING (Puskesmas) · HIJAU (self-care), plus a Mobile JKN button.
 
 **Visual reference:** [docs/TropiCek-Simulasi.html](docs/TropiCek-Simulasi.html). Colors, type, components: [DESIGN.md](DESIGN.md). Copy its look into React. Don't copy its known mistakes. The section "Fitur" below lists every feature and what still has to change.
@@ -151,51 +151,21 @@ Status: ✅ ada di simulasi, pindahkan ke React · 🔧 ada di simulasi, perlu d
 | Suara, getar, konfeti | Bisa dimatikan di Pengaturan. Animasi mati kalau`prefers-reduced-motion`. | Terasa seperti permainan, tapi tetap bisa diatur. | ✅     |
 | Responsif             | HP dulu, lalu desktop (≥ 640px). samakan tampilan tablet degnan desktop    | Kebanyakan pengguna memakai HP.                   | ✅     |
 
-## Open questions for the doctor (in Indonesian)
+## Doctor's answers (in Indonesian)
 
-**A. Pertanyaan kuesioner dan pengukuran**
+Pertanyaan terbuka untuk dokter sudah dijawab: [docs/Jawaban-Dokter.md](docs/Jawaban-Dokter.md). Yang masih perlu diputuskan:
 
-1. Pada keluhan selain demam, pasien tanpa termometer tidak ditanya suhu. Apakah cukup bertanya "Badan terasa panas?" sebagai pengganti?
-2. pada aplikasi, Pilihan "gemuk" (pengganti berat badan) menaikkan skor malaria berat. Apakah ada sumber ilmiahnya, dan jika tidak, apakah aturan ini dihapus?
-3. Opsi cacingan saat ini muncul untuk semua usia. Apakah hanya untuk anak, dan sampai usia berapa?
-4. Aplikasi memakai IMT < 18,5 untuk kurus, IMT ≥ 27 untuk gemuk (`nutrition()`), dan "pakaian longgar" sebagai tanda kurus. Apakah batas ini sesuai untuk Indonesia, dan cukup kuatkah pertanyaan penggantinya?
-
-**B. Penyakit, rute, dan wilayah**
-
-5. Di Blueprint tifoid ada kurung kosong "( )". Apakah isinya "pola demam naik bertahap" atau istilah lain?
-6. Campak belum punya rute (MERAH, KUNING KHUSUS, KUNING, atau HIJAU). Rute mana yang tepat, dan adakah kondisi seperti usia atau komplikasi yang mengubahnya?
-7. Bengkak menahun bisa langsung dianggap filariasis. Pertanyaan tambahan apa (misalnya lama bengkak atau demam berulang) yang perlu ditanyakan untuk membedakannya?
-8. Aplikasi belum membedakan cacar air ringan dan berat. Apa tanda pembedanya, rute mana untuk yang berat, dan fasilitas mana yang dituju?
-9. Setiap dari 20 penyakit harus punya satu rute (`route`), dan baru campak yang sudah ditanyakan. Mohon isi rute (HIJAU, KUNING, KUNING KHUSUS, atau MERAH) beserta catatannya untuk ke-20 penyakit.
-10. Fitur lokasi menaikkan skor jika pasien berada di daerah endemis, misalnya malaria di Papua dan NTT. Provinsi mana yang endemis untuk tiap penyakit, dan apa sumber datanya?
-11. Tim ingin menguji aplikasi dengan vignette (kasus singkat). Apakah sudah ada vignette yang bisa dipakai, atau bersediakah DR menulis beberapa kasus?
-
-**C. Peringatan dan obat**
-
-11. Pasien dengan dugaan DBD yang pernah minum Ibuprofen atau Aspirin akan melihat peringatan. Setujukah peringatan ini ditambahkan, dan apa kalimatnya?
-12. Peringatan "hentikan obat mampat" muncul untuk dugaan diare atau amebiasis (`drugFlags()`). Obat apa saja yang memicunya, dan apa kalimat peringatannya?
-13. Nyeri pergelangan ≥ 7/10 atau nyeri menetap lebih dari 3 bulan memicu peringatan kontrol untuk Chikungunya kronis. Setujukah angka dan batas waktu ini?
-
-**D. Rute merah dan aturan rujukan**
-
-14. Demam ≥ 39,5 °C menaikkan rute HIJAU ke KUNING (`decide()`). Setujukah angka dan aturan ini, dan apakah berlaku untuk semua penyakit atau hanya HIJAU?
-
-**G. Pertanyaan setelah deploy aplikasi (dokter melihat langsung)**
-
-17. Pertanyaan klaster Q3 dan Q4 serta daftar faktor ekologi (ECO, termasuk "Danau Lindu/Napu/Bada") tampil berurutan di kuesioner. Apakah teks, pilihan jawaban, dan urutannya sudah tepat?
-18. Fitur foto (prioritas rendah, masih simulasi) meminta pasien memilih temuan di ruam, luka, lidah, atau mata. Apakah pilihan temuan di layar sudah sesuai, dan temuan apa yang perlu ditambah?
-19. Halaman hasil menampilkan rute rujukan dan saran untuk pasien. Setelah melihat contoh hasil nyata, sejauh mana rekomendasi boleh diberikan, misalnya apakah boleh menyebut obat bebas?
-20. Rute MERAH menampilkan kondisi terdeteksi, pertolongan pertama (`aid`), tombol 119, dan tombol navigasi ke fasilitas (`fac`). Apakah daftar tanda bahaya, langkah pertolongan pertama, dan fasilitas yang dicari sudah tepat?
-21. Teks "Yang perlu dilakukan" (`care`) tampil di halaman hasil dan di rangkuman QR yang dibuka petugas. Apakah teks tiap penyakit sudah sesuai, dan mohon tuliskan revisinya jika ada.
-22. Daftar lab tiap penyakit (`lab`) masuk ke rangkuman yang bisa disalin, tetapi tidak tampil di halaman hasil. Apakah daftar lab di rangkuman sudah sesuai?
-23. Skor rendah menampilkan "Belum dapat ditentukan", dan setiap hasil memuat penafian bahwa ini skrining, bukan diagnosis. Apakah kedua kalimat ini sudah tepat saat dibaca di halaman hasil?
-
-**Perlu persetujuan ST** (bobot dan skor):
-
-25. Ambang skor nyeri: Chikungunya ≥ 6/10 dan peringatan kronis ≥ 7/10kdoe  (dulu VAS ≥ 60/100).
-26. Batas skor rendah: di bawah 30 berarti "belum dapat ditentukan".
-27. Bobot semua aturan skor, bobot lokasi (no. 10), dan cara menyebut perhitungan di layar "Kak Tropi sedang menebak".
-28. **Tulisan "XGBoost"** di Blueprint diganti sesuai cara hitung ST
+1. **Tulisan "XGBoost"** di Blueprint diganti sesuai cara hitung ST.
+2. **Jawaban no. 16 (dan bagian E–F)** tidak ada di daftar jawaban.
+3. **Blueprint vs. jawaban no. 9 (rute) berbeda.** Mana yang dipakai (DR)?
+   - Leptospirosis: jawaban → MERAH; Blueprint → "Leptospirosis dini" KUNING, gagal ginjal MERAH.
+   - Cacingan (STH): jawaban → KUNING; Blueprint → HIJAU (ringan).
+   - Hepatitis: jawaban → Hepatitis A saja; Blueprint → Hepatitis A&B.
+   - Varicella berat: jawaban → "Kuning FKRTL/Spesialis"; Blueprint → KUNING (Puskesmas).
+4. **Urutan pertanyaan:** jawaban no. 17 bilang ECO langsung setelah Q2; Blueprint menaruh red flag (Q3) di antaranya.
+5. **Tahap 5** bilang "klaster yang dipilih di Tahap 4"; kemungkinan maksudnya Tahap 2.
+6. **Teks pop-up NSAID, obat mampat, dan disclaimer** di Blueprint beda kalimat dengan jawaban no. 12, 13, 23. Pilih satu versi (DR).
+7. **Rute MERAH di Blueprint** ("berkedip dengan sirene audio") bertentangan dengan aturan "Red route: no coins or animation" di atas.
 
 ## Remember (in Indonesian)
 
