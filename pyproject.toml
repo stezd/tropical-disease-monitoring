@@ -34,3 +34,36 @@ extend-ignore-re = [
 
 [tool.typos.default.extend-identifiers]
 alls = "alls"
+# Indonesian and medical vocabulary used by the docs, the quiz content JSON and
+# the code. The typos hook checks against an English dictionary, so every
+# Indonesian word in AGENTS.md, docs/ and backend/app/triage/content/ reads as a
+# misspelling. Listing them keeps the hook useful for real typos.
+[tool.typos.default.extend-words]
+absolut = "absolut"
+analisis = "analisis"
+faktor = "faktor"
+fase = "fase"
+foto = "foto"
+hav = "hav"
+jus = "jus"
+lokal = "lokal"
+makin = "makin"
+mata = "mata"
+minum = "minum"
+mis = "mis"
+ot = "ot"
+paket = "paket"
+persisten = "persisten"
+poin = "poin"
+rute = "rute"
+samping = "samping"
+serebral = "serebral"
+sistem = "sistem"
+standar = "standar"
+studi = "studi"
+tak = "tak"
+teh = "teh"
+tipe = "tipe"
+vas = "vas"
+vektor = "vektor"
+vertikal = "vertikal"
