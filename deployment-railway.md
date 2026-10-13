@@ -199,6 +199,7 @@ Rates: RAM $10/GB/month, CPU $20/vCPU/month, egress $0.05/GB. **Builds are free.
 | Build fails, Railpack mentions no start command / a build error at the repo root | No root `Dockerfile` | Set `RAILWAY_DOCKERFILE_PATH=backend/Dockerfile` and redeploy |
 | `dockerfile invalid: flag '--mount=type=bind,…' is missing a type=cache argument (other mount types are not supported)` | Railway's builder accepts only `type=cache` mounts | Remove every `--mount` flag from the Dockerfile and `COPY` the lock files instead |
 | `error TS2307: Cannot find module '@/lib/utils'` during the image build | Root `.gitignore` has bare patterns such as `lib/` that match source directories at any depth, and `railway up` applies ignore patterns to the whole tree | Anchor them (`/lib/`) and pre-flight: run `git check-ignore --no-index -v --stdin` over the output of `git ls-files` |
+| `error TS2307: Cannot find module './routeTree.gen'` plus cascading route-type errors | `frontend/src/routeTree.gen.ts` is gitignored and absent from a clean checkout, but `main.tsx` imports it and the build ran `tsc` first | Keep the build script as `vite build && tsc -p tsconfig.build.json`: the TanStack plugin generates the tree from its existing vite config before type-checking, and a type error still fails the build |
 | `railway up` exited 0 but nothing is running | The exit code is not a success signal (observed) | `railway deployment list --service backend`, then `railway logs --build -s backend -n 60` |
 | `railway status --service x` → `unexpected argument '--service'` | `status` is one of the few commands without the global service flag | Use `railway logs -s`, `railway deployment list -s`, `railway variable list -s` |
 | `Unauthorized. Please check that your RAILWAY_TOKEN is valid…` | Project token used for an account-level command (or vice versa) | Use the right variable for the token's scope (§1) |
@@ -239,3 +240,17 @@ Two consequences worth knowing:
 - The Dockerfile is three stages: frontend build -> Python build (which owns `uv`) -> runtime (copies only `/app/.venv`). Keep `uv` out of the runtime stage.
 
 Re-measure with `docker images backend:latest --format "{{.Size}}"`.
+
+## 12. Production deploys require human approval
+
+Development deploys are automatic. **Production is gated**: nothing reaches production without an explicit human go-ahead.
+
+Railway has no per-environment approval role outside Enterprise, so the gate is procedural and deliberate:
+
+1. Deploy to `development` first and verify it - endpoints, a real quiz run, and the red route.
+2. Get an explicit human approval ("deploy to production") before doing anything to production.
+3. `railway up -e production` is the gate action. It is the only thing that changes production, and it is never run automatically, never as part of a batch, and never as a follow-on from a dev deploy.
+
+Railway's staged changes give a second, platform-level checkpoint: variable and configuration edits are staged and must be reviewed and deployed in the dashboard before they take effect, so an accidental variable change does not silently reach production either.
+
+If a CI-driven deploy is ever added, gate it with a GitHub Environment that has required reviewers, and keep `railway up -e production` out of every automatic path.
