@@ -118,6 +118,7 @@ railway up --service backend
 Notes:
 
 - `railway up` uploads the **local directory**, so Railway never needs GitHub access to the repo. The trade-off: no autodeploy on push, deploys are explicit.
+- `railway up` applies your **`.gitignore` patterns to the whole tree**, not just to untracked files. An over-broad pattern silently drops source files from the archive: a bare `lib/` excluded `frontend/src/lib/` and broke the TypeScript build with `TS2307`. Pre-flight by running `git check-ignore --no-index -v --stdin` over the output of `git ls-files` and confirm nothing you need is listed.
 - **Do not trust `railway up`'s exit code.** In a non-interactive shell it returns 0 as soon as the upload finishes, before the build result is known — Railway's docs say it exits 0 only on SUCCESS, but we observed exit 0 while the deployment record said `FAILED`. Confirm with `railway deployment list --service backend`, then `railway logs --build -s backend` if it failed.
 - `railway add --variables KEY=value` **echoes the values** in its output — we leaked two secrets that way and had to rotate them. Create the service first, then use `railway variable set`, which prints only the key names.
 - The CLI **resolves** `${{Postgres.DATABASE_URL}}` to the literal connection string when you set it, so it will not follow a later database password rotation.
@@ -197,6 +198,7 @@ Rates: RAM $10/GB/month, CPU $20/vCPU/month, egress $0.05/GB. **Builds are free.
 | --- | --- | --- |
 | Build fails, Railpack mentions no start command / a build error at the repo root | No root `Dockerfile` | Set `RAILWAY_DOCKERFILE_PATH=backend/Dockerfile` and redeploy |
 | `dockerfile invalid: flag '--mount=type=bind,…' is missing a type=cache argument (other mount types are not supported)` | Railway's builder accepts only `type=cache` mounts | Remove every `--mount` flag from the Dockerfile and `COPY` the lock files instead |
+| `error TS2307: Cannot find module '@/lib/utils'` during the image build | Root `.gitignore` has bare patterns such as `lib/` that match source directories at any depth, and `railway up` applies ignore patterns to the whole tree | Anchor them (`/lib/`) and pre-flight: run `git check-ignore --no-index -v --stdin` over the output of `git ls-files` |
 | `railway up` exited 0 but nothing is running | The exit code is not a success signal (observed) | `railway deployment list --service backend`, then `railway logs --build -s backend -n 60` |
 | `railway status --service x` → `unexpected argument '--service'` | `status` is one of the few commands without the global service flag | Use `railway logs -s`, `railway deployment list -s`, `railway variable list -s` |
 | `Unauthorized. Please check that your RAILWAY_TOKEN is valid…` | Project token used for an account-level command (or vice versa) | Use the right variable for the token's scope (§1) |
