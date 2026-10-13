@@ -189,6 +189,9 @@ Rates: RAM $10/GB/month, CPU $20/vCPU/month, egress $0.05/GB. **Builds are free.
 | Symptom | Cause | Fix |
 | --- | --- | --- |
 | Build fails, Railpack mentions no start command / a build error at the repo root | No root `Dockerfile` | Set `RAILWAY_DOCKERFILE_PATH=backend/Dockerfile` and redeploy |
+| `dockerfile invalid: flag '--mount=type=bind,…' is missing a type=cache argument (other mount types are not supported)` | Railway's builder accepts only `type=cache` mounts | Remove every `--mount` flag from the Dockerfile and `COPY` the lock files instead |
+| `railway up` exited 0 but nothing is running | The exit code is not a success signal (observed) | `railway deployment list --service backend`, then `railway logs --build -s backend -n 60` |
+| `railway status --service x` → `unexpected argument '--service'` | `status` is one of the few commands without the global service flag | Use `railway logs -s`, `railway deployment list -s`, `railway variable list -s` |
 | `Unauthorized. Please check that your RAILWAY_TOKEN is valid…` | Project token used for an account-level command (or vice versa) | Use the right variable for the token's scope (§1) |
 | `failed to resolve source metadata for ghcr.io/astral-sh/uv` | Registry DNS blip on the builder | Retry the build; it is transient, not your Dockerfile |
 | `ValueError: The value of SECRET_KEY is "changethis"…` | Real secret not set, and `FASTAPI_ENV` unset | Set a real `SECRET_KEY` (do not set `FASTAPI_ENV=development`) |

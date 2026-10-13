@@ -40,12 +40,12 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Install dependencies
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
-# Deliberately no --mount=type=cache: Railway requires cache mounts to use
-# id=s/<service-id>-<target-path>, and the service id isn't knowable when this
-# file is written. Bind mounts are fine and keep the layer cached by inputs.
-RUN --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-workspace --package app
+# No --mount flags anywhere in this file: Railway's builder rejects every mount
+# type except type=cache, and cache mounts need an id built from the service id,
+# which isn't knowable when this file is written. Copying the lock files keeps
+# the dependency layer cached against their contents instead.
+COPY uv.lock pyproject.toml /app/
+RUN uv sync --frozen --no-install-workspace --package app
 
 COPY ./backend/scripts /app/backend/scripts
 
@@ -57,10 +57,8 @@ COPY --from=frontend-build /app/frontend/dist /app/backend/app/frontend
 
 # Sync the project
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
-# See the note above: no --mount=type=cache, for Railway compatibility.
-RUN --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --package app
+# See the note above: no --mount flags, for Railway compatibility.
+RUN uv sync --frozen --package app
 
 WORKDIR /app/backend/
 
