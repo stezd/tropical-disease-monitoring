@@ -11,7 +11,7 @@ Gamified quiz that screens Indonesian patients and tells them where to go.
 - **Chronic path** — Flow: [docs/Blueprint-Kronis.md](docs/Blueprint-Kronis.md)
 - **Result** — a route: MERAH (IGD) · KUNING KHUSUS (program poli) · KUNING (Puskesmas) · HIJAU (self-care), plus a Mobile JKN button.
 
-**Visual reference:** [docs/TropiCek-Simulasi.html](docs/TropiCek-Simulasi.html). Copy its look into React. Don't copy its known mistakes. Section 3 of the plan lists the changes.
+**Visual reference:** [docs/TropiCek-Simulasi.html](docs/TropiCek-Simulasi.html). Colors, type, components: [DESIGN.md](DESIGN.md). Copy its look into React. Don't copy its known mistakes. The section "Changes to make vs. the HTML prototype" below lists them.
 
 ## Where things are
 
@@ -75,3 +75,36 @@ bash scripts/generate-client.sh          # after API changes
 - Model changed → add an Alembic migration. API changed → regenerate the client.
 - Design for phones first, then tablet (≥640px) and desktop (≥960px).
 - Near the deadline: fix bugs instead of adding features.
+
+## Changes to make vs. the HTML prototype (in Indonesian)
+
+Simulasi HTML hanya contoh tampilan. Perubahan ini dibuat di aplikasi asli:
+
+1. **Halaman awal:** pilih "Saya sedang sakit" atau "Cek risiko penyakit jangka panjang".
+2. **Usia dan jenis kelamin** ditanya paling awal.
+3. **Kondisi gawat:** tampilkan tombol telepon 119 dan nomor 119/112 yang bisa disalin. Tanpa koin atau animasi.
+4. **Nama penyakit tidak muncul di pilihan jawaban,** hanya di halaman hasil.
+5. **Skala nyeri** diganti dengan visual analogue scale
+6. **Tombol "Buat janji dokter (Mobile JKN)"** di halaman hasil.
+7. **Login opsional.** Orang tetap bisa skrining tanpa akun.
+8. **Koin tidak diberikan per jawaban.** Koin untuk menyelesaikan skrining, kontrol setelah berobat, atau cek rutin.
+
+## Open questions for the doctor (in Indonesian)
+
+1. **Suhu tubuh:** kalau pasien tidak punya termometer di keluhan selain demam (napas, perut, kulit, bengkak), cukup tanya "Badan terasa panas?"?
+2. **Tifoid:** di Blueprint ada kurung kosong "( )". Apakah isinya "pola demam naik bertahap"?
+3. **Campak** masuk rute mana?
+4. **"Badan gemuk → malaria berat":** ada sumbernya? Kalau tidak, dihapus.
+5. **Peringatan jangan minum Ibuprofen/Aspirin** untuk dugaan DBD: setuju ditambahkan?
+6. **Cacingan:** pilihan ini hanya untuk anak (batas usia berapa) atau semua umur?
+7. **Bengkak menahun:** perlu pertanyaan tambahan supaya tidak langsung dianggap filariasis?
+8. **Cacar air ringan vs. berat:** apa bedanya, dan yang berat dirujuk ke mana?
+9. apakah ada vignette
+10. **Tulisan "XGBoost"** di Blueprint diganti sesuai cara hitung ST.
+
+## Remember (in Indonesian)
+
+- **Jujur soal "AI".** Skor dihitung dari data literatur dan diuji dengan kartu kasus dokter. Fitur foto (kalau belum selesai), GPS, dan kirim data ke SATUSEHAT masih simulasi, jadi sebut sebagai rencana.
+- **Uji coba pakai kartu kasus,** bukan data kesehatan asli peserta. Peserta mengisi survei kemudahan pakai (SUS).
+- **Jangan pakai kata "diagnosis"** di aplikasi. Pakai "skrining" atau "perkiraan".
+- **Jangan minta NIK atau nomor BPJS.**
