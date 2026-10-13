@@ -8,7 +8,7 @@ Gamified quiz that screens Indonesian patients and tells them where to go.
 
 - **Infection path** — 20 tropical diseases. Flow: [docs/Blueprint.md](docs/Blueprint.md)
   - **Photo step (low priority):** the infection path asks the user for a photo (e.g. rash, swelling). ST builds the analysis; if not ready, keep the prototype's simulated step. Photos are health data: ask consent, don't commit real photos to the repo.
-- **Chronic path** — Flow: [docs/Blueprint-Kronis.md](docs/Blueprint-Kronis.md)
+- **Chronic path (PTM)** — same file: [docs/Blueprint.md](docs/Blueprint.md) (Tahap 2 clusters 6–8, CVD score, PTM routes)
 - **Result** — a route: MERAH (IGD) · KUNING KHUSUS (program poli) · KUNING (Puskesmas) · HIJAU (self-care), plus a Mobile JKN button.
 
 **Visual reference:** [docs/TropiCek-Simulasi.html](docs/TropiCek-Simulasi.html). Colors, type, components: [DESIGN.md](DESIGN.md). Copy its look into React. Don't copy its known mistakes. The section "Changes to make vs. the HTML prototype" below lists them.
@@ -89,18 +89,21 @@ Simulasi HTML hanya contoh tampilan. Perubahan ini dibuat di aplikasi asli:
 7. **Login opsional.** Orang tetap bisa skrining tanpa akun.
 8. **Koin tidak diberikan per jawaban.** Koin untuk menyelesaikan skrining, kontrol setelah berobat, atau cek rutin.
 
-## Open questions for the doctor (in Indonesian)
+## Doctor's answers (in Indonesian)
 
-1. **Suhu tubuh:** kalau pasien tidak punya termometer di keluhan selain demam (napas, perut, kulit, bengkak), cukup tanya "Badan terasa panas?"?
-2. **Tifoid:** di Blueprint ada kurung kosong "( )". Apakah isinya "pola demam naik bertahap"?
-3. **Campak** masuk rute mana?
-4. **"Badan gemuk → malaria berat":** ada sumbernya? Kalau tidak, dihapus.
-5. **Peringatan jangan minum Ibuprofen/Aspirin** untuk dugaan DBD: setuju ditambahkan?
-6. **Cacingan:** pilihan ini hanya untuk anak (batas usia berapa) atau semua umur?
-7. **Bengkak menahun:** perlu pertanyaan tambahan supaya tidak langsung dianggap filariasis?
-8. **Cacar air ringan vs. berat:** apa bedanya, dan yang berat dirujuk ke mana?
-9. apakah ada vignette
-10. **Tulisan "XGBoost"** di Blueprint diganti sesuai cara hitung ST.
+Pertanyaan terbuka untuk dokter sudah dijawab: [docs/Jawaban-Dokter.md](docs/Jawaban-Dokter.md). Yang masih perlu diputuskan:
+
+1. **Tulisan "XGBoost"** di Blueprint diganti sesuai cara hitung ST.
+2. **Jawaban no. 16 (dan bagian E–F)** tidak ada di daftar jawaban.
+3. **Blueprint vs. jawaban no. 9 (rute) berbeda.** Mana yang dipakai (DR)?
+   - Leptospirosis: jawaban → MERAH; Blueprint → "Leptospirosis dini" KUNING, gagal ginjal MERAH.
+   - Cacingan (STH): jawaban → KUNING; Blueprint → HIJAU (ringan).
+   - Hepatitis: jawaban → Hepatitis A saja; Blueprint → Hepatitis A&B.
+   - Varicella berat: jawaban → "Kuning FKRTL/Spesialis"; Blueprint → KUNING (Puskesmas).
+4. **Urutan pertanyaan:** jawaban no. 17 bilang ECO langsung setelah Q2; Blueprint menaruh red flag (Q3) di antaranya.
+5. **Tahap 5** bilang "klaster yang dipilih di Tahap 4"; kemungkinan maksudnya Tahap 2.
+6. **Teks pop-up NSAID, obat mampat, dan disclaimer** di Blueprint beda kalimat dengan jawaban no. 12, 13, 23. Pilih satu versi (DR).
+7. **Rute MERAH di Blueprint** ("berkedip dengan sirene audio") bertentangan dengan aturan "Red route: no coins or animation" di atas.
 
 ## Remember (in Indonesian)
 
