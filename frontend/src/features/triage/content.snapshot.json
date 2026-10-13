@@ -180,21 +180,36 @@
         "emoji": "🌡️",
         "name": "Demam & Badan",
         "sub": "Demam, linu, menggigil",
-        "members": ["dbd", "malaria", "chik", "lepto", "skisto"]
+        "members": [
+          "dbd",
+          "malaria",
+          "chik",
+          "lepto",
+          "skisto"
+        ]
       },
       {
         "id": "B",
         "emoji": "😷",
         "name": "Napas",
         "sub": "Batuk, pilek, sesak",
-        "members": ["ispa", "tbc"]
+        "members": [
+          "ispa",
+          "tbc"
+        ]
       },
       {
         "id": "C",
         "emoji": "🤢",
         "name": "Perut",
         "sub": "Mencret, mual, mata kuning",
-        "members": ["diare", "tifoid", "amoeba", "hepa", "sth"]
+        "members": [
+          "diare",
+          "tifoid",
+          "amoeba",
+          "hepa",
+          "sth"
+        ]
       },
       {
         "id": "D",
@@ -215,7 +230,9 @@
         "emoji": "🦵",
         "name": "Bengkak Kronis",
         "sub": "Bengkak di kaki/lengan",
-        "members": ["filaria"]
+        "members": [
+          "filaria"
+        ]
       }
     ],
     "patterns": {

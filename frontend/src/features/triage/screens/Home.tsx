@@ -58,7 +58,11 @@ export function HomeScreen() {
           <button type="button" className="btn btn-purple big" onClick={start}>
             🤒 Saya sedang sakit
           </button>
-          <Link className="btn btn-purple" to="/kronis" onClick={() => sfx.tap()}>
+          <Link
+            className="btn btn-purple"
+            to="/kronis"
+            onClick={() => sfx.tap()}
+          >
             🩺 Cek risiko penyakit jangka panjang
           </Link>
           {loggedIn && (

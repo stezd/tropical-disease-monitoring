@@ -79,7 +79,10 @@ test("Successful log out", async ({ page }) => {
 
   await page.getByTestId("user-menu").click()
   await page.getByRole("button", { name: "Keluar" }).click()
-  await expect(page.getByRole("link", { name: /Masuk/ })).toBeVisible()
+  // The app has no "Masuk" link anywhere (the login page says "Log In"), so
+  // assert the session is actually gone instead: the user menu only renders
+  // while logged in.
+  await expect(page.getByTestId("user-menu")).not.toBeVisible()
 })
 
 test("Logged-out user cannot access protected routes", async ({ page }) => {
@@ -94,7 +97,7 @@ test("Logged-out user cannot access protected routes", async ({ page }) => {
 
   await page.getByTestId("user-menu").click()
   await page.getByRole("button", { name: "Keluar" }).click()
-  await expect(page.getByRole("link", { name: /Masuk/ })).toBeVisible()
+  await expect(page.getByTestId("user-menu")).not.toBeVisible()
 
   await page.goto("/settings")
   await page.waitForURL("/login")
