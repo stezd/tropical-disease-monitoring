@@ -265,3 +265,20 @@ How the wiring works:
 - **Connecting a repo - or changing its source - deploys every environment immediately.** Do it while the branches hold identical commits, or accept that production deploys whatever `prod` points at.
 - `Wait for CI` (`checkSuites`) is **off**. It became possible on 2026-10-14, when the repository's GitHub Actions workflows finally registered - they had never been registered since the repo was created, and pushing a change under `.github/workflows/` fixed it. Left off for now: a failing check should not silently block a deploy until the suite has a track record.
 - `railway up -e production` still works as an emergency path, but it uploads the local working tree rather than a committed revision. Prefer the branch, so what is deployed is always traceable to a commit.
+
+## 13. When a deploy triggers (watch paths)
+
+Both environments build only when something the image actually depends on changes:
+
+```
+backend/**
+frontend/**
+package.json
+bun.lock
+uv.lock
+pyproject.toml
+```
+
+A docs-only or workflow-only commit is **skipped**: the service keeps its previous deployment instead of rebuilding a 358 MB image for a README edit. The root `package.json`/`bun.lock`/`uv.lock`/`pyproject.toml` are included because the Dockerfile copies them into the build.
+
+Watch paths live on the **service instance**, so they are set per environment - changing them means updating `development` and `production` separately. A skipped deploy does not show in the default deployment list: check the skipped entries if a push appears to do nothing.
