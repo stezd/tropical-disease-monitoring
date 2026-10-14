@@ -6,7 +6,7 @@ Satu-satunya acuan isi medis aplikasi: pertanyaan, kriteria, rute, peringatan, l
 
 - Kalau JSON konten (`backend/app/triage/content/`) berbeda dengan dokumen ini, **dokumen ini yang berlaku**. Perbaiki JSON-nya, atau perbarui dokumen ini dengan persetujuan DR.
 - Teks medis berubah hanya dengan persetujuan **DR**. Bobot dan ambang skor hanya dengan persetujuan **ST**.
-- Data dan format per tahap untuk model ada di [Alur-Data.md](Alur-Data.md).
+- Format masukan dan keluaran MedGemma ada di [Format-MedGemma.md](Format-MedGemma.md).
 
 **Kode sumber** (di akhir setiap butir)
 

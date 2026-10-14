@@ -8,7 +8,7 @@ Gamified quiz that screens Indonesian patients and tells them where to go.
 
 - **Infection path** — 20 tropical diseases. Medical source of truth: [docs/Acuan-Medis.md](docs/Acuan-Medis.md)
   - **Photo step (low priority):** the infection path asks the user for a photo (e.g. rash, swelling). ST builds the analysis; if not ready, keep the prototype's simulated step. Photos are health data: ask consent, don't commit real photos to the repo.
-- **Chronic path (PTM)** — same file (clusters F–H, CVD score, PTM routes). Data formats for scoring and the model: [docs/Alur-Data.md](docs/Alur-Data.md)
+- **Chronic path (PTM)** — same file (clusters F–H, CVD score, PTM routes). MedGemma input/output formats: [docs/Format-MedGemma.md](docs/Format-MedGemma.md)
 - **Result** — a route: MERAH (IGD) · KUNING KHUSUS (program poli) · KUNING (Puskesmas) · HIJAU (self-care), plus a Mobile JKN button.
 
 **Visual reference:** [docs/TropiCek-Simulasi.html](docs/TropiCek-Simulasi.html). Colors, type, components: [DESIGN.md](DESIGN.md). Copy its look into React. Don't copy its known mistakes. The section "Fitur" below lists every feature and what still has to change.

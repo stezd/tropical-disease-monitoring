@@ -28,6 +28,6 @@ Quiz text, options, and weights live here, not in React. The backend serves them
 - Medical content (criteria, routes, text, and who approves what):
   [docs/Acuan-Medis.md](../../../../docs/Acuan-Medis.md). If a JSON file disagrees with it,
   the document wins.
-- Data formats per step, feature names, and the scoring contract:
-  [docs/Alur-Data.md](../../../../docs/Alur-Data.md).
+- MedGemma input/output formats and the model scoring contract:
+  [docs/Format-MedGemma.md](../../../../docs/Format-MedGemma.md).
 - Open items for DR and ST: Acuan-Medis section 1 (K1–K29).
