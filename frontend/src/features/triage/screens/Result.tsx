@@ -1,9 +1,10 @@
-import { useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import { type FlowPublic, TriageService } from "@/client"
 import { scoreAnswers, scoreKey } from "../api"
 import { Sparkles } from "../components/Art"
+import { PhotoCard } from "../components/PhotoCard"
 import { Card, copyText, Rich, toast, WarnBox } from "../components/Ui"
 import { confetti, sfx, vibrate } from "../fx"
 import { isAndroid, jknURL, mapsURL } from "../links"
@@ -33,16 +34,24 @@ export function ResultScreen({
     queryKey: scoreKey(api, flow.id),
     queryFn: () => scoreAnswers(api, flow.id),
     staleTime: Number.POSITIVE_INFINITY,
+    // A photo added on this page changes the answers: keep showing the old
+    // result while the new one loads instead of the loading screen.
+    placeholderData: keepPreviousData,
   })
   const r = score.data
   const host = useRef<HTMLDivElement>(null)
   const [grow, setGrow] = useState(false)
 
+  // Celebrate the first result only, not each re-score.
+  const celebrated = useRef(false)
   useEffect(() => {
     if (!r) return
-    sfx.win()
-    vibrate([30, 40, 30])
-    confetti(host.current?.closest(".tc-app") as HTMLElement | null)
+    if (!celebrated.current) {
+      celebrated.current = true
+      sfx.win()
+      vibrate([30, 40, 30])
+      confetti(host.current?.closest(".tc-app") as HTMLElement | null)
+    }
     const t = setTimeout(() => setGrow(true), 60)
     return () => clearTimeout(t)
   }, [r])
@@ -57,7 +66,7 @@ export function ResultScreen({
           {score.isError && (
             <button
               type="button"
-              className="btn btn-purple"
+              className="btn btn-primary"
               onClick={() => score.refetch()}
             >
               ↻ Coba lagi
@@ -95,7 +104,7 @@ export function ResultScreen({
         <div className="htitle">Hasil Skrining</div>
       </div>
       <div className="rscroll">
-        <div className="banner" style={{ background: grad }}>
+        <div className={`banner rt-${r.route}`} style={{ background: grad }}>
           ✨ SKRINING SELESAI! ✨
         </div>
         <div className="rcols">
@@ -137,7 +146,10 @@ export function ResultScreen({
                   </p>
                 </>
               )}
-              <span className="rtag" style={{ background: grad }}>
+              <span
+                className={`rtag rt-${r.route}`}
+                style={{ background: grad }}
+              >
                 {route.emoji} {route.name}
               </span>
             </Card>
@@ -198,7 +210,7 @@ export function ResultScreen({
           <div className="rcol">
             <div className="card rcard">
               <div
-                className="rhead"
+                className={`rhead rt-${r.route}`}
                 style={{
                   background: `linear-gradient(160deg,${route.color_from},${route.color_to})`,
                 }}
@@ -228,7 +240,7 @@ export function ResultScreen({
                   </div>
                 </div>
                 <a
-                  className={`btn ${r.route === "green" ? "btn-teal" : "btn-purple"}`}
+                  className="btn btn-primary"
                   href={mapsURL(r.maps_query)}
                   target="_blank"
                   rel="noopener"
@@ -260,6 +272,8 @@ export function ResultScreen({
               </div>
             </div>
 
+            <PhotoCard flow={flow} route={r.route} />
+
             {r.warnings.length > 0 && (
               <Card tab="CATATAN PENTING">
                 {r.warnings.map((w) => (
@@ -273,14 +287,14 @@ export function ResultScreen({
             <div className="btnrow">
               <button
                 type="button"
-                className="btn btn-teal"
+                className="btn btn-secondary"
                 onClick={copySummary}
               >
                 📋 Salin Rangkuman
               </button>
               <button
                 type="button"
-                className="btn btn-purple big"
+                className="btn btn-secondary"
                 onClick={onRestart}
               >
                 ↻ Ulangi Skrining
@@ -366,7 +380,7 @@ function SaveCard({
           )}
           <button
             type="button"
-            className="btn btn-purple"
+            className="btn btn-secondary"
             disabled={state === "saving"}
             onClick={save}
           >
