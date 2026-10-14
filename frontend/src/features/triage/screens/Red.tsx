@@ -47,7 +47,7 @@ export function RedScreen({
         >
           ‹
         </button>
-        <div className="htitle">RUTE DARURAT</div>
+        <div className="htitle">KONDISI DARURAT</div>
       </div>
       <div className="rscroll">
         <div className="redcols">

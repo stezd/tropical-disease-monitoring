@@ -211,7 +211,7 @@ class Warnings(BaseModel):
     high_fever: str | None = None
     route_upgraded: str | None = None
     route_upgraded_bp: str | None = None
-    route_upgraded_sign: str = "Rute dinaikkan ke SEDANG karena ada tanda: {sign}."
+    route_upgraded_sign: str = "Kondisi dinaikkan ke SEDANG karena ada tanda: {sign}."
     no_thermo_fever_pattern: str | None = None
     no_thermo_other: str | None = None
     no_bp: str | None = None

@@ -287,7 +287,6 @@ def test_content_never_says_diagnosis(flow_id: str) -> None:
 # Option text that names a disease on purpose. Pending DR (see content/README.md).
 # Family history has to name the diseases it asks about (Blueprint Q4).
 NAME_EXCEPTIONS = {
-    ("mr", "campak"),
     ("kontak", "tbc"),
     ("keturunan", "kencing manis"),
     ("keturunan", "darah tinggi"),

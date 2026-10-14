@@ -953,7 +953,7 @@
       {
         "id": "mr",
         "emoji": "💉",
-        "text": "Imunisasi campak (MR) anak belum lengkap",
+        "text": "Imunisasi anak belum lengkap",
         "detail": null,
         "reason": "Imunisasi MR/Campak tidak lengkap",
         "disease": null,
@@ -1271,7 +1271,7 @@
     ],
     "routes": {
       "green": {
-        "name": "RUTE RINGAN",
+        "name": "KONDISI RINGAN",
         "sub": "Perawatan Mandiri · Apotek",
         "emoji": "🌿",
         "color_from": "#4FDDA0",
@@ -1281,7 +1281,7 @@
         "nav_label": "Apotek"
       },
       "yellow": {
-        "name": "RUTE SEDANG",
+        "name": "KONDISI SEDANG",
         "sub": "Puskesmas · Klinik Pratama",
         "emoji": "🏥",
         "color_from": "#FFCB57",
@@ -1291,7 +1291,7 @@
         "nav_label": "Puskesmas"
       },
       "special": {
-        "name": "RUTE SEDANG",
+        "name": "KONDISI SEDANG",
         "sub": "Poli Program Nasional Kemenkes",
         "emoji": "🎯",
         "color_from": "#FFA45C",
@@ -1301,7 +1301,7 @@
         "nav_label": "Puskesmas"
       },
       "red": {
-        "name": "RUTE DARURAT",
+        "name": "KONDISI DARURAT",
         "sub": "Kedaruratan · IGD Rumah Sakit",
         "emoji": "🚨",
         "color_from": "#FF7280",
@@ -2104,7 +2104,7 @@
     ],
     "routes": {
       "green": {
-        "name": "RUTE RINGAN",
+        "name": "KONDISI RINGAN",
         "sub": "Perawatan Mandiri · Apotek",
         "emoji": "🌿",
         "color_from": "#4FDDA0",
@@ -2114,7 +2114,7 @@
         "nav_label": "Apotek"
       },
       "yellow": {
-        "name": "RUTE SEDANG",
+        "name": "KONDISI SEDANG",
         "sub": "Puskesmas · Klinik Pratama",
         "emoji": "🏥",
         "color_from": "#FFCB57",
@@ -2124,7 +2124,7 @@
         "nav_label": "Puskesmas"
       },
       "special": {
-        "name": "RUTE SEDANG",
+        "name": "KONDISI SEDANG",
         "sub": "Poli Program Nasional Kemenkes",
         "emoji": "🎯",
         "color_from": "#FFA45C",
@@ -2134,7 +2134,7 @@
         "nav_label": "Puskesmas"
       },
       "red": {
-        "name": "RUTE DARURAT",
+        "name": "KONDISI DARURAT",
         "sub": "Kedaruratan · IGD Rumah Sakit",
         "emoji": "🚨",
         "color_from": "#FF7280",
