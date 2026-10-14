@@ -49,6 +49,51 @@ Catatan:
 - Ada tanda bahaya → model tidak dipanggil (MERAH, aturan tetap).
 - Tanpa nama, NIK, nomor BPJS, koordinat, atau foto.
 
+Contoh `user` (jalur infeksi, cocok dengan contoh keluaran di bawah):
+
+```text
+Jalur: infeksi
+
+Fakta pasien:
+F1 Pasien: Saya sendiri, 22 tahun, laki-laki
+F2 Keluhan utama: Demam & Badan
+F3 Pola gejala: Menggigil berulang tiap 2–3 hari
+F4 Gejala penyerta: Keringat dingin deras & pucat usai demam
+F5 Riwayat / faktor risiko: Dari Papua/Maluku/NTT, hutan, atau tambang
+F6 Suhu: tidak diukur
+F7 Pengganti alat ukur: Menggigil hebat atau keringat sampai baju basah
+F8 Gizi: Pakaian/celana sangat longgar dalam 1-2 bulan terakhir
+F9 Nyeri: Kepala / mata, nyeri 4/10
+F10 Temuan foto: tidak ada
+
+<obat_pasien>Paracetamol</obat_pasien>
+
+Kandidat:
+- dbd: Demam Berdarah Dengue (DBD)
+- malaria: Malaria
+- chik: Chikungunya
+- lepto: Leptospirosis
+- skisto: Skistosomiasis
+- ispa: ISPA (Infeksi Saluran Pernapasan Akut)
+- tbc: Tuberkulosis (TBC)
+- diare: Diare Akut
+- tifoid: Demam Tifoid (Tipes)
+- amoeba: Amebiasis (Disentri Amuba)
+- hepa: Hepatitis A/B
+- sth: Cacingan (STH)
+- scabies: Skabies (Kudis)
+- tinea: Tinea (Jamur Kulit)
+- campak: Campak (Measles)
+- varicella: Varicella (Cacar Air)
+- kusta: Kusta (Lepra)
+- frambusia: Frambusia (Patek)
+- filaria: Filariasis (Kaki Gajah)
+
+Literatur:
+[S1] {penerbit} · {judul pedoman malaria yang disetujui DR} · {tahun} · {bagian}
+{teks potongan}
+```
+
 ### Keluaran
 
 ```json
