@@ -102,9 +102,9 @@ const PAIN_COLORS = [
   "#F08A2E",
   "#EC7B2C",
   "#E8622C",
-  "#E2532E",
-  "#DC3B2E",
-  "#D62B2B",
+  "#D0392A",
+  "#C9302A",
+  "#C22424",
 ]
 
 /** Vertical 0–10 scale (0 on top). No starting value. Saved as 0–10. */
@@ -128,7 +128,7 @@ export function PainScale({
         <button
           key={`n${n}`}
           type="button"
-          className={`fnum ${n < 7 ? "dk" : ""} ${value === n ? "on" : ""}`}
+          className={`fnum ${n < 8 ? "dk" : ""} ${value === n ? "on" : ""}`}
           style={{ gridRow: n + 1, ["--fc" as string]: c }}
           aria-pressed={value === n}
           aria-label={`${n} dari 10${label(n) ? `, ${label(n)}` : ""}`}
