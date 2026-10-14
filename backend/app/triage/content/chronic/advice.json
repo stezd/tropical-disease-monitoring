@@ -1,8 +1,8 @@
 {
   "drugs": {},
   "warnings": {
-    "route_upgraded_bp": "Rute dinaikkan ke SEDANG karena tensi sistolik {sys} mmHg sangat tinggi.",
-    "route_upgraded_sign": "Rute dinaikkan ke SEDANG karena ada tanda: {sign}.",
+    "route_upgraded_bp": "Kondisi dinaikkan ke SEDANG karena tensi sistolik {sys} mmHg sangat tinggi.",
+    "route_upgraded_sign": "Kondisi dinaikkan ke SEDANG karena ada tanda: {sign}.",
     "no_bp": "Tensi tidak diukur. Klasifikasi tetap dihitung dari **jawaban lainnya**.",
     "no_bmi": "IMT tidak diisi — AI memakai **proksi kelonggaran pakaian**."
   },
@@ -27,6 +27,6 @@
     "eco": "Memetakan faktor risiko ({count} faktor)",
     "findings": "Menggabungkan temuan foto",
     "score": "Menghitung klasifikasi kecocokan 6 kondisi",
-    "route": "Menentukan rute rujukan & faskes"
+    "route": "Menentukan kondisi rujukan & faskes"
   }
 }

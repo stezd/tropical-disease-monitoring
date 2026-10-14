@@ -1,15 +1,23 @@
 // "Rangkuman Pasien": the page staff see after scanning the QR on the result page.
 // Answers come from the URL hash (never sent to the server as part of the URL);
 // the page asks our own API to score them. Nothing is stored.
+//
+// Order follows what staff need first: where the patient goes, danger signs, labs,
+// the estimate, then the answers. Everything else is one tap away.
 import { useQuery } from "@tanstack/react-query"
 import { Link, useRouterState } from "@tanstack/react-router"
 import { useMemo } from "react"
 
+import type { ScoreResult, SummaryRow } from "@/client"
 import { scoreAnswers, useFlow } from "../api"
-import { Sparkles } from "../components/Art"
-import { Card } from "../components/Ui"
+import { Card, copyText, Rich, toast, WarnBox } from "../components/Ui"
 import { readSummaryHash, unpackAnswers } from "../qr"
-import { AdviceCards } from "./Result"
+
+// Rows shown elsewhere on the page, not in "Data pasien".
+const OWN_PLACE = new Set(["date", "lab", "estimate", "route"])
+const EMPTY = new Set(["-", ""])
+// "Tunjukkan QR ke petugas" is advice for the patient, not for the staff reading this.
+const QR_TODO = /QR rangkuman/
 
 export function SummaryScreen() {
   const hash = useRouterState({ select: (s) => s.location.hash })
@@ -36,7 +44,6 @@ export function SummaryScreen() {
 
   return (
     <div className="screen bg-result">
-      <Sparkles n={10} />
       <div className="hud">
         <Link className="icon-btn" to="/" aria-label="Beranda">
           ⌂
@@ -55,36 +62,187 @@ export function SummaryScreen() {
         ) : !r || !route ? (
           <p className="footdisc">Memuat rangkuman…</p>
         ) : (
-          <>
-            <div
-              className="banner"
-              style={{
-                background: `linear-gradient(${route.color_from},${route.color_to})`,
-              }}
-            >
-              {route.emoji} {route.name}
-            </div>
-            <div className="rcols">
-              <div className="rcol">
-                <Card tab="KONDISI PASIEN" style={{ marginTop: 34 }}>
-                  <pre className="scanpre">{r.summary}</pre>
-                </Card>
-              </div>
-              <div className="rcol">
-                <AdviceCards r={r} />
-                <div className="btnrow">
-                  <Link className="btn btn-teal" to="/">
-                    Buka TropiCare
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </>
+          <SummaryBody
+            r={r}
+            route={route}
+            grad={`linear-gradient(160deg,${route.color_from},${route.color_to})`}
+          />
         )}
         <p className="footdisc">
           ⚠️ Ini hasil skrining awal dari jawaban pasien, bukan diagnosis dokter.
+          Pastikan dengan pemeriksaan langsung.
         </p>
       </div>
+    </div>
+  )
+}
+
+function SummaryBody({
+  r,
+  route,
+  grad,
+}: {
+  r: ScoreResult
+  route: { emoji: string; name: string; sub: string }
+  grad: string
+}) {
+  const rows = new Map(r.summary_rows.map((x) => [x.key, x]))
+  const value = (k: string) => rows.get(k)?.value ?? "-"
+  const flags = value("red_flags")
+  const hasFlags = !EMPTY.has(flags) && flags !== "tidak ada"
+  const labs = EMPTY.has(value("lab")) ? [] : value("lab").split("; ")
+  // Danger signs already have their own box when there are any.
+  const facts = r.summary_rows.filter(
+    (x) =>
+      !OWN_PLACE.has(x.key) &&
+      !EMPTY.has(x.value) &&
+      !(x.key === "red_flags" && hasFlags),
+  )
+  const top = r.unknown ? null : r.top
+  const todo = r.todo.filter((x) => !QR_TODO.test(x))
+
+  const copy = async () => {
+    toast(
+      (await copyText(r.summary))
+        ? "📋 Rangkuman tersalin!"
+        : 'Gagal menyalin — buka "Teks lengkap".',
+    )
+  }
+
+  return (
+    <div className="rcols sumpage">
+      <div className="rcol">
+        <div className="card rcard">
+          <div className="rhead" style={{ background: grad }}>
+            <div className="re" aria-hidden="true">
+              {route.emoji}
+            </div>
+            <h3>{route.name}</h3>
+            <p>{route.sub}</p>
+          </div>
+          <div className="rbody">
+            <div className="sum-place">
+              <span>Arahkan ke</span>
+              <b>{r.place}</b>
+            </div>
+            <div className="sum-meta">🕒 Diisi {value("date")}</div>
+          </div>
+        </div>
+
+        {hasFlags && (
+          <div className="warn r sum-flag">
+            <span className="wi" aria-hidden="true">
+              🚨
+            </span>
+            <span>
+              <b>Tanda bahaya:</b> {flags}
+            </span>
+          </div>
+        )}
+
+        <Card tab="PERKIRAAN">
+          {top ? (
+            <div className="sum-top">
+              <span className="sum-emo" aria-hidden="true">
+                {top.emoji}
+              </span>
+              <span className="sum-name">{top.name}</span>
+              <span className="sum-pct">{top.pct}%</span>
+            </div>
+          ) : (
+            <div className="sum-top">
+              <span className="sum-emo" aria-hidden="true">
+                🩺
+              </span>
+              <span className="sum-name">Belum dapat ditentukan</span>
+            </div>
+          )}
+          {r.others.length > 0 && (
+            <ul className="sum-others" aria-label="Kemungkinan lain">
+              {r.others.map((o) => (
+                <li key={o.id}>
+                  <span aria-hidden="true">{o.emoji}</span> {o.name}
+                  <b>{o.pct}%</b>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+
+        {labs.length > 0 && (
+          <Card tab="LAB YANG MUNGKIN DIBUTUHKAN">
+            <ul className="sum-labs">
+              {labs.map((x) => (
+                <li key={x}>🧪 {x}</li>
+              ))}
+            </ul>
+          </Card>
+        )}
+
+        {r.warnings.length > 0 && (
+          <Card tab="CATATAN PENTING">
+            {r.warnings.map((w) => (
+              <WarnBox key={w.text} {...w} />
+            ))}
+          </Card>
+        )}
+      </div>
+
+      <div className="rcol">
+        <Card tab="DATA PASIEN">
+          <dl className="sum-facts">
+            {facts.map((x) => (
+              <Fact key={x.key} row={x} />
+            ))}
+          </dl>
+        </Card>
+
+        {top && r.reasons.length > 0 && (
+          <Card tab="DASAR PERKIRAAN">
+            <ul className="why">
+              {r.reasons.map((x) => (
+                <li key={x}>{x}</li>
+              ))}
+            </ul>
+            {r.cross_checks.length > 0 && (
+              <div className="xval">
+                {r.cross_checks.map((x) => (
+                  <div key={x}>
+                    ⚖️ <Rich text={x} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        )}
+
+        <details className="sum sum-more">
+          <summary>💬 Saran yang diterima pasien ({todo.length})</summary>
+          <ul className="todo">
+            {todo.map((x) => (
+              <li key={x}>
+                <Rich text={x} />
+              </li>
+            ))}
+          </ul>
+        </details>
+        <details className="sum sum-more">
+          <summary>📄 Teks lengkap</summary>
+          <pre>{r.summary}</pre>
+          <button type="button" className="btn btn-teal" onClick={copy}>
+            📋 Salin rangkuman
+          </button>
+        </details>
+      </div>
+    </div>
+  )
+}
+
+function Fact({ row }: { row: SummaryRow }) {
+  return (
+    <div className={row.key === "patient" ? "sum-fact lead" : "sum-fact"}>
+      <dt>{row.label}</dt>
+      <dd>{row.value}</dd>
     </div>
   )
 }

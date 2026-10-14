@@ -13,13 +13,14 @@
 **Sudah ada**
 - ✅ Kontrak input/output (Pydantic) untuk skor teks dan foto
 - ✅ Jawaban pasien → fakta F1..Fn → pesan ke MedGemma
+- ✅ Lokasi pasien → nama provinsi → fakta `Provinsi tempat tinggal`, ditanya di data diri jalur infeksi (tanpa koordinat)
 - ✅ JSON Schema untuk membatasi jawaban model
 - ✅ Keluaran MedGemma → skor dan alasan → hasil (rute tetap dari aturan)
 
 **Belum ada**
 - ⏳ Memanggil MedGemma di server (ST)
 - ⏳ `ModelEngine` + kembali ke `RuleEngine` kalau model gagal (ST)
-- ⏳ Literatur RAG: sumber dipilih DR, korpus dibuat ST
+- ⏳ Literatur RAG: sumber dipilih DR, korpus dibuat ST. Usul: kueri pencarian memakai fakta pasien, termasuk provinsi, supaya potongan tentang daerah endemis ikut terambil
 - ⏳ Analisis foto sungguhan (ST, prioritas rendah)
 - ⏳ BE: meter maskot tetap pakai aturan; endpoint foto terima `flow_id`; catat versi model
 
@@ -73,15 +74,16 @@ Jalur: {infeksi | kronis}
 
 Fakta pasien:
 F1 Pasien: {siapa}, {usia} tahun, {jenis kelamin}{, hamil / tidak hamil}
-F2 Keluhan utama: {teks klaster}
-F3 Pola gejala: {teks pilihan}
-F4 Gejala penyerta: {teks pilihan}            ← satu baris per pilihan
-F5 Riwayat / faktor risiko: {teks pilihan}    ← satu baris per pilihan
-F6 Suhu: {38,6 °C | tidak diukur}             ← kronis: Tensi, Gula darah, Lingkar perut
-F7 Pengganti alat ukur: {teks pilihan}
-F8 Gizi: {IMT 22,4 | teks proksi}
-F9 Nyeri: {wilayah tubuh}, nyeri {0–10}/10
-F10 Temuan foto: {teks temuan | tidak ada}
+F2 Provinsi tempat tinggal: {nama provinsi}   ← jalur infeksi; dari lokasi HP atau dipilih pasien
+F3 Keluhan utama: {teks klaster}
+F4 Pola gejala: {teks pilihan}
+F5 Gejala penyerta: {teks pilihan}            ← satu baris per pilihan
+F6 Riwayat / faktor risiko: {teks pilihan}    ← satu baris per pilihan
+F7 Suhu: {38,6 °C | tidak diukur}             ← kronis: Tensi, Gula darah, Lingkar perut
+F8 Pengganti alat ukur: {teks pilihan}
+F9 Gizi: {IMT 22,4 | teks proksi}
+F10 Nyeri: {wilayah tubuh}, nyeri {0–10}/10
+F11 Temuan foto: {teks temuan | tidak ada}
 
 <obat_pasien>{teks bebas pasien}</obat_pasien>
 
@@ -99,6 +101,7 @@ Catatan:
 - Jawaban `null` → lewati barisnya. Jawaban `"none"` → tulis `tidak ada`.
 - Ada tanda bahaya → model tidak dipanggil (MERAH, aturan tetap).
 - Tanpa nama, NIK, nomor BPJS, koordinat, atau foto.
+- Lokasi: hanya nama provinsi (38 provinsi, nama sama dengan `frontend/src/features/triage/location.ts`). Tidak ada bobot per provinsi; model menimbang provinsi bersama fakta lain dan literatur RAG.
 
 Contoh `user` (jalur infeksi, cocok dengan contoh keluaran di bawah):
 
@@ -107,15 +110,16 @@ Jalur: infeksi
 
 Fakta pasien:
 F1 Pasien: Saya sendiri, 22 tahun, laki-laki
-F2 Keluhan utama: Demam & Badan
-F3 Pola gejala: Menggigil berulang tiap 2–3 hari
-F4 Gejala penyerta: Keringat dingin deras & pucat usai demam
-F5 Riwayat / faktor risiko: Dari Papua/Maluku/NTT, hutan, atau tambang
-F6 Suhu: tidak diukur
-F7 Pengganti alat ukur: Menggigil hebat atau keringat sampai baju basah
-F8 Gizi: Pakaian/celana sangat longgar dalam 1-2 bulan terakhir
-F9 Nyeri: Kepala / mata, nyeri 4/10
-F10 Temuan foto: tidak ada
+F2 Provinsi tempat tinggal: Papua
+F3 Keluhan utama: Demam & Badan
+F4 Pola gejala: Menggigil berulang tiap 2–3 hari
+F5 Gejala penyerta: Keringat dingin deras & pucat usai demam
+F6 Riwayat / faktor risiko: Dari Papua/Maluku/NTT, hutan, atau tambang
+F7 Suhu: tidak diukur
+F8 Pengganti alat ukur: Menggigil hebat atau keringat sampai baju basah
+F9 Gizi: Pakaian/celana sangat longgar dalam 1-2 bulan terakhir
+F10 Nyeri: Kepala / mata, nyeri 4/10
+F11 Temuan foto: tidak ada
 
 <obat_pasien>Paracetamol</obat_pasien>
 
@@ -164,13 +168,13 @@ Literatur:
     {
       "id": "malaria",
       "score": 78,
-      "evidence": ["F3", "F4", "F5"],
+      "evidence": ["F2", "F4", "F5", "F6"],
       "sources": ["S1"]
     },
     {
       "id": "dbd",
       "score": 22,
-      "evidence": ["F2"],
+      "evidence": ["F3"],
       "sources": []
     }
   ]

@@ -115,9 +115,9 @@
     { "id": "none", "emoji": "🙅", "text": "Tidak ada temuan", "wide": true }
   ],
   "routes": {
-    "green": { "name": "RUTE RINGAN", "sub": "Perawatan Mandiri · Apotek", "emoji": "🌿", "color_from": "#4FDDA0", "color_to": "#1FA86E", "place": "Apotek terdekat", "maps_query": "apotek terdekat", "nav_label": "Apotek" },
-    "yellow": { "name": "RUTE SEDANG", "sub": "Puskesmas · Klinik Pratama", "emoji": "🏥", "color_from": "#FFCB57", "color_to": "#F59B0B", "place": "Poli Umum Puskesmas dengan laboratorium", "maps_query": "puskesmas terdekat", "nav_label": "Puskesmas" },
-    "special": { "name": "RUTE SEDANG", "sub": "Poli Program Nasional Kemenkes", "emoji": "🎯", "color_from": "#FFA45C", "color_to": "#E8662A", "place": "Puskesmas dengan program nasional", "maps_query": "puskesmas terdekat", "nav_label": "Puskesmas" },
-    "red": { "name": "RUTE DARURAT", "sub": "Kedaruratan · IGD Rumah Sakit", "emoji": "🚨", "color_from": "#FF7280", "color_to": "#E0283F", "place": "IGD rumah sakit terdekat", "maps_query": "IGD rumah sakit terdekat", "nav_label": "IGD" }
+    "green": { "name": "KONDISI RINGAN", "sub": "Perawatan Mandiri · Apotek", "emoji": "🌿", "color_from": "#4FDDA0", "color_to": "#1FA86E", "place": "Apotek terdekat", "maps_query": "apotek terdekat", "nav_label": "Apotek" },
+    "yellow": { "name": "KONDISI SEDANG", "sub": "Puskesmas · Klinik Pratama", "emoji": "🏥", "color_from": "#FFCB57", "color_to": "#F59B0B", "place": "Poli Umum Puskesmas dengan laboratorium", "maps_query": "puskesmas terdekat", "nav_label": "Puskesmas" },
+    "special": { "name": "KONDISI SEDANG", "sub": "Poli Program Nasional Kemenkes", "emoji": "🎯", "color_from": "#FFA45C", "color_to": "#E8662A", "place": "Puskesmas dengan program nasional", "maps_query": "puskesmas terdekat", "nav_label": "Puskesmas" },
+    "red": { "name": "KONDISI DARURAT", "sub": "Kedaruratan · IGD Rumah Sakit", "emoji": "🚨", "color_from": "#FF7280", "color_to": "#E0283F", "place": "IGD rumah sakit terdekat", "maps_query": "IGD rumah sakit terdekat", "nav_label": "IGD" }
   }
 }

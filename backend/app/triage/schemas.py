@@ -75,6 +75,13 @@ class Warning(BaseModel):
     text: str
 
 
+class SummaryRow(BaseModel):
+    # Stable id for the front end (e.g. "lab", "red_flags"); label and value are shown.
+    key: str
+    label: str
+    value: str
+
+
 class ScoreResult(BaseModel):
     flow_id: str
     route: RouteId
@@ -95,7 +102,9 @@ class ScoreResult(BaseModel):
     maps_query: str
     nav_label: str
     analysis_steps: list[str]
+    # Plain text for copying, and the same content as rows for the QR page.
     summary: str
+    summary_rows: list[SummaryRow]
 
 
 class ScreeningCreate(BaseModel):

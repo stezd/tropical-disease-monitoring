@@ -287,7 +287,6 @@ def test_content_never_says_diagnosis(flow_id: str) -> None:
 # Option text that names a disease on purpose. Pending DR (see content/README.md).
 # Family history has to name the diseases it asks about (Blueprint Q4).
 NAME_EXCEPTIONS = {
-    ("mr", "campak"),
     ("kontak", "tbc"),
     ("keturunan", "kencing manis"),
     ("keturunan", "darah tinggi"),
@@ -356,6 +355,23 @@ def test_chronic_without_complaint_is_unknown(chronic: FlowContent) -> None:
 def test_pregnancy_in_summary(chronic: FlowContent) -> None:
     r = run(chronic, age=30, sex="P", pregnant=True, complaint="none", no_bp=True)
     assert "hamil" in r.summary.split("\n")[2]
+
+
+def test_province_in_summary(content: FlowContent) -> None:
+    r = run(content, complaint="A", pattern="dbd", province="Papua Tengah")
+    assert "Provinsi  : Papua Tengah" in r.summary
+    assert "Provinsi  : -" in run(content, complaint="A", pattern="dbd").summary
+
+
+def test_summary_rows_match_text(content: FlowContent) -> None:
+    r = run(content, complaint="A", pattern="dbd", province="Papua", temp=38.6)
+    rows = {row.key: row for row in r.summary_rows}
+    assert rows["province"].value == "Papua"
+    assert rows["temp"].value == "38.6 °C"
+    assert {"red_flags", "lab", "estimate", "route"} <= rows.keys()
+    # The copy text is built from the same rows.
+    for row in r.summary_rows:
+        assert f"{row.label:<10}: {row.value}" in r.summary
 
 
 def test_features_are_numeric(content: FlowContent) -> None:

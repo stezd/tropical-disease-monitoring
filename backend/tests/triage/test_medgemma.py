@@ -170,6 +170,7 @@ DOC_ANSWERS = {
     "pattern": "malaria",
     "companion": ["malaria"],
     "eco": ["timur"],
+    "province": "Papua",
     "drugs": "Paracetamol",
     "no_thermo": True,
     "vital_proxy": ["menggigil"],
@@ -181,15 +182,16 @@ DOC_ANSWERS = {
 
 DOC_FACTS = """\
 F1 Pasien: Saya sendiri, 22 tahun, laki-laki
-F2 Keluhan utama: Demam & Badan
-F3 Pola gejala: Menggigil berulang tiap 2–3 hari
-F4 Gejala penyerta: Keringat dingin deras & pucat usai demam
-F5 Riwayat / faktor risiko: Dari Papua/Maluku/NTT, hutan, atau tambang
-F6 Suhu: tidak diukur
-F7 Pengganti alat ukur: Menggigil hebat atau keringat sampai baju basah
-F8 Gizi: Pakaian/celana sangat longgar dalam 1-2 bulan terakhir
-F9 Nyeri: Kepala / mata, nyeri 4/10
-F10 Temuan foto: tidak ada
+F2 Provinsi tempat tinggal: Papua
+F3 Keluhan utama: Demam & Badan
+F4 Pola gejala: Menggigil berulang tiap 2–3 hari
+F5 Gejala penyerta: Keringat dingin deras & pucat usai demam
+F6 Riwayat / faktor risiko: Dari Papua/Maluku/NTT, hutan, atau tambang
+F7 Suhu: tidak diukur
+F8 Pengganti alat ukur: Menggigil hebat atau keringat sampai baju basah
+F9 Gizi: Pakaian/celana sangat longgar dalam 1-2 bulan terakhir
+F10 Nyeri: Kepala / mata, nyeri 4/10
+F11 Temuan foto: tidak ada
 """
 
 
@@ -206,9 +208,10 @@ def test_doc_example_facts(content: FlowContent) -> None:
     assert req is not None
     assert "<obat_pasien>Paracetamol</obat_pasien>" in req.user_message()
     reasons = {f.id: f.reason for f in req.facts}
-    assert reasons["F2"] == "Keluhan utama: Demam & Badan"
-    assert reasons["F3"] == "Demam menggigil berulang teratur tiap 2–3 hari"
-    assert reasons["F8"] == "Proksi gizi: pakaian longgar / BB turun drastis"
+    assert reasons["F3"] == "Keluhan utama: Demam & Badan"
+    assert reasons["F4"] == "Demam menggigil berulang teratur tiap 2–3 hari"
+    assert reasons["F9"] == "Proksi gizi: pakaian longgar / BB turun drastis"
+    assert "F2 Provinsi tempat tinggal: Papua\n" in req.user_message()
     assert reasons["F1"] is None
 
 
@@ -234,6 +237,7 @@ def test_null_skipped_none_written(content: FlowContent) -> None:
     assert "Gejala penyerta" not in facts
     assert "Gizi" not in facts
     assert "Temuan foto" not in facts
+    assert "Provinsi tempat tinggal" not in facts
 
 
 def test_age_limited_options_left_out(content: FlowContent) -> None:
@@ -277,15 +281,22 @@ def test_chronic_facts() -> None:
     assert "Suhu" not in facts and "Nyeri" not in facts
 
 
+def test_province_only_where_asked(content: FlowContent) -> None:
+    answers = Answers(age=40, province="Papua")
+    assert case_facts(answers, content)[1].label == "Provinsi tempat tinggal"
+    labels = [f.label for f in case_facts(answers, get_content("chronic"))]
+    assert "Provinsi tempat tinggal" not in labels
+
+
 def test_to_breakdown_feeds_build_result(content: FlowContent) -> None:
     answers = Answers.model_validate(DOC_ANSWERS)
     req = build_request(answers, content)
     assert req is not None
     out = TextOutput.model_validate_json(
         '{"candidates": ['
-        '{"id": "malaria", "score": 78, "evidence": ["F3", "F4", "F5", "F7", "F9"],'
-        ' "sources": []},'
-        '{"id": "dbd", "score": 22, "evidence": ["F2"], "sources": []}]}'
+        '{"id": "malaria", "score": 78,'
+        ' "evidence": ["F4", "F5", "F6", "F2", "F8", "F10"], "sources": []},'
+        '{"id": "dbd", "score": 22, "evidence": ["F3"], "sources": []}]}'
     )
     b = to_breakdown(out, req, content)
     assert set(b.scores) == set(content.scored_diseases)
@@ -294,6 +305,7 @@ def test_to_breakdown_feeds_build_result(content: FlowContent) -> None:
         "Demam menggigil berulang teratur tiap 2–3 hari",
         "Keringat dingin deras setelah demam turun, pucat",
         "Riwayat Indonesia Timur / hutan / tambang",
+        "Provinsi tempat tinggal: Papua",
         "Demam dengan menggigil hebat / keringat deras",
         "Nyeri: Kepala / mata, nyeri 4/10",
     ]

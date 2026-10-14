@@ -259,6 +259,10 @@ export type FlowPublic = {
      */
     pregnancy_from_age?: number | null;
     /**
+     * Ask Province
+     */
+    ask_province?: boolean;
+    /**
      * Red Flags
      */
     red_flags: Array<RedFlag>;
@@ -691,6 +695,10 @@ export type ScoreResult = {
      * Summary
      */
     summary: string;
+    /**
+     * Summary Rows
+     */
+    summary_rows: Array<SummaryRow>;
 };
 
 /**
@@ -804,6 +812,24 @@ export type StepText = {
      * Hint
      */
     hint?: string | null;
+};
+
+/**
+ * SummaryRow
+ */
+export type SummaryRow = {
+    /**
+     * Key
+     */
+    key: string;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Value
+     */
+    value: string;
 };
 
 /**

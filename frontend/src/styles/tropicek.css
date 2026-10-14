@@ -518,30 +518,6 @@
   padding: 8px 12px;
   font-size: 13px;
 }
-.cand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 5px;
-  font-size: 11px;
-  font-weight: 800;
-  color: #7b5bd6;
-  white-space: nowrap;
-}
-.meter {
-  flex: 1;
-  height: 7px;
-  background: #eee8ff;
-  border-radius: 99px;
-  overflow: hidden;
-}
-.meter i {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, #b98cff, #8b4dff);
-  border-radius: 99px;
-  transition: width 0.5s;
-}
 .qwrap {
   position: relative;
   z-index: 2;
@@ -1018,6 +994,43 @@
   border-color: #d8c8ff;
 }
 
+/* Province: "use my location" button + picker. Stacked on phones. */
+.loc {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.loc .btn {
+  font-size: 15px;
+  padding: 11px 14px;
+}
+.inp select {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  outline: 0;
+  font-family: var(--tc-fb);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--tc-ink);
+  padding: 12px 0;
+}
+@media (min-width: 640px) {
+  .loc {
+    flex-direction: row;
+    align-items: center;
+  }
+  .loc .btn {
+    width: auto;
+    flex: none;
+  }
+  .loc .inp {
+    flex: 1;
+  }
+}
+
 .thermo {
   display: flex;
   gap: 14px;
@@ -1068,10 +1081,14 @@
   align-items: center;
   gap: 8px;
 }
+/* min-width/width: an <input> is ~20 characters wide by default, which pushed
+   the + button past the card edge on phones. */
 .tval .inp {
   flex: 1;
+  min-width: 0;
 }
 .tval .inp input {
+  width: 100%;
   text-align: center;
   font-size: 30px;
 }
@@ -1381,6 +1398,13 @@
     0 5px 0 #1b4daa,
     0 10px 20px rgba(30, 80, 200, 0.3);
 }
+.jkn-hint {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--tc-muted);
+}
 .row-links {
   display: flex;
   gap: 10px;
@@ -1388,6 +1412,69 @@
 .row-links .btn {
   flex: 1;
 }
+/* Photo consent: long text, so the box starts at the top. */
+.chk.consent {
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.4;
+  margin-top: 12px;
+}
+.chk.consent input {
+  margin-top: 1px;
+}
+.linkbtn {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  color: var(--tc-purple);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.disc a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* Privacy notice (/privasi and the photo step's modal). */
+.privacy {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--tc-ink2);
+}
+.privacy h3,
+.mbody .privacy h3 {
+  font-family: var(--tc-fh);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--tc-ink);
+  margin: 16px 0 6px;
+}
+.privacy ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.privacy .privacy-key {
+  list-style: none;
+  padding: 10px 12px;
+  background: #f3eeff;
+  border: 2px solid #d8c8ff;
+  border-radius: 14px;
+  color: var(--tc-ink);
+}
+.privacy .privacy-key li::before {
+  content: "🔒 ";
+}
+.privacy-date {
+  margin: 16px 0 0;
+  font-size: 12px;
+  color: var(--tc-muted);
+}
+
 .saveinfo {
   margin: 0 0 10px;
   font-weight: 800;
@@ -2114,6 +2201,148 @@
   color: var(--tc-ink);
   margin-bottom: 2px;
 }
+/* QR summary page for staff (/ringkasan). */
+.sumpage .rcard {
+  margin-top: 8px;
+}
+.sumpage .rcol > * + .card {
+  margin-top: 30px;
+}
+.sum-place {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+}
+.sum-place span {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--tc-ink2);
+}
+.sum-place b {
+  font-family: var(--tc-fh);
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--tc-ink);
+  line-height: 1.3;
+}
+.sum-meta {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--tc-muted);
+}
+.warn.sum-flag {
+  margin-top: 14px;
+  font-size: 14px;
+}
+.sum-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sum-emo {
+  font-size: 30px;
+  line-height: 1;
+  flex: none;
+}
+.sum-name {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--tc-fh);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.25;
+  color: var(--tc-ink);
+}
+.sum-pct {
+  flex: none;
+  font-family: var(--tc-fh);
+  font-weight: 700;
+  font-size: 17px;
+  color: #fff;
+  background: var(--tc-purple);
+  border-radius: 999px;
+  padding: 4px 11px;
+}
+.sum-others {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 10px 0 0;
+  border-top: 2px dashed var(--tc-line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sum-others li {
+  display: flex;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--tc-ink2);
+}
+.sum-others b {
+  margin-left: auto;
+  color: var(--tc-ink);
+}
+.sum-labs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sum-labs li {
+  background: #e6f8f5;
+  border: 2px solid #bfeee6;
+  color: #126b60;
+  border-radius: 12px;
+  padding: 7px 11px;
+  font-size: 13.5px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+.sum-facts {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+.sum-fact {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 10px;
+  padding: 8px 2px;
+  border-bottom: 1.5px solid var(--tc-line);
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+.sum-fact:last-child {
+  border-bottom: 0;
+}
+.sum-fact dt {
+  font-weight: 800;
+  color: var(--tc-ink2);
+}
+.sum-fact dd {
+  margin: 0;
+  font-weight: 700;
+  color: var(--tc-ink);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.sum-fact.lead dd {
+  font-weight: 900;
+}
+details.sum-more {
+  margin-top: 14px;
+}
+details.sum-more .todo,
+details.sum-more .btn {
+  margin-top: 10px;
+}
+
 details.sum {
   margin-top: 12px;
   background: var(--tc-soft);
@@ -2401,6 +2630,38 @@ details.sum pre {
 
 /* ===== ≥ 960px: desktop dua kolom ===== */
 @media (min-width: 960px) {
+  /* landing: tombol di sisi kanan Kak Tropi */
+  .home {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
+    grid-template-rows: auto 1fr auto;
+    column-gap: 56px;
+    align-items: end;
+    justify-content: center;
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .home .ribbon {
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+  .home .hero {
+    grid-column: 1;
+    grid-row: 2;
+    justify-content: flex-end;
+    align-self: stretch;
+  }
+  .home .home-btns {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: center;
+    max-width: none;
+  }
+  .home .disc {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
   .qlayout {
     max-width: 1120px;
     display: grid;
@@ -2436,10 +2697,7 @@ details.sum pre {
     border-width: 9px 9px 0 9px;
     border-color: #fff transparent transparent transparent;
   }
-  .cand {
-    font-size: 12px;
-    margin-top: 8px;
-  }
+  
   .qwrap {
     padding: 34px 8px 12px;
   }

@@ -131,6 +131,8 @@ class Flow(BaseModel):
     sex: list[Option]
     # Ask women from this age whether they are pregnant (Blueprint Q1). None = never.
     pregnancy_from_age: int | None = None
+    # Ask for the province (location or picked) in step "who". Goes to MedGemma.
+    ask_province: bool = False
     red_flags: list[RedFlag]
     # Red flag IDs shown first in this flow; the rest keep the order of red_flags.json.
     # Order only: every flow still shows every red flag.
@@ -209,7 +211,7 @@ class Warnings(BaseModel):
     high_fever: str | None = None
     route_upgraded: str | None = None
     route_upgraded_bp: str | None = None
-    route_upgraded_sign: str = "Rute dinaikkan ke SEDANG karena ada tanda: {sign}."
+    route_upgraded_sign: str = "Kondisi dinaikkan ke SEDANG karena ada tanda: {sign}."
     no_thermo_fever_pattern: str | None = None
     no_thermo_other: str | None = None
     no_bp: str | None = None

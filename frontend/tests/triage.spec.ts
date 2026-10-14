@@ -44,7 +44,7 @@ test("Guest finishes the infection quiz and sees a route", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Demam Berdarah Dengue (DBD)" }),
   ).toBeVisible()
-  await expect(page.locator(".rtag")).toContainText("RUTE SEDANG")
+  await expect(page.locator(".rtag")).toContainText("KONDISI SEDANG")
   await expect(page.getByText(/bukan diagnosis dokter/)).toBeVisible()
   await expect(page.locator(".qrbox canvas")).toBeVisible()
   await expect(page.getByRole("link", { name: /Mobile JKN/ })).toHaveAttribute(

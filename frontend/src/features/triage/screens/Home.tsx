@@ -81,7 +81,10 @@ export function HomeScreen() {
             </div>
           )}
         </div>
-        <p className="disc">🩺 Skrining awal · masuk akun bersifat opsional</p>
+        <p className="disc">
+          🩺 Skrining awal · masuk akun bersifat opsional ·{" "}
+          <Link to="/privasi">Privasi</Link>
+        </p>
       </div>
 
       {modal === "settings" && <SettingsModal onClose={() => setModal(null)} />}
