@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape, urlSearchParamsBodySerializer } from './client';
 import { client } from './client.gen';
-import type { loginLoginAccessTokenData, loginLoginAccessTokenErrors, loginLoginAccessTokenResponses, loginRecoverPasswordData, loginRecoverPasswordErrors, loginRecoverPasswordHtmlContentData, loginRecoverPasswordHtmlContentErrors, loginRecoverPasswordHtmlContentResponses, loginRecoverPasswordResponses, loginResetPasswordData, loginResetPasswordErrors, loginResetPasswordResponses, loginTestTokenData, loginTestTokenResponses, privateCreateUserData, privateCreateUserErrors, privateCreateUserResponses, triageAnalyzePhotoData, triageAnalyzePhotoErrors, triageAnalyzePhotoResponses, triageCreateScreeningData, triageCreateScreeningErrors, triageCreateScreeningResponses, triageReadFlowData, triageReadFlowErrors, triageReadFlowResponses, triageReadScreeningsData, triageReadScreeningsErrors, triageReadScreeningsResponses, triageScoreFlowData, triageScoreFlowErrors, triageScoreFlowResponses, usersCreateUserData, usersCreateUserErrors, usersCreateUserResponses, usersDeleteUserData, usersDeleteUserErrors, usersDeleteUserMeData, usersDeleteUserMeResponses, usersDeleteUserResponses, usersReadUserByIdData, usersReadUserByIdErrors, usersReadUserByIdResponses, usersReadUserMeData, usersReadUserMeResponses, usersReadUsersData, usersReadUsersErrors, usersReadUsersResponses, usersRegisterUserData, usersRegisterUserErrors, usersRegisterUserResponses, usersUpdatePasswordMeData, usersUpdatePasswordMeErrors, usersUpdatePasswordMeResponses, usersUpdateUserData, usersUpdateUserErrors, usersUpdateUserMeData, usersUpdateUserMeErrors, usersUpdateUserMeResponses, usersUpdateUserResponses, utilsHealthCheckData, utilsHealthCheckResponses, utilsTestEmailData, utilsTestEmailErrors, utilsTestEmailResponses } from './types.gen';
+import type { facilitiesListFacilitiesData, facilitiesListFacilitiesErrors, facilitiesListFacilitiesResponses, loginLoginAccessTokenData, loginLoginAccessTokenErrors, loginLoginAccessTokenResponses, loginRecoverPasswordData, loginRecoverPasswordErrors, loginRecoverPasswordHtmlContentData, loginRecoverPasswordHtmlContentErrors, loginRecoverPasswordHtmlContentResponses, loginRecoverPasswordResponses, loginResetPasswordData, loginResetPasswordErrors, loginResetPasswordResponses, loginTestTokenData, loginTestTokenResponses, privateCreateUserData, privateCreateUserErrors, privateCreateUserResponses, triageAnalyzePhotoData, triageAnalyzePhotoErrors, triageAnalyzePhotoResponses, triageCreateScreeningData, triageCreateScreeningErrors, triageCreateScreeningResponses, triageReadFlowData, triageReadFlowErrors, triageReadFlowResponses, triageReadScreeningsData, triageReadScreeningsErrors, triageReadScreeningsResponses, triageScoreFlowData, triageScoreFlowErrors, triageScoreFlowResponses, usersCreateUserData, usersCreateUserErrors, usersCreateUserResponses, usersDeleteUserData, usersDeleteUserErrors, usersDeleteUserMeData, usersDeleteUserMeResponses, usersDeleteUserResponses, usersReadUserByIdData, usersReadUserByIdErrors, usersReadUserByIdResponses, usersReadUserMeData, usersReadUserMeResponses, usersReadUsersData, usersReadUsersErrors, usersReadUsersResponses, usersRegisterUserData, usersRegisterUserErrors, usersRegisterUserResponses, usersUpdatePasswordMeData, usersUpdatePasswordMeErrors, usersUpdatePasswordMeResponses, usersUpdateUserData, usersUpdateUserErrors, usersUpdateUserMeData, usersUpdateUserMeErrors, usersUpdateUserMeResponses, usersUpdateUserResponses, utilsHealthCheckData, utilsHealthCheckResponses, utilsTestEmailData, utilsTestEmailErrors, utilsTestEmailResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -363,6 +363,25 @@ export class TriageService {
                 'Content-Type': null,
                 ...options.headers
             }
+        });
+    }
+}
+
+export class FacilitiesService {
+    /**
+     * List Facilities
+     *
+     * Operational health facilities in a province.
+     *
+     * Coordinates-first: facilities with latitude and longitude are returned
+     * first, so the front end can sort by distance using the browser's position
+     * without round-tripping patient coordinates to the server.
+     */
+    public static listFacilities<ThrowOnError extends boolean = true>(options: Options<facilitiesListFacilitiesData, ThrowOnError>) {
+        return (options.client ?? client).get<facilitiesListFacilitiesResponses, facilitiesListFacilitiesErrors, ThrowOnError>({
+            responseType: 'json',
+            url: '/api/v1/facilities/',
+            ...options
         });
     }
 }
