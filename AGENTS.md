@@ -18,9 +18,14 @@ Gamified quiz that screens Indonesian patients and tells them where to go.
 | What                                  | Where                             |
 | ------------------------------------- | --------------------------------- |
 | Backend (FastAPI, SQLModel)           | `backend/app`                   |
-| Frontend (React, Tailwind, shadcn/ui) | `frontend/src`                  |
+| — API routes                          | `backend/app/api/routes/`         |
+| — Use cases (orchestration)          | `backend/app/application/use_cases/` |
+| — Domain rules (route, warnings, etc) | `backend/app/domain/`            |
+| — Adapters (JSON disk, SQLModel DB)   | `backend/app/adapters/`          |
+| — Composition root (wire-up / DI)     | `backend/app/composition/`       |
 | Questions, options, weights (JSON)    | `backend/app/triage/content/`   |
-| Scoring (owned by ST)                 | `backend/app/triage/scoring.py` |
+| Scoring engines (Rule / Model)        | `backend/app/triage/scoring.py` |
+| Frontend (React, Tailwind, shadcn/ui) | `frontend/src`                  |
 | API client — generated, don't edit   | `frontend/src/client`           |
 
 Template leftovers (`items`, template README): delete, don't build on them.
@@ -40,8 +45,27 @@ uv run bash scripts/lint.sh              # lint
 # frontend (from repo root)
 bun install
 bun run dev                              # localhost:5173
+bun run lint                             # biome: format + lint, rewrites files
 bash scripts/generate-client.sh          # after API changes
+
+# everything CI checks (from repo root)
+uv run prek run --all-files              # pre-commit hooks over every file
 ```
+
+## Lolos CI (sebelum push)
+
+CI runs pre-commit only on the files a PR changes, and **treats a hook that rewrites a file as a failure**. Run these before pushing:
+
+```bash
+uv run prek run --all-files              # from repo root
+uv run bash scripts/lint.sh              # from backend/
+uv run bash scripts/test.sh              # from backend/
+bun run lint && bun test                 # from repo root
+```
+
+- If prek or biome rewrites a file, `git add` it and commit again. This is the most common red CI.
+- Words CI flags as typos but are real Indonesian (`maks`, `tabel`, `oktober`, …) live in `[tool.typos.default.extend-words]` in `pyproject.toml`. Add the word there, don't change the UI copy.
+- `frontend/src/client/` and `frontend/public/data/` are generated/vendored and excluded from the formatters. Don't reformat them.
 
 ## How it fits together
 
@@ -52,6 +76,13 @@ bash scripts/generate-client.sh          # after API changes
 - **Login is optional.** Guests can do the whole quiz. Offer login on the home page.
 - **Ask age and sex first.** They change which questions and options appear.
 - **Low score** → "belum dapat ditentukan" + route KUNING.
+- **Backend changes follow ports & adapters:**
+  - Route handlers (`api/routes/triage.py`) stay dumb: parse the request, call `get_score_use_case().execute(...)`, return schemas.
+  - Triage orchestration lives in `application/use_cases/score_flow.py`, not in route functions.
+  - Business rules live in `domain/`: `route_policy.py` (which route wins), `warnings.py` (which alerts fire), `narration.py` (mascot bubble text), `answers.py` (raw intake).
+  - Outbound data access lives in `adapters/` and implements the interfaces in `application/ports/`. Never import an adapter from `domain/`.
+  - Wire-up happens in `composition/triage_container.py`. Swap engines or repositories there, not in application code.
+  - Triage behavior is protected by frozen snapshot tests in `backend/tests/triage/test_goldens.py`. If a change intentionally alters scoring output for existing cases, update the corresponding `goldens/<name>.json`.
 
 ## Must not break
 
