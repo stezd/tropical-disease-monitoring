@@ -44,6 +44,10 @@ class Option(BaseModel):
     age_max: int | None = None
     # Picking this option raises the route to at least this level.
     min_route: RouteId | None = None
+    # Picking this option is a danger sign: the red screen for this red flag ID.
+    red_flag: str | None = None
+    # Shown to the patient and in the summary for the health worker.
+    staff_note: str | None = None
     wide: bool = False
 
     def targets(self, default: str | None = None) -> list[str]:
@@ -66,6 +70,8 @@ class RedFlag(BaseModel):
     first_aid: str | None = None
     # What not to do on the way to hospital (DR no. 19, "DON'T").
     dont: str | None = None
+    # False = not in the step-1 list; only reached through an option's `red_flag`.
+    listed: bool = True
 
 
 class Cluster(BaseModel):
@@ -358,6 +364,7 @@ class FlowContent(BaseModel):
         clusters = {c.id for c in self.flow.clusters}
         regions = {r.id for r in self.flow.body_regions}
         eco = {o.id for o in self.flow.eco}
+        red = {f.id for f in self.flow.red_flags}
 
         def need(ids: Iterable[str | None], known: set[str], where: str) -> None:
             for i in ids:
@@ -376,6 +383,7 @@ class FlowContent(BaseModel):
             need(q.patterns or [], patterns, f"flow.companions[{cid}].patterns")
             for o in q.options:
                 need(o.targets(), scored, f"flow.companions[{cid}]")
+                need([o.red_flag] if o.red_flag else [], red, f"flow.companions[{cid}]")
         for o in self.flow.findings:
             need(o.targets(), scored, "flow.findings")
         need(list(self.flow.vital_proxies), set(self.flow.vitals), "flow.vital_proxies")

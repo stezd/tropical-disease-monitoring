@@ -29,6 +29,7 @@ from app.triage.scoring import (
     companion_shown,
     nutrition,
     rank,
+    red_flag_ids,
     visible,
 )
 
@@ -390,7 +391,7 @@ def build_request(
 ) -> TextRequest | None:
     """The text-scoring request, or None when MedGemma must not be called: a red flag
     (route MERAH, fixed rule) or nothing to go on."""
-    if any(f != NONE_ID for f in answers.red_flags):
+    if red_flag_ids(answers, content):
         return None
     facts = case_facts(answers, content)
     if not facts:

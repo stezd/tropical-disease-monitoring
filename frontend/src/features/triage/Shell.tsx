@@ -5,6 +5,7 @@ import type { FlowPublic } from "@/client"
 import { useFlow } from "./api"
 import { Mascot } from "./components/Art"
 import { ToastHost } from "./components/Ui"
+import { hasRedFlag, steps } from "./model"
 import { HomeScreen } from "./screens/Home"
 import { PrivacyScreen } from "./screens/Privacy"
 import { QuizScreen } from "./screens/Quiz"
@@ -100,12 +101,20 @@ export function ScreeningPage({ flowId }: { flowId: string }) {
         {(flow) => {
           switch (phase) {
             case "red":
-              // Back goes to stage 1 (the red-flag question).
+              // Back goes to the question that raised the danger sign: stage 1,
+              // or the companion question (e.g. very yellow eyes with fever).
               return (
                 <RedScreen
                   flow={flow}
                   answers={answers}
-                  onBack={() => quiz.set({ phase: "quiz", step: 1 })}
+                  onBack={() =>
+                    quiz.set({
+                      phase: "quiz",
+                      step: hasRedFlag(answers)
+                        ? 1
+                        : Math.max(1, steps(answers, flow).indexOf("q4")),
+                    })
+                  }
                   onRestart={restart}
                 />
               )

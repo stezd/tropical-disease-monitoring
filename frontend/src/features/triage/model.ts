@@ -118,6 +118,17 @@ export function bmiOf(a: QuizAnswers): number | null {
 export const hasRedFlag = (a: QuizAnswers) =>
   a.red_flags.some((x) => x !== NONE)
 
+/** Danger signs from step q1, plus picked companion options that are one
+ * (e.g. very yellow eyes with fever). Same rule as the server's red_flag_ids. */
+export function redFlagIds(a: QuizAnswers, flow: FlowPublic): string[] {
+  const out = a.red_flags.filter((x) => x !== NONE)
+  for (const o of companionQuestion(a, flow)?.options ?? []) {
+    if (o.red_flag && a.companion.includes(o.id) && !out.includes(o.red_flag))
+      out.push(o.red_flag)
+  }
+  return out
+}
+
 /** Companion question for the chosen complaint, if it applies to the chosen pattern. */
 export function companionQuestion(a: QuizAnswers, flow: FlowPublic) {
   const q = flow.companions[a.complaint ?? ""]

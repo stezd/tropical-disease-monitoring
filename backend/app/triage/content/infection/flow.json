@@ -122,6 +122,7 @@
         { "id": "dbd", "disease": "dbd", "emoji": "👁️", "text": "Nyeri belakang mata / sakit kepala hebat", "reason": "Nyeri belakang bola mata / sakit kepala hebat" },
         { "id": "chik", "disease": "chik", "emoji": "🦴", "text": "Nyeri sendi berat, tanpa sakit kepala", "reason": "Nyeri sendi melumpuhkan tanpa sakit kepala" },
         { "id": "malaria", "disease": "malaria", "emoji": "💦", "text": "Keringat dingin deras & pucat usai demam", "reason": "Keringat dingin deras setelah demam turun, pucat" },
+        { "id": "kuning", "emoji": "💛", "text": "Mata atau kulit sangat kuning", "reason": "Mata/kulit sangat kuning", "red_flag": "kuning" },
         { "id": "none", "emoji": "🙅", "text": "Tidak ada" }
       ]
     },
@@ -133,13 +134,23 @@
         { "id": "none", "emoji": "🙅", "text": "Tidak ada" }
       ]
     },
+    "C": {
+      "title": "Ada tanda ini pada anak?",
+      "patterns": ["sth"],
+      "options": [
+        { "id": "lesu", "emoji": "🥱", "text": "Lesu, mudah lelah", "reason": "Lesu", "min_route": "yellow", "staff_note": "Cek hemoglobin (Hb). Beri obat cacing program Kemenkes (Albendazol, dosis sesuai usia)." },
+        { "id": "pucat", "emoji": "😶", "text": "Pucat", "reason": "Pucat", "min_route": "yellow", "staff_note": "Cek hemoglobin (Hb). Beri obat cacing program Kemenkes (Albendazol, dosis sesuai usia)." },
+        { "id": "buncit", "emoji": "🎈", "text": "Perut buncit", "reason": "Perut buncit", "min_route": "yellow", "staff_note": "Cek hemoglobin (Hb). Beri obat cacing program Kemenkes (Albendazol, dosis sesuai usia)." },
+        { "id": "none", "emoji": "🙅", "text": "Tidak ada" }
+      ]
+    },
     "D": {
       "title": "Ada tanda ini pada lentingnya?",
       "patterns": ["varicella"],
       "options": [
-        { "id": "mata", "emoji": "👁️", "text": "Lenting menyebar sampai ke area dekat mata", "reason": "Lenting dekat mata", "min_route": "yellow" },
-        { "id": "sesak", "emoji": "😮‍💨", "text": "Sesak napas", "reason": "Sesak napas", "min_route": "yellow" },
-        { "id": "nanah", "emoji": "🟡", "text": "Cairan lenting berubah jadi nanah hijau/kuning", "reason": "Cairan lenting bernanah", "min_route": "yellow" },
+        { "id": "mata", "emoji": "👁️", "text": "Lenting menyebar sampai ke area dekat mata", "reason": "Lenting dekat mata", "min_route": "yellow", "staff_note": "Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata." },
+        { "id": "sesak", "emoji": "😮‍💨", "text": "Sesak napas", "reason": "Sesak napas", "red_flag": "napas" },
+        { "id": "nanah", "emoji": "🟡", "text": "Cairan lenting berubah jadi nanah hijau/kuning", "reason": "Cairan lenting bernanah", "min_route": "yellow", "staff_note": "Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata." },
         { "id": "none", "emoji": "🙅", "text": "Tidak ada, lenting bening biasa" }
       ]
     }

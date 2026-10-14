@@ -148,9 +148,9 @@ def test_mild_varicella_stays_green(content: FlowContent) -> None:
     assert r.route == "green"
 
 
-@pytest.mark.parametrize("sign", ["mata", "sesak", "nanah"])
+@pytest.mark.parametrize("sign", ["mata", "nanah"])
 def test_severe_varicella_goes_yellow(content: FlowContent, sign: str) -> None:
-    """DR no. 8: blisters near the eye, short of breath, or pus → yellow."""
+    """Blisters near the eye or pus → yellow, with a referral note for the doctor."""
     r = run(
         content,
         age=9,
@@ -163,6 +163,51 @@ def test_severe_varicella_goes_yellow(content: FlowContent, sign: str) -> None:
     assert r.top is not None and r.top.id == "varicella"
     assert r.route == "yellow"
     assert any(w.icon == "⬆️" for w in r.warnings)
+    assert any("Spesialis Kulit/Mata" in w.text for w in r.warnings)
+    assert "Spesialis Kulit/Mata" in r.summary
+
+
+def test_varicella_short_of_breath_goes_red(content: FlowContent) -> None:
+    """Varicella pneumonia: short of breath → red (danger sign "napas")."""
+    r = run(content, age=9, complaint="D", pattern="varicella", companion=["sesak"])
+    assert r.route == "red"
+    assert r.top is None
+    assert "Sesak napas sangat berat" in r.summary
+
+
+@pytest.mark.parametrize("pattern", ["lepto", "malaria"])
+def test_fever_with_very_yellow_eyes_goes_red(
+    content: FlowContent, pattern: str
+) -> None:
+    """Weil's disease risk: very yellow eyes or skin with fever → red."""
+    r = run(content, age=30, complaint="A", pattern=pattern, companion=["kuning"])
+    assert r.route == "red"
+
+
+def test_lepto_without_danger_signs_goes_yellow(content: FlowContent) -> None:
+    r = run(
+        content,
+        age=30,
+        complaint="A",
+        pattern="lepto",
+        companion=["none"],
+        eco=["banjir"],
+        temp=38.5,
+        nutrition_proxy="normal",
+    )
+    assert r.top is not None and r.top.id == "lepto"
+    assert r.route == "yellow"
+
+
+def test_hidden_red_flags_need_a_companion(content: FlowContent) -> None:
+    hidden = {f.id for f in content.flow.red_flags if not f.listed}
+    used = {
+        o.red_flag
+        for q in content.flow.companions.values()
+        for o in q.options
+        if o.red_flag
+    }
+    assert hidden and hidden <= used
 
 
 def test_varicella_signs_ignored_for_other_patterns(content: FlowContent) -> None:
@@ -217,6 +262,38 @@ def test_sth_shown_for_children(content: FlowContent, age: int) -> None:
     assert r.top is not None and r.top.id == "sth"
 
 
+def test_sth_without_signs_stays_green(content: FlowContent) -> None:
+    r = run(
+        content,
+        age=8,
+        complaint="C",
+        pattern="sth",
+        companion=["none"],
+        temp=37.0,
+        nutrition_proxy="normal",
+    )
+    assert r.top is not None and r.top.id == "sth"
+    assert r.route == "green"
+
+
+@pytest.mark.parametrize("sign", ["lesu", "pucat", "buncit"])
+def test_sth_with_signs_goes_yellow(content: FlowContent, sign: str) -> None:
+    """Child with worms and tiredness, pallor, or a swollen belly → Puskesmas (Hb)."""
+    r = run(
+        content,
+        age=8,
+        complaint="C",
+        pattern="sth",
+        companion=[sign, "pucat"] if sign != "pucat" else [sign],
+        temp=37.0,
+        nutrition_proxy="normal",
+    )
+    assert r.top is not None and r.top.id == "sth"
+    assert r.route == "yellow"
+    notes = [w for w in r.warnings if "hemoglobin" in w.text]
+    assert len(notes) == 1
+
+
 def test_photo_chip_scores_several_diseases(content: FlowContent) -> None:
     b = RuleEngine().score(Answers(findings=["ruam", "mata"]), content)
     scored = {d for d, s in b.scores.items() if s > 0}
@@ -254,7 +331,7 @@ def test_drug_flags(content: FlowContent) -> None:
 def test_drug_popup_in_result(content: FlowContent) -> None:
     r = run(content, complaint="C", pattern="amoeba", drugs="imodium", no_thermo=True)
     assert len(r.drug_popups) == 1
-    assert "obat mampat" in r.drug_popups[0].text
+    assert "penghenti mencret" in r.drug_popups[0].text
     assert r.drug_popups[0].level == "y"
 
 

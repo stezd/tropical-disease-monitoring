@@ -37,6 +37,7 @@ import {
   num,
   prune,
   type QuizAnswers,
+  redFlagIds,
   STAGE_OF,
   type StepId,
   steps,
@@ -51,8 +52,8 @@ type StepDef = {
   tab: string
   say: string
   valid: (a: QuizAnswers, flow: FlowPublic) => boolean
-  nextLabel?: (a: QuizAnswers) => string
-  nextCls?: (a: QuizAnswers) => string
+  nextLabel?: (a: QuizAnswers, flow: FlowPublic) => string
+  nextCls?: (a: QuizAnswers, flow: FlowPublic) => string
 }
 
 type Vital = FlowPublic["vitals"][number]
@@ -126,6 +127,10 @@ const STEP_DEFS: Record<StepId, StepDef> = {
     tab: "TAHAP 3 · GEJALA PENYERTA",
     say: "Ini membedakan penyakit yang **mirip** 🧩",
     valid: (a) => a.companion.length > 0,
+    nextLabel: (a, flow) =>
+      redFlagIds(a, flow).length ? "🚨 Lihat Tindakan Darurat" : "Lanjut ▶",
+    nextCls: (a, flow) =>
+      redFlagIds(a, flow).length ? "btn-danger" : "btn-primary",
   },
   q5: {
     tab: "TAHAP 4 · PETA EKOLOGI",
@@ -223,7 +228,10 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
   const proceed = () => {
     const cur = quiz.get().answers
     if (id === "who") set(prune(cur, flow))
-    if (id === "q1" && hasRedFlag(cur)) {
+    if (
+      (id === "q1" && hasRedFlag(cur)) ||
+      (id === "q4" && redFlagIds(cur, flow).length)
+    ) {
       quiz.set({ phase: "red" })
       return
     }
@@ -309,13 +317,15 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
               selected={a.red_flags}
               onPick={(i) => pick("red_flags", i, true)}
               options={[
-                ...flow.red_flags.map((r) => ({
-                  id: r.id,
-                  emoji: r.emoji,
-                  text: r.text,
-                  detail: r.detail,
-                  cls: "danger",
-                })),
+                ...flow.red_flags
+                  .filter((r) => r.listed !== false)
+                  .map((r) => ({
+                    id: r.id,
+                    emoji: r.emoji,
+                    text: r.text,
+                    detail: r.detail,
+                    cls: "danger",
+                  })),
                 {
                   id: NONE,
                   emoji: "✅",
@@ -355,9 +365,7 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
               {text?.title ?? "Keluhan mana yang paling mengganggu?"}
             </h2>
             <p className="qh">{text?.hint ?? "Pilih satu"}</p>
-            <div
-              className={`cgrid ${flow.clusters.length % 2 ? "" : "even"}`}
-            >
+            <div className={`cgrid ${flow.clusters.length % 2 ? "" : "even"}`}>
               {flow.clusters.map(box)}
             </div>
             {/* Outside the grid: a plain full-width row under the groups. */}
@@ -492,11 +500,11 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
           <div className="foot">
             <button
               type="button"
-              className={`btn big ${def.nextCls?.(a) ?? "btn-primary"}`}
+              className={`btn big ${def.nextCls?.(a, flow) ?? "btn-primary"}`}
               disabled={!valid || busy}
               onClick={next}
             >
-              {busy ? "Sebentar…" : (def.nextLabel?.(a) ?? "Lanjut ▶")}
+              {busy ? "Sebentar…" : (def.nextLabel?.(a, flow) ?? "Lanjut ▶")}
             </button>
           </div>
         </div>

@@ -67,6 +67,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -81,6 +83,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -95,6 +99,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -109,6 +115,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       }
     ],
@@ -125,6 +133,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -139,6 +149,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       }
     ],
@@ -154,7 +166,8 @@
         "condition": "Syok Dengue (DSS)",
         "facility": "Resusitasi / ICU",
         "first_aid": "Baringkan dengan kaki ditinggikan. Minum oralit bertahap jika pasien sadar.",
-        "dont": "Beri makan/minum jika pasien mulai mengantuk/penurunan kesadaran (risiko tersedak/aspirasi)."
+        "dont": "Beri makan/minum jika pasien mulai mengantuk/penurunan kesadaran (risiko tersedak/aspirasi).",
+        "listed": true
       },
       {
         "id": "darah",
@@ -165,7 +178,8 @@
         "condition": "Pendarahan masif / TBC batuk darah masif",
         "facility": "ICU & Transfusi Darah",
         "first_aid": "Mimisan: duduk condong ke depan, tekan cuping hidung 10 menit.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "ginjal",
@@ -176,7 +190,8 @@
         "condition": "Gagal ginjal akut (Leptospirosis/Malaria)",
         "facility": "Hemodialisa",
         "first_aid": "Jangan minum obat anti-nyeri sembarangan; segera berangkat.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "napas",
@@ -187,7 +202,8 @@
         "condition": "Gagal napas / Pneumonia berat",
         "facility": "Oksigen & ICU",
         "first_aid": "Posisikan setengah duduk, longgarkan pakaian.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "otak",
@@ -198,7 +214,8 @@
         "condition": "Ensefalopati / Malaria serebral / Tifoid toksik",
         "facility": "ICU",
         "first_aid": "Saat kejang: miringkan tubuh, jangan masukkan apa pun ke mulut.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "dehidrasi",
@@ -209,7 +226,8 @@
         "condition": "Dehidrasi berat",
         "facility": "Resusitasi cairan IGD",
         "first_aid": "Beri oralit sedikit-sedikit tapi sering selama perjalanan.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "rabies",
@@ -220,7 +238,8 @@
         "condition": "Rabies / gigitan hewan penular rabies",
         "facility": "Rabies Center (Vaksin Anti-Rabies)",
         "first_aid": "Cuci luka gigitan di air mengalir dengan SABUN selama minimal 15 menit tanpa henti sebelum ke RS.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "jantung",
@@ -231,7 +250,8 @@
         "condition": "Sindrom Koroner Akut (STEMI)",
         "facility": "EKG & penanganan serangan jantung",
         "first_aid": "Posisikan pasien dengan kepala agak ditinggikan 30°.",
-        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru)."
+        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru).",
+        "listed": true
       },
       {
         "id": "stroke",
@@ -242,7 +262,8 @@
         "condition": "Stroke akut",
         "facility": "CT scan & penanganan stroke",
         "first_aid": "Posisikan pasien dengan kepala agak ditinggikan 30°.",
-        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru)."
+        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru).",
+        "listed": true
       },
       {
         "id": "krisis_ht",
@@ -253,7 +274,8 @@
         "condition": "Krisis Hipertensi",
         "facility": "IGD rumah sakit",
         "first_aid": null,
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "koma_dm",
@@ -264,7 +286,20 @@
         "condition": "Koma Diabetik (Ketoasidosis / Hipoglikemia berat)",
         "facility": "IGD rumah sakit",
         "first_aid": null,
-        "dont": null
+        "dont": null,
+        "listed": true
+      },
+      {
+        "id": "kuning",
+        "emoji": "💛",
+        "text": "Mata atau kulit sangat kuning saat demam",
+        "detail": "Ditanya sebagai gejala penyerta demam, tidak di daftar tahap 1",
+        "label": "Leptospirosis berat",
+        "condition": "Leptospirosis berat (Weil's disease), risiko gagal ginjal akut",
+        "facility": "IGD rumah sakit",
+        "first_aid": null,
+        "dont": null,
+        "listed": false
       }
     ],
     "red_flag_first": [],
@@ -351,6 +386,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -365,6 +402,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -379,6 +418,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -393,6 +434,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -407,6 +450,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -421,6 +466,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -441,6 +488,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -455,6 +504,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -469,6 +520,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -489,6 +542,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -503,6 +558,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -517,6 +574,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -531,6 +590,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -545,6 +606,8 @@
             "age_min": 1,
             "age_max": 12,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -559,6 +622,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -579,6 +644,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -593,6 +660,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -607,6 +676,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -621,6 +692,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -635,6 +708,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -649,6 +724,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -663,6 +740,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -683,6 +762,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -697,6 +778,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -719,6 +802,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -733,6 +818,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -747,6 +834,24 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
+            "wide": false
+          },
+          {
+            "id": "kuning",
+            "emoji": "💛",
+            "text": "Mata atau kulit sangat kuning",
+            "detail": null,
+            "reason": "Mata/kulit sangat kuning",
+            "disease": null,
+            "diseases": [],
+            "child_only": false,
+            "age_min": null,
+            "age_max": null,
+            "min_route": null,
+            "red_flag": "kuning",
+            "staff_note": null,
             "wide": false
           },
           {
@@ -761,6 +866,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -781,6 +888,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -795,6 +904,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -809,10 +920,84 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
         "patterns": null
+      },
+      "C": {
+        "title": "Ada tanda ini pada anak?",
+        "options": [
+          {
+            "id": "lesu",
+            "emoji": "🥱",
+            "text": "Lesu, mudah lelah",
+            "detail": null,
+            "reason": "Lesu",
+            "disease": null,
+            "diseases": [],
+            "child_only": false,
+            "age_min": null,
+            "age_max": null,
+            "min_route": "yellow",
+            "red_flag": null,
+            "staff_note": "Cek hemoglobin (Hb). Beri obat cacing program Kemenkes (Albendazol, dosis sesuai usia).",
+            "wide": false
+          },
+          {
+            "id": "pucat",
+            "emoji": "😶",
+            "text": "Pucat",
+            "detail": null,
+            "reason": "Pucat",
+            "disease": null,
+            "diseases": [],
+            "child_only": false,
+            "age_min": null,
+            "age_max": null,
+            "min_route": "yellow",
+            "red_flag": null,
+            "staff_note": "Cek hemoglobin (Hb). Beri obat cacing program Kemenkes (Albendazol, dosis sesuai usia).",
+            "wide": false
+          },
+          {
+            "id": "buncit",
+            "emoji": "🎈",
+            "text": "Perut buncit",
+            "detail": null,
+            "reason": "Perut buncit",
+            "disease": null,
+            "diseases": [],
+            "child_only": false,
+            "age_min": null,
+            "age_max": null,
+            "min_route": "yellow",
+            "red_flag": null,
+            "staff_note": "Cek hemoglobin (Hb). Beri obat cacing program Kemenkes (Albendazol, dosis sesuai usia).",
+            "wide": false
+          },
+          {
+            "id": "none",
+            "emoji": "🙅",
+            "text": "Tidak ada",
+            "detail": null,
+            "reason": null,
+            "disease": null,
+            "diseases": [],
+            "child_only": false,
+            "age_min": null,
+            "age_max": null,
+            "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
+            "wide": false
+          }
+        ],
+        "patterns": [
+          "sth"
+        ]
       },
       "D": {
         "title": "Ada tanda ini pada lentingnya?",
@@ -829,6 +1014,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": "yellow",
+            "red_flag": null,
+            "staff_note": "Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata.",
             "wide": false
           },
           {
@@ -842,7 +1029,9 @@
             "child_only": false,
             "age_min": null,
             "age_max": null,
-            "min_route": "yellow",
+            "min_route": null,
+            "red_flag": "napas",
+            "staff_note": null,
             "wide": false
           },
           {
@@ -857,6 +1046,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": "yellow",
+            "red_flag": null,
+            "staff_note": "Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata.",
             "wide": false
           },
           {
@@ -871,6 +1062,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -892,6 +1085,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -906,6 +1101,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -920,6 +1117,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -934,6 +1133,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -948,6 +1149,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -962,6 +1165,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -976,6 +1181,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": true
       }
     ],
@@ -1006,6 +1213,8 @@
           "age_min": null,
           "age_max": null,
           "min_route": null,
+          "red_flag": null,
+          "staff_note": null,
           "wide": false
         },
         {
@@ -1020,6 +1229,8 @@
           "age_min": null,
           "age_max": null,
           "min_route": null,
+          "red_flag": null,
+          "staff_note": null,
           "wide": false
         },
         {
@@ -1034,6 +1245,8 @@
           "age_min": null,
           "age_max": null,
           "min_route": null,
+          "red_flag": null,
+          "staff_note": null,
           "wide": false
         }
       ]
@@ -1052,6 +1265,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1066,6 +1281,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1080,6 +1297,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       }
     ],
@@ -1193,6 +1412,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1207,6 +1428,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1221,6 +1444,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1235,6 +1460,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1252,6 +1479,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1266,6 +1495,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": true
       }
     ],
@@ -1363,7 +1594,7 @@
         "route": "yellow"
       },
       "hepa": {
-        "name": "Hepatitis A/B",
+        "name": "Hepatitis Akut",
         "emoji": "🟡",
         "route": "yellow"
       },
@@ -1500,6 +1731,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1514,6 +1747,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1528,6 +1763,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1542,6 +1779,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       }
     ],
@@ -1558,6 +1797,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1572,6 +1813,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       }
     ],
@@ -1587,7 +1830,8 @@
         "condition": "Sindrom Koroner Akut (STEMI)",
         "facility": "EKG & penanganan serangan jantung",
         "first_aid": "Posisikan pasien dengan kepala agak ditinggikan 30°.",
-        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru)."
+        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru).",
+        "listed": true
       },
       {
         "id": "stroke",
@@ -1598,7 +1842,8 @@
         "condition": "Stroke akut",
         "facility": "CT scan & penanganan stroke",
         "first_aid": "Posisikan pasien dengan kepala agak ditinggikan 30°.",
-        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru)."
+        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru).",
+        "listed": true
       },
       {
         "id": "krisis_ht",
@@ -1609,7 +1854,8 @@
         "condition": "Krisis Hipertensi",
         "facility": "IGD rumah sakit",
         "first_aid": null,
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "koma_dm",
@@ -1620,7 +1866,8 @@
         "condition": "Koma Diabetik (Ketoasidosis / Hipoglikemia berat)",
         "facility": "IGD rumah sakit",
         "first_aid": null,
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "syok",
@@ -1631,7 +1878,8 @@
         "condition": "Syok Dengue (DSS)",
         "facility": "Resusitasi / ICU",
         "first_aid": "Baringkan dengan kaki ditinggikan. Minum oralit bertahap jika pasien sadar.",
-        "dont": "Beri makan/minum jika pasien mulai mengantuk/penurunan kesadaran (risiko tersedak/aspirasi)."
+        "dont": "Beri makan/minum jika pasien mulai mengantuk/penurunan kesadaran (risiko tersedak/aspirasi).",
+        "listed": true
       },
       {
         "id": "darah",
@@ -1642,7 +1890,8 @@
         "condition": "Pendarahan masif / TBC batuk darah masif",
         "facility": "ICU & Transfusi Darah",
         "first_aid": "Mimisan: duduk condong ke depan, tekan cuping hidung 10 menit.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "ginjal",
@@ -1653,7 +1902,8 @@
         "condition": "Gagal ginjal akut (Leptospirosis/Malaria)",
         "facility": "Hemodialisa",
         "first_aid": "Jangan minum obat anti-nyeri sembarangan; segera berangkat.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "napas",
@@ -1664,7 +1914,8 @@
         "condition": "Gagal napas / Pneumonia berat",
         "facility": "Oksigen & ICU",
         "first_aid": "Posisikan setengah duduk, longgarkan pakaian.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "otak",
@@ -1675,7 +1926,8 @@
         "condition": "Ensefalopati / Malaria serebral / Tifoid toksik",
         "facility": "ICU",
         "first_aid": "Saat kejang: miringkan tubuh, jangan masukkan apa pun ke mulut.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "dehidrasi",
@@ -1686,7 +1938,8 @@
         "condition": "Dehidrasi berat",
         "facility": "Resusitasi cairan IGD",
         "first_aid": "Beri oralit sedikit-sedikit tapi sering selama perjalanan.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "rabies",
@@ -1697,7 +1950,20 @@
         "condition": "Rabies / gigitan hewan penular rabies",
         "facility": "Rabies Center (Vaksin Anti-Rabies)",
         "first_aid": "Cuci luka gigitan di air mengalir dengan SABUN selama minimal 15 menit tanpa henti sebelum ke RS.",
-        "dont": null
+        "dont": null,
+        "listed": true
+      },
+      {
+        "id": "kuning",
+        "emoji": "💛",
+        "text": "Mata atau kulit sangat kuning saat demam",
+        "detail": "Ditanya sebagai gejala penyerta demam, tidak di daftar tahap 1",
+        "label": "Leptospirosis berat",
+        "condition": "Leptospirosis berat (Weil's disease), risiko gagal ginjal akut",
+        "facility": "IGD rumah sakit",
+        "first_aid": null,
+        "dont": null,
+        "listed": false
       }
     ],
     "red_flag_first": [
@@ -1760,6 +2026,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -1774,6 +2042,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -1788,6 +2058,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -1811,6 +2083,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -1825,6 +2099,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -1839,6 +2115,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -1859,6 +2137,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -1873,6 +2153,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -1893,6 +2175,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1907,6 +2191,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1921,6 +2207,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1935,6 +2223,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": true
       }
     ],
@@ -1965,6 +2255,8 @@
           "age_min": null,
           "age_max": null,
           "min_route": null,
+          "red_flag": null,
+          "staff_note": null,
           "wide": false
         },
         {
@@ -1979,6 +2271,8 @@
           "age_min": null,
           "age_max": null,
           "min_route": null,
+          "red_flag": null,
+          "staff_note": null,
           "wide": false
         },
         {
@@ -1993,6 +2287,8 @@
           "age_min": null,
           "age_max": null,
           "min_route": null,
+          "red_flag": null,
+          "staff_note": null,
           "wide": false
         }
       ]
@@ -2011,6 +2307,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -2025,6 +2323,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -2039,6 +2339,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       }
     ],
@@ -2057,6 +2359,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -2071,6 +2375,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -2085,6 +2391,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -2099,6 +2407,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": true
       }
     ],

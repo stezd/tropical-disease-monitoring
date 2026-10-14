@@ -23,6 +23,7 @@ from app.triage.scoring import (
     bmi,
     companion_shown,
     nutrition,
+    red_flag_ids,
     visible,
 )
 
@@ -42,10 +43,6 @@ def drug_flags(answers: Answers, content: FlowContent) -> list[str]:
             continue
         out.append(name)
     return out
-
-
-def red_flags(answers: Answers) -> list[str]:
-    return [f for f in answers.red_flags if f != NONE_ID]
 
 
 def _fmt(n: float) -> str:
@@ -108,7 +105,7 @@ def build_result(
     flow_id: str, answers: Answers, content: FlowContent, b: ScoreBreakdown
 ) -> ScoreResult:
     flow, advice, w = content.flow, content.advice, content.weights
-    flags = red_flags(answers)
+    flags = red_flag_ids(answers, content)
     ranked = b.ranked
     top = ranked[0] if ranked else None
     no_thermo, no_bp = _missing_vitals(answers, content)
@@ -153,6 +150,7 @@ def build_result(
                         sign=(o.reason or o.text).lower()
                     )
                 )
+    staff_notes = staff_notes_for(answers, content)
 
     def public(r_id: str, score: float, share: float) -> RankedDisease:
         d = content.diseases[r_id]
@@ -212,6 +210,7 @@ def build_result(
             for n in advice.route_notes.get(route, [])
         )
     warns.extend(Warning(level="b", icon="⬆️", text=n) for n in notes)
+    warns.extend(Warning(level="y", icon="🩺", text=n) for n in staff_notes)
     if no_thermo and wn.no_thermo_fever_pattern and wn.no_thermo_other:
         warns.append(
             Warning(
@@ -308,6 +307,14 @@ def build_result(
     )
 
 
+def staff_notes_for(answers: Answers, content: FlowContent) -> list[str]:
+    """Notes for the health worker from the picked options, without repeats."""
+    if red_flag_ids(answers, content):
+        return []
+    notes = [o.staff_note for o in picked_options(answers, content) if o.staff_note]
+    return list(dict.fromkeys(notes))
+
+
 def summary_rows(
     answers: Answers,
     content: FlowContent,
@@ -341,7 +348,8 @@ def summary_rows(
         else []
     )
     eco = [o.reason or o.text for o in flow.eco if o.id in a.eco and o.id != NONE_ID]
-    flags = [f for f in flow.red_flags if f.id in a.red_flags]
+    flag_ids = red_flag_ids(a, content)
+    flags = [f for f in flow.red_flags if f.id in flag_ids]
     b = bmi(a)
     no_thermo, no_bp = _missing_vitals(a, content)
     proxies = [
@@ -424,6 +432,10 @@ def summary_rows(
     rows += [
         ("findings", "Foto", ", ".join(findings) if findings else "-"),
         ("lab", "Lab", "; ".join(disease.lab) if disease and disease.lab else "-"),
+    ]
+    if notes := staff_notes_for(a, content):
+        rows.append(("staff_note", "Catatan petugas", "; ".join(notes)))
+    rows += [
         ("estimate", "Dugaan", dugaan),
         ("route", "Kondisi", f"{r.name} – {r.sub}"),
     ]

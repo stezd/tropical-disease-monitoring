@@ -110,6 +110,16 @@
       "label": "Koma diabetik",
       "condition": "Koma Diabetik (Ketoasidosis / Hipoglikemia berat)",
       "facility": "IGD rumah sakit"
+    },
+    {
+      "id": "kuning",
+      "emoji": "💛",
+      "text": "Mata atau kulit sangat kuning saat demam",
+      "detail": "Ditanya sebagai gejala penyerta demam, tidak di daftar tahap 1",
+      "label": "Leptospirosis berat",
+      "condition": "Leptospirosis berat (Weil's disease), risiko gagal ginjal akut",
+      "facility": "IGD rumah sakit",
+      "listed": false
     }
   ],
   "red_maps": {

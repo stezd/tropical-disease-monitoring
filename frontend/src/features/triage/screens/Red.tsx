@@ -6,7 +6,7 @@ import type { FlowPublic } from "@/client"
 import { Card, copyText, RED_TAB, toast } from "../components/Ui"
 import { vibrate } from "../fx"
 import { mapsURL } from "../links"
-import type { QuizAnswers } from "../model"
+import { type QuizAnswers, redFlagIds } from "../model"
 
 export function RedScreen({
   flow,
@@ -19,7 +19,8 @@ export function RedScreen({
   onBack: () => void
   onRestart: () => void
 }) {
-  const flags = flow.red_flags.filter((r) => answers.red_flags.includes(r.id))
+  const ids = redFlagIds(answers, flow)
+  const flags = flow.red_flags.filter((r) => ids.includes(r.id))
   const onlyRabies = flags.length === 1 && flags[0].id === "rabies"
   const q = onlyRabies
     ? flow.red_maps.rabies
