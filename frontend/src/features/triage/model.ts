@@ -14,6 +14,7 @@ export type QuizAnswers = {
   pattern: string | null
   companion: string[]
   eco: string[]
+  province: string | null
   drugs: string
   temp: string
   no_thermo: boolean
@@ -49,6 +50,7 @@ export const blankAnswers = (): QuizAnswers => ({
   pattern: null,
   companion: [],
   eco: [],
+  province: null,
   drugs: "",
   temp: "",
   no_thermo: false,
@@ -203,6 +205,7 @@ export function toApi(a: QuizAnswers): Answers {
     pattern: a.pattern,
     companion: a.companion,
     eco: a.eco,
+    province: a.province,
     drugs: a.drugs.slice(0, 500),
     temp: !a.no_thermo && tempValid(t) ? Math.round(t * 10) / 10 : null,
     no_thermo: a.no_thermo,

@@ -5,5 +5,5 @@ set -x
 
 mypy app
 ty check app
-ruff check app
-ruff format app --check
+ruff check app tests
+ruff format app tests --check

@@ -214,10 +214,9 @@ Rates: RAM $10/GB/month, CPU $20/vCPU/month, egress $0.05/GB. **Builds are free.
 
 ## 10. What this app deliberately does not do
 
-- No SATUSEHAT, BPJS API, telemedicine, or faskes integrations — plain links only (Google Maps search, opening Mobile JKN).
-- No NIK or BPJS numbers, ever.
+- No BPJS API, telemedicine, or faskes integrations — plain links only (Google Maps search, opening Mobile JKN).
 - Photos are never stored; the photo analyzer is a skeleton returning `available: false`.
-- Nothing is sent outside our own server.
+- Nothing is sent outside our own server. SATUSEHAT integration is under consideration and not covered by this rule.
 
 See `AGENTS.md` for the full "Must not break" list.
 

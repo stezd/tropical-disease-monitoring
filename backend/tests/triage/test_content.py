@@ -22,11 +22,22 @@ def test_unknown_flow() -> None:
 
 def test_red_flags_are_shared() -> None:
     """Any danger sign must reach the red screen, whichever path was picked."""
-    ids = [[f.id for f in get_content(f).flow.red_flags] for f in FLOW_IDS]
+    ids = [{f.id for f in get_content(f).flow.red_flags} for f in FLOW_IDS]
     assert all(i == ids[0] for i in ids)
-    assert {"syok", "rabies", "jantung", "stroke", "krisis_ht", "koma_dm"} <= set(
-        ids[0]
-    )
+    assert {"syok", "rabies", "jantung", "stroke", "krisis_ht", "koma_dm"} <= ids[0]
+
+
+def test_chronic_shows_ptm_red_flags_first() -> None:
+    first = [f.id for f in get_content("chronic").flow.red_flags][:4]
+    assert first == ["jantung", "stroke", "krisis_ht", "koma_dm"]
+    assert get_content("infection").flow.red_flags[0].id == "syok"
+
+
+def test_bad_red_flag_order_is_rejected() -> None:
+    raw = raw_content("chronic")
+    raw["flow"]["red_flag_first"] = ["serangan_jantung"]
+    with pytest.raises(ValueError, match="serangan_jantung"):
+        FlowContent.model_validate(raw)
 
 
 def test_bad_id_is_rejected() -> None:

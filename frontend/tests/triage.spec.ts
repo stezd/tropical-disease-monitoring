@@ -44,9 +44,11 @@ test("Guest finishes the infection quiz and sees a route", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Demam Berdarah Dengue (DBD)" }),
   ).toBeVisible()
-  await expect(page.locator(".rtag")).toContainText("RUTE SEDANG")
+  await expect(page.locator(".rhead h3")).toContainText("KONDISI SEDANG")
   await expect(page.getByText(/bukan diagnosis dokter/)).toBeVisible()
-  await expect(page.locator(".qrbox canvas")).toBeVisible()
+  await expect(
+    page.getByRole("img", { name: "QR rangkuman untuk petugas" }),
+  ).toBeVisible()
   await expect(page.getByRole("link", { name: /Mobile JKN/ })).toHaveAttribute(
     "href",
     /app\.bpjs\.mobile/,
@@ -59,7 +61,9 @@ test("Red flag opens the red route without the server", async ({ page }) => {
   await page.route("**/api/v1/**", (route) => route.abort())
   await page.getByText("Sesak napas sangat berat").click()
   await next(page)
-  await expect(page.getByText("KONDISI DARURAT")).toBeVisible()
+  await expect(
+    page.getByRole("heading", { name: "KONDISI DARURAT" }),
+  ).toBeVisible()
   await expect(page.getByRole("link", { name: /Telepon 119/ })).toHaveAttribute(
     "href",
     "tel:119",
@@ -75,6 +79,11 @@ test("Guest finishes the chronic risk check", async ({ page }) => {
   await page.getByPlaceholder("25").fill("55")
   await page.getByRole("button", { name: "Laki-laki" }).click()
   await next(page)
+  // PTM danger signs come first; their details stay hidden until asked.
+  await expect(page.locator(".opt").first()).toContainText("Nyeri dada kiri")
+  await expect(page.locator(".opt .od")).toHaveCount(0)
+  await page.getByRole("button", { name: /Lihat ciri-ciri/ }).click()
+  await expect(page.locator(".opt .od").first()).toBeVisible()
   await page.getByText("Tidak ada, saya aman").click()
   await next(page)
   await page.locator(".cbox", { hasText: "Sendi mendadak" }).click()

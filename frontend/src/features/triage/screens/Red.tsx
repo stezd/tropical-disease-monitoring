@@ -47,7 +47,7 @@ export function RedScreen({
         >
           ‹
         </button>
-        <div className="htitle">RUTE DARURAT</div>
+        <div className="htitle">KONDISI DARURAT</div>
       </div>
       <div className="rscroll">
         <div className="redcols">
@@ -60,13 +60,13 @@ export function RedScreen({
               Kuesioner dihentikan. Segera ke <b>IGD Rumah Sakit</b> sekarang —
               jangan menunggu.
             </p>
-            <a className="btn btn-white big" href="tel:119">
+            <a className="btn btn-danger big" href="tel:119">
               📞 Telepon 119 · Ambulans
             </a>
             <Card
               tab="NOMOR DARURAT"
               tabStyle={RED_TAB}
-              style={{ marginTop: 34 }}
+              style={{ marginTop: "var(--card-gap)" }}
             >
               <div className="nums">
                 <div className="numcard">
@@ -86,8 +86,8 @@ export function RedScreen({
               </div>
             </Card>
             <a
-              className="btn btn-dark"
-              style={{ marginTop: 14 }}
+              className="btn btn-secondary"
+              style={{ marginTop: "var(--sp-4)" }}
               href={mapsURL(q)}
               target="_blank"
               rel="noopener"
@@ -96,8 +96,8 @@ export function RedScreen({
             </a>
             {flags.some((f) => f.id === "rabies") && !onlyRabies && (
               <a
-                className="btn btn-dark"
-                style={{ marginTop: 14 }}
+                className="btn btn-secondary"
+                style={{ marginTop: "var(--sp-4)" }}
                 href={mapsURL(flow.red_maps.rabies)}
                 target="_blank"
                 rel="noopener"
@@ -107,7 +107,11 @@ export function RedScreen({
             )}
           </div>
           <div className="redcol">
-            <Card tab="TERDETEKSI" tabStyle={RED_TAB} style={{ marginTop: 34 }}>
+            <Card
+              tab="TERDETEKSI"
+              tabStyle={RED_TAB}
+              style={{ marginTop: "var(--card-gap)" }}
+            >
               {flags.map((f) => (
                 <div className="rflag" key={f.id}>
                   <span className="oe" aria-hidden="true">
@@ -115,7 +119,6 @@ export function RedScreen({
                   </span>
                   <div>
                     <b>{f.condition}</b>
-                    <span>{f.label}</span>
                     {f.first_aid && <em>🩹 Sambil menuju RS: {f.first_aid}</em>}
                     {f.dont && <em className="dont">🚫 Jangan: {f.dont}</em>}
                   </div>
@@ -123,14 +126,7 @@ export function RedScreen({
               ))}
             </Card>
             <Card tab="FASILITAS YANG DICARI" tabStyle={RED_TAB}>
-              <p
-                style={{
-                  margin: "0 0 10px",
-                  fontWeight: 800,
-                  fontSize: 13,
-                  color: "var(--tc-ink2)",
-                }}
-              >
+              <p className="saveinfo">
                 Jangan ke klinik biasa. Cari rumah sakit yang punya:
               </p>
               <div className="fac">

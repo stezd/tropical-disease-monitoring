@@ -1,19 +1,23 @@
-import { useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo, useRef, useState } from "react"
 
-import { type FlowPublic, type ScoreResult, TriageService } from "@/client"
+import { type FlowPublic, TriageService } from "@/client"
 import { scoreAnswers, scoreKey } from "../api"
 import { Sparkles } from "../components/Art"
+import { PhotoCard } from "../components/PhotoCard"
+import { QrCard } from "../components/QrCard"
 import { Card, copyText, Rich, toast, WarnBox } from "../components/Ui"
 import { confetti, sfx, vibrate } from "../fx"
-import { jknURL, mapsURL } from "../links"
+import { isAndroid, jknURL, mapsURL } from "../links"
 import { type QuizAnswers, toApi } from "../model"
-import { drawQR, summaryURL } from "../qr"
+import "@/styles/result.css"
 
 export const DISCLAIMER =
   "⚠️ Ini adalah skrining awal, bukan diagnosis dokter. Jika kondisi memburuk, segera ke fasilitas kesehatan atau hubungi 119."
 
-const QR_TODO = /QR rangkuman/
+// "Kenapa aku menebak ini?": the first reasons (complaint, pattern, companion
+// symptoms) stay visible; the rest are one tap away.
+const WHY_SHOWN = 3
 
 export function ResultScreen({
   flow,
@@ -31,16 +35,24 @@ export function ResultScreen({
     queryKey: scoreKey(api, flow.id),
     queryFn: () => scoreAnswers(api, flow.id),
     staleTime: Number.POSITIVE_INFINITY,
+    // A photo added on this page changes the answers: keep showing the old
+    // result while the new one loads instead of the loading screen.
+    placeholderData: keepPreviousData,
   })
   const r = score.data
   const host = useRef<HTMLDivElement>(null)
   const [grow, setGrow] = useState(false)
 
+  // Celebrate the first result only, not each re-score.
+  const celebrated = useRef(false)
   useEffect(() => {
     if (!r) return
-    sfx.win()
-    vibrate([30, 40, 30])
-    confetti(host.current?.closest(".tc-app") as HTMLElement | null)
+    if (!celebrated.current) {
+      celebrated.current = true
+      sfx.win()
+      vibrate([30, 40, 30])
+      confetti(host.current?.closest(".tc-app") as HTMLElement | null)
+    }
     const t = setTimeout(() => setGrow(true), 60)
     return () => clearTimeout(t)
   }, [r])
@@ -55,7 +67,7 @@ export function ResultScreen({
           {score.isError && (
             <button
               type="button"
-              className="btn btn-purple"
+              className="btn btn-primary"
               onClick={() => score.refetch()}
             >
               ↻ Coba lagi
@@ -67,7 +79,6 @@ export function ResultScreen({
   }
 
   const route = flow.routes[r.route]
-  const grad = `linear-gradient(${route.color_from},${route.color_to})`
   const top = r.unknown ? null : r.top
   const pct = top?.pct ?? 0
 
@@ -78,6 +89,18 @@ export function ResultScreen({
     } else toast('Gagal menyalin — buka "Lihat rangkuman lengkap".')
   }
 
+  // Phones read top to bottom: hero (route + estimate), what to do, notes, QR,
+  // other possibilities, why, photo, save, summary, restart. From 640px the
+  // hero spans the width; below it "what to do" sits left and "QR + why"
+  // right. The last group (save, summary, restart) goes under whichever column
+  // is likely shorter. Rough heights in ~150px units; only a layout hint.
+  const leftH = 2.3 + r.todo.length * 0.35 + r.warnings.length * 0.5
+  const rightH =
+    (r.route !== "green" ? 2.7 : 0) +
+    (r.others.length ? 1.3 : 0) +
+    (top ? 2.1 : 0) +
+    (flow.photo_analysis ? 2.3 : 0)
+  const endRight = rightH < leftH
   return (
     <div className="screen bg-result" ref={host}>
       <Sparkles n={18} />
@@ -93,52 +116,112 @@ export function ResultScreen({
         <div className="htitle">Hasil Skrining</div>
       </div>
       <div className="rscroll">
-        <div className="banner" style={{ background: grad }}>
-          ✨ SKRINING SELESAI! ✨
-        </div>
-        <div className="rcols">
-          <div className="rcol">
-            <Card
-              tab="TEBAKAN KAK TROPI"
-              className="reveal"
-              style={{ marginTop: 34 }}
-            >
-              {top ? (
-                <>
-                  <div className="lead">
-                    Aku menebak kamu mungkin mengalami…
-                  </div>
-                  <div className="bigemo" aria-hidden="true">
-                    {top.emoji}
-                  </div>
+        <div className="banner">✨ SKRINING SELESAI! ✨</div>
+        <div className={`rcols res ${endRight ? "end-right" : ""}`}>
+          <section className="card rhero" aria-label="Hasil skrining">
+            <div className={`rhead rt-${r.route}`}>
+              <span className="re" aria-hidden="true">
+                {route.emoji}
+              </span>
+              <div>
+                <h3>{route.name}</h3>
+                <p>{route.sub}</p>
+              </div>
+            </div>
+            {top ? (
+              <div className="est">
+                <div className="bigemo" aria-hidden="true">
+                  {top.emoji}
+                </div>
+                <div className="est-txt">
+                  <p className="lead">Aku menebak kamu mungkin mengalami…</p>
                   <h2>{top.name}</h2>
+                </div>
+                <div
+                  className="score"
+                  role="img"
+                  aria-label={`Klasifikasi kecocokan ${pct} persen`}
+                >
                   <div
                     className="score-ring"
                     style={{ ["--p" as string]: pct }}
-                    role="img"
-                    aria-label={`Klasifikasi kecocokan ${pct} persen`}
                   >
-                    <div>
-                      {pct}%<small>klasifikasi kecocokan</small>
-                    </div>
+                    <div>{pct}%</div>
                   </div>
-                </>
-              ) : (
-                <>
-                  <div className="bigemo" aria-hidden="true">
-                    🩺
-                  </div>
+                  <small>klasifikasi kecocokan</small>
+                </div>
+              </div>
+            ) : (
+              <div className="est">
+                <div className="bigemo" aria-hidden="true">
+                  🩺
+                </div>
+                <div className="est-txt">
                   <h2>Belum dapat ditentukan</h2>
                   <p className="lead">
                     Gejalamu belum cocok dengan satu pola. Lebih aman diperiksa
                     langsung, ya!
                   </p>
-                </>
-              )}
-              <span className="rtag" style={{ background: grad }}>
-                {route.emoji} {route.name}
-              </span>
+                </div>
+              </div>
+            )}
+          </section>
+
+          <div className="rgrp rg-act">
+            <Card tab="YANG PERLU DILAKUKAN">
+              <ul className="todo">
+                {r.todo.map((x) => (
+                  <li key={x}>
+                    <Rich text={x} />
+                  </li>
+                ))}
+              </ul>
+              <div className="place">
+                <span className="pe" aria-hidden="true">
+                  📍
+                </span>
+                <div>
+                  {r.place}
+                  <small>Dibuka di Google Maps</small>
+                </div>
+              </div>
+              <div className="ractions">
+                <a
+                  className="btn btn-primary big"
+                  href={mapsURL(r.maps_query)}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  🧭 Navigasi ke {r.nav_label} Terdekat
+                </a>
+                <a
+                  className="btn btn-jkn"
+                  href={jknURL()}
+                  // An intent link hands off to Android; a new tab would stay blank.
+                  target={isAndroid() ? undefined : "_blank"}
+                  rel="noopener"
+                >
+                  📅 Buat janji dokter (Mobile JKN)
+                </a>
+                {isAndroid() && (
+                  <p className="jkn-hint">
+                    Kalau yang terbuka Play Store, ketuk <b>Buka</b>.
+                  </p>
+                )}
+              </div>
             </Card>
+
+            {r.warnings.length > 0 && (
+              <Card tab="CATATAN PENTING" className="rnotes">
+                {r.warnings.map((w) => (
+                  <WarnBox key={w.text} {...w} />
+                ))}
+              </Card>
+            )}
+          </div>
+
+          <div className="rgrp rg-info">
+            {r.route !== "green" && <QrCard answers={api} flowId={flow.id} />}
 
             {r.others.length > 0 && (
               <Card tab="KEMUNGKINAN LAIN">
@@ -164,10 +247,22 @@ export function ResultScreen({
             {top && (
               <Card tab="KENAPA AKU MENEBAK INI?">
                 <ul className="why">
-                  {r.reasons.map((x) => (
+                  {r.reasons.slice(0, WHY_SHOWN).map((x) => (
                     <li key={x}>{x}</li>
                   ))}
                 </ul>
+                {r.reasons.length > WHY_SHOWN && (
+                  <details className="sum">
+                    <summary>
+                      Lihat {r.reasons.length - WHY_SHOWN} alasan lain
+                    </summary>
+                    <ul className="why">
+                      {r.reasons.slice(WHY_SHOWN).map((x) => (
+                        <li key={x}>{x}</li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
                 {r.cross_checks.length > 0 && (
                   <div className="xval">
                     {r.cross_checks.map((x) => (
@@ -179,128 +274,38 @@ export function ResultScreen({
                 )}
               </Card>
             )}
+
+            <PhotoCard flow={flow} route={r.route} />
           </div>
 
-          <div className="rcol">
-            <div className="card rcard">
-              <div
-                className="rhead"
-                style={{
-                  background: `linear-gradient(160deg,${route.color_from},${route.color_to})`,
-                }}
-              >
-                <div className="re" aria-hidden="true">
-                  {route.emoji}
-                </div>
-                <h3>{route.name}</h3>
-                <p>{route.sub}</p>
-              </div>
-              <div className="rbody">
-                <h4>Yang perlu dilakukan</h4>
-                <ul className="todo">
-                  {r.todo.map((x) => (
-                    <li key={x}>
-                      <Rich text={x} />
-                    </li>
-                  ))}
-                </ul>
-                <div className="place">
-                  <span className="pe" aria-hidden="true">
-                    📍
-                  </span>
-                  <div>
-                    {r.place}
-                    <small>Dibuka di Google Maps</small>
-                  </div>
-                </div>
-                <a
-                  className={`btn ${r.route === "green" ? "btn-teal" : "btn-purple"}`}
-                  href={mapsURL(r.maps_query)}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  🧭 Navigasi ke {r.nav_label} Terdekat
-                </a>
-                <a
-                  className="btn btn-jkn"
-                  style={{ marginTop: 14 }}
-                  href={jknURL()}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  📅 Buat janji dokter (Mobile JKN)
-                </a>
-                {r.route !== "green" && (
-                  <QrBox answers={api} flowId={flow.id} />
-                )}
-                <details className="sum">
-                  <summary>📄 Lihat rangkuman lengkap</summary>
-                  <pre>{r.summary}</pre>
-                </details>
-              </div>
-            </div>
-
-            {r.warnings.length > 0 && (
-              <Card tab="CATATAN PENTING">
-                {r.warnings.map((w) => (
-                  <WarnBox key={w.text} {...w} />
-                ))}
-              </Card>
-            )}
-
+          <div className="rgrp rg-end">
             <SaveCard answers={api} flowId={flow.id} />
 
-            <div className="btnrow">
+            <Card tab="RANGKUMAN" className="rsum">
+              <details className="sum">
+                <summary>📄 Lihat rangkuman lengkap</summary>
+                <pre>{r.summary}</pre>
+              </details>
               <button
                 type="button"
-                className="btn btn-teal"
+                className="btn btn-secondary"
                 onClick={copySummary}
               >
                 📋 Salin Rangkuman
               </button>
-              <button
-                type="button"
-                className="btn btn-purple big"
-                onClick={onRestart}
-              >
-                ↻ Ulangi Skrining
-              </button>
-            </div>
+            </Card>
+
+            <button
+              type="button"
+              className="btn btn-secondary rrestart"
+              onClick={onRestart}
+            >
+              ↻ Ulangi Skrining
+            </button>
           </div>
         </div>
         <p className="footdisc">{DISCLAIMER}</p>
       </div>
-    </div>
-  )
-}
-
-function QrBox({
-  answers,
-  flowId,
-}: {
-  answers: ReturnType<typeof toApi>
-  flowId: string
-}) {
-  const canvas = useRef<HTMLCanvasElement>(null)
-  const [ok, setOk] = useState(true)
-  useEffect(() => {
-    if (canvas.current) {
-      setOk(drawQR(canvas.current, summaryURL(answers, flowId)))
-    }
-  }, [answers, flowId])
-  if (!ok) return null
-  return (
-    <div className="qrbox">
-      <canvas
-        ref={canvas}
-        width={232}
-        height={232}
-        aria-label="QR rangkuman untuk petugas"
-      />
-      <b>QR Rangkuman</b>
-      Tunjukkan ke petugas. Petugas yang memindai melihat rangkuman kondisimu
-      dan saran penanganan. Jawabanmu ada di dalam QR ini dan tidak disimpan di
-      server.
     </div>
   )
 }
@@ -337,18 +342,17 @@ function SaveCard({
       ) : (
         <>
           <p className="saveinfo">
-            Boleh kami simpan jawabanmu <b>tanpa nama</b> untuk menguji dan
-            memperbaiki TropiCare? Tidak ada nama, NIK, nomor BPJS, atau foto
-            yang disimpan. Boleh dilewati.
+            Boleh simpan jawabanmu <b>tanpa nama</b> untuk memperbaiki
+            TropiCare? Tanpa nama atau foto. Boleh dilewati.
           </p>
           {state === "error" && (
-            <p className="saveinfo" style={{ color: "#B3122E" }}>
+            <p className="saveinfo err" role="alert">
               Gagal menyimpan. Coba lagi nanti.
             </p>
           )}
           <button
             type="button"
-            className="btn btn-purple"
+            className="btn btn-secondary"
             disabled={state === "saving"}
             onClick={save}
           >
@@ -357,30 +361,5 @@ function SaveCard({
         </>
       )}
     </Card>
-  )
-}
-
-export function AdviceCards({ r }: { r: ScoreResult }) {
-  return (
-    <>
-      <Card tab="SARAN PENANGANAN">
-        <ul className="todo">
-          {r.todo
-            .filter((x) => !QR_TODO.test(x))
-            .map((x) => (
-              <li key={x}>
-                <Rich text={x} />
-              </li>
-            ))}
-        </ul>
-      </Card>
-      {r.warnings.length > 0 && (
-        <Card tab="CATATAN PENTING">
-          {r.warnings.map((w) => (
-            <WarnBox key={w.text} {...w} />
-          ))}
-        </Card>
-      )}
-    </>
   )
 }
