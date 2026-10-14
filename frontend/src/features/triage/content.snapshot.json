@@ -266,6 +266,7 @@
         "dont": null
       }
     ],
+    "red_flag_first": [],
     "red_maps": {
       "default": "IGD rumah sakit terdekat",
       "ginjal": "rumah sakit IGD hemodialisa terdekat",
@@ -1576,6 +1577,50 @@
     "pregnancy_from_age": 10,
     "red_flags": [
       {
+        "id": "jantung",
+        "emoji": "💔",
+        "text": "Nyeri dada kiri seperti tertindih benda berat",
+        "detail": "Nyeri dada bagian kiri terasa seperti tertindih benda sangat berat, menjalar ke rahang/lengan kiri/punggung, disertai keringat dingin sebesar biji jagung",
+        "label": "Serangan jantung",
+        "condition": "Sindrom Koroner Akut (STEMI)",
+        "facility": "EKG & penanganan serangan jantung",
+        "first_aid": "Posisikan pasien dengan kepala agak ditinggikan 30°.",
+        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru)."
+      },
+      {
+        "id": "stroke",
+        "emoji": "🫤",
+        "text": "Wajah mencong, bicara pelo, atau lemah separuh badan",
+        "detail": "Mulut/wajah mendadak mencong, bicara pelo (cadel), atau kelemahan separuh badan (tangan/kaki) yang terjadi tiba-tiba hari ini",
+        "label": "Stroke",
+        "condition": "Stroke akut",
+        "facility": "CT scan & penanganan stroke",
+        "first_aid": "Posisikan pasien dengan kepala agak ditinggikan 30°.",
+        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru)."
+      },
+      {
+        "id": "krisis_ht",
+        "emoji": "🤯",
+        "text": "Nyeri tengkuk sangat hebat, pandangan gelap",
+        "detail": "Nyeri kepala bagian belakang (tengkuk) yang sangat ekstrem hingga pandangan mendadak gelap/kabur, atau mimisan deras",
+        "label": "Krisis hipertensi",
+        "condition": "Krisis Hipertensi",
+        "facility": "IGD rumah sakit",
+        "first_aid": null,
+        "dont": null
+      },
+      {
+        "id": "koma_dm",
+        "emoji": "🍎",
+        "text": "Penderita kencing manis pingsan / napas bau buah",
+        "detail": "Penderita kencing manis mendadak pingsan, mengigau, sangat pucat dan gemetar hebat, atau napasnya berbau buah menyengat (aseton)",
+        "label": "Koma diabetik",
+        "condition": "Koma Diabetik (Ketoasidosis / Hipoglikemia berat)",
+        "facility": "IGD rumah sakit",
+        "first_aid": null,
+        "dont": null
+      },
+      {
         "id": "syok",
         "emoji": "🥶",
         "text": "Muntah hebat / tangan-kaki dingin",
@@ -1651,51 +1696,13 @@
         "facility": "Rabies Center (Vaksin Anti-Rabies)",
         "first_aid": "Cuci luka gigitan di air mengalir dengan SABUN selama minimal 15 menit tanpa henti sebelum ke RS.",
         "dont": null
-      },
-      {
-        "id": "jantung",
-        "emoji": "💔",
-        "text": "Nyeri dada kiri seperti tertindih benda berat",
-        "detail": "Nyeri dada bagian kiri terasa seperti tertindih benda sangat berat, menjalar ke rahang/lengan kiri/punggung, disertai keringat dingin sebesar biji jagung",
-        "label": "Serangan jantung",
-        "condition": "Sindrom Koroner Akut (STEMI)",
-        "facility": "EKG & penanganan serangan jantung",
-        "first_aid": "Posisikan pasien dengan kepala agak ditinggikan 30°.",
-        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru)."
-      },
-      {
-        "id": "stroke",
-        "emoji": "🫤",
-        "text": "Wajah mencong, bicara pelo, atau lemah separuh badan",
-        "detail": "Mulut/wajah mendadak mencong, bicara pelo (cadel), atau kelemahan separuh badan (tangan/kaki) yang terjadi tiba-tiba hari ini",
-        "label": "Stroke",
-        "condition": "Stroke akut",
-        "facility": "CT scan & penanganan stroke",
-        "first_aid": "Posisikan pasien dengan kepala agak ditinggikan 30°.",
-        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru)."
-      },
-      {
-        "id": "krisis_ht",
-        "emoji": "🤯",
-        "text": "Nyeri tengkuk sangat hebat, pandangan gelap",
-        "detail": "Nyeri kepala bagian belakang (tengkuk) yang sangat ekstrem hingga pandangan mendadak gelap/kabur, atau mimisan deras",
-        "label": "Krisis hipertensi",
-        "condition": "Krisis Hipertensi",
-        "facility": "IGD rumah sakit",
-        "first_aid": null,
-        "dont": null
-      },
-      {
-        "id": "koma_dm",
-        "emoji": "🍎",
-        "text": "Penderita kencing manis pingsan / napas bau buah",
-        "detail": "Penderita kencing manis mendadak pingsan, mengigau, sangat pucat dan gemetar hebat, atau napasnya berbau buah menyengat (aseton)",
-        "label": "Koma diabetik",
-        "condition": "Koma Diabetik (Ketoasidosis / Hipoglikemia berat)",
-        "facility": "IGD rumah sakit",
-        "first_aid": null,
-        "dont": null
       }
+    ],
+    "red_flag_first": [
+      "jantung",
+      "stroke",
+      "krisis_ht",
+      "koma_dm"
     ],
     "red_maps": {
       "default": "IGD rumah sakit terdekat",

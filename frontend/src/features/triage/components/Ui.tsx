@@ -4,6 +4,7 @@ import {
   type ReactNode,
   useEffect,
   useRef,
+  useState,
   useSyncExternalStore,
 } from "react"
 
@@ -65,30 +66,51 @@ export function Options({
   layout?: "" | "tiles" | "tiles tiles3"
   onPick: (id: string) => void
 }) {
+  // Details stay one tap away so the list is quick to scan. They show for picked
+  // options (to confirm the choice) and for everyone after "Lihat ciri-ciri".
+  // Screen readers always get them.
+  const [showAll, setShowAll] = useState(false)
+  const hasDetail = options.some((o) => o.detail)
   return (
-    <div className={`opts ${layout}`}>
-      {options.map((o) => {
-        const on = selected.includes(o.id)
-        return (
-          <button
-            key={o.id}
-            type="button"
-            className={`opt ${o.cls ?? ""} ${on ? "on" : ""} ${multi ? "multi" : ""}`}
-            aria-pressed={on}
-            onClick={() => onPick(o.id)}
-          >
-            <span className="oe" aria-hidden="true">
-              {o.emoji}
-            </span>
-            <span className="ot">
-              {o.text}
-              {o.detail && <span className="od">{o.detail}</span>}
-            </span>
-            <span className="ck" />
-          </button>
-        )
-      })}
-    </div>
+    <>
+      {hasDetail && (
+        <button
+          type="button"
+          className="dtoggle"
+          aria-expanded={showAll}
+          onClick={() => setShowAll((v) => !v)}
+        >
+          {showAll ? "Sembunyikan ciri-ciri ▲" : "ⓘ Lihat ciri-ciri ▼"}
+        </button>
+      )}
+      <div className={`opts ${layout}`}>
+        {options.map((o) => {
+          const on = selected.includes(o.id)
+          return (
+            <button
+              key={o.id}
+              type="button"
+              className={`opt ${o.cls ?? ""} ${on ? "on" : ""} ${multi ? "multi" : ""}`}
+              aria-pressed={on}
+              onClick={() => onPick(o.id)}
+            >
+              <span className="oe" aria-hidden="true">
+                {o.emoji}
+              </span>
+              <span className="ot">
+                {o.text}
+                {o.detail && (
+                  <span className={showAll || on ? "od" : "sr-only"}>
+                    {o.detail}
+                  </span>
+                )}
+              </span>
+              <span className="ck" />
+            </button>
+          )
+        })}
+      </div>
+    </>
   )
 }
 

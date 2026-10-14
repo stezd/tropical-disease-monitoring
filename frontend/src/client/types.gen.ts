@@ -263,6 +263,10 @@ export type FlowPublic = {
      */
     red_flags: Array<RedFlag>;
     /**
+     * Red Flag First
+     */
+    red_flag_first?: Array<string>;
+    /**
      * Red Maps
      */
     red_maps: {

@@ -75,6 +75,11 @@ test("Guest finishes the chronic risk check", async ({ page }) => {
   await page.getByPlaceholder("25").fill("55")
   await page.getByRole("button", { name: "Laki-laki" }).click()
   await next(page)
+  // PTM danger signs come first; their details stay hidden until asked.
+  await expect(page.locator(".opt").first()).toContainText("Nyeri dada kiri")
+  await expect(page.locator(".opt .od")).toHaveCount(0)
+  await page.getByRole("button", { name: /Lihat ciri-ciri/ }).click()
+  await expect(page.locator(".opt .od").first()).toBeVisible()
   await page.getByText("Tidak ada, saya aman").click()
   await next(page)
   await page.locator(".cbox", { hasText: "Sendi mendadak" }).click()

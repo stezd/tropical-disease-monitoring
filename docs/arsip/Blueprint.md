@@ -1,6 +1,6 @@
 # BLUEPRINT APLIKASI: TRIASE ADAPTIF INFEKSI TROPIS, NTD & PTM
 
-> Versi acuan terbaru. Jawaban dokter atas pertanyaan terbuka: [Jawaban-Dokter.md](Jawaban-Dokter.md).
+> **Diarsipkan.** Acuan yang berlaku: [../Acuan-Medis.md](../Acuan-Medis.md). File ini disimpan apa adanya sebagai sumber, dikutip di sana sebagai `[B-T…]`. Jangan diedit.
 
 ## TAHAP 1: FILTER DEMOGRAFI ABSOLUT
 

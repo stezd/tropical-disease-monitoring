@@ -115,7 +115,6 @@ export function RedScreen({
                   </span>
                   <div>
                     <b>{f.condition}</b>
-                    <span>{f.label}</span>
                     {f.first_aid && <em>🩹 Sambil menuju RS: {f.first_aid}</em>}
                     {f.dont && <em className="dont">🚫 Jangan: {f.dont}</em>}
                   </div>
