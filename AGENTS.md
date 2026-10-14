@@ -76,6 +76,16 @@ bash scripts/generate-client.sh          # after API changes
 - Design for phones first, then tablet (≥640px) and desktop (≥960px).
 - Near the deadline: fix bugs instead of adding features.
 
+## Checklist aplikasi (in Indonesian)
+
+- [ ] App bisa membuka Mobile JKN langsung saat di HP dan aplikasinya terpasang
+- [ ] App bisa mengambil lokasi dan memasukkannya ke inferensi
+- [ ] App bisa mengambil foto dan memasukkannya ke inferensi
+- [ ] App melakukan inferensi secara akurat berdasarkan pilihan, lokasi, dan foto
+- [ ] Tampilan enak di HP
+- [ ] Pertanyaan lengkap
+- [ ] Sedang mencoba mengintegrasikan ke SATUSEHAT — ⚠️ bertentangan dengan aturan "Standalone" di atas; perlu keputusan tim sebelum dikerjakan
+
 ## Fitur (in Indonesian)
 
 Semua fitur aplikasi, beserta alasannya. Simulasi HTML hanya contoh tampilan; kolom **Status** menunjukkan apa yang tinggal dipindahkan dan apa yang masih harus diubah.
