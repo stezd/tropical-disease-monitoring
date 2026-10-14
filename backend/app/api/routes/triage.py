@@ -1,9 +1,12 @@
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-from sqlmodel import col, func, select
 
+from app.adapters.outbound.sqlmodel.screening_repository import (
+    SqlModelScreeningRepository,
+)
 from app.api.deps import SessionDep, get_current_active_superuser
+from app.application.ports.outbound.screening_repository import ScreeningRepository
 from app.core.config import settings
 from app.models import Screening, ScreeningPublic, ScreeningsPublic
 from app.triage.advice import build_result
@@ -65,8 +68,8 @@ def create_screening(session: SessionDep, body: ScreeningCreate) -> ScoreResult:
         top_score=result.top.score if result.top else None,
         engine=settings.TRIAGE_SCORING_ENGINE,
     )
-    session.add(screening)
-    session.commit()
+    repository: ScreeningRepository = SqlModelScreeningRepository(session)
+    repository.save(screening)
     return result
 
 
@@ -77,13 +80,8 @@ def create_screening(session: SessionDep, body: ScreeningCreate) -> ScoreResult:
 )
 def read_screenings(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     """Saved screenings for ST's analysis. Superusers only."""
-    count = session.exec(select(func.count()).select_from(Screening)).one()
-    rows = session.exec(
-        select(Screening)
-        .order_by(col(Screening.created_at).desc())
-        .offset(skip)
-        .limit(limit)
-    ).all()
+    repository: ScreeningRepository = SqlModelScreeningRepository(session)
+    rows, count = repository.list(skip, limit)
     return ScreeningsPublic(
         data=[ScreeningPublic.model_validate(r) for r in rows], count=count
     )
