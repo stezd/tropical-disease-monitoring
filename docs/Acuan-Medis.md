@@ -287,7 +287,7 @@ Pasien mengetik atau mengetuk obat yang sudah/rutin diminum (opsional). `[B-T4]`
 - Lingkar perut (cm), hanya jalur kronis. ⏳ K22: ambang.
 - Tanpa timbangan, tanyakan proksi:
   - "Pakaian/celana sangat longgar dalam 1–2 bulan terakhir". Instrumen yang cukup kuat untuk penurunan BB tak disengaja > 5 % pada suspek TBC, HIV, malnutrisi `[J4]`; juga prediktor STH dan DM katabolik `[B-T6]`.
-  - "Celana makin sempit di perut / Kelebihan berat badan (Obesitas)". Kata "gemuk" diganti `[J2]`.
+  - "Celana makin sempit di perut / Kelebihan berat badan". Kata "gemuk" diganti `[J2]`; kata "(Obesitas)" dihapus dari teks pilihan atas persetujuan DR (Okt 2026).
 - **Obesitas → risiko malaria berat.** Obesitas adalah faktor risiko komplikasi *P. falciparum* (malaria serebral, ARDS), sesuai WHO dan BMJ Global Health `[J2]`. Juga prediktor hipertensi dan DM `[B-T6]`.
 
 ### Foto `[B-T6]` `[J17]`

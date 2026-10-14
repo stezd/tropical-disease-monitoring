@@ -1,0 +1,369 @@
+/* Result page (features/triage/screens/Result.tsx, components/QrCard.tsx).
+   Uses the tokens from tropicek.css :root. Shared pieces (.card, .btn, .todo,
+   .why, .xval, .warn, details.sum, .footdisc, .rt-*) live there.
+
+   Order (phones, top to bottom): hero (route + estimate) → what to do +
+   buttons → notes → QR → other possibilities → why → photo → save → summary
+   → restart. From 640px the hero spans the width, .rg-act sits left, .rg-info
+   right, and .rg-end under the shorter column (.end-right, set in Result). */
+
+/* ---- Layout */
+.rcols.res,
+.rgrp {
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+}
+.rcols.res {
+  max-width: 600px;
+  margin: var(--sp-5) auto 0;
+}
+.res > *,
+.res .rgrp > * {
+  margin: 0;
+}
+.res .card > :first-child,
+.res .card > .tab + * {
+  margin-top: 0;
+}
+
+/* "Skrining selesai" pill: celebratory but neutral, so the route color only
+   shows up once (in the hero). */
+.banner {
+  margin: var(--sp-1) auto 0;
+  width: fit-content;
+  max-width: 100%;
+  color: #fff;
+  font-family: var(--tc-fh);
+  font-weight: 700;
+  font-size: var(--fs-md);
+  letter-spacing: 1px;
+  padding: var(--sp-2) var(--sp-5);
+  border-radius: var(--r-pill);
+  background: rgba(30, 15, 80, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  text-align: center;
+}
+
+/* ---- Hero: route band on top, estimate below */
+.card.rhero {
+  padding: 0;
+  overflow: hidden;
+}
+.rhero .rhead {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  text-align: left;
+}
+.rhero .rhead .re {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.55);
+  font-size: 30px;
+}
+.rhero .rhead h3 {
+  margin: 0;
+  font-size: var(--fs-xl);
+  line-height: var(--lh-tight);
+}
+.rhero .rhead p {
+  margin: 2px 0 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
+}
+.est {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-4) var(--sp-5);
+}
+.est-txt h2 {
+  margin: 0;
+  font-family: var(--tc-fh);
+  font-weight: 600;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-tight);
+  color: var(--tc-ink);
+  overflow-wrap: anywhere;
+}
+.est-txt .lead {
+  margin: 0 0 var(--sp-1);
+  font-weight: 800;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-tight);
+  color: var(--tc-ink2);
+}
+.est-txt h2 + .lead {
+  margin: var(--sp-1) 0 0;
+  line-height: var(--lh-base);
+}
+.bigemo {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--r-md);
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+  background: var(--tc-tabbg);
+  box-shadow: 0 4px 0 #ddd5fb;
+  animation: flip 0.9s cubic-bezier(0.2, 1.3, 0.4, 1);
+}
+@keyframes flip {
+  from {
+    transform: rotateY(180deg) scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+  width: 84px;
+}
+.score small {
+  font-size: var(--fs-xs);
+  font-weight: 900;
+  line-height: var(--lh-tight);
+  text-align: center;
+  color: var(--tc-ink2);
+}
+.score-ring {
+  --p: 70;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(var(--tc-purple) calc(var(--p) * 1%), #eee8ff 0);
+}
+.score-ring div {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #fff;
+  display: grid;
+  place-items: center;
+  font-family: var(--tc-fh);
+  font-weight: 700;
+  font-size: var(--fs-lg);
+  color: var(--tc-purpleSh);
+  line-height: 1;
+}
+
+/* ---- What to do */
+.place {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+  background: var(--tc-soft);
+  border-radius: var(--r-md);
+  padding: var(--sp-3);
+  margin-top: var(--sp-4);
+  font-weight: 800;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
+}
+.place .pe {
+  flex: none;
+  font-size: 24px;
+}
+.place small {
+  display: block;
+  color: var(--tc-ink2);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+}
+.ractions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+.ractions .jkn-hint {
+  margin: 0;
+}
+.rnotes .warn:first-of-type {
+  margin-top: 0;
+}
+
+/* ---- QR for the officer */
+.qrcard {
+  text-align: center;
+}
+.qrcard canvas {
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 1;
+  image-rendering: pixelated;
+  border-radius: var(--r-sm);
+  background: #fff;
+  border: 2px solid var(--tc-line);
+}
+.qrcap {
+  margin: var(--sp-3) 0 0;
+  font-size: var(--fs-sm);
+  font-weight: 800;
+  line-height: var(--lh-base);
+  color: var(--tc-ink2);
+}
+.qrcap b {
+  display: block;
+  font-family: var(--tc-fh);
+  font-weight: 600;
+  font-size: var(--fs-md);
+  color: var(--tc-ink);
+}
+.qrbtns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+/* Side by side when both fit on one line, stacked in narrow columns. */
+.qrbtns .btn {
+  flex: 1 1 130px;
+  padding-left: var(--sp-3);
+  padding-right: var(--sp-3);
+}
+
+/* ---- Other possibilities */
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-weight: 800;
+  font-size: var(--fs-sm);
+}
+.bar .be {
+  font-size: 20px;
+  width: 28px;
+  text-align: center;
+  flex: none;
+}
+.bar .bn {
+  flex: 1;
+  min-width: 0;
+}
+.bar .bt {
+  height: 10px;
+  border-radius: var(--r-pill);
+  background: #f0ecff;
+  overflow: hidden;
+  margin-top: var(--sp-1);
+}
+.bar .bt i {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--tc-purple);
+  width: 0;
+  transition: width 1s 0.3s;
+}
+.bar .bp2 {
+  font-family: var(--tc-fh);
+  font-weight: 600;
+  color: var(--tc-ink2);
+  flex: none;
+}
+
+/* ---- Save, summary, restart */
+.saveinfo.err {
+  color: #b3122e;
+}
+.rsum details.sum {
+  margin: 0 0 var(--sp-4);
+}
+.res .rcol > .rrestart {
+  margin-top: var(--sp-6);
+}
+
+/* ===== ≥640px: tablet looks like desktop (two columns) ===== */
+@media (min-width: 640px) {
+  .rcols.res {
+    max-width: 1080px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "hero hero"
+      "act info"
+      "end info";
+    gap: var(--card-gap) var(--sp-5);
+    align-items: start;
+  }
+  .rcols.res.end-right {
+    grid-template-areas:
+      "hero hero"
+      "act info"
+      "act end";
+  }
+  .res .rhero {
+    grid-area: hero;
+  }
+  .res .rg-act {
+    grid-area: act;
+  }
+  .res .rg-info {
+    grid-area: info;
+  }
+  .res .rg-end {
+    grid-area: end;
+  }
+  .score {
+    width: 96px;
+  }
+  .score-ring {
+    width: 84px;
+    height: 84px;
+  }
+  .score-ring div {
+    width: 66px;
+    height: 66px;
+  }
+}
+/* Between 640 and 960 the columns are narrow: tighter card padding. */
+@media (min-width: 640px) and (max-width: 959px) {
+  .res .card {
+    padding-left: var(--sp-4);
+    padding-right: var(--sp-4);
+  }
+  .res .card.rhero {
+    padding: 0;
+  }
+}
+/* ≥960px: hero becomes one strip, route left and estimate right, lined up
+   with the columns below. */
+@media (min-width: 960px) {
+  .rcols.res {
+    column-gap: 28px;
+  }
+  .card.rhero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .rhero .rhead {
+    padding: var(--sp-5) var(--sp-6);
+  }
+  .rhero .est {
+    padding: var(--sp-5) var(--sp-6);
+  }
+}

@@ -62,11 +62,7 @@ export function SummaryScreen() {
         ) : !r || !route ? (
           <p className="footdisc">Memuat rangkuman…</p>
         ) : (
-          <SummaryBody
-            r={r}
-            route={route}
-            grad={`linear-gradient(160deg,${route.color_from},${route.color_to})`}
-          />
+          <SummaryBody r={r} route={route} />
         )}
         <p className="footdisc">
           ⚠️ Ini hasil skrining awal dari jawaban pasien, bukan diagnosis dokter.
@@ -80,11 +76,9 @@ export function SummaryScreen() {
 function SummaryBody({
   r,
   route,
-  grad,
 }: {
   r: ScoreResult
   route: { emoji: string; name: string; sub: string }
-  grad: string
 }) {
   const rows = new Map(r.summary_rows.map((x) => [x.key, x]))
   const value = (k: string) => rows.get(k)?.value ?? "-"
@@ -113,7 +107,7 @@ function SummaryBody({
     <div className="rcols sumpage">
       <div className="rcol">
         <div className="card rcard">
-          <div className="rhead" style={{ background: grad }}>
+          <div className={`rhead rt-${r.route}`}>
             <div className="re" aria-hidden="true">
               {route.emoji}
             </div>
@@ -229,7 +223,7 @@ function SummaryBody({
         <details className="sum sum-more">
           <summary>📄 Teks lengkap</summary>
           <pre>{r.summary}</pre>
-          <button type="button" className="btn btn-teal" onClick={copy}>
+          <button type="button" className="btn btn-secondary" onClick={copy}>
             📋 Salin rangkuman
           </button>
         </details>
