@@ -1,13 +1,25 @@
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-from sqlmodel import col, func, select
 
+from app.adapters.outbound.sqlmodel.screening_repository import (
+    SqlModelScreeningRepository,
+)
 from app.api.deps import SessionDep, get_current_active_superuser
+from app.application.ports.outbound.screening_repository import ScreeningRepository
+from app.application.use_cases.score_flow import (
+    EngineUnavailableError,
+    UnknownFlowError,
+)
+from app.composition.triage_container import (
+    get_content_repository,
+    get_photo_analyzer,
+    get_score_use_case,
+)
 from app.core.config import settings
+from app.domain.answers import Answers as DomainAnswers
 from app.models import Screening, ScreeningPublic, ScreeningsPublic
-from app.triage.advice import build_result
-from app.triage.content import FlowContent, get_content
+from app.triage.content import FlowContent
 from app.triage.schemas import (
     Answers,
     FlowPublic,
@@ -16,38 +28,38 @@ from app.triage.schemas import (
     ScreeningCreate,
     flow_public,
 )
-from app.triage.scoring import get_engine
-from app.triage.vision import ALLOWED_TYPES, MAX_PHOTO_BYTES, get_analyzer
+from app.triage.vision import ALLOWED_TYPES, MAX_PHOTO_BYTES
 
 router = APIRouter(prefix="/triage", tags=["triage"])
 
 
 def _content(flow_id: str) -> FlowContent:
     try:
-        return get_content(flow_id)
+        return get_content_repository().get(flow_id)
     except KeyError:
         raise HTTPException(status_code=404, detail="Flow not found")
 
 
-def score_answers(flow_id: str, answers: Answers) -> ScoreResult:
-    content = _content(flow_id)
+def score_answers(flow_id: str, answers: DomainAnswers) -> ScoreResult:
+    """Score answers via the use case. Kept for backwards compatibility."""
     try:
-        breakdown = get_engine().score(answers, content)
-    except NotImplementedError as e:
+        return get_score_use_case().execute(flow_id, answers)
+    except UnknownFlowError:
+        raise HTTPException(status_code=404, detail="Flow not found")
+    except EngineUnavailableError as e:
         raise HTTPException(status_code=503, detail=str(e))
-    return build_result(flow_id, answers, content, breakdown)
 
 
 @router.get("/flows/{flow_id}")
 def read_flow(flow_id: str) -> FlowPublic:
     """Questions and options for a flow. Weights are not included."""
-    return flow_public(_content(flow_id), photo_analysis=get_analyzer().available)
+    return flow_public(_content(flow_id), photo_analysis=get_photo_analyzer().available)
 
 
 @router.post("/flows/{flow_id}/score")
 def score_flow(flow_id: str, answers: Answers) -> ScoreResult:
     """Score answers. Stateless: nothing is saved."""
-    return score_answers(flow_id, answers)
+    return score_answers(flow_id, answers.to_domain())
 
 
 @router.post("/screenings")
@@ -55,7 +67,7 @@ def create_screening(session: SessionDep, body: ScreeningCreate) -> ScoreResult:
     """Save an anonymous screening. Only when the patient agreed (`consent=true`)."""
     if not body.consent:
         raise HTTPException(status_code=400, detail="Consent is required to save")
-    result = score_answers(body.flow_id, body.answers)
+    result = score_answers(body.flow_id, body.answers.to_domain())
     screening = Screening(
         flow_id=body.flow_id,
         answers=body.answers.model_dump(mode="json", exclude_defaults=True),
@@ -65,8 +77,8 @@ def create_screening(session: SessionDep, body: ScreeningCreate) -> ScoreResult:
         top_score=result.top.score if result.top else None,
         engine=settings.TRIAGE_SCORING_ENGINE,
     )
-    session.add(screening)
-    session.commit()
+    repository: ScreeningRepository = SqlModelScreeningRepository(session)
+    repository.save(screening)
     return result
 
 
@@ -77,13 +89,8 @@ def create_screening(session: SessionDep, body: ScreeningCreate) -> ScoreResult:
 )
 def read_screenings(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     """Saved screenings for ST's analysis. Superusers only."""
-    count = session.exec(select(func.count()).select_from(Screening)).one()
-    rows = session.exec(
-        select(Screening)
-        .order_by(col(Screening.created_at).desc())
-        .offset(skip)
-        .limit(limit)
-    ).all()
+    repository: ScreeningRepository = SqlModelScreeningRepository(session)
+    rows, count = repository.list(skip, limit)
     return ScreeningsPublic(
         data=[ScreeningPublic.model_validate(r) for r in rows], count=count
     )
@@ -97,7 +104,7 @@ def analyze_photo(
 
     Skeleton: returns `available=false` until ST plugs in a model (app/triage/vision.py).
     """
-    analyzer = get_analyzer()
+    analyzer = get_photo_analyzer()
     if not analyzer.available:
         return PhotoAnalysis(
             available=False, findings=[], message="Analisis foto belum tersedia."
