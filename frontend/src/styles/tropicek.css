@@ -1018,6 +1018,43 @@
   border-color: #d8c8ff;
 }
 
+/* Province: "use my location" button + picker. Stacked on phones. */
+.loc {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.loc .btn {
+  font-size: 15px;
+  padding: 11px 14px;
+}
+.inp select {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  outline: 0;
+  font-family: var(--tc-fb);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--tc-ink);
+  padding: 12px 0;
+}
+@media (min-width: 640px) {
+  .loc {
+    flex-direction: row;
+    align-items: center;
+  }
+  .loc .btn {
+    width: auto;
+    flex: none;
+  }
+  .loc .inp {
+    flex: 1;
+  }
+}
+
 .thermo {
   display: flex;
   gap: 14px;

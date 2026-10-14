@@ -17,6 +17,7 @@ import {
   WarnBox,
 } from "../components/Ui"
 import { sfx, vibrate } from "../fx"
+import { askProvince, PROVINCES } from "../location"
 import {
   ageOf,
   asksPregnancy,
@@ -592,6 +593,7 @@ function StepWho({
           </fieldset>
         </div>
       )}
+      {flow.ask_province && <StepLocation a={a} set={set} />}
     </>
   )
 }
@@ -633,6 +635,74 @@ function StepDrugs({
             + {d}
           </button>
         ))}
+      </div>
+    </>
+  )
+}
+
+const LOCATE_FAILED: Record<string, string> = {
+  denied: "Izin lokasi ditolak.",
+  unsupported: "Perangkat ini tidak bisa membagikan lokasi.",
+  unavailable: "Lokasi belum bisa diambil.",
+  outside: "Lokasimu sepertinya di luar Indonesia.",
+}
+
+/** Province from the browser's location, or picked by hand. Optional. */
+function StepLocation({ a, set }: { a: QuizAnswers; set: Setter }) {
+  const [busy, setBusy] = useState(false)
+  const [status, setStatus] = useState<string | null>(null)
+  const locate = async () => {
+    sfx.tap()
+    setBusy(true)
+    setStatus(null)
+    const r = await askProvince()
+    setBusy(false)
+    if (r.ok) {
+      set({ province: r.province })
+      setStatus(`📍 Terdeteksi: **${r.province}**`)
+    } else {
+      setStatus(
+        `${LOCATE_FAILED[r.reason]} Pilih provinsi sendiri, atau lewati saja.`,
+      )
+    }
+  }
+  return (
+    <>
+      <h3 className="subq">Tinggal di provinsi mana sekarang?</h3>
+      <div className="loc">
+        <button
+          type="button"
+          className="btn btn-teal"
+          disabled={busy}
+          onClick={locate}
+        >
+          {busy ? "Mencari lokasi…" : "📍 Pakai lokasiku"}
+        </button>
+        <div className="inp">
+          <select
+            aria-label="Provinsi"
+            value={a.province ?? ""}
+            onChange={(e) => set({ province: e.target.value || null })}
+          >
+            <option value="">Pilih provinsi (opsional)</option>
+            {PROVINCES.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div aria-live="polite">
+        {status && (
+          <div className="note">
+            <Rich text={status} />
+          </div>
+        )}
+      </div>
+      <div className="note purple">
+        Hanya <b>nama provinsi</b> yang dipakai. Titik lokasimu tidak disimpan
+        atau dikirim.
       </div>
     </>
   )

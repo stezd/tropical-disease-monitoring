@@ -26,6 +26,7 @@
     { "id": "P", "emoji": "👧", "text": "Perempuan" }
   ],
   "pregnancy_from_age": 10,
+  "ask_province": true,
   "clusters": [
     {
       "id": "A",

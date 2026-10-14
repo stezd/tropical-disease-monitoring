@@ -143,6 +143,7 @@
       }
     ],
     "pregnancy_from_age": 10,
+    "ask_province": true,
     "red_flags": [
       {
         "id": "syok",
@@ -1575,6 +1576,7 @@
       }
     ],
     "pregnancy_from_age": 10,
+    "ask_province": false,
     "red_flags": [
       {
         "id": "jantung",

@@ -259,6 +259,10 @@ export type FlowPublic = {
      */
     pregnancy_from_age?: number | null;
     /**
+     * Ask Province
+     */
+    ask_province?: boolean;
+    /**
      * Red Flags
      */
     red_flags: Array<RedFlag>;

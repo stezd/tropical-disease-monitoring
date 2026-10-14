@@ -314,6 +314,9 @@ def case_facts(answers: Answers, content: FlowContent) -> list[Fact]:
     ]
     if any(patient):
         add("Pasien", ", ".join(p for p in patient if p))
+    # Asked with the patient's details. Only the province name, never coordinates.
+    if flow.ask_province and a.province:
+        add("Provinsi tempat tinggal", a.province)
 
     cluster = next((c for c in flow.clusters if c.id == a.complaint), None)
     if cluster:
@@ -375,8 +378,6 @@ def case_facts(answers: Answers, content: FlowContent) -> list[Fact]:
         add("Nyeri", ", ".join(regions) + pain)
 
     picked("Temuan foto", flow.findings, a.findings)
-    if a.province:
-        add("Provinsi", a.province)
 
     return [
         Fact(id=f"F{i}", label=label, text=text, reason=reason)
