@@ -6,7 +6,7 @@ import { scoreAnswers, scoreKey } from "../api"
 import { Sparkles } from "../components/Art"
 import { Card, copyText, Rich, toast, WarnBox } from "../components/Ui"
 import { confetti, sfx, vibrate } from "../fx"
-import { jknURL, mapsURL } from "../links"
+import { isAndroid, jknURL, mapsURL } from "../links"
 import { type QuizAnswers, toApi } from "../model"
 import { drawQR, summaryURL } from "../qr"
 
@@ -239,11 +239,17 @@ export function ResultScreen({
                   className="btn btn-jkn"
                   style={{ marginTop: 14 }}
                   href={jknURL()}
-                  target="_blank"
+                  // An intent link hands off to Android; a new tab would stay blank.
+                  target={isAndroid() ? undefined : "_blank"}
                   rel="noopener"
                 >
                   📅 Buat janji dokter (Mobile JKN)
                 </a>
+                {isAndroid() && (
+                  <p className="jkn-hint">
+                    Kalau yang terbuka Play Store, ketuk <b>Buka</b>.
+                  </p>
+                )}
                 {r.route !== "green" && (
                   <QrBox answers={api} flowId={flow.id} />
                 )}

@@ -65,8 +65,9 @@ bash scripts/generate-client.sh          # after API changes
 
 ## Mobile JKN button
 
-- Android: `intent://#Intent;package=app.bpjs.mobile;S.browser_fallback_url=<Play Store URL>;end`
+- Android: `intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=app.bpjs.mobile;S.browser_fallback_url=<Play Store URL>;end`
 - Otherwise: `https://play.google.com/store/apps/details?id=app.bpjs.mobile`
+- Mobile JKN 4.18.0 has no deep link (no URL scheme, no App Links; checked in its AndroidManifest). Chrome only opens apps that accept browser links, so in Chrome the button lands on the Play Store page, which shows "Buka" when the app is installed. If a later version adds a scheme, put it in `frontend/src/features/triage/links.ts`.
 - Test on a real Android phone before the demo.
 
 ## Tips
