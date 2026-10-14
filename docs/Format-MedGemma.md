@@ -1,12 +1,33 @@
 # Format Masukan dan Keluaran MedGemma
 
-Template untuk ST. Usulan; ST yang memutuskan. ID perkiraan dan temuan diambil dari `backend/app/triage/content/<flow>/diseases.json` dan `flow.json`.
+- **Untuk:** ST. Ini usulan; ST yang memutuskan.
+- **ID penyakit dan temuan:** `backend/app/triage/content/<flow>/diseases.json` dan `flow.json`
+- **Kode:** `backend/app/triage/medgemma.py` (kalau berbeda dengan dokumen ini, kode yang benar)
+  - Input: `TextRequest`, `PhotoRequest`
+  - Output: `TextOutput`, `PhotoOutput`
+  - Jawaban → fakta: `build_request()`
+  - Output → skor: `to_breakdown()`
+
+## Status
+
+**Sudah ada**
+- ✅ Kontrak input/output (Pydantic) untuk skor teks dan foto
+- ✅ Jawaban pasien → fakta F1..Fn → pesan ke MedGemma
+- ✅ JSON Schema untuk membatasi jawaban model
+- ✅ Keluaran MedGemma → skor dan alasan → hasil (rute tetap dari aturan)
+
+**Belum ada**
+- ⏳ Memanggil MedGemma di server (ST)
+- ⏳ `ModelEngine` + kembali ke `RuleEngine` kalau model gagal (ST)
+- ⏳ Literatur RAG: sumber dipilih DR, korpus dibuat ST
+- ⏳ Analisis foto sungguhan (ST, prioritas rendah)
+- ⏳ BE: meter maskot tetap pakai aturan; endpoint foto terima `flow_id`; catat versi model
 
 ## 1. Skor teks
 
 ### input
 
-**`system`**
+**`system`** (bisa diubah)
 
 ```text
 You are a screening assistant for an Indonesian community health app. You do not diagnose.
