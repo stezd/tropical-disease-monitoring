@@ -22,65 +22,69 @@ GOLDEN_DIR = Path(__file__).parent / "goldens"
 CASES: dict[str, tuple[str, dict[str, Any]]] = {
     "low_score_unknown": (
         "infection",
-        dict(
-            age=30,
-            complaint="E",
-            pattern="none",
-            no_thermo=True,
-            nutrition_proxy="normal",
-        ),
+        {
+            "age": 30,
+            "complaint": "E",
+            "pattern": "none",
+            "no_thermo": True,
+            "nutrition_proxy": "normal",
+        },
     ),
     "high_fever_upgrade": (
         "infection",
-        dict(
-            age=30, complaint="B", pattern="ispa", temp=39.6, nutrition_proxy="normal"
-        ),
+        {
+            "age": 30,
+            "complaint": "B",
+            "pattern": "ispa",
+            "temp": 39.6,
+            "nutrition_proxy": "normal",
+        },
     ),
     "systolic_above_160": (
         "infection",
-        dict(
-            age=50,
-            complaint="B",
-            pattern="ispa",
-            temp=37.0,
-            bp_sys=170,
-            bp_dia=100,
-            nutrition_proxy="normal",
-        ),
+        {
+            "age": 50,
+            "complaint": "B",
+            "pattern": "ispa",
+            "temp": 37.0,
+            "bp_sys": 170,
+            "bp_dia": 100,
+            "nutrition_proxy": "normal",
+        },
     ),
     "severe_varicella_sign": (
         "infection",
-        dict(
-            age=9,
-            complaint="D",
-            pattern="varicella",
-            companion=["mata"],
-            temp=37.8,
-            nutrition_proxy="normal",
-        ),
+        {
+            "age": 9,
+            "complaint": "D",
+            "pattern": "varicella",
+            "companion": ["mata"],
+            "temp": 37.8,
+            "nutrition_proxy": "normal",
+        },
     ),
     "red_flag": (
         "infection",
-        dict(red_flags=["napas"], complaint="B", pattern="ispa"),
+        {"red_flags": ["napas"], "complaint": "B", "pattern": "ispa"},
     ),
     "no_thermometer_proxy": (
         "infection",
-        dict(
-            age=30,
-            complaint="A",
-            pattern="malaria",
-            no_thermo=True,
-            vital_proxy=["menggigil", "nadi"],
-            nutrition_proxy="normal",
-        ),
+        {
+            "age": 30,
+            "complaint": "A",
+            "pattern": "malaria",
+            "no_thermo": True,
+            "vital_proxy": ["menggigil", "nadi"],
+            "nutrition_proxy": "normal",
+        },
     ),
     "drug_popup": (
         "infection",
-        dict(complaint="C", pattern="amoeba", drugs="imodium", no_thermo=True),
+        {"complaint": "C", "pattern": "amoeba", "drugs": "imodium", "no_thermo": True},
     ),
     "chronic_no_complaint": (
         "chronic",
-        dict(age=45, complaint="none", eco=["rokok", "metabolik"], no_bp=True),
+        {"age": 45, "complaint": "none", "eco": ["rokok", "metabolik"], "no_bp": True},
     ),
 }
 
