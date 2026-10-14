@@ -358,6 +358,23 @@ def test_pregnancy_in_summary(chronic: FlowContent) -> None:
     assert "hamil" in r.summary.split("\n")[2]
 
 
+def test_province_in_summary(content: FlowContent) -> None:
+    r = run(content, complaint="A", pattern="dbd", province="Papua Tengah")
+    assert "Provinsi  : Papua Tengah" in r.summary
+    assert "Provinsi  : -" in run(content, complaint="A", pattern="dbd").summary
+
+
+def test_summary_rows_match_text(content: FlowContent) -> None:
+    r = run(content, complaint="A", pattern="dbd", province="Papua", temp=38.6)
+    rows = {row.key: row for row in r.summary_rows}
+    assert rows["province"].value == "Papua"
+    assert rows["temp"].value == "38.6 °C"
+    assert {"red_flags", "lab", "estimate", "route"} <= rows.keys()
+    # The copy text is built from the same rows.
+    for row in r.summary_rows:
+        assert f"{row.label:<10}: {row.value}" in r.summary
+
+
 def test_features_are_numeric(content: FlowContent) -> None:
     f = features(Answers(complaint="A", pattern="dbd", no_thermo=True), content)
     assert f["complaint_A"] == 1.0

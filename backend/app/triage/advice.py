@@ -11,7 +11,13 @@ from app.triage.content import (
     Option,
     RouteId,
 )
-from app.triage.schemas import Answers, RankedDisease, ScoreResult, Warning
+from app.triage.schemas import (
+    Answers,
+    RankedDisease,
+    ScoreResult,
+    SummaryRow,
+    Warning,
+)
 from app.triage.scoring import (
     ScoreBreakdown,
     bmi,
@@ -278,6 +284,7 @@ def build_result(
 
     candidates = max(1, len([r for r in ranked if r.share >= w.candidate_min_share]))
     meter_pct = min(w.max_display_pct, _pct(top.share)) if top else 0
+    rows = summary_rows(answers, content, route, top_public, unknown)
 
     return ScoreResult(
         flow_id=flow_id,
@@ -296,18 +303,22 @@ def build_result(
         maps_query=maps_query,
         nav_label=route_info.nav_label,
         analysis_steps=analysis,
-        summary=summary(answers, content, route, top_public, unknown),
+        summary=summary_text(rows),
+        summary_rows=rows,
     )
 
 
-def summary(
+def summary_rows(
     answers: Answers,
     content: FlowContent,
     route: RouteId,
     top: RankedDisease | None,
     unknown: bool,
-) -> str:
-    """Plain-text summary for the copy button and the QR page. No name, NIK, or photo."""
+) -> list[SummaryRow]:
+    """Summary as label/value rows, for the QR page. No name, NIK, or photo.
+
+    `key` is stable for the front end; `label` and `value` are shown as is.
+    """
     flow = content.flow
     a = answers
 
@@ -365,16 +376,23 @@ def summary(
     if a.pregnant is not None:
         patient.append("hamil" if a.pregnant else "tidak hamil")
 
-    lines = [
-        "TROPICARE – RANGKUMAN SKRINING",
-        f"Tanggal   : {when}",
-        "Pasien    : " + " · ".join(patient),
-        "Tanda bahaya: " + ("; ".join(f.text for f in flags) if flags else "tidak ada"),
-        f"Keluhan   : {complaint}",
-        f"Pola      : {pattern or '-'}",
-        f"Penyerta  : {'; '.join(companions) if companions else '-'}",
-        f"{flow.eco_label:<10}: {'; '.join(eco) if eco else 'tidak ada'}",
-        f"Obat      : {a.drugs.strip() or '-'}",
+    rows: list[tuple[str, str, str]] = [
+        ("date", "Tanggal", when),
+        ("patient", "Pasien", " · ".join(patient)),
+    ]
+    if flow.ask_province:
+        rows.append(("province", "Provinsi", a.province or "-"))
+    rows += [
+        (
+            "red_flags",
+            "Tanda bahaya",
+            "; ".join(f.text for f in flags) if flags else "tidak ada",
+        ),
+        ("complaint", "Keluhan", complaint),
+        ("pattern", "Pola", pattern or "-"),
+        ("companion", "Penyerta", "; ".join(companions) if companions else "-"),
+        ("eco", flow.eco_label, "; ".join(eco) if eco else "tidak ada"),
+        ("drugs", "Obat", a.drugs.strip() or "-"),
     ]
     if "temp" in flow.vitals:
         if no_thermo:
@@ -383,7 +401,7 @@ def summary(
             temp = f"{a.temp:.1f} °C"
         else:
             temp = "-"
-        lines.append(f"Suhu      : {temp}")
+        rows.append(("temp", "Suhu", temp))
     if "bp" in flow.vitals:
         if no_bp:
             bp = "tidak diukur (tidak punya tensimeter)"
@@ -391,24 +409,29 @@ def summary(
             bp = f"{a.bp_sys}/{a.bp_dia} mmHg"
         else:
             bp = "-"
-        lines.append(f"Tensi     : {bp}")
+        rows.append(("bp", "Tensi", bp))
     if "glucose" in flow.vitals:
-        lines.append(
-            f"Gula darah: {_fmt(a.glucose) + ' mg/dL' if a.glucose is not None else '-'}"
-        )
+        glucose = _fmt(a.glucose) + " mg/dL" if a.glucose is not None else "-"
+        rows.append(("glucose", "Gula darah", glucose))
     if no_thermo or no_bp:
-        lines.append(f"Proksi    : {'; '.join(proxies) if proxies else 'tidak ada'}")
-    lines.append(f"Gizi      : {gizi}")
+        rows.append(("proxy", "Proksi", "; ".join(proxies) if proxies else "tidak ada"))
+    rows.append(("nutrition", "Gizi", gizi))
     if flow.measure_waist:
-        lines.append(
-            f"Lingkar perut: {_fmt(a.waist_cm) + ' cm' if a.waist_cm is not None else '-'}"
-        )
+        waist = _fmt(a.waist_cm) + " cm" if a.waist_cm is not None else "-"
+        rows.append(("waist", "Lingkar perut", waist))
     if flow.body_regions:
-        lines.append(f"Peta nyeri: {', '.join(body) + pain if body else '-'}")
-    lines += [
-        f"Foto      : {', '.join(findings) if findings else '-'}",
-        f"Lab       : {'; '.join(disease.lab) if disease and disease.lab else '-'}",
-        f"Dugaan    : {dugaan}",
-        f"Rute      : {r.name} – {r.sub}",
+        rows.append(("body", "Peta nyeri", ", ".join(body) + pain if body else "-"))
+    rows += [
+        ("findings", "Foto", ", ".join(findings) if findings else "-"),
+        ("lab", "Lab", "; ".join(disease.lab) if disease and disease.lab else "-"),
+        ("estimate", "Dugaan", dugaan),
+        ("route", "Kondisi", f"{r.name} – {r.sub}"),
     ]
+    return [SummaryRow(key=k, label=lbl, value=v) for k, lbl, v in rows]
+
+
+def summary_text(rows: list[SummaryRow]) -> str:
+    """Plain-text summary for the copy button, from summary_rows()."""
+    lines = ["TROPICARE – RANGKUMAN SKRINING"]
+    lines += [f"{r.label:<10}: {r.value}" for r in rows]
     return "\n".join(lines)

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo, useRef, useState } from "react"
 
-import { type FlowPublic, type ScoreResult, TriageService } from "@/client"
+import { type FlowPublic, TriageService } from "@/client"
 import { scoreAnswers, scoreKey } from "../api"
 import { Sparkles } from "../components/Art"
 import { Card, copyText, Rich, toast, WarnBox } from "../components/Ui"
@@ -13,7 +13,6 @@ import { drawQR, summaryURL } from "../qr"
 export const DISCLAIMER =
   "⚠️ Ini adalah skrining awal, bukan diagnosis dokter. Jika kondisi memburuk, segera ke fasilitas kesehatan atau hubungi 119."
 
-const QR_TODO = /QR rangkuman/
 // "Kenapa aku menebak ini?": the first reasons (complaint, pattern, companion
 // symptoms) stay visible; the rest are one tap away.
 const WHY_SHOWN = 3
@@ -370,30 +369,5 @@ function SaveCard({
         </>
       )}
     </Card>
-  )
-}
-
-export function AdviceCards({ r }: { r: ScoreResult }) {
-  return (
-    <>
-      <Card tab="SARAN PENANGANAN">
-        <ul className="todo">
-          {r.todo
-            .filter((x) => !QR_TODO.test(x))
-            .map((x) => (
-              <li key={x}>
-                <Rich text={x} />
-              </li>
-            ))}
-        </ul>
-      </Card>
-      {r.warnings.length > 0 && (
-        <Card tab="CATATAN PENTING">
-          {r.warnings.map((w) => (
-            <WarnBox key={w.text} {...w} />
-          ))}
-        </Card>
-      )}
-    </>
   )
 }

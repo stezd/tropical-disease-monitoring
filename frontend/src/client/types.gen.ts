@@ -695,6 +695,10 @@ export type ScoreResult = {
      * Summary
      */
     summary: string;
+    /**
+     * Summary Rows
+     */
+    summary_rows: Array<SummaryRow>;
 };
 
 /**
@@ -808,6 +812,24 @@ export type StepText = {
      * Hint
      */
     hint?: string | null;
+};
+
+/**
+ * SummaryRow
+ */
+export type SummaryRow = {
+    /**
+     * Key
+     */
+    key: string;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Value
+     */
+    value: string;
 };
 
 /**
