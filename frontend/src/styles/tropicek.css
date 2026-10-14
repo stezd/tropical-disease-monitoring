@@ -886,14 +886,14 @@
   border-color: var(--tc-red);
 }
 .opt.safe {
-  background: #f0fbf6;
-  border-color: #cdefdf;
-  box-shadow: 0 3px 0 #cdefdf;
+  background: #e2f9ee;
+  border-color: #b5ebd2;
+  box-shadow: 0 3px 0 #b5ebd2;
 }
 .opt.safe.on {
   border-color: var(--tc-green);
-  background: #e2f9ee;
-  box-shadow: 0 3px 0 #9fe3c3;
+  background: #cff4e2;
+  box-shadow: 0 3px 0 #8edbb7;
 }
 .opt.safe.on .ck {
   background: var(--tc-green);
@@ -1003,8 +1003,48 @@
 .cG {
   --cb: #ffdfe5;
 }
-.cnone {
-  --cb: #ecebf5;
+.cbox .ct {
+  display: block;
+}
+/* "No complaint": a plain green row under the grid, full width at every size. */
+.cbox.cnone {
+  --cb: #fff;
+  width: 100%;
+  min-height: 0;
+  margin-top: var(--sp-3);
+  flex-direction: row;
+  align-items: center;
+  gap: var(--sp-3);
+  text-align: left;
+  background: #e2f9ee;
+  border-color: #b5ebd2;
+  box-shadow: 0 4px 0 #b5ebd2;
+}
+.cbox.cnone .ce {
+  width: 44px;
+  height: 44px;
+  font-size: 24px;
+  flex: none;
+}
+.cbox.cnone b {
+  margin-top: 0;
+}
+.cbox.cnone.on {
+  padding-right: 44px;
+}
+.cbox.cnone:active {
+  box-shadow: 0 1px 0 #b5ebd2;
+}
+.cbox.cnone.on {
+  border-color: var(--tc-green);
+  background: #cff4e2;
+  box-shadow: 0 4px 0 #8edbb7;
+}
+.cbox.cnone.on::after {
+  top: 50%;
+  right: var(--sp-3);
+  transform: translateY(-50%);
+  background: var(--tc-green);
 }
 /* Even number of boxes: no wide last box. */
 .cgrid.even .cbox:last-child {

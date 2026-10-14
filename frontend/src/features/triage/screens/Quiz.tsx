@@ -57,6 +57,11 @@ type StepDef = {
 
 type Vital = FlowPublic["vitals"][number]
 
+/** Tile class: wide options span the row; "none" is tinted green. */
+function tileCls(o: { id: string; wide?: boolean | null }) {
+  return [o.wide && "wide", o.id === NONE && "safe"].filter(Boolean).join(" ")
+}
+
 /** A stand-in question was answered (at least one option, "none" included). */
 function proxyAnswered(a: QuizAnswers, flow: FlowPublic, vital: Vital) {
   const opts = flow.vital_proxies?.[vital]
@@ -322,42 +327,47 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
           </>
         )
       case "q2": {
-        const boxes = [
-          ...flow.clusters,
-          ...(flow.allow_no_complaint
-            ? [
-                {
-                  id: NONE,
-                  emoji: "🙂",
-                  name: "Tidak ada keluhan",
-                  sub: "Cek risiko saja",
-                },
-              ]
-            : []),
-        ]
+        const box = (c: {
+          id: string
+          emoji: string
+          name: string
+          sub: string
+        }) => (
+          <button
+            key={c.id}
+            type="button"
+            aria-pressed={a.complaint === c.id}
+            className={`cbox c${c.id} ${a.complaint === c.id ? "on" : ""}`}
+            onClick={() => pick("complaint", c.id, false)}
+          >
+            <span className="ce" aria-hidden="true">
+              {c.emoji}
+            </span>
+            <span className="ct">
+              <b>{c.name}</b>
+              <span className="cs">{c.sub}</span>
+            </span>
+          </button>
+        )
         return (
           <>
             <h2 className="qt">
               {text?.title ?? "Keluhan mana yang paling mengganggu?"}
             </h2>
             <p className="qh">{text?.hint ?? "Pilih satu"}</p>
-            <div className={`cgrid ${boxes.length % 2 ? "" : "even"}`}>
-              {boxes.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  aria-pressed={a.complaint === c.id}
-                  className={`cbox c${c.id} ${a.complaint === c.id ? "on" : ""}`}
-                  onClick={() => pick("complaint", c.id, false)}
-                >
-                  <span className="ce" aria-hidden="true">
-                    {c.emoji}
-                  </span>
-                  <b>{c.name}</b>
-                  <span className="cs">{c.sub}</span>
-                </button>
-              ))}
+            <div
+              className={`cgrid ${flow.clusters.length % 2 ? "" : "even"}`}
+            >
+              {flow.clusters.map(box)}
             </div>
+            {/* Outside the grid: a plain full-width row under the groups. */}
+            {flow.allow_no_complaint &&
+              box({
+                id: NONE,
+                emoji: "🙂",
+                name: "Tidak ada keluhan",
+                sub: "Cek risiko saja",
+              })}
           </>
         )
       }
@@ -405,7 +415,7 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
               onPick={(i) => pick("eco", i, true)}
               options={flow.eco
                 .filter((o) => visible(o, a, flow))
-                .map((o) => ({ ...o, cls: o.wide ? "wide" : "" }))}
+                .map((o) => ({ ...o, cls: tileCls(o) }))}
             />
           </>
         )
@@ -1160,7 +1170,7 @@ function StepPhoto({
 
   const options: Choice[] = flow.findings.map((o) => ({
     ...o,
-    cls: o.wide ? "wide" : "",
+    cls: tileCls(o),
   }))
 
   return (
