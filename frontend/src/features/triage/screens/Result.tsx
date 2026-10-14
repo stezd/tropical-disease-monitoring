@@ -352,7 +352,7 @@ function SaveCard({
         <>
           <p className="saveinfo">
             Boleh simpan jawabanmu <b>tanpa nama</b> untuk memperbaiki
-            TropiCare? Tanpa nama, NIK, BPJS, atau foto. Boleh dilewati.
+            TropiCare? Tanpa nama atau foto. Boleh dilewati.
           </p>
           {state === "error" && (
             <p className="saveinfo" style={{ color: "#B3122E" }}>

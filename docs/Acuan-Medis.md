@@ -77,8 +77,8 @@ Semua hal yang belum bisa dikerjakan karena menunggu keputusan. Nomor `K…` dir
 - Nama penyakit tidak boleh ada di teks pilihan jawaban, hanya di halaman hasil. `[Tim]`
 - Pemeriksaan tanda bahaya, kenaikan rute karena suhu, dan skor rendah → KUNING adalah **aturan tetap**, bukan keluaran model. `[Tim]`
 - Rute MERAH: layar tenang, tanpa animasi dan suara, dengan tombol telepon 119 serta nomor 119 dan 112 yang bisa disalin. `[Tim]` `[B-T8]`
-- Aplikasi berdiri sendiri. Fitur integrasi di Blueprint tidak dibangun (§12). `[Tim]`
-- Tidak pernah meminta NIK, nomor BPJS, atau nama. Foto tidak disimpan. `[Tim]`
+- Aplikasi berdiri sendiri. Fitur integrasi di Blueprint tidak dibangun (§12), kecuali integrasi SATUSEHAT yang sedang dipertimbangkan tim. `[Tim]`
+- Tidak pernah meminta nama. Foto tidak disimpan. `[Tim]`
 
 ---
 
@@ -432,7 +432,6 @@ Dihapus karena keputusan tim: aplikasi berdiri sendiri, tanpa integrasi yang but
 
 | Isi Blueprint | Pengganti di aplikasi |
 | --- | --- |
-| QR terintegrasi SATUSEHAT / pengisian RME `[B-T8]` `[B-T9]` | QR berisi alamat aplikasi + jawaban terkode. Halaman rangkuman dihitung di browser petugas. |
 | API Mobile JKN untuk antrean `[B-T9]` | Tombol yang hanya membuka aplikasi Mobile JKN |
 | Pre-arrival alert ke SIMRS, *pre-notification* faskes, cek stok OAT/MDT `[B-T8]` | Tidak ada. Hanya tautan pencarian Google Maps. |
 | Live tracking ambulans, transmisi data ke 119 `[B-T8]` | Tombol telepon 119 + nomor yang bisa disalin |

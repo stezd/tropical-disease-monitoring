@@ -48,7 +48,7 @@ bash scripts/generate-client.sh          # after API changes
 - **Quiz content lives in JSON**, not React. DR and ST edit it without FE. Option IDs are shared by FE, BE, and scoring; rename all three together.
 - **API** (`/api/v1`): `GET /triage/flows/{flow_id}` · `POST /triage/flows/{flow_id}/score`
 - **Emergency check runs in the browser.** Any danger sign → MERAH screen right away, even if the server is down.
-- **Standalone.** No integrations that need a legal agreement or admin approval (SATUSEHAT, BPJS API, telemedicine providers, faskes systems). Plain links are fine (Google Maps search, opening Mobile JKN). Nothing is sent outside our own server.
+- **Standalone.** No integrations that need a legal agreement or admin approval (BPJS API, telemedicine providers, faskes systems). Plain links are fine (Google Maps search, opening Mobile JKN). Nothing is sent outside our own server. SATUSEHAT integration is under consideration by the team and is not covered by this rule.
 - **Login is optional.** Guests can do the whole quiz. Offer login on the home page.
 - **Ask age and sex first.** They change which questions and options appear.
 - **Low score** → "belum dapat ditentukan" + route KUNING.
@@ -61,7 +61,7 @@ bash scripts/generate-client.sh          # after API changes
 - Pain scale: 0–10 with faces and labels, like the prototype. No starting value. Save 0–10.
 - Every result page has a disclaimer: this is screening, not a doctor's diagnosis.
 - Medical text changes need DR's OK. Weight changes need ST's OK.
-- **Privacy:** ask consent before saving. Never collect NIK or BPJS numbers. No real patient data in the repo. No real secrets in git.
+- **Privacy:** ask consent before saving. No real patient data in the repo. No real secrets in git.
 
 ## Mobile JKN button
 
@@ -84,7 +84,8 @@ bash scripts/generate-client.sh          # after API changes
 - [ ] App melakukan inferensi secara akurat berdasarkan pilihan, lokasi, dan foto
 - [ ] Tampilan enak di HP
 - [ ] Pertanyaan lengkap
-- [ ] Sedang mencoba mengintegrasikan ke SATUSEHAT — ⚠️ bertentangan dengan aturan "Standalone" di atas; perlu keputusan tim sebelum dikerjakan
+- [ ] Pemindai QR diarahkan ke halaman rangkuman yang ringkas, jelas, menarik, dan sederhana tanpa mengorbankan kualitas
+- [ ] Sedang mencoba mengintegrasikan ke SATUSEHAT
 
 ## Fitur (in Indonesian)
 
@@ -150,7 +151,6 @@ Status: ✅ ada di simulasi, pindahkan ke React · 🔧 ada di simulasi, perlu d
 | Fitur          | Deskripsi                                                             | Alasan                                     | Status                                                                                                               |
 | -------------- | --------------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | Login opsional | Tamu bisa skrining sampai selesai. Tawaran masuk ada di halaman awal. | Tidak menghalangi orang yang sedang sakit. | 🔧 simulasi hanya menyimpan nama di perangkat; BE membuat akun sungguhan. Belum ada fitur simpan hasil atau riwayat. |
-| Tanpa NIK/BPJS | Tidak pernah meminta NIK atau nomor BPJS.                             | Mengurangi risiko kebocoran data.          | ✅                                                                                                                   |
 
 ### Permainan dan tampilan
 
@@ -172,5 +172,4 @@ Blueprint dan jawaban dokter sudah digabung di [docs/Acuan-Medis.md](docs/Acuan-
 - **Tetap aturan tetap, bukan model:** pemeriksaan tanda bahaya di browser, naik ke KUNING bila suhu ≥ 39,5 °C, dan skor rendah → KUNING. Pembagian tugas MedGemma dan skor aturan: ST.
 - **Uji coba pakai kartu kasus,** bukan data kesehatan asli peserta. Peserta mengisi survei kemudahan pakai (SUS).
 - **Jangan pakai kata "diagnosis"** di aplikasi. Pakai "skrining" atau "perkiraan".
-- **Jangan minta NIK atau nomor BPJS.**
-- **Aplikasi berdiri sendiri.** Tidak terhubung ke SATUSEHAT, sistem faskes, atau layanan telemedisin, supaya tidak ada beban hukum dan administrasi.
+- **Aplikasi berdiri sendiri.** Tidak terhubung ke sistem faskes atau layanan telemedisin, supaya tidak ada beban hukum dan administrasi.
