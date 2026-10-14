@@ -77,7 +77,7 @@ Pengujian langsung terhadap Sandbox SATUSEHAT (`https://api-satusehat-stg.dto.ke
 ```
 
 **Keuntungan Pola Mirror:**
-1. **Ketahanan Rute Gawat Darurat (MERAH):** Pasien dalam kondisi gawat darurat tetap mendapatkan navigasi faskes terdekat tanpa hambatan meski server Kemenkes sedang gangguan (*down* / *maintenance*).
+1. **Tidak ada ketergantungan saat permintaan.** Layar hasil tidak pernah menunggu Kemenkes. (Catatan: rute MERAH tidak memakai mirror sama sekali — layar darurat memakai tautan pencarian Google Maps dan nomor 119, jadi ia tetap hidup apa pun yang terjadi pada mirror.)
 2. **Nol Latensi Eksternal:** Permintaan faskes dilayani langsung dari database internal.
 3. **Privasi Koordinat:** Koordinat pengguna hanya diproses di browser lokal untuk memilih faskes terdekat dari daftar faskes dalam satu provinsi. Server tidak pernah menerima titik lintang/bujur pengguna.
 4. **Fallback Halus:** Jika sinkronisasi belum dijalankan atau database kosong, tombol rujukan kembali ke pencarian Google Maps umum seperti sebelumnya.
@@ -100,3 +100,46 @@ Skrip probe diagnostik:
 cd backend
 uv run --env-file ../.env python scripts/satusehat_probe.py --check-provinces
 ```
+
+Sinkronisasi mirror faskes ke database lokal:
+```bash
+cd backend
+# Default: Puskesmas (102) + Rumah Sakit (104), seluruh Indonesia (~15 halaman, ~20 detik)
+uv run --env-file ../.env python scripts/sync_facilities.py
+
+# Satu provinsi saja (mis. 31 = DKI Jakarta) — jauh lebih cepat
+uv run --env-file ../.env python scripts/sync_facilities.py --province 31
+
+# Ikut menyertakan Apotek (105). Tidak disarankan: hanya 2,1% berkoordinat
+uv run --env-file ../.env python scripts/sync_facilities.py --include-apotek
+```
+
+> **Peringatan:** menjalankan `pytest` **mengosongkan** tabel `facility` — fixture `clean_facilities` menghapus seluruh baris pada setup dan teardown. Jalankan sinkronisasi **setelah** test, sebelum demo, atau endpoint `/facilities` akan mengembalikan daftar kosong.
+
+---
+
+## 5. Jebakan & Temuan Nyata (Jangan Temukan Ulang)
+
+Hal-hal yang dibuktikan langsung lewat panggilan API ke sandbox, bukan sekadar tertulis di dokumentasi:
+
+1. **`limit=2000` gagal di Apigee.** Dokumentasi MSI menyebut batas 2000, tetapi gateway Apigee Kemenkes mengembalikan `502 Bad Gateway` dengan rincian `protocol.http.TooBigBody` ("Body buffer overflow") untuk respon multi-jenis di atas ~1500 baris. Gunakan `limit=1000`.
+2. **Kualitas koordinat sangat berbeda antar jenis:**
+   - Puskesmas (`102`): **100% berkoordinat**.
+   - Rumah Sakit (`104`): **96% berkoordinat**.
+   - Apotek (`105`): **hanya 2,1% berkoordinat**.
+   - *Angka "92%" di awal riset adalah bias sampling* dari 3 halaman pertama MSI yang didominasi Posyandu (bukan sarana yang dipakai TropiCare). Karena Apotek 98% tanpa koordinat dan menghabiskan 79% ukuran mirror, Apotek dikeluarkan dari sinkronisasi default.
+3. **Pencarian NIK ke FHIR `GET /Patient` tidak selalu unik.**
+   - Contoh nyata di sandbox: NIK dummy `9271060312000001` mengembalikan `total: 2` (dua catatan pasien berbeda untuk satu NIK). Logika apa pun yang mengasumsikan `entry[0]` akan salah secara acak.
+   - Nama pasien selalu disamarkan oleh SATUSEHAT (misal `Ar** Pu**`).
+   - Bidang `gender` dan `birthDate` pada data dummy sandbox sering bernilai `None`.
+4. **NIK asli warga TIDAK ADA di sandbox.**
+   - Kueri NIK penduduk asli ke sandbox selalu mengembalikan `HTTP 200` dengan `total: 0`. Sandbox adalah pangkalan data tiruan terisolasi yang tidak terhubung ke Dukcapil.
+   - NIK asli hanya hidup di Production (`api.satusehat.kemkes.go.id`), yang mewajibkan status fasyankes berizin/terverifikasi resmi.
+5. **`POST /Patient` TIDAK DIIZINKAN untuk tipe akses mana pun.**
+   - Di matriks hak akses SATUSEHAT, `POST /Patient` bernilai `FALSE`. Sistem luar tidak bisa membuat pasien baru — hanya bisa mencari pasien yang sudah didaftarkan faskes/Dukcapil.
+6. **Token `expires_in` bernilai string dan berdurasi 4 jam.**
+   - Dokumentasi memberi contoh `3599` (angka, 1 jam). Respon asli mengembalikan string `"14399"` (4 jam). Wajib membaca TTL dari badan respon dinamis, bukan mengasumsikan 3600 detik.
+7. **Baris tanpa provinsi harus dibuang.**
+   - MSI memiliki 17 baris nasional dengan `provinsi.kode` dan `nama` kosong (misalnya data demo seperti `MAKARYO JAYA MERDEKA`). Endpoint `/facilities` mensyaratkan `province`, sehingga baris ini menjadi beban mati jika tersimpan.
+8. **Nama DIY tidak seragam.**
+   - MSI menamai provinsi kode 34 sebagai `"Yogyakarta"`, sementara front-end TropiCare (`location.ts`) memakai `"Daerah Istimewa Yogyakarta"`. Adapter backend harus menerima kedua nama dan kode numeriknya `"34"`.
