@@ -44,7 +44,7 @@ test("Guest finishes the infection quiz and sees a route", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Demam Berdarah Dengue (DBD)" }),
   ).toBeVisible()
-  await expect(page.locator(".rtag")).toContainText("RUTE SEDANG")
+  await expect(page.locator(".rtag")).toContainText("KONDISI SEDANG")
   await expect(page.getByText(/bukan diagnosis dokter/)).toBeVisible()
   await expect(page.locator(".qrbox canvas")).toBeVisible()
   await expect(page.getByRole("link", { name: /Mobile JKN/ })).toHaveAttribute(
@@ -75,6 +75,11 @@ test("Guest finishes the chronic risk check", async ({ page }) => {
   await page.getByPlaceholder("25").fill("55")
   await page.getByRole("button", { name: "Laki-laki" }).click()
   await next(page)
+  // PTM danger signs come first; their details stay hidden until asked.
+  await expect(page.locator(".opt").first()).toContainText("Nyeri dada kiri")
+  await expect(page.locator(".opt .od")).toHaveCount(0)
+  await page.getByRole("button", { name: /Lihat ciri-ciri/ }).click()
+  await expect(page.locator(".opt .od").first()).toBeVisible()
   await page.getByText("Tidak ada, saya aman").click()
   await next(page)
   await page.locator(".cbox", { hasText: "Sendi mendadak" }).click()

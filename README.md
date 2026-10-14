@@ -107,6 +107,7 @@ Jalankan `uv sync`, `bun install`, atau `prestart.sh` lagi kalau ada perubahan p
 
 - [AGENTS.md](./AGENTS.md): struktur kode, aturan yang tidak boleh dilanggar, daftar fitur
 - [DESIGN.md](./DESIGN.md): warna, huruf, komponen
-- [docs/Blueprint.md](./docs/Blueprint.md) dan [docs/Blueprint-Kronis.md](./docs/Blueprint-Kronis.md): alur kuis
+- [docs/Acuan-Medis.md](./docs/Acuan-Medis.md): acuan medis (alur kuis, rute, teks) dan keputusan yang masih terbuka
+- [docs/Format-MedGemma.md](./docs/Format-MedGemma.md): format masukan dan keluaran MedGemma (skor teks dan foto)
 - [development.md](./development.md): menjalankan seluruh aplikasi dengan Docker Compose, pre-commit hooks
 - [deployment.md](./deployment.md) dan [deployment-docker-compose.md](./deployment-docker-compose.md): deploy

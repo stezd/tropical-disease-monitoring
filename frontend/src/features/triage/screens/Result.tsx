@@ -1,19 +1,21 @@
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo, useRef, useState } from "react"
 
-import { type FlowPublic, type ScoreResult, TriageService } from "@/client"
+import { type FlowPublic, TriageService } from "@/client"
 import { scoreAnswers, scoreKey } from "../api"
 import { Sparkles } from "../components/Art"
 import { Card, copyText, Rich, toast, WarnBox } from "../components/Ui"
 import { confetti, sfx, vibrate } from "../fx"
-import { jknURL, mapsURL } from "../links"
+import { isAndroid, jknURL, mapsURL } from "../links"
 import { type QuizAnswers, toApi } from "../model"
 import { drawQR, summaryURL } from "../qr"
 
 export const DISCLAIMER =
   "⚠️ Ini adalah skrining awal, bukan diagnosis dokter. Jika kondisi memburuk, segera ke fasilitas kesehatan atau hubungi 119."
 
-const QR_TODO = /QR rangkuman/
+// "Kenapa aku menebak ini?": the first reasons (complaint, pattern, companion
+// symptoms) stay visible; the rest are one tap away.
+const WHY_SHOWN = 3
 
 export function ResultScreen({
   flow,
@@ -164,10 +166,22 @@ export function ResultScreen({
             {top && (
               <Card tab="KENAPA AKU MENEBAK INI?">
                 <ul className="why">
-                  {r.reasons.map((x) => (
+                  {r.reasons.slice(0, WHY_SHOWN).map((x) => (
                     <li key={x}>{x}</li>
                   ))}
                 </ul>
+                {r.reasons.length > WHY_SHOWN && (
+                  <details className="sum">
+                    <summary>
+                      Lihat {r.reasons.length - WHY_SHOWN} alasan lain
+                    </summary>
+                    <ul className="why">
+                      {r.reasons.slice(WHY_SHOWN).map((x) => (
+                        <li key={x}>{x}</li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
                 {r.cross_checks.length > 0 && (
                   <div className="xval">
                     {r.cross_checks.map((x) => (
@@ -225,11 +239,17 @@ export function ResultScreen({
                   className="btn btn-jkn"
                   style={{ marginTop: 14 }}
                   href={jknURL()}
-                  target="_blank"
+                  // An intent link hands off to Android; a new tab would stay blank.
+                  target={isAndroid() ? undefined : "_blank"}
                   rel="noopener"
                 >
                   📅 Buat janji dokter (Mobile JKN)
                 </a>
+                {isAndroid() && (
+                  <p className="jkn-hint">
+                    Kalau yang terbuka Play Store, ketuk <b>Buka</b>.
+                  </p>
+                )}
                 {r.route !== "green" && (
                   <QrBox answers={api} flowId={flow.id} />
                 )}
@@ -298,8 +318,7 @@ function QrBox({
         aria-label="QR rangkuman untuk petugas"
       />
       <b>QR Rangkuman</b>
-      Tunjukkan ke petugas. Petugas yang memindai melihat rangkuman kondisimu
-      dan saran penanganan. Jawabanmu ada di dalam QR ini dan tidak disimpan di
+      Tunjukkan ke petugas agar tidak perlu ditanya ulang. Tidak disimpan di
       server.
     </div>
   )
@@ -337,9 +356,8 @@ function SaveCard({
       ) : (
         <>
           <p className="saveinfo">
-            Boleh kami simpan jawabanmu <b>tanpa nama</b> untuk menguji dan
-            memperbaiki TropiCare? Tidak ada nama, NIK, nomor BPJS, atau foto
-            yang disimpan. Boleh dilewati.
+            Boleh simpan jawabanmu <b>tanpa nama</b> untuk memperbaiki
+            TropiCare? Tanpa nama atau foto. Boleh dilewati.
           </p>
           {state === "error" && (
             <p className="saveinfo" style={{ color: "#B3122E" }}>
@@ -357,30 +375,5 @@ function SaveCard({
         </>
       )}
     </Card>
-  )
-}
-
-export function AdviceCards({ r }: { r: ScoreResult }) {
-  return (
-    <>
-      <Card tab="SARAN PENANGANAN">
-        <ul className="todo">
-          {r.todo
-            .filter((x) => !QR_TODO.test(x))
-            .map((x) => (
-              <li key={x}>
-                <Rich text={x} />
-              </li>
-            ))}
-        </ul>
-      </Card>
-      {r.warnings.length > 0 && (
-        <Card tab="CATATAN PENTING">
-          {r.warnings.map((w) => (
-            <WarnBox key={w.text} {...w} />
-          ))}
-        </Card>
-      )}
-    </>
   )
 }

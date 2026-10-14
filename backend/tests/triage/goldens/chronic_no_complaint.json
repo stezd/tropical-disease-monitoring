@@ -34,7 +34,94 @@
     "Imputasi gizi dari proksi kelonggaran baju",
     "Memetakan faktor risiko (2 faktor)",
     "Menghitung klasifikasi kecocokan 6 kondisi",
-    "Menentukan rute rujukan & faskes"
+    "Menentukan kondisi rujukan & faskes"
   ],
-  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 45 th · -\nTanda bahaya: tidak ada\nKeluhan   : tidak ada keluhan (cek risiko)\nPola      : -\nPenyerta  : -\nFaktor risiko: Merokok aktif / mantan perokok; Jarang olahraga + pola makan berisiko sindrom metabolik\nObat      : -\nTensi     : tidak diukur (tidak punya tensimeter)\nGula darah: -\nProksi    : tidak ada\nGizi      : proksi: -\nLingkar perut: -\nFoto      : -\nLab       : -\nDugaan    : belum dapat ditentukan\nRute      : RUTE SEDANG – Puskesmas · Klinik Pratama"
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 45 th · -\nTanda bahaya: tidak ada\nKeluhan   : tidak ada keluhan (cek risiko)\nPola      : -\nPenyerta  : -\nFaktor risiko: Merokok aktif / mantan perokok; Jarang olahraga + pola makan berisiko sindrom metabolik\nObat      : -\nTensi     : tidak diukur (tidak punya tensimeter)\nGula darah: -\nProksi    : tidak ada\nGizi      : proksi: -\nLingkar perut: -\nFoto      : -\nLab       : -\nDugaan    : belum dapat ditentukan\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
+  "summary_rows": [
+    {
+      "key": "date",
+      "label": "Tanggal",
+      "value": "-"
+    },
+    {
+      "key": "patient",
+      "label": "Pasien",
+      "value": "- · 45 th · -"
+    },
+    {
+      "key": "red_flags",
+      "label": "Tanda bahaya",
+      "value": "tidak ada"
+    },
+    {
+      "key": "complaint",
+      "label": "Keluhan",
+      "value": "tidak ada keluhan (cek risiko)"
+    },
+    {
+      "key": "pattern",
+      "label": "Pola",
+      "value": "-"
+    },
+    {
+      "key": "companion",
+      "label": "Penyerta",
+      "value": "-"
+    },
+    {
+      "key": "eco",
+      "label": "Faktor risiko",
+      "value": "Merokok aktif / mantan perokok; Jarang olahraga + pola makan berisiko sindrom metabolik"
+    },
+    {
+      "key": "drugs",
+      "label": "Obat",
+      "value": "-"
+    },
+    {
+      "key": "bp",
+      "label": "Tensi",
+      "value": "tidak diukur (tidak punya tensimeter)"
+    },
+    {
+      "key": "glucose",
+      "label": "Gula darah",
+      "value": "-"
+    },
+    {
+      "key": "proxy",
+      "label": "Proksi",
+      "value": "tidak ada"
+    },
+    {
+      "key": "nutrition",
+      "label": "Gizi",
+      "value": "proksi: -"
+    },
+    {
+      "key": "waist",
+      "label": "Lingkar perut",
+      "value": "-"
+    },
+    {
+      "key": "findings",
+      "label": "Foto",
+      "value": "-"
+    },
+    {
+      "key": "lab",
+      "label": "Lab",
+      "value": "-"
+    },
+    {
+      "key": "estimate",
+      "label": "Dugaan",
+      "value": "belum dapat ditentukan"
+    },
+    {
+      "key": "route",
+      "label": "Kondisi",
+      "value": "KONDISI SEDANG – Puskesmas · Klinik Pratama"
+    }
+  ]
 }

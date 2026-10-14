@@ -128,7 +128,12 @@ class Flow(BaseModel):
     sex: list[Option]
     # Ask women from this age whether they are pregnant (Blueprint Q1). None = never.
     pregnancy_from_age: int | None = None
+    # Ask for the province (location or picked) in step "who". Goes to MedGemma.
+    ask_province: bool = False
     red_flags: list[RedFlag]
+    # Red flag IDs shown first in this flow; the rest keep the order of red_flags.json.
+    # Order only: every flow still shows every red flag.
+    red_flag_first: list[str] = []
     red_maps: dict[str, str]
     clusters: list[Cluster]
     # Lets the patient answer "no complaint" in step q2 (chronic risk check).
@@ -148,6 +153,16 @@ class Flow(BaseModel):
     pain_faces: list[PainFace]
     findings: list[Option]
     routes: dict[RouteId, RouteInfo]
+
+    @model_validator(mode="after")
+    def _order_red_flags(self) -> Self:
+        known = {f.id for f in self.red_flags}
+        unknown = [i for i in self.red_flag_first if i not in known]
+        if unknown:
+            raise ValueError(f"flow.red_flag_first: unknown id {unknown}")
+        rank = {i: n for n, i in enumerate(self.red_flag_first)}
+        self.red_flags.sort(key=lambda f: rank.get(f.id, len(rank)))
+        return self
 
     def all_options(self) -> list[Option]:
         out = [*self.eco, *self.findings, *self.nutrition_proxies]
@@ -193,7 +208,7 @@ class Warnings(BaseModel):
     high_fever: str | None = None
     route_upgraded: str | None = None
     route_upgraded_bp: str | None = None
-    route_upgraded_sign: str = "Rute dinaikkan ke SEDANG karena ada tanda: {sign}."
+    route_upgraded_sign: str = "Kondisi dinaikkan ke SEDANG karena ada tanda: {sign}."
     no_thermo_fever_pattern: str | None = None
     no_thermo_other: str | None = None
     no_bp: str | None = None

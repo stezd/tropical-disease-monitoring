@@ -5,17 +5,26 @@ summary(). All patient-facing text comes from content/<flow>/advice.json (DR).
 
 The pieces now live in app/domain -- route_policy (route + escalation), warnings
 ("Catatan penting" and the drug pop-ups), narration (the guessing steps) and summary (the
-plain text). This module stays the entry point and only wires them together.
+plain text + structured rows). This module stays the entry point and only wires them together.
 """
 
 from app.domain.narration import analysis_steps, cross_checks, meter, pct
 from app.domain.route_policy import decide_route, resolve_place
-from app.domain.summary import summary
+from app.domain.summary import summary, summary_rows, summary_text
 from app.domain.warnings import drug_flags as drug_flags  # re-exported for callers
 from app.domain.warnings import red_flags, warnings_for
 from app.triage.content import FlowContent
 from app.triage.schemas import Answers, RankedDisease, ScoreResult
 from app.triage.scoring import ScoreBreakdown
+
+__all__ = [
+    "build_result",
+    "drug_flags",
+    "red_flags",
+    "summary",
+    "summary_rows",
+    "summary_text",
+]
 
 
 def build_result(
@@ -70,6 +79,8 @@ def build_result(
     analysis = analysis_steps(answers, content, checks)
     candidates, meter_pct = meter(ranked, content, top)
 
+    rows = summary_rows(answers, content, route, top_public, unknown)
+
     return ScoreResult(
         flow_id=flow_id,
         route=route,
@@ -87,5 +98,6 @@ def build_result(
         maps_query=maps_query,
         nav_label=route_info.nav_label,
         analysis_steps=analysis,
-        summary=summary(answers, content, route, top_public, unknown),
+        summary=summary_text(rows),
+        summary_rows=rows,
     )

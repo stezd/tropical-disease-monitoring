@@ -83,7 +83,94 @@
     "Validasi silang: Diare vs Amebiasis",
     "Memetakan risiko One Health (0 faktor)",
     "Menghitung klasifikasi kecocokan 20 penyakit",
-    "Menentukan rute rujukan & faskes"
+    "Menentukan kondisi rujukan & faskes"
   ],
-  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · - · -\nTanda bahaya: tidak ada\nKeluhan   : Perut\nPola      : BAB berdarah & berlendir, perih saat mengejan\nPenyerta  : -\nEkologi   : tidak ada\nObat      : imodium\nSuhu      : tidak diukur (tidak punya termometer)\nProksi    : tidak ada\nGizi      : proksi: -\nPeta nyeri: -\nFoto      : -\nLab       : Cek feses mikroskopis\nDugaan    : Amebiasis (Disentri Amuba) (65%)\nRute      : RUTE SEDANG – Puskesmas · Klinik Pratama"
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · - · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Perut\nPola      : BAB berdarah & berlendir, perih saat mengejan\nPenyerta  : -\nEkologi   : tidak ada\nObat      : imodium\nSuhu      : tidak diukur (tidak punya termometer)\nProksi    : tidak ada\nGizi      : proksi: -\nPeta nyeri: -\nFoto      : -\nLab       : Cek feses mikroskopis\nDugaan    : Amebiasis (Disentri Amuba) (65%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
+  "summary_rows": [
+    {
+      "key": "date",
+      "label": "Tanggal",
+      "value": "-"
+    },
+    {
+      "key": "patient",
+      "label": "Pasien",
+      "value": "- · - · -"
+    },
+    {
+      "key": "province",
+      "label": "Provinsi",
+      "value": "-"
+    },
+    {
+      "key": "red_flags",
+      "label": "Tanda bahaya",
+      "value": "tidak ada"
+    },
+    {
+      "key": "complaint",
+      "label": "Keluhan",
+      "value": "Perut"
+    },
+    {
+      "key": "pattern",
+      "label": "Pola",
+      "value": "BAB berdarah & berlendir, perih saat mengejan"
+    },
+    {
+      "key": "companion",
+      "label": "Penyerta",
+      "value": "-"
+    },
+    {
+      "key": "eco",
+      "label": "Ekologi",
+      "value": "tidak ada"
+    },
+    {
+      "key": "drugs",
+      "label": "Obat",
+      "value": "imodium"
+    },
+    {
+      "key": "temp",
+      "label": "Suhu",
+      "value": "tidak diukur (tidak punya termometer)"
+    },
+    {
+      "key": "proxy",
+      "label": "Proksi",
+      "value": "tidak ada"
+    },
+    {
+      "key": "nutrition",
+      "label": "Gizi",
+      "value": "proksi: -"
+    },
+    {
+      "key": "body",
+      "label": "Peta nyeri",
+      "value": "-"
+    },
+    {
+      "key": "findings",
+      "label": "Foto",
+      "value": "-"
+    },
+    {
+      "key": "lab",
+      "label": "Lab",
+      "value": "Cek feses mikroskopis"
+    },
+    {
+      "key": "estimate",
+      "label": "Dugaan",
+      "value": "Amebiasis (Disentri Amuba) (65%)"
+    },
+    {
+      "key": "route",
+      "label": "Kondisi",
+      "value": "KONDISI SEDANG – Puskesmas · Klinik Pratama"
+    }
+  ]
 }

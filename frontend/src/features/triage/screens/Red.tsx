@@ -47,7 +47,7 @@ export function RedScreen({
         >
           ‹
         </button>
-        <div className="htitle">RUTE DARURAT</div>
+        <div className="htitle">KONDISI DARURAT</div>
       </div>
       <div className="rscroll">
         <div className="redcols">
@@ -115,7 +115,6 @@ export function RedScreen({
                   </span>
                   <div>
                     <b>{f.condition}</b>
-                    <span>{f.label}</span>
                     {f.first_aid && <em>🩹 Sambil menuju RS: {f.first_aid}</em>}
                     {f.dont && <em className="dont">🚫 Jangan: {f.dont}</em>}
                   </div>

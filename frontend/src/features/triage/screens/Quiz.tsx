@@ -3,9 +3,10 @@ import { useNavigate } from "@tanstack/react-router"
 import { type ReactNode, useMemo, useRef, useState } from "react"
 
 import { type FlowPublic, type ScoreResult, TriageService } from "@/client"
-import { scoreAnswers, scoreKey, useLiveScore } from "../api"
+import { scoreAnswers, scoreKey } from "../api"
 import { hop, Mascot, Sparkles } from "../components/Art"
 import { BodyMap, PainScale } from "../components/Body"
+import { PrivacyText } from "../components/Privacy"
 import {
   Card,
   type Choice,
@@ -17,6 +18,7 @@ import {
   WarnBox,
 } from "../components/Ui"
 import { sfx, vibrate } from "../fx"
+import { askProvince, PROVINCES } from "../location"
 import {
   ageOf,
   asksPregnancy,
@@ -171,7 +173,6 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
   }
   const valid = def.valid(a, flow)
   const api = useMemo(() => toApi(a), [a])
-  const live = useLiveScore(api, flow.id)
   const mascot = useRef<SVGSVGElement>(null)
   const [modal, setModal] = useState<ReactNode>(null)
   const [busy, setBusy] = useState(false)
@@ -281,17 +282,6 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
     if (step > 0) quiz.set({ step: step - 1 })
     else navigate({ to: "/" })
   }
-
-  // Before a complaint: every disease is possible, minus the red-only ones once
-  // the patient said there is no danger sign.
-  const all = Object.values(flow.diseases)
-  const open = all.filter((d) => d.route !== "red").length
-  let meter: { n: number; p: number } | null
-  if (!a.complaint) {
-    meter = { n: a.red_flags.includes(NONE) ? open : all.length, p: 5 }
-  } else if (live.data)
-    meter = { n: live.data.meter_candidates, p: live.data.meter_pct }
-  else meter = null
 
   const body = (() => {
     switch (id) {
@@ -477,15 +467,6 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
             <p>
               <Rich text={def.say} />
             </p>
-            {meter && (
-              <div className="cand" aria-live="polite">
-                <span>🔮 {meter.n} kemungkinan</span>
-                <span className="meter">
-                  <i style={{ width: `${meter.p}%` }} />
-                </span>
-                <span>klasifikasi {meter.p}%</span>
-              </div>
-            )}
           </div>
         </div>
         <div className="qmain">
@@ -592,6 +573,7 @@ function StepWho({
           </fieldset>
         </div>
       )}
+      {flow.ask_province && <StepLocation a={a} set={set} />}
     </>
   )
 }
@@ -633,6 +615,74 @@ function StepDrugs({
             + {d}
           </button>
         ))}
+      </div>
+    </>
+  )
+}
+
+const LOCATE_FAILED: Record<string, string> = {
+  denied: "Izin lokasi ditolak.",
+  unsupported: "Perangkat ini tidak bisa membagikan lokasi.",
+  unavailable: "Lokasi belum bisa diambil.",
+  outside: "Lokasimu sepertinya di luar Indonesia.",
+}
+
+/** Province from the browser's location, or picked by hand. Optional. */
+function StepLocation({ a, set }: { a: QuizAnswers; set: Setter }) {
+  const [busy, setBusy] = useState(false)
+  const [status, setStatus] = useState<string | null>(null)
+  const locate = async () => {
+    sfx.tap()
+    setBusy(true)
+    setStatus(null)
+    const r = await askProvince()
+    setBusy(false)
+    if (r.ok) {
+      set({ province: r.province })
+      setStatus(`📍 Terdeteksi: **${r.province}**`)
+    } else {
+      setStatus(
+        `${LOCATE_FAILED[r.reason]} Pilih provinsi sendiri, atau lewati saja.`,
+      )
+    }
+  }
+  return (
+    <>
+      <h3 className="subq">Tinggal di provinsi mana sekarang?</h3>
+      <div className="loc">
+        <button
+          type="button"
+          className="btn btn-teal"
+          disabled={busy}
+          onClick={locate}
+        >
+          {busy ? "Mencari lokasi…" : "📍 Pakai lokasiku"}
+        </button>
+        <div className="inp">
+          <select
+            aria-label="Provinsi"
+            value={a.province ?? ""}
+            onChange={(e) => set({ province: e.target.value || null })}
+          >
+            <option value="">Pilih provinsi (opsional)</option>
+            {PROVINCES.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div aria-live="polite">
+        {status && (
+          <div className="note">
+            <Rich text={status} />
+          </div>
+        )}
+      </div>
+      <div className="note purple">
+        Hanya <b>nama provinsi</b> yang dipakai. Titik lokasimu tidak disimpan
+        atau dikirim.
       </div>
     </>
   )
@@ -1074,8 +1124,9 @@ function StepBody({
   )
 }
 
-// Photo step. Photos are health data: ask first, keep them on the device unless the
-// server has a real analyzer (flow.photo_analysis), and never store them.
+// Photo step. Photos are health data: the camera stays off until the patient
+// agrees, photos stay on the device unless the server has a real analyzer
+// (flow.photo_analysis), and they are never stored.
 let photoConsent = false
 
 function StepPhoto({
@@ -1098,47 +1149,23 @@ function StepPhoto({
   const [scanning, setScanning] = useState(false)
   const analyze = flow.photo_analysis
 
-  const askConsent = () => {
+  const [consent, setConsent] = useState(photoConsent)
+  const agree = (v: boolean) => {
+    photoConsent = v
+    setConsent(v)
     sfx.tap()
-    if (photoConsent) {
-      input.current?.click()
-      return
-    }
-    const close = () => setModal(null)
+  }
+  const openCamera = () => {
+    if (!consent) return
+    sfx.tap()
+    input.current?.click()
+  }
+  const showPrivacy = () =>
     setModal(
-      <Modal
-        tab="IZIN FOTO"
-        onClose={close}
-        actions={
-          <>
-            <button
-              type="button"
-              className="btn btn-purple"
-              onClick={() => {
-                photoConsent = true
-                close()
-                input.current?.click()
-              }}
-            >
-              Saya setuju, buka kamera
-            </button>
-            <button type="button" className="btn btn-teal" onClick={close}>
-              Tidak, pilih temuan saja
-            </button>
-          </>
-        }
-      >
-        <h3>Foto adalah data kesehatan 🔒</h3>
-        <p className="saveinfo">
-          {analyze ? (
-            <Rich text="Foto akan dikirim ke server TropiCare untuk dianalisis, lalu langsung dihapus. Foto **tidak disimpan** dan tidak dibagikan." />
-          ) : (
-            <Rich text="Foto hanya ditampilkan di layar ini untuk membantumu memilih temuan. Foto **tidak dikirim** dan **tidak disimpan**." />
-          )}
-        </p>
+      <Modal tab="PRIVASI" onClose={() => setModal(null)}>
+        <PrivacyText />
       </Modal>,
     )
-  }
 
   const onFile = async (file: File) => {
     if (photo) URL.revokeObjectURL(photo)
@@ -1198,7 +1225,12 @@ function StepPhoto({
             </div>
           )}
         </div>
-        <button type="button" className="btn btn-teal" onClick={askConsent}>
+        <button
+          type="button"
+          className="btn btn-teal"
+          disabled={!consent}
+          onClick={openCamera}
+        >
           <span aria-hidden="true">📸</span>
           {photo ? "Ganti" : "Kamera"}
         </button>
@@ -1215,6 +1247,22 @@ function StepPhoto({
           }}
         />
       </div>
+      <label className="chk consent">
+        <input
+          type="checkbox"
+          checked={consent}
+          onChange={(e) => agree(e.target.checked)}
+        />
+        <span>
+          {analyze
+            ? "Saya setuju foto dikirim ke server TropiCare untuk dianalisis, lalu langsung dihapus."
+            : "Saya setuju memakai foto untuk skrining ini. Foto tetap di perangkat ini."}{" "}
+          Foto tidak disimpan.{" "}
+          <button type="button" className="linkbtn" onClick={showPrivacy}>
+            Baca privasi
+          </button>
+        </span>
+      </label>
       <h3 className="subq">Pilih temuan yang terlihat:</h3>
       <Options
         multi

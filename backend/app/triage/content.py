@@ -1,10 +1,8 @@
-"""Compatibility shim. Consumers keep importing from here; the code moved to:
+"""Load and validate quiz content from app/triage/content/<flow_id>/*.json.
 
-- models + constants: app/domain/triage_content.py
-- flow ids + port:   app/application/ports/outbound/content_repository.py
-- JSON loader:       app/adapters/outbound/json_files/content_repository.py
-
-New code should import from those modules directly.
+SHIM: domain models live in app.domain.triage_content, storage and cached loader
+live in app.adapters.outbound.json_files.content_repository. This module re-exports
+every public name so existing consumers keep working without edits.
 """
 
 from app.adapters.outbound.json_files.content_repository import (

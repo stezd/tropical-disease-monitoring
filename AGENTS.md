@@ -6,9 +6,9 @@ Short guide for AI agents and developers. Team plan: [docs/RENCANA-KERJA.md](doc
 
 Gamified quiz that screens Indonesian patients and tells them where to go.
 
-- **Infection path** — 20 tropical diseases. Flow: [docs/Blueprint.md](docs/Blueprint.md)
+- **Infection path** — 20 tropical diseases. Medical source of truth: [docs/Acuan-Medis.md](docs/Acuan-Medis.md)
   - **Photo step (low priority):** the infection path asks the user for a photo (e.g. rash, swelling). ST builds the analysis; if not ready, keep the prototype's simulated step. Photos are health data: ask consent, don't commit real photos to the repo.
-- **Chronic path (PTM)** — same file: [docs/Blueprint.md](docs/Blueprint.md) (Tahap 2 clusters 6–8, CVD score, PTM routes)
+- **Chronic path (PTM)** — same file (clusters F–H, CVD score, PTM routes). MedGemma input/output formats: [docs/Format-MedGemma.md](docs/Format-MedGemma.md)
 - **Result** — a route: MERAH (IGD) · KUNING KHUSUS (program poli) · KUNING (Puskesmas) · HIJAU (self-care), plus a Mobile JKN button.
 
 **Visual reference:** [docs/TropiCek-Simulasi.html](docs/TropiCek-Simulasi.html). Colors, type, components: [DESIGN.md](DESIGN.md). Copy its look into React. Don't copy its known mistakes. The section "Fitur" below lists every feature and what still has to change.
@@ -48,7 +48,7 @@ bash scripts/generate-client.sh          # after API changes
 - **Quiz content lives in JSON**, not React. DR and ST edit it without FE. Option IDs are shared by FE, BE, and scoring; rename all three together.
 - **API** (`/api/v1`): `GET /triage/flows/{flow_id}` · `POST /triage/flows/{flow_id}/score`
 - **Emergency check runs in the browser.** Any danger sign → MERAH screen right away, even if the server is down.
-- **Standalone.** No integrations that need a legal agreement or admin approval (SATUSEHAT, BPJS API, telemedicine providers, faskes systems). Plain links are fine (Google Maps search, opening Mobile JKN). Nothing is sent outside our own server.
+- **Standalone.** No integrations that need a legal agreement or admin approval (BPJS API, telemedicine providers, faskes systems). Plain links are fine (Google Maps search, opening Mobile JKN). Nothing is sent outside our own server. SATUSEHAT integration is under consideration by the team and is not covered by this rule.
 - **Login is optional.** Guests can do the whole quiz. Offer login on the home page.
 - **Ask age and sex first.** They change which questions and options appear.
 - **Low score** → "belum dapat ditentukan" + route KUNING.
@@ -61,12 +61,13 @@ bash scripts/generate-client.sh          # after API changes
 - Pain scale: 0–10 with faces and labels, like the prototype. No starting value. Save 0–10.
 - Every result page has a disclaimer: this is screening, not a doctor's diagnosis.
 - Medical text changes need DR's OK. Weight changes need ST's OK.
-- **Privacy:** ask consent before saving. Never collect NIK or BPJS numbers. No real patient data in the repo. No real secrets in git.
+- **Privacy:** ask consent before saving. No real patient data in the repo. No real secrets in git.
 
 ## Mobile JKN button
 
-- Android: `intent://#Intent;package=app.bpjs.mobile;S.browser_fallback_url=<Play Store URL>;end`
+- Android: `intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=app.bpjs.mobile;S.browser_fallback_url=<Play Store URL>;end`
 - Otherwise: `https://play.google.com/store/apps/details?id=app.bpjs.mobile`
+- Mobile JKN 4.18.0 has no deep link (no URL scheme, no App Links; checked in its AndroidManifest). Chrome only opens apps that accept browser links, so in Chrome the button lands on the Play Store page, which shows "Buka" when the app is installed. If a later version adds a scheme, put it in `frontend/src/features/triage/links.ts`.
 - Test on a real Android phone before the demo.
 
 ## Tips
@@ -75,6 +76,17 @@ bash scripts/generate-client.sh          # after API changes
 - Model changed → add an Alembic migration. API changed → regenerate the client.
 - Design for phones first, then tablet (≥640px) and desktop (≥960px).
 - Near the deadline: fix bugs instead of adding features.
+
+## Checklist aplikasi (in Indonesian)
+
+- [ ] App bisa membuka Mobile JKN langsung saat di HP dan aplikasinya terpasang
+- [ ] App bisa mengambil lokasi dan memasukkannya ke inferensi
+- [ ] App bisa mengambil foto dan memasukkannya ke inferensi
+- [ ] App melakukan inferensi secara akurat berdasarkan pilihan, lokasi, dan foto
+- [ ] Tampilan enak di HP
+- [ ] Pertanyaan lengkap
+- [ ] Pemindai QR diarahkan ke halaman rangkuman yang ringkas, jelas, menarik, dan sederhana tanpa mengorbankan kualitas
+- [ ] Sedang mencoba mengintegrasikan ke SATUSEHAT
 
 ## Fitur (in Indonesian)
 
@@ -87,7 +99,7 @@ Status: ✅ ada di simulasi, pindahkan ke React · 🔧 ada di simulasi, perlu d
 | Fitur        | Deskripsi                                                                                                             | Alasan                                        | Status         |
 | ------------ | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- | -------------- |
 | Halaman awal | Pilih "Saya sedang sakit" (jalur infeksi) atau "Cek risiko penyakit jangka panjang" (jalur kronis). Ada tombol Masuk. | Dua jalur punya alur pertanyaan yang berbeda. | ✅             |
-| Jalur kronis | Skrining risiko penyakit jangka panjang (PTM): klaster Gula & Saraf, Tekanan & Kepala, Sendi, atau "tidak ada keluhan"; faktor risiko; tensi, gula darah, lingkar perut. Alur di [docs/Blueprint.md](docs/Blueprint.md) (Tahap 2 klaster 6–8). | Melengkapi skrining infeksi akut. | 🔧 alur dari Blueprint sudah jalan; bobot faktor risiko/tensi/gula dan skor CVD menunggu ST; rute angina, care, dan lab PTM perlu DR |
+| Jalur kronis | Skrining risiko penyakit jangka panjang (PTM): klaster Gula & Saraf, Tekanan & Kepala, Sendi, atau "tidak ada keluhan"; faktor risiko; tensi, gula darah, lingkar perut. Alur di [docs/Acuan-Medis.md](docs/Acuan-Medis.md) §5. | Melengkapi skrining infeksi akut. | 🔧 alur dari Blueprint sudah jalan; bobot faktor risiko/tensi/gula dan skor CVD menunggu ST; rute angina, care, dan lab PTM perlu DR |
 | Data diri | Siapa yang sakit (sendiri, anak, lansia, keluarga lain), usia, dan jenis kelamin. Perempuan ditanya status kehamilan (Blueprint Q1). Ditanya paling awal. | nama, kelamin, pekerjaan | ✅ batas usia pertanyaan hamil (10 th) perlu DR |
 
 ### Kuesioner jalur infeksi
@@ -98,8 +110,8 @@ Status: ✅ ada di simulasi, pindahkan ke React · 🔧 ada di simulasi, perlu d
 | Tahap 2 · Keluhan utama              | 5 klaster: demam, napas, pencernaan, kulit, bengkak.                                                                                                                                                                                                                                    | Mengelompokkan 20 penyakit supaya pasien hanya menjawab pertanyaan yang relevan.                                  | ✅                                                                                               |
 | Tahap 3 · Gejala dan gejala penyerta | Pertanyaan berubah sesuai klaster yang dipilih.                                                                                                                                                                                                                                         | Membedakan penyakit yang gejalanya mirip.                                                                         | ✅                                                                                               |
 | Tahap 4 · Peta ekologi               | Riwayat 1–4 bulan terakhir: daerah, banjir, lingkungan padat, kontak TBC, imunisasi.                                                                                                                                                                                                   | Faktor risiko lingkungan menambah ketepatan skor.                                                                 | ✅                                                                                               |
-| Tahap 4 · Lokasi pengguna            | Minta izin lokasi browser, lalu ubah jadi provinsi di browser dengan data batas provinsi yang ikut di aplikasi, tanpa layanan peta luar. Hanya provinsi yang dipakai dan disimpan, bukan titik koordinat. Kalau izin ditolak, pasien memilih provinsi sendiri atau lanjut tanpa lokasi. | Beberapa penyakit lebih sering di wilayah tertentu, misalnya malaria di Papua dan NTT. Lokasi ikut masuk ke skor. | ⏳ wilayah dan bobot per penyakit perlu persetujuan DR dan ST                                    |
-| Tahap 4 · Riwayat obat | Ketik atau ketuk obat yang sudah diminum (opsional). Muncul peringatan: NSAID pada demam (merah), obat mampat pada diare/amebiasis (kuning), Amlodipine pada bengkak dan Captopril pada batuk (biru, Blueprint Q5). | Mencegah pasien meneruskan obat yang bisa memperburuk kondisi. | 🔧 teks pop-up NSAID dan obat mampat: pilih versi Blueprint atau jawaban no. 12–13 (DR, lihat konflik no. 3) |
+| Data diri · Lokasi pengguna          | Ditanya di langkah data diri jalur infeksi (`ask_province` di flow.json). Minta izin lokasi browser, lalu ubah jadi provinsi di browser dengan data batas provinsi yang ikut di aplikasi, tanpa layanan peta luar. Hanya provinsi yang dipakai dan disimpan, bukan titik koordinat. Kalau izin ditolak, pasien memilih provinsi sendiri atau lanjut tanpa lokasi. | Beberapa penyakit lebih sering di wilayah tertentu, misalnya malaria di Papua dan NTT. Lokasi ikut dipertimbangkan MedGemma. | ✅ lokasi → provinsi sudah jalan; provinsi masuk ke input MedGemma sebagai fakta "Provinsi tempat tinggal" ([docs/Format-MedGemma.md](docs/Format-MedGemma.md)), tanpa bobot per provinsi |
+| Tahap 4 · Riwayat obat | Ketik atau ketuk obat yang sudah diminum (opsional). Muncul peringatan: NSAID pada demam (merah), obat mampat pada diare/amebiasis (kuning), Amlodipine pada bengkak dan Captopril pada batuk (biru, Blueprint Q5). | Mencegah pasien meneruskan obat yang bisa memperburuk kondisi. | 🔧 teks pop-up NSAID dan obat mampat: pilih versi Blueprint atau jawaban no. 12–13 (DR, Acuan-Medis K6–K7) |
 | Tahap 5 · Suhu tubuh | Isi suhu dalam °C, atau centang "tidak punya termometer" lalu jawab proksi: menggigil/keringat deras, nadi cepat saat istirahat (DR no. 1). | Banyak orang tidak punya termometer; skor tetap bisa dihitung dari pola demam. | ✅ bobot proksi menunggu ST (sekarang 0 poin) |
 | Tahap 5 · Tinggi dan berat badan | Hitung IMT, atau jawab pertanyaan pengganti (pakaian longgar, kelebihan berat badan/obesitas, normal). | Status gizi ikut menentukan risiko keparahan; pertanyaan pengganti untuk yang tidak punya timbangan. | ✅ obesitas → risiko malaria berat dikonfirmasi DR (no. 2) |
 | Tahap 5 · Peta nyeri                 | Ketuk bagian tubuh yang sakit atau bengkak di gambar tubuh.                                                                                                                                                                                                                             | Lokasi nyeri membantu membedakan penyakit, misalnya perut kanan atas atau sendi pergelangan.                      | ✅                                                                                               |
@@ -116,7 +128,7 @@ Status: ✅ ada di simulasi, pindahkan ke React · 🔧 ada di simulasi, perlu d
 | Skor rendah                      | "Belum dapat ditentukan" → rute KUNING.                                                                                                                                                                                                                             | Kalau pola tidak jelas, lebih aman diperiksa langsung.                                                          | ✅                                                                                                                                 |
 | Kemungkinan lain                 | 3 perkiraan berikutnya beserta skornya.                                                                                                                                                                                                                              | Pasien dan petugas melihat pilihan lain yang perlu dipikirkan. beserta label keyakinan agar pengguna tau        | ✅                                                                                                                                 |
 | "Kenapa aku menebak ini?"        | Jawaban yang paling memengaruhi skor, dan perbandingan penyakit mirip (Tifoid vs DBD, Kusta vs Tinea, Diare vs Amebiasis).                                                                                                                                           | Transparan: pasien tahu dasar perkiraannya.                                                                     | ✅                                                                                                                                 |
-| Rute rujukan | MERAH (IGD) · KUNING KHUSUS (poli program) · KUNING (Puskesmas) · HIJAU (perawatan mandiri). Demam ≥ 39,5 °C atau sistolik > 160 mmHg menaikkan HIJAU ke KUNING. Tanda Varicella berat menaikkan ke KUNING. | Inti aplikasi: memberi tahu pasien harus ke mana. | ✅ aturan suhu dikonfirmasi DR (no. 15); rute Lepto/STH/Hepatitis/Varicella berat masih konflik no. 1 |
+| Rute rujukan | MERAH (IGD) · KUNING KHUSUS (poli program) · KUNING (Puskesmas) · HIJAU (perawatan mandiri). Demam ≥ 39,5 °C atau sistolik > 160 mmHg menaikkan HIJAU ke KUNING. Tanda Varicella berat menaikkan ke KUNING. | Inti aplikasi: memberi tahu pasien harus ke mana. | ✅ aturan suhu dikonfirmasi DR (no. 15); rute Lepto/STH/Hepatitis/Varicella berat masih menunggu DR (Acuan-Medis K1–K4) |
 | Yang perlu dilakukan             | Daftar langkah sesuai rute dan perkiraan.                                                                                                                                                                                                                            | Pasien tahu apa yang dilakukan sekarang.                                                                        | ✅ teks medis perlu persetujuan DR                                                                                                 |
 | Navigasi ke faskes               | Tombol membuka Google Maps ke apotek atau Puskesmas terdekat.                                                                                                                                                                                                        | Pasien langsung tahu lokasinya.                                                                                 | ✅ hanya tautan pencarian, tanpa daftar faskes sendiri                                                                             |
 | Tombol Mobile JKN                | "Buat janji dokter (Mobile JKN)". Android membuka aplikasinya, perangkat lain membuka Play Store.                                                                                                                                                                    | Lanjut ke pendaftaran resmi BPJS. Hanya membuka aplikasinya: tidak ada API, kerja sama, atau data yang dikirim. | ✅ uji di HP Android sungguhan                                                                                                     |
@@ -140,7 +152,6 @@ Status: ✅ ada di simulasi, pindahkan ke React · 🔧 ada di simulasi, perlu d
 | Fitur          | Deskripsi                                                             | Alasan                                     | Status                                                                                                               |
 | -------------- | --------------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | Login opsional | Tamu bisa skrining sampai selesai. Tawaran masuk ada di halaman awal. | Tidak menghalangi orang yang sedang sakit. | 🔧 simulasi hanya menyimpan nama di perangkat; BE membuat akun sungguhan. Belum ada fitur simpan hasil atau riwayat. |
-| Tanpa NIK/BPJS | Tidak pernah meminta NIK atau nomor BPJS.                             | Mengurangi risiko kebocoran data.          | ✅                                                                                                                   |
 
 ### Permainan dan tampilan
 
@@ -151,17 +162,9 @@ Status: ✅ ada di simulasi, pindahkan ke React · 🔧 ada di simulasi, perlu d
 | Suara, getar, konfeti | Bisa dimatikan di Pengaturan. Animasi mati kalau`prefers-reduced-motion`. | Terasa seperti permainan, tapi tetap bisa diatur. | ✅     |
 | Responsif             | HP dulu, lalu desktop (≥ 640px). samakan tampilan tablet degnan desktop    | Kebanyakan pengguna memakai HP.                   | ✅     |
 
-## Doctor's answers (in Indonesian)
+## Keputusan medis terbuka (in Indonesian)
 
-Pertanyaan terbuka untuk dokter sudah dijawab: [docs/Jawaban-Dokter.md](docs/Jawaban-Dokter.md). Yang masih perlu diputuskan:
-
-1. **Blueprint vs. jawaban no. 9 (rute) berbeda.** Mana yang dipakai (DR)?
-   - Leptospirosis: jawaban → MERAH; Blueprint → "Leptospirosis dini" KUNING, gagal ginjal MERAH.
-   - Cacingan (STH): jawaban → KUNING; Blueprint → HIJAU (ringan).
-   - Hepatitis: jawaban → Hepatitis A saja; Blueprint → Hepatitis A&B.
-   - Varicella berat: jawaban → "Kuning FKRTL/Spesialis"; Blueprint → KUNING (Puskesmas).
-2. **Urutan pertanyaan:** jawaban no. 16 bilang ECO langsung setelah Q2; Blueprint menaruh red flag (Q3) di antaranya.
-3. **Teks pop-up NSAID, obat mampat, dan disclaimer** di Blueprint beda kalimat dengan jawaban no. 12, 13, 22. Pilih satu versi (DR).
+Blueprint dan jawaban dokter sudah digabung di [docs/Acuan-Medis.md](docs/Acuan-Medis.md); aslinya diarsipkan di `docs/arsip/`. Semua yang masih menunggu DR atau ST ada di bagian 1 dokumen itu (K1–K29), termasuk konflik rute Lepto/STH/Hepatitis/Varicella berat (K1–K4), urutan Peta Ekologi (K5), dan teks pop-up obat serta penafian (K6–K9).
 
 ## Remember (in Indonesian)
 
@@ -170,5 +173,4 @@ Pertanyaan terbuka untuk dokter sudah dijawab: [docs/Jawaban-Dokter.md](docs/Jaw
 - **Tetap aturan tetap, bukan model:** pemeriksaan tanda bahaya di browser, naik ke KUNING bila suhu ≥ 39,5 °C, dan skor rendah → KUNING. Pembagian tugas MedGemma dan skor aturan: ST.
 - **Uji coba pakai kartu kasus,** bukan data kesehatan asli peserta. Peserta mengisi survei kemudahan pakai (SUS).
 - **Jangan pakai kata "diagnosis"** di aplikasi. Pakai "skrining" atau "perkiraan".
-- **Jangan minta NIK atau nomor BPJS.**
-- **Aplikasi berdiri sendiri.** Tidak terhubung ke SATUSEHAT, sistem faskes, atau layanan telemedisin, supaya tidak ada beban hukum dan administrasi.
+- **Aplikasi berdiri sendiri.** Tidak terhubung ke sistem faskes atau layanan telemedisin, supaya tidak ada beban hukum dan administrasi.

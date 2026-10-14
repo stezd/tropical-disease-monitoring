@@ -50,7 +50,7 @@
     {
       "level": "b",
       "icon": "⬆️",
-      "text": "Rute dinaikkan ke SEDANG karena suhu 39.6 °C sangat tinggi."
+      "text": "Kondisi dinaikkan ke SEDANG karena suhu 39.6 °C sangat tinggi."
     },
     {
       "level": "b",
@@ -74,7 +74,89 @@
     "Validasi silang: Tifoid vs DBD",
     "Memetakan risiko One Health (0 faktor)",
     "Menghitung klasifikasi kecocokan 20 penyakit",
-    "Menentukan rute rujukan & faskes"
+    "Menentukan kondisi rujukan & faskes"
   ],
-  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 30 th · -\nTanda bahaya: tidak ada\nKeluhan   : Napas\nPola      : Kurang dari 2 minggu, hidung tersumbat, bersin, tenggorokan gatal\nPenyerta  : -\nEkologi   : tidak ada\nObat      : -\nSuhu      : 39.6 °C\nGizi      : proksi: Normal\nPeta nyeri: -\nFoto      : -\nLab       : -\nDugaan    : ISPA (Infeksi Saluran Pernapasan Akut) (51%)\nRute      : RUTE SEDANG – Puskesmas · Klinik Pratama"
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 30 th · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Napas\nPola      : Kurang dari 2 minggu, hidung tersumbat, bersin, tenggorokan gatal\nPenyerta  : -\nEkologi   : tidak ada\nObat      : -\nSuhu      : 39.6 °C\nGizi      : proksi: Normal\nPeta nyeri: -\nFoto      : -\nLab       : -\nDugaan    : ISPA (Infeksi Saluran Pernapasan Akut) (51%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
+  "summary_rows": [
+    {
+      "key": "date",
+      "label": "Tanggal",
+      "value": "-"
+    },
+    {
+      "key": "patient",
+      "label": "Pasien",
+      "value": "- · 30 th · -"
+    },
+    {
+      "key": "province",
+      "label": "Provinsi",
+      "value": "-"
+    },
+    {
+      "key": "red_flags",
+      "label": "Tanda bahaya",
+      "value": "tidak ada"
+    },
+    {
+      "key": "complaint",
+      "label": "Keluhan",
+      "value": "Napas"
+    },
+    {
+      "key": "pattern",
+      "label": "Pola",
+      "value": "Kurang dari 2 minggu, hidung tersumbat, bersin, tenggorokan gatal"
+    },
+    {
+      "key": "companion",
+      "label": "Penyerta",
+      "value": "-"
+    },
+    {
+      "key": "eco",
+      "label": "Ekologi",
+      "value": "tidak ada"
+    },
+    {
+      "key": "drugs",
+      "label": "Obat",
+      "value": "-"
+    },
+    {
+      "key": "temp",
+      "label": "Suhu",
+      "value": "39.6 °C"
+    },
+    {
+      "key": "nutrition",
+      "label": "Gizi",
+      "value": "proksi: Normal"
+    },
+    {
+      "key": "body",
+      "label": "Peta nyeri",
+      "value": "-"
+    },
+    {
+      "key": "findings",
+      "label": "Foto",
+      "value": "-"
+    },
+    {
+      "key": "lab",
+      "label": "Lab",
+      "value": "-"
+    },
+    {
+      "key": "estimate",
+      "label": "Dugaan",
+      "value": "ISPA (Infeksi Saluran Pernapasan Akut) (51%)"
+    },
+    {
+      "key": "route",
+      "label": "Kondisi",
+      "value": "KONDISI SEDANG – Puskesmas · Klinik Pratama"
+    }
+  ]
 }

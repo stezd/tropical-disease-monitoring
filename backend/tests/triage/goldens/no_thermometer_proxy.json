@@ -70,7 +70,94 @@
     "Validasi silang: Tifoid vs DBD",
     "Memetakan risiko One Health (0 faktor)",
     "Menghitung klasifikasi kecocokan 20 penyakit",
-    "Menentukan rute rujukan & faskes"
+    "Menentukan kondisi rujukan & faskes"
   ],
-  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 30 th · -\nTanda bahaya: tidak ada\nKeluhan   : Demam & Badan\nPola      : Menggigil berulang tiap 2–3 hari\nPenyerta  : -\nEkologi   : tidak ada\nObat      : -\nSuhu      : tidak diukur (tidak punya termometer)\nProksi    : Menggigil hebat atau keringat sampai baju basah; Nadi terasa sangat cepat saat istirahat\nGizi      : proksi: Normal\nPeta nyeri: -\nFoto      : -\nLab       : Apusan Darah Tebal (Giemsa) / RDT Malaria\nDugaan    : Malaria (65%)\nRute      : RUTE SEDANG – Puskesmas · Klinik Pratama"
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 30 th · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Demam & Badan\nPola      : Menggigil berulang tiap 2–3 hari\nPenyerta  : -\nEkologi   : tidak ada\nObat      : -\nSuhu      : tidak diukur (tidak punya termometer)\nProksi    : Menggigil hebat atau keringat sampai baju basah; Nadi terasa sangat cepat saat istirahat\nGizi      : proksi: Normal\nPeta nyeri: -\nFoto      : -\nLab       : Apusan Darah Tebal (Giemsa) / RDT Malaria\nDugaan    : Malaria (65%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
+  "summary_rows": [
+    {
+      "key": "date",
+      "label": "Tanggal",
+      "value": "-"
+    },
+    {
+      "key": "patient",
+      "label": "Pasien",
+      "value": "- · 30 th · -"
+    },
+    {
+      "key": "province",
+      "label": "Provinsi",
+      "value": "-"
+    },
+    {
+      "key": "red_flags",
+      "label": "Tanda bahaya",
+      "value": "tidak ada"
+    },
+    {
+      "key": "complaint",
+      "label": "Keluhan",
+      "value": "Demam & Badan"
+    },
+    {
+      "key": "pattern",
+      "label": "Pola",
+      "value": "Menggigil berulang tiap 2–3 hari"
+    },
+    {
+      "key": "companion",
+      "label": "Penyerta",
+      "value": "-"
+    },
+    {
+      "key": "eco",
+      "label": "Ekologi",
+      "value": "tidak ada"
+    },
+    {
+      "key": "drugs",
+      "label": "Obat",
+      "value": "-"
+    },
+    {
+      "key": "temp",
+      "label": "Suhu",
+      "value": "tidak diukur (tidak punya termometer)"
+    },
+    {
+      "key": "proxy",
+      "label": "Proksi",
+      "value": "Menggigil hebat atau keringat sampai baju basah; Nadi terasa sangat cepat saat istirahat"
+    },
+    {
+      "key": "nutrition",
+      "label": "Gizi",
+      "value": "proksi: Normal"
+    },
+    {
+      "key": "body",
+      "label": "Peta nyeri",
+      "value": "-"
+    },
+    {
+      "key": "findings",
+      "label": "Foto",
+      "value": "-"
+    },
+    {
+      "key": "lab",
+      "label": "Lab",
+      "value": "Apusan Darah Tebal (Giemsa) / RDT Malaria"
+    },
+    {
+      "key": "estimate",
+      "label": "Dugaan",
+      "value": "Malaria (65%)"
+    },
+    {
+      "key": "route",
+      "label": "Kondisi",
+      "value": "KONDISI SEDANG – Puskesmas · Klinik Pratama"
+    }
+  ]
 }
