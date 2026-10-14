@@ -1081,10 +1081,14 @@
   align-items: center;
   gap: 8px;
 }
+/* min-width/width: an <input> is ~20 characters wide by default, which pushed
+   the + button past the card edge on phones. */
 .tval .inp {
   flex: 1;
+  min-width: 0;
 }
 .tval .inp input {
+  width: 100%;
   text-align: center;
   font-size: 30px;
 }
@@ -2626,6 +2630,38 @@ details.sum pre {
 
 /* ===== ≥ 960px: desktop dua kolom ===== */
 @media (min-width: 960px) {
+  /* landing: tombol di sisi kanan Kak Tropi */
+  .home {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
+    grid-template-rows: auto 1fr auto;
+    column-gap: 56px;
+    align-items: end;
+    justify-content: center;
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .home .ribbon {
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+  .home .hero {
+    grid-column: 1;
+    grid-row: 2;
+    justify-content: flex-end;
+    align-self: stretch;
+  }
+  .home .home-btns {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: center;
+    max-width: none;
+  }
+  .home .disc {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
   .qlayout {
     max-width: 1120px;
     display: grid;
