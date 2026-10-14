@@ -67,6 +67,14 @@ bun run lint && bun test                 # from repo root
 - Words CI flags as typos but are real Indonesian (`maks`, `tabel`, `oktober`, …) live in `[tool.typos.default.extend-words]` in `pyproject.toml`. Add the word there, don't change the UI copy.
 - `frontend/src/client/` and `frontend/public/data/` are generated/vendored and excluded from the formatters. Don't reformat them.
 
+## Traps (don't rediscover these)
+
+- **Use `127.0.0.1`, never `localhost`, in `DATABASE_URL`.** On Windows with Docker Desktop, `localhost` resolves to IPv6 `::1` first; the port forward accepts the SYN but never completes the handshake, so the OS waits out a ~21s TCP timeout before falling back to IPv4. One connection costs **~130s instead of ~0.015s**. This alone made the backend suite take 260s instead of 7s. `.env` and `.env.example` already use `127.0.0.1`. Linux CI is unaffected, so don't "fix" the workflow files.
+- **`bash` does not work on Windows here.** It resolves to the WSL shim, and the default distro is `docker-desktop`, which has no `/bin/bash`. So `scripts/*.sh` fail, and the `generate-frontend-sdk` pre-commit hook is always red locally. Run the underlying command instead (`bun run generate-client` after dumping `openapi.json`), and expect that one hook to fail locally only.
+- **Running `pytest` empties the `facility` mirror.** The `clean_facilities` fixture deletes every row on setup and teardown. Re-run `scripts/sync_facilities.py` after tests, before demoing, or the facilities endpoint returns an empty list.
+- **`except A, B:` without parentheses is valid on Python 3.14** (PEP 758). `ruff format` normalises to it. Don't "fix" it to `except (A, B):` — ruff will revert it.
+- **`uv run` is not free.** It re-resolves the environment on every call. For a tight dev loop, activate `.venv` once and call `python -m pytest` directly. Also skip `scripts/test.sh` while iterating: it runs `coverage`, which instruments every line.
+
 ## How it fits together
 
 - **Quiz content lives in JSON**, not React. DR and ST edit it without FE. Option IDs are shared by FE, BE, and scoring; rename all three together.
