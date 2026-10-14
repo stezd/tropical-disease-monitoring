@@ -117,7 +117,7 @@ bun run lint && bun test                 # from repo root
 - [ ] Tampilan enak di HP
 - [ ] Pertanyaan lengkap
 - [ ] Pemindai QR diarahkan ke halaman rangkuman yang ringkas, jelas, menarik, dan sederhana tanpa mengorbankan kualitas
-- [ ] Sedang mencoba mengintegrasikan ke SATUSEHAT
+- [ ] Integrasi SATUSEHAT Master Sarana Index (MSI): desain & probe sudah tervalidasi, mirror faskes + endpoint sedang dikerjakan. Rencana: routing faskes terverifikasi (Puskesmas/RS/Apotek) dengan koordinat presisi via batch mirror lokal. Push FHIR pasien sengaja dihindari demi privasi (no-NIK) dan prinsip skrining non-diagnosis. Detail: [docs/SATUSEHAT.md](docs/SATUSEHAT.md).
 
 ## Fitur (in Indonesian)
 
