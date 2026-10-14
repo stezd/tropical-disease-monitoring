@@ -103,7 +103,7 @@
   "measure_waist": true,
   "nutrition_proxies": [
     { "id": "longgar", "emoji": "👕", "text": "Pakaian/celana sangat longgar dalam 1-2 bulan terakhir" },
-    { "id": "gemuk", "emoji": "🧸", "text": "Celana terasa makin sempit di perut / Postur Kelebihan Berat Badan (Obesitas)" },
+    { "id": "gemuk", "emoji": "🧸", "text": "Celana terasa makin sempit di perut / Postur Kelebihan Berat Badan" },
     { "id": "normal", "emoji": "🙂", "text": "Normal" }
   ],
   "body_regions": [],

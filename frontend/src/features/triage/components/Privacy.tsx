@@ -46,8 +46,8 @@ export function PrivacyText() {
         <li>
           Jawaban disimpan di server hanya kalau kamu menekan{" "}
           <b>"Ya, simpan tanpa nama"</b>. Yang disimpan hanya jawaban dan hasil
-          skrining, tanpa nama, email, atau foto. Tim memakainya
-          untuk memperbaiki TropiCare.
+          skrining, tanpa nama, email, atau foto. Tim memakainya untuk
+          memperbaiki TropiCare.
         </li>
       </ul>
 
@@ -65,9 +65,7 @@ export function PrivacyText() {
 
       <h3>4. QR rangkuman</h3>
       <ul>
-        <li>
-          QR berisi jawabanmu dalam kode ringkas, tanpa nama atau foto.
-        </li>
+        <li>QR berisi jawabanmu dalam kode ringkas, tanpa nama atau foto.</li>
         <li>
           Siapa pun yang memindai QR bisa membaca jawabanmu. Tunjukkan hanya ke
           petugas kesehatan.

@@ -2,11 +2,15 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 import { type ReactNode, useMemo, useRef, useState } from "react"
 
-import { type FlowPublic, type ScoreResult, TriageService } from "@/client"
+import type { FlowPublic, ScoreResult } from "@/client"
 import { scoreAnswers, scoreKey } from "../api"
 import { hop, Mascot, Sparkles } from "../components/Art"
 import { BodyMap, PainScale } from "../components/Body"
-import { PrivacyText } from "../components/Privacy"
+import {
+  mergeFindings,
+  type PhotoOutcome,
+  PhotoPicker,
+} from "../components/PhotoPicker"
 import {
   Card,
   type Choice,
@@ -52,6 +56,11 @@ type StepDef = {
 }
 
 type Vital = FlowPublic["vitals"][number]
+
+/** Tile class: wide options span the row; "none" is tinted green. */
+function tileCls(o: { id: string; wide?: boolean | null }) {
+  return [o.wide && "wide", o.id === NONE && "safe"].filter(Boolean).join(" ")
+}
 
 /** A stand-in question was answered (at least one option, "none" included). */
 function proxyAnswered(a: QuizAnswers, flow: FlowPublic, vital: Vital) {
@@ -101,7 +110,7 @@ const STEP_DEFS: Record<StepId, StepDef> = {
     valid: (a) => a.red_flags.length > 0,
     nextLabel: (a) =>
       hasRedFlag(a) ? "🚨 Lihat Tindakan Darurat" : "Lanjut ▶",
-    nextCls: (a) => (hasRedFlag(a) ? "btn-red" : "btn-purple"),
+    nextCls: (a) => (hasRedFlag(a) ? "btn-danger" : "btn-primary"),
   },
   q2: {
     tab: "TAHAP 2 · KELUHAN UTAMA",
@@ -255,7 +264,7 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
             actions={
               <button
                 type="button"
-                className="btn btn-purple"
+                className="btn btn-primary"
                 onClick={() => {
                   setModal(null)
                   proceed()
@@ -318,42 +327,47 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
           </>
         )
       case "q2": {
-        const boxes = [
-          ...flow.clusters,
-          ...(flow.allow_no_complaint
-            ? [
-                {
-                  id: NONE,
-                  emoji: "🙂",
-                  name: "Tidak ada keluhan",
-                  sub: "Cek risiko saja",
-                },
-              ]
-            : []),
-        ]
+        const box = (c: {
+          id: string
+          emoji: string
+          name: string
+          sub: string
+        }) => (
+          <button
+            key={c.id}
+            type="button"
+            aria-pressed={a.complaint === c.id}
+            className={`cbox c${c.id} ${a.complaint === c.id ? "on" : ""}`}
+            onClick={() => pick("complaint", c.id, false)}
+          >
+            <span className="ce" aria-hidden="true">
+              {c.emoji}
+            </span>
+            <span className="ct">
+              <b>{c.name}</b>
+              <span className="cs">{c.sub}</span>
+            </span>
+          </button>
+        )
         return (
           <>
             <h2 className="qt">
               {text?.title ?? "Keluhan mana yang paling mengganggu?"}
             </h2>
             <p className="qh">{text?.hint ?? "Pilih satu"}</p>
-            <div className={`cgrid ${boxes.length % 2 ? "" : "even"}`}>
-              {boxes.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  aria-pressed={a.complaint === c.id}
-                  className={`cbox c${c.id} ${a.complaint === c.id ? "on" : ""}`}
-                  onClick={() => pick("complaint", c.id, false)}
-                >
-                  <span className="ce" aria-hidden="true">
-                    {c.emoji}
-                  </span>
-                  <b>{c.name}</b>
-                  <span className="cs">{c.sub}</span>
-                </button>
-              ))}
+            <div
+              className={`cgrid ${flow.clusters.length % 2 ? "" : "even"}`}
+            >
+              {flow.clusters.map(box)}
             </div>
+            {/* Outside the grid: a plain full-width row under the groups. */}
+            {flow.allow_no_complaint &&
+              box({
+                id: NONE,
+                emoji: "🙂",
+                name: "Tidak ada keluhan",
+                sub: "Cek risiko saja",
+              })}
           </>
         )
       }
@@ -401,7 +415,7 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
               onPick={(i) => pick("eco", i, true)}
               options={flow.eco
                 .filter((o) => visible(o, a, flow))
-                .map((o) => ({ ...o, cls: o.wide ? "wide" : "" }))}
+                .map((o) => ({ ...o, cls: tileCls(o) }))}
             />
           </>
         )
@@ -478,7 +492,7 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
           <div className="foot">
             <button
               type="button"
-              className={`btn big ${def.nextCls?.(a) ?? "btn-purple"}`}
+              className={`btn big ${def.nextCls?.(a) ?? "btn-primary"}`}
               disabled={!valid || busy}
               onClick={next}
             >
@@ -652,7 +666,7 @@ function StepLocation({ a, set }: { a: QuizAnswers; set: Setter }) {
       <div className="loc">
         <button
           type="button"
-          className="btn btn-teal"
+          className="btn btn-secondary"
           disabled={busy}
           onClick={locate}
         >
@@ -689,11 +703,11 @@ function StepLocation({ a, set }: { a: QuizAnswers; set: Setter }) {
 }
 
 function tempStatus(t: number): [string, string, string] {
-  if (Number.isNaN(t)) return ["Masukkan suhu", "#EEE", "#777"]
+  if (Number.isNaN(t)) return ["Masukkan suhu", "#EEE", "#555"]
   if (t < 34 || t > 43) return ["Angka tidak wajar", "#FFE3E6", "#C8102E"]
-  if (t < 37.5) return ["😊 Normal", "#E2F9EE", "#1A9A66"]
+  if (t < 37.5) return ["😊 Normal", "#E2F9EE", "#15784F"]
   if (t < 38) return ["🙂 Subfebris", "#FFF6DB", "#8A5A00"]
-  if (t < 39.5) return ["🤒 Demam", "#FFE8D6", "#C2570C"]
+  if (t < 39.5) return ["🤒 Demam", "#FFE8D6", "#A3410A"]
   return ["🥵 Demam tinggi", "#FFE3E6", "#C8102E"]
 }
 
@@ -817,12 +831,12 @@ function StepTemp({
 
 function bpStatus(sys: number, dia: number): [string, string, string] {
   if (Number.isNaN(sys) || Number.isNaN(dia))
-    return ["Masukkan tensi", "#EEE", "#777"]
+    return ["Masukkan tensi", "#EEE", "#555"]
   if (!sysValid(sys) || !diaValid(dia))
     return ["Angka tidak wajar", "#FFE3E6", "#C8102E"]
   if (sys > 160) return ["Sangat tinggi", "#FFE3E6", "#C8102E"]
-  if (sys >= 140 || dia >= 90) return ["Tinggi", "#FFE8D6", "#C2570C"]
-  return ["Tercatat", "#E2F9EE", "#1A9A66"]
+  if (sys >= 140 || dia >= 90) return ["Tinggi", "#FFE8D6", "#A3410A"]
+  return ["Tercatat", "#E2F9EE", "#15784F"]
 }
 
 function StepBp({
@@ -940,12 +954,12 @@ function StepBmi({
   const proxy = flow.nutrition_proxies.find((p) => p.id === a.nutrition_proxy)
   const cat: [string, string] | null = b
     ? b < 18.5
-      ? ["Kurus", "#3B9BE0"]
+      ? ["Kurus", "#1F6FB2"]
       : b < 25
-        ? ["Normal", "#1A9A66"]
+        ? ["Normal", "#15784F"]
         : b < 27
-          ? ["Berat lebih", "#C98A00"]
-          : ["Obesitas", "#D63650"]
+          ? ["Berat lebih", "#8A5A00"]
+          : ["Obesitas", "#B01E3A"]
     : null
   const openProxy = () => {
     sfx.tap()
@@ -1124,18 +1138,13 @@ function StepBody({
   )
 }
 
-// Photo step. Photos are health data: the camera stays off until the patient
-// agrees, photos stay on the device unless the server has a real analyzer
-// (flow.photo_analysis), and they are never stored.
-let photoConsent = false
-
+// Photo step. Consent, camera/gallery, and analysis live in PhotoPicker; photos
+// are never stored. Findings from the analysis are added to the patient's picks.
 function StepPhoto({
   flow,
   title,
   a,
   pick,
-  set,
-  setModal,
 }: {
   flow: FlowPublic
   title?: string | null
@@ -1144,125 +1153,35 @@ function StepPhoto({
   set: Setter
   setModal: (m: ReactNode) => void
 }) {
-  const input = useRef<HTMLInputElement>(null)
-  const [photo, setPhoto] = useState<string | null>(null)
-  const [scanning, setScanning] = useState(false)
-  const analyze = flow.photo_analysis
-
-  const [consent, setConsent] = useState(photoConsent)
-  const agree = (v: boolean) => {
-    photoConsent = v
-    setConsent(v)
-    sfx.tap()
-  }
-  const openCamera = () => {
-    if (!consent) return
-    sfx.tap()
-    input.current?.click()
-  }
-  const showPrivacy = () =>
-    setModal(
-      <Modal tab="PRIVASI" onClose={() => setModal(null)}>
-        <PrivacyText />
-      </Modal>,
-    )
-
-  const onFile = async (file: File) => {
-    if (photo) URL.revokeObjectURL(photo)
-    setPhoto(URL.createObjectURL(file))
-    if (!analyze) return
-    setScanning(true)
-    sfx.think()
-    try {
-      const r = (await TriageService.analyzePhoto({ body: { photo: file } }))
-        .data
-      if (r.available && r.findings.length) {
-        set({
-          findings: [
-            ...new Set([
-              ...a.findings.filter((x) => x !== NONE),
-              ...r.findings,
-            ]),
-          ],
-        })
-        toast("Pindai selesai! Cek temuan di bawah 👇")
-      } else toast("Tidak ada temuan otomatis. Pilih sendiri, ya 👇")
-    } catch {
-      toast("Analisis foto gagal. Pilih temuan sendiri, ya 👇")
-    } finally {
-      setScanning(false)
-    }
+  const onAnalyzed = (o: PhotoOutcome) => {
+    if (o.kind === "found") {
+      // Merge into the latest answers, not the ones from before the upload.
+      quiz.answer((prev) => ({
+        ...prev,
+        findings: mergeFindings(prev.findings, o.ids),
+      }))
+      toast("Pindai selesai! Cek temuan di bawah 👇")
+    } else if (o.kind === "none")
+      toast("Tidak ada temuan otomatis. Pilih sendiri, ya 👇")
+    else if (o.kind === "too_big")
+      toast("Foto terlalu besar (maks. 8 MB). Pilih temuan sendiri, ya 👇")
+    else toast("Analisis foto gagal. Pilih temuan sendiri, ya 👇")
   }
 
   const options: Choice[] = flow.findings.map((o) => ({
     ...o,
-    cls: o.wide ? "wide" : "",
+    cls: tileCls(o),
   }))
 
   return (
     <>
       <h2 className="qt">{title ?? "Foto ruam, luka, atau mata"}</h2>
       <p className="qh">
-        {analyze
+        {flow.photo_analysis
           ? "Opsional · foto dianalisis lalu dihapus"
           : "Opsional · foto tidak dikirim ke mana pun"}
       </p>
-      <div className="photorow">
-        <div className="photo">
-          {photo ? (
-            <>
-              <img src={photo} alt="Foto yang dipilih" />
-              {scanning && (
-                <>
-                  <div className="scanline" />
-                  <span className="scanbadge">🔎 Memindai…</span>
-                </>
-              )}
-            </>
-          ) : (
-            <div className="ph">
-              <div aria-hidden="true">🖼️</div>Belum ada foto
-            </div>
-          )}
-        </div>
-        <button
-          type="button"
-          className="btn btn-teal"
-          disabled={!consent}
-          onClick={openCamera}
-        >
-          <span aria-hidden="true">📸</span>
-          {photo ? "Ganti" : "Kamera"}
-        </button>
-        <input
-          ref={input}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          hidden
-          onChange={(e) => {
-            const f = e.target.files?.[0]
-            if (f) void onFile(f)
-            e.target.value = ""
-          }}
-        />
-      </div>
-      <label className="chk consent">
-        <input
-          type="checkbox"
-          checked={consent}
-          onChange={(e) => agree(e.target.checked)}
-        />
-        <span>
-          {analyze
-            ? "Saya setuju foto dikirim ke server TropiCare untuk dianalisis, lalu langsung dihapus."
-            : "Saya setuju memakai foto untuk skrining ini. Foto tetap di perangkat ini."}{" "}
-          Foto tidak disimpan.{" "}
-          <button type="button" className="linkbtn" onClick={showPrivacy}>
-            Baca privasi
-          </button>
-        </span>
-      </label>
+      <PhotoPicker flow={flow} onAnalyzed={onAnalyzed} />
       <h3 className="subq">Pilih temuan yang terlihat:</h3>
       <Options
         multi

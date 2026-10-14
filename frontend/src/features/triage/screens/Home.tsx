@@ -55,11 +55,11 @@ export function HomeScreen() {
           </div>
         </div>
         <div className="home-btns">
-          <button type="button" className="btn btn-purple big" onClick={start}>
+          <button type="button" className="btn btn-primary big" onClick={start}>
             🤒 Saya sedang sakit
           </button>
           <Link
-            className="btn btn-purple"
+            className="btn btn-secondary"
             to="/kronis"
             onClick={() => {
               sfx.tap()
@@ -94,12 +94,12 @@ export function HomeScreen() {
           onClose={() => setModal(null)}
           actions={
             <>
-              <Link className="btn btn-purple" to="/settings">
+              <Link className="btn btn-primary" to="/settings">
                 ⚙ Pengaturan akun
               </Link>
               <button
                 type="button"
-                className="btn btn-teal"
+                className="btn btn-secondary"
                 onClick={() => {
                   setModal(null)
                   logout()
@@ -152,8 +152,8 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
         />
       </div>
       <div className="setsec">
-        Bahasa<span className="pill-teal">Indonesia</span>Wilayah
-        <span className="pill-teal" style={{ marginBottom: 0 }}>
+        Bahasa<span className="pill-val">Indonesia</span>Wilayah
+        <span className="pill-val" style={{ marginBottom: 0 }}>
           Indonesia
         </span>
       </div>

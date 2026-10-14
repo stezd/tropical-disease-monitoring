@@ -117,13 +117,13 @@ export function ThinkingScreen({
             <div className="mbtns">
               <button
                 type="button"
-                className="btn btn-purple"
+                className="btn btn-primary"
                 onClick={() => score.refetch()}
               >
                 ↻ Coba lagi
               </button>
               <a
-                className="btn btn-teal"
+                className="btn btn-secondary"
                 href={mapsURL("puskesmas terdekat")}
                 target="_blank"
                 rel="noopener"
