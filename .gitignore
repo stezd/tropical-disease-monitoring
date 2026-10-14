@@ -58,6 +58,7 @@ openapi.json
 /playwright/.auth/
 
 # IDE & OS
+.serena/
 .vscode/*
 !.vscode/extensions.json
 .idea/

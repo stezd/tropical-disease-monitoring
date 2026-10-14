@@ -217,6 +217,74 @@ export type DiseasePublic = {
 };
 
 /**
+ * FacilitiesPublic
+ */
+export type FacilitiesPublic = {
+    /**
+     * Data
+     */
+    data: Array<FacilityPublic>;
+    /**
+     * Count
+     */
+    count: number;
+};
+
+/**
+ * FacilityPublic
+ */
+export type FacilityPublic = {
+    /**
+     * Satusehat Id
+     */
+    satusehat_id: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Jenis Sarana Kode
+     */
+    jenis_sarana_kode: string;
+    /**
+     * Jenis Sarana Nama
+     */
+    jenis_sarana_nama: string;
+    /**
+     * Province Code
+     */
+    province_code: string;
+    /**
+     * Province Name
+     */
+    province_name: string;
+    /**
+     * City Name
+     */
+    city_name: string | null;
+    /**
+     * Address
+     */
+    address: string | null;
+    /**
+     * Phone
+     */
+    phone: string | null;
+    /**
+     * Latitude
+     */
+    latitude: number | null;
+    /**
+     * Longitude
+     */
+    longitude: number | null;
+};
+
+/**
  * FlowPublic
  */
 export type FlowPublic = {
@@ -1607,6 +1675,52 @@ export type triageAnalyzePhotoResponses = {
 };
 
 export type triageAnalyzePhotoResponse = triageAnalyzePhotoResponses[keyof triageAnalyzePhotoResponses];
+
+export type facilitiesListFacilitiesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Province
+         *
+         * Province name or code, e.g. 'DKI Jakarta' or '31'
+         */
+        province: string;
+        /**
+         * Kind
+         *
+         * Facility kind: 'puskesmas' (102), 'rs' (104), 'apotek' (105)
+         */
+        kind?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Skip
+         */
+        skip?: number;
+    };
+    url: '/api/v1/facilities/';
+};
+
+export type facilitiesListFacilitiesErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type facilitiesListFacilitiesError = facilitiesListFacilitiesErrors[keyof facilitiesListFacilitiesErrors];
+
+export type facilitiesListFacilitiesResponses = {
+    /**
+     * Successful Response
+     */
+    200: FacilitiesPublic;
+};
+
+export type facilitiesListFacilitiesResponse = facilitiesListFacilitiesResponses[keyof facilitiesListFacilitiesResponses];
 
 export type privateCreateUserData = {
     body: PrivateUserCreate;

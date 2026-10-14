@@ -67,6 +67,20 @@ class Settings(BaseSettings):
     # Photo analysis is a skeleton until ST plugs in a model. "none" = not available.
     TRIAGE_PHOTO_ANALYZER: Literal["none"] = "none"
 
+    # SATUSEHAT Master Sarana Index (MSI) mirror. Credentials come from the SSP
+    # Kode Akses API page; sync is a CLI job (backend/scripts/sync_facilities.py).
+    SATUSEHAT_ENV: Literal["sandbox", "production"] = "sandbox"
+    SATUSEHAT_CLIENT_ID: str = ""
+    SATUSEHAT_CLIENT_SECRET: str = ""
+    SATUSEHAT_ORG_ID: str = ""
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def satusehat_base_url(self) -> str:
+        if self.SATUSEHAT_ENV == "production":
+            return "https://api.satusehat.kemkes.go.id"
+        return "https://api-satusehat-stg.dto.kemkes.go.id"
+
     EMAIL_TEST_USER: EmailStr = "test@example.com"
     FIRST_SUPERUSER: EmailStr
     FIRST_SUPERUSER_PASSWORD: str
