@@ -8,13 +8,14 @@ The pieces now live in app/domain -- route_policy (route + escalation), warnings
 plain text + structured rows). This module stays the entry point and only wires them together.
 """
 
+from app.domain.answers import Answers
 from app.domain.narration import analysis_steps, cross_checks, meter, pct
 from app.domain.route_policy import decide_route, resolve_place
 from app.domain.summary import summary, summary_rows, summary_text
 from app.domain.warnings import drug_flags as drug_flags  # re-exported for callers
 from app.domain.warnings import red_flags, warnings_for
 from app.triage.content import FlowContent
-from app.triage.schemas import Answers, RankedDisease, ScoreResult
+from app.triage.schemas import RankedDisease, ScoreResult
 from app.triage.scoring import ScoreBreakdown
 
 __all__ = [

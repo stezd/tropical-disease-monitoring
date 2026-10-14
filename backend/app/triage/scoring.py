@@ -15,9 +15,8 @@ import math
 from dataclasses import dataclass, field
 from typing import Protocol
 
-from app.core.config import settings
+from app.domain.answers import Answers
 from app.triage.content import NONE_ID, FlowContent, Option, Question
-from app.triage.schemas import Answers
 
 
 @dataclass
@@ -113,9 +112,15 @@ def accumulate(
     are ignored, and each disease's reasons keep the order the contributions were made
     in — both as in the previous mutating implementation.
     """
-    scores = {d: sum((c.points for c in contributions if c.disease == d), 0.0) for d in scored}
+    scores = {
+        d: sum((c.points for c in contributions if c.disease == d), 0.0) for d in scored
+    }
     reasons = {
-        d: list(dict.fromkeys(c.reason for c in contributions if c.disease == d and c.reason))
+        d: list(
+            dict.fromkeys(
+                c.reason for c in contributions if c.disease == d and c.reason
+            )
+        )
         for d in scored
     }
     return scores, reasons
@@ -187,9 +192,7 @@ class RuleEngine:
             )
             contrib += [Contribution(d, p, thin_reason) for d, p in n.thin.items()]
         elif nut == "obes":
-            contrib += [
-                Contribution(d, p, n.obese_reason) for d, p in n.obese.items()
-            ]
+            contrib += [Contribution(d, p, n.obese_reason) for d, p in n.obese.items()]
 
         if bw := w.body:
             body = set(answers.body)
@@ -308,9 +311,3 @@ class ModelEngine:
         raise NotImplementedError(
             "ModelEngine is a skeleton. Set TRIAGE_SCORING_ENGINE=rules until ST plugs in a model."
         )
-
-
-def get_engine() -> ScoringEngine:
-    if settings.TRIAGE_SCORING_ENGINE == "model":
-        return ModelEngine(settings.TRIAGE_MODEL_PATH)
-    return RuleEngine()

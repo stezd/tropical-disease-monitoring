@@ -4,9 +4,10 @@
 plain-text form built from it.
 """
 
+from app.domain.answers import Answers
 from app.domain.warnings import missing_vitals
 from app.triage.content import NONE_ID, FlowContent, Option, RouteId
-from app.triage.schemas import Answers, RankedDisease, SummaryRow
+from app.triage.schemas import RankedDisease, SummaryRow
 from app.triage.scoring import bmi, companion_shown
 
 

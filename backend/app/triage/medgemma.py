@@ -21,8 +21,8 @@ from typing import Annotated, Any, Literal, Self, cast
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+from app.domain.answers import Answers
 from app.triage.content import NONE_ID, FlowContent, Option
-from app.triage.schemas import Answers
 from app.triage.scoring import (
     ScoreBreakdown,
     bmi,

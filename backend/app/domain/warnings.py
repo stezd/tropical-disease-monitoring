@@ -5,8 +5,9 @@ order of the checks is part of the screen the patient sees. All patient-facing t
 comes from content/<flow>/advice.json (DR).
 """
 
+from app.domain.answers import Answers
 from app.triage.content import NONE_ID, FlowContent, RouteId
-from app.triage.schemas import Answers, Warning
+from app.triage.schemas import Warning
 from app.triage.scoring import ScoreBreakdown, bmi, nutrition
 
 JOINT_REGIONS = {"wrist_r", "wrist_l", "ankle_r", "ankle_l"}

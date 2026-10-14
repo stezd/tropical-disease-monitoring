@@ -4,9 +4,9 @@ The route decides where the patient is told to go, so the rules here follow the 
 answers (DR no. 15, Blueprint Tahap 7) and never the model.
 """
 
+from app.domain.answers import Answers
 from app.domain.warnings import missing_vitals
 from app.triage.content import ROUTE_LEVEL, FlowContent, Option, RouteId
-from app.triage.schemas import Answers
 from app.triage.scoring import ScoreBreakdown, companion_shown, visible
 
 

@@ -4,9 +4,9 @@ The wording lives in content/<flow>/advice.json (DR); narration only picks the o
 fills in the counts.
 """
 
+from app.domain.answers import Answers
 from app.domain.warnings import missing_vitals, no_thermo_text
 from app.triage.content import NONE_ID, FlowContent
-from app.triage.schemas import Answers
 from app.triage.scoring import Ranked, bmi
 
 
