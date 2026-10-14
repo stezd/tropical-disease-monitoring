@@ -518,30 +518,6 @@
   padding: 8px 12px;
   font-size: 13px;
 }
-.cand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 5px;
-  font-size: 11px;
-  font-weight: 800;
-  color: #7b5bd6;
-  white-space: nowrap;
-}
-.meter {
-  flex: 1;
-  height: 7px;
-  background: #eee8ff;
-  border-radius: 99px;
-  overflow: hidden;
-}
-.meter i {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, #b98cff, #8b4dff);
-  border-radius: 99px;
-  transition: width 0.5s;
-}
 .qwrap {
   position: relative;
   z-index: 2;
@@ -2622,10 +2598,7 @@ details.sum pre {
     border-width: 9px 9px 0 9px;
     border-color: #fff transparent transparent transparent;
   }
-  .cand {
-    font-size: 12px;
-    margin-top: 8px;
-  }
+  
   .qwrap {
     padding: 34px 8px 12px;
   }

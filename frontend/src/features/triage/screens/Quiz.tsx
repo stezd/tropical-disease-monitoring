@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { type ReactNode, useMemo, useRef, useState } from "react"
 
 import { type FlowPublic, type ScoreResult, TriageService } from "@/client"
-import { scoreAnswers, scoreKey, useLiveScore } from "../api"
+import { scoreAnswers, scoreKey } from "../api"
 import { hop, Mascot, Sparkles } from "../components/Art"
 import { BodyMap, PainScale } from "../components/Body"
 import {
@@ -172,7 +172,6 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
   }
   const valid = def.valid(a, flow)
   const api = useMemo(() => toApi(a), [a])
-  const live = useLiveScore(api, flow.id)
   const mascot = useRef<SVGSVGElement>(null)
   const [modal, setModal] = useState<ReactNode>(null)
   const [busy, setBusy] = useState(false)
@@ -282,17 +281,6 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
     if (step > 0) quiz.set({ step: step - 1 })
     else navigate({ to: "/" })
   }
-
-  // Before a complaint: every disease is possible, minus the red-only ones once
-  // the patient said there is no danger sign.
-  const all = Object.values(flow.diseases)
-  const open = all.filter((d) => d.route !== "red").length
-  let meter: { n: number; p: number } | null
-  if (!a.complaint) {
-    meter = { n: a.red_flags.includes(NONE) ? open : all.length, p: 5 }
-  } else if (live.data)
-    meter = { n: live.data.meter_candidates, p: live.data.meter_pct }
-  else meter = null
 
   const body = (() => {
     switch (id) {
@@ -478,15 +466,6 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
             <p>
               <Rich text={def.say} />
             </p>
-            {meter && (
-              <div className="cand" aria-live="polite">
-                <span>🔮 {meter.n} kemungkinan</span>
-                <span className="meter">
-                  <i style={{ width: `${meter.p}%` }} />
-                </span>
-                <span>klasifikasi {meter.p}%</span>
-              </div>
-            )}
           </div>
         </div>
         <div className="qmain">
