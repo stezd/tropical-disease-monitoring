@@ -355,9 +355,7 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
               {text?.title ?? "Keluhan mana yang paling mengganggu?"}
             </h2>
             <p className="qh">{text?.hint ?? "Pilih satu"}</p>
-            <div
-              className={`cgrid ${flow.clusters.length % 2 ? "" : "even"}`}
-            >
+            <div className={`cgrid ${flow.clusters.length % 2 ? "" : "even"}`}>
               {flow.clusters.map(box)}
             </div>
             {/* Outside the grid: a plain full-width row under the groups. */}
