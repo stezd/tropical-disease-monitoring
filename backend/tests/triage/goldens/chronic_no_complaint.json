@@ -1,0 +1,40 @@
+{
+  "flow_id": "chronic",
+  "route": "yellow",
+  "unknown": true,
+  "top": null,
+  "others": [],
+  "meter_candidates": 1,
+  "meter_pct": 0,
+  "reasons": [],
+  "cross_checks": [],
+  "warnings": [
+    {
+      "level": "b",
+      "icon": "🩺",
+      "text": "Tensi tidak diukur. Klasifikasi tetap dihitung dari **jawaban lainnya**."
+    },
+    {
+      "level": "b",
+      "icon": "🤖",
+      "text": "IMT tidak diisi — AI memakai **proksi kelonggaran pakaian**."
+    }
+  ],
+  "drug_popups": [],
+  "todo": [
+    "Datang ke Poli Umum Puskesmas untuk pemeriksaan langsung",
+    "Tunjukkan QR rangkuman ke petugas pendaftaran"
+  ],
+  "place": "Poli Umum Puskesmas dengan laboratorium",
+  "maps_query": "puskesmas terdekat",
+  "nav_label": "Puskesmas",
+  "analysis_steps": [
+    "Membaca seluruh jawaban kuesioner",
+    "Tensi tidak diukur: dihitung tanpa tensi",
+    "Imputasi gizi dari proksi kelonggaran baju",
+    "Memetakan faktor risiko (2 faktor)",
+    "Menghitung klasifikasi kecocokan 6 kondisi",
+    "Menentukan rute rujukan & faskes"
+  ],
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 45 th · -\nTanda bahaya: tidak ada\nKeluhan   : tidak ada keluhan (cek risiko)\nPola      : -\nPenyerta  : -\nFaktor risiko: Merokok aktif / mantan perokok; Jarang olahraga + pola makan berisiko sindrom metabolik\nObat      : -\nTensi     : tidak diukur (tidak punya tensimeter)\nGula darah: -\nProksi    : tidak ada\nGizi      : proksi: -\nLingkar perut: -\nFoto      : -\nLab       : -\nDugaan    : belum dapat ditentukan\nRute      : RUTE SEDANG – Puskesmas · Klinik Pratama"
+}

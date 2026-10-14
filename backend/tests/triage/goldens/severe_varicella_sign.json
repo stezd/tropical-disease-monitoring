@@ -1,0 +1,75 @@
+{
+  "flow_id": "infection",
+  "route": "yellow",
+  "unknown": false,
+  "top": {
+    "id": "varicella",
+    "name": "Varicella (Cacar Air)",
+    "emoji": "🫧",
+    "score": 50.0,
+    "pct": 60
+  },
+  "others": [
+    {
+      "id": "scabies",
+      "name": "Skabies (Kudis)",
+      "emoji": "🐛",
+      "score": 10.0,
+      "pct": 8
+    },
+    {
+      "id": "tinea",
+      "name": "Tinea (Jamur Kulit)",
+      "emoji": "🍄",
+      "score": 10.0,
+      "pct": 8
+    },
+    {
+      "id": "campak",
+      "name": "Campak (Measles)",
+      "emoji": "🔴",
+      "score": 10.0,
+      "pct": 8
+    }
+  ],
+  "meter_candidates": 6,
+  "meter_pct": 60,
+  "reasons": [
+    "Keluhan utama: Kulit",
+    "Lenting berisi air menyebar ke seluruh tubuh"
+  ],
+  "cross_checks": [
+    "Kusta vs Tinea: dipisahkan dari sensasi bercak → condong ke **Tinea (gatal saat berkeringat)**"
+  ],
+  "warnings": [
+    {
+      "level": "b",
+      "icon": "⬆️",
+      "text": "Rute dinaikkan ke SEDANG karena ada tanda: lenting dekat mata."
+    },
+    {
+      "level": "b",
+      "icon": "🤖",
+      "text": "IMT tidak diisi — AI memakai **proksi kelonggaran pakaian**."
+    }
+  ],
+  "drug_popups": [],
+  "todo": [
+    "Bedak/losion kalamin untuk gatal, jangan digaruk",
+    "Isolasi sampai semua lenting mengering",
+    "Paracetamol bila demam",
+    "Tunjukkan QR rangkuman ke petugas pendaftaran"
+  ],
+  "place": "Poli Umum Puskesmas dengan laboratorium",
+  "maps_query": "puskesmas terdekat",
+  "nav_label": "Puskesmas",
+  "analysis_steps": [
+    "Membaca seluruh jawaban kuesioner",
+    "Imputasi gizi dari proksi kelonggaran baju",
+    "Validasi silang: Kusta vs Tinea",
+    "Memetakan risiko One Health (0 faktor)",
+    "Menghitung klasifikasi kecocokan 20 penyakit",
+    "Menentukan rute rujukan & faskes"
+  ],
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 9 th · -\nTanda bahaya: tidak ada\nKeluhan   : Kulit\nPola      : Lenting berisi air di seluruh tubuh\nPenyerta  : Lenting menyebar sampai ke area dekat mata\nEkologi   : tidak ada\nObat      : -\nSuhu      : 37.8 °C\nGizi      : proksi: Normal\nPeta nyeri: -\nFoto      : -\nLab       : -\nDugaan    : Varicella (Cacar Air) (60%)\nRute      : RUTE SEDANG – Puskesmas · Klinik Pratama"
+}

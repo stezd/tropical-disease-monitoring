@@ -1,0 +1,39 @@
+{
+  "flow_id": "infection",
+  "route": "red",
+  "unknown": false,
+  "top": null,
+  "others": [
+    {
+      "id": "tbc",
+      "name": "Tuberkulosis (TBC)",
+      "emoji": "🫁",
+      "score": 10.0,
+      "pct": 12
+    }
+  ],
+  "meter_candidates": 2,
+  "meter_pct": 88,
+  "reasons": [],
+  "cross_checks": [],
+  "warnings": [
+    {
+      "level": "b",
+      "icon": "🤖",
+      "text": "IMT tidak diisi — AI memakai **proksi kelonggaran pakaian**."
+    }
+  ],
+  "drug_popups": [],
+  "todo": [],
+  "place": "IGD rumah sakit terdekat",
+  "maps_query": "IGD rumah sakit terdekat",
+  "nav_label": "IGD",
+  "analysis_steps": [
+    "Membaca seluruh jawaban kuesioner",
+    "Imputasi gizi dari proksi kelonggaran baju",
+    "Memetakan risiko One Health (0 faktor)",
+    "Menghitung klasifikasi kecocokan 20 penyakit",
+    "Menentukan rute rujukan & faskes"
+  ],
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · - · -\nTanda bahaya: Sesak napas sangat berat\nKeluhan   : Napas\nPola      : Kurang dari 2 minggu, hidung tersumbat, bersin, tenggorokan gatal\nPenyerta  : -\nEkologi   : tidak ada\nObat      : -\nSuhu      : -\nGizi      : proksi: -\nPeta nyeri: -\nFoto      : -\nLab       : -\nDugaan    : -\nRute      : RUTE DARURAT – Kedaruratan · IGD Rumah Sakit"
+}
