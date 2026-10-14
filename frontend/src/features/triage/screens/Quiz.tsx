@@ -6,6 +6,7 @@ import { type FlowPublic, type ScoreResult, TriageService } from "@/client"
 import { scoreAnswers, scoreKey } from "../api"
 import { hop, Mascot, Sparkles } from "../components/Art"
 import { BodyMap, PainScale } from "../components/Body"
+import { PrivacyText } from "../components/Privacy"
 import {
   Card,
   type Choice,
@@ -1123,8 +1124,9 @@ function StepBody({
   )
 }
 
-// Photo step. Photos are health data: ask first, keep them on the device unless the
-// server has a real analyzer (flow.photo_analysis), and never store them.
+// Photo step. Photos are health data: the camera stays off until the patient
+// agrees, photos stay on the device unless the server has a real analyzer
+// (flow.photo_analysis), and they are never stored.
 let photoConsent = false
 
 function StepPhoto({
@@ -1147,47 +1149,23 @@ function StepPhoto({
   const [scanning, setScanning] = useState(false)
   const analyze = flow.photo_analysis
 
-  const askConsent = () => {
+  const [consent, setConsent] = useState(photoConsent)
+  const agree = (v: boolean) => {
+    photoConsent = v
+    setConsent(v)
     sfx.tap()
-    if (photoConsent) {
-      input.current?.click()
-      return
-    }
-    const close = () => setModal(null)
+  }
+  const openCamera = () => {
+    if (!consent) return
+    sfx.tap()
+    input.current?.click()
+  }
+  const showPrivacy = () =>
     setModal(
-      <Modal
-        tab="IZIN FOTO"
-        onClose={close}
-        actions={
-          <>
-            <button
-              type="button"
-              className="btn btn-purple"
-              onClick={() => {
-                photoConsent = true
-                close()
-                input.current?.click()
-              }}
-            >
-              Saya setuju, buka kamera
-            </button>
-            <button type="button" className="btn btn-teal" onClick={close}>
-              Tidak, pilih temuan saja
-            </button>
-          </>
-        }
-      >
-        <h3>Foto adalah data kesehatan 🔒</h3>
-        <p className="saveinfo">
-          {analyze ? (
-            <Rich text="Foto akan dikirim ke server TropiCare untuk dianalisis, lalu langsung dihapus. Foto **tidak disimpan** dan tidak dibagikan." />
-          ) : (
-            <Rich text="Foto hanya ditampilkan di layar ini untuk membantumu memilih temuan. Foto **tidak dikirim** dan **tidak disimpan**." />
-          )}
-        </p>
+      <Modal tab="PRIVASI" onClose={() => setModal(null)}>
+        <PrivacyText />
       </Modal>,
     )
-  }
 
   const onFile = async (file: File) => {
     if (photo) URL.revokeObjectURL(photo)
@@ -1247,7 +1225,12 @@ function StepPhoto({
             </div>
           )}
         </div>
-        <button type="button" className="btn btn-teal" onClick={askConsent}>
+        <button
+          type="button"
+          className="btn btn-teal"
+          disabled={!consent}
+          onClick={openCamera}
+        >
           <span aria-hidden="true">📸</span>
           {photo ? "Ganti" : "Kamera"}
         </button>
@@ -1264,6 +1247,22 @@ function StepPhoto({
           }}
         />
       </div>
+      <label className="chk consent">
+        <input
+          type="checkbox"
+          checked={consent}
+          onChange={(e) => agree(e.target.checked)}
+        />
+        <span>
+          {analyze
+            ? "Saya setuju foto dikirim ke server TropiCare untuk dianalisis, lalu langsung dihapus."
+            : "Saya setuju memakai foto untuk skrining ini. Foto tetap di perangkat ini."}{" "}
+          Foto tidak disimpan.{" "}
+          <button type="button" className="linkbtn" onClick={showPrivacy}>
+            Baca privasi
+          </button>
+        </span>
+      </label>
       <h3 className="subq">Pilih temuan yang terlihat:</h3>
       <Options
         multi

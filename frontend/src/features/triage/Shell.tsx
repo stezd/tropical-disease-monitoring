@@ -6,6 +6,7 @@ import { useFlow } from "./api"
 import { Mascot } from "./components/Art"
 import { ToastHost } from "./components/Ui"
 import { HomeScreen } from "./screens/Home"
+import { PrivacyScreen } from "./screens/Privacy"
 import { QuizScreen } from "./screens/Quiz"
 import { RedScreen } from "./screens/Red"
 import { ResultScreen } from "./screens/Result"
@@ -50,6 +51,14 @@ export function HomePage() {
   return (
     <Shell>
       <HomeScreen />
+    </Shell>
+  )
+}
+
+export function PrivacyPage() {
+  return (
+    <Shell>
+      <PrivacyScreen />
     </Shell>
   )
 }

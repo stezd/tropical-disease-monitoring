@@ -1408,6 +1408,69 @@
 .row-links .btn {
   flex: 1;
 }
+/* Photo consent: long text, so the box starts at the top. */
+.chk.consent {
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.4;
+  margin-top: 12px;
+}
+.chk.consent input {
+  margin-top: 1px;
+}
+.linkbtn {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  color: var(--tc-purple);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.disc a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* Privacy notice (/privasi and the photo step's modal). */
+.privacy {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--tc-ink2);
+}
+.privacy h3,
+.mbody .privacy h3 {
+  font-family: var(--tc-fh);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--tc-ink);
+  margin: 16px 0 6px;
+}
+.privacy ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.privacy .privacy-key {
+  list-style: none;
+  padding: 10px 12px;
+  background: #f3eeff;
+  border: 2px solid #d8c8ff;
+  border-radius: 14px;
+  color: var(--tc-ink);
+}
+.privacy .privacy-key li::before {
+  content: "🔒 ";
+}
+.privacy-date {
+  margin: 16px 0 0;
+  font-size: 12px;
+  color: var(--tc-muted);
+}
+
 .saveinfo {
   margin: 0 0 10px;
   font-weight: 800;
