@@ -100,6 +100,16 @@
 .nf-actions > .btn:only-child {
   grid-column: 1 / -1;
 }
+/* Phones: smaller labels and more room between facility cards. */
+@media (max-width: 39.9375rem) {
+  .nf-list {
+    gap: var(--sp-4);
+  }
+  .nf-actions .btn {
+    min-height: var(--tap);
+    font-size: var(--fs-sm);
+  }
+}
 
 /* .btn-wa (WhatsApp) is teal-soft like the other secondary buttons; its colors live with
    .btn-secondary in tropicek.css. */

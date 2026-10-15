@@ -92,7 +92,7 @@
   font-size: var(--fs-2xl);
   line-height: var(--lh-tight);
   color: var(--tc-ink);
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 .est-txt .lead {
   margin: 0 0 var(--sp-1);
@@ -322,6 +322,83 @@
 }
 .res .rcol > .rrestart {
   margin-top: var(--sp-6);
+}
+
+/* ===== Phones (<40rem). Android "large text" makes rem grow ~1.3×, so the
+   hero stacks the score under the name instead of squeezing three columns,
+   headings and buttons drop a step, and cards get more air between them
+   (the tab overlaps the top edge by half its height). ===== */
+@media (max-width: 39.9375rem) {
+  .rcols.res,
+  .rgrp {
+    gap: 2.75rem;
+  }
+  .rcols.res {
+    margin-top: var(--sp-7);
+  }
+  .banner {
+    font-size: var(--fs-base);
+    letter-spacing: 0.03125rem;
+    padding: var(--sp-2) var(--sp-4);
+  }
+  .res .tab {
+    font-size: var(--fs-note);
+    letter-spacing: 0.03125rem;
+    padding: var(--sp-2h) var(--sp-4);
+  }
+  .rhero .rhead h3 {
+    font-size: var(--fs-lg);
+  }
+  .rhero .rhead .re {
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: 1.5rem;
+  }
+  .est {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: var(--sp-4);
+  }
+  .bigemo {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.625rem;
+  }
+  .est-txt h2 {
+    font-size: var(--fs-xl);
+  }
+  /* Score: ring and caption side by side on its own row under the name. */
+  .est .score {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--sp-3);
+    width: auto;
+    padding-top: var(--sp-3);
+    border-top: 1px solid var(--tc-line);
+  }
+  .score small {
+    font-size: var(--fs-xs);
+    text-align: left;
+  }
+  .score-ring {
+    width: 3.75rem;
+    height: 3.75rem;
+  }
+  .score-ring div {
+    width: 2.875rem;
+    height: 2.875rem;
+    font-size: var(--fs-base);
+  }
+  .ractions .btn,
+  .rsum .btn,
+  .save-btns .btn,
+  .qrbtns .btn,
+  .res .rrestart {
+    font-size: var(--fs-sm);
+  }
+  .ractions .btn.big {
+    font-size: var(--fs-base);
+  }
 }
 
 /* ===== ≥40rem: tablet looks like desktop (two columns) ===== */
