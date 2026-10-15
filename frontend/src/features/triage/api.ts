@@ -43,18 +43,9 @@ export async function scoreAnswers(
   ).data
 }
 
-/** Query key for the final result (shared by Thinking and Result). */
-export const scoreKey = (answers: Answers, flowId: string) => [
+export const scoreKey = (answers: Answers, flowId: string, preview = false) => [
   "triage",
-  "score",
-  flowId,
-  answers,
-]
-
-/** Separate key for rule-only previews, so they never stand in for the result. */
-export const previewKey = (answers: Answers, flowId: string) => [
-  "triage",
-  "preview",
+  preview ? "score-preview" : "score",
   flowId,
   answers,
 ]

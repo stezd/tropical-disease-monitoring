@@ -37,10 +37,18 @@ class ScoreBreakdown:
     reasons: dict[str, list[str]]
     # Diseases with a positive score, highest first.
     ranked: list[Ranked] = field(default_factory=list)
-    # The engine that actually produced `scores`, and whether that was a fallback
-    # (the configured engine failed and RuleEngine answered instead).
-    engine: EngineId = "rules"
+    # What produced the scores, saved with a screening: "rules", "model", "ai", or
+    # "ai-fb:<reason>" when the AI engine fell back to rules. At most 20 characters.
+    engine: str = "rules"
+    # True = the configured engine failed and RuleEngine answered instead.
     fallback: bool = False
+
+    @property
+    def engine_id(self) -> EngineId:
+        """`engine` without the fallback reason, for the API (`ScoreResult.engine`)."""
+        if self.engine == "ai":
+            return "ai"
+        return "model" if self.engine == "model" else "rules"
 
 
 class ScoringEngine(Protocol):

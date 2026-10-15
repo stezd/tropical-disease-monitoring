@@ -1,6 +1,6 @@
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.adapters.outbound.sqlmodel.screening_repository import (
     SqlModelScreeningRepository,
@@ -9,12 +9,11 @@ from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
 from app.application.ports.outbound.screening_repository import ScreeningRepository
 from app.application.use_cases.score_flow import (
     EngineUnavailableError,
-    ScoreFlowUseCase,
+    Scored,
     UnknownFlowError,
 )
 from app.composition.triage_container import (
     get_content_repository,
-    get_preview_use_case,
     get_score_use_case,
 )
 from app.domain.answers import Answers as DomainAnswers
@@ -39,11 +38,17 @@ def _content(flow_id: str) -> FlowContent:
 
 
 def score_answers(
-    flow_id: str, answers: DomainAnswers, use_case: ScoreFlowUseCase | None = None
+    flow_id: str, answers: DomainAnswers, preview: bool = False
 ) -> ScoreResult:
-    """Score answers via the use case (the configured engine by default)."""
+    """Score answers via the use case. Kept for backwards compatibility."""
+    return score_detailed(flow_id, answers, preview).result
+
+
+def score_detailed(
+    flow_id: str, answers: DomainAnswers, preview: bool = False
+) -> Scored:
     try:
-        return (use_case or get_score_use_case()).execute(flow_id, answers)
+        return get_score_use_case().execute_detailed(flow_id, answers, preview)
     except UnknownFlowError:
         raise HTTPException(status_code=404, detail="Flow not found")
     except EngineUnavailableError as e:
@@ -57,14 +62,19 @@ def read_flow(flow_id: str) -> FlowPublic:
 
 
 @router.post("/flows/{flow_id}/score")
-def score_flow(flow_id: str, answers: Answers, preview: bool = False) -> ScoreResult:
-    """Score answers. Stateless: nothing is saved.
-
-    `preview=true`: always the rule engine, never a model call. For mid-quiz checks
-    (drug pop-ups); the final result uses the configured engine.
-    """
-    use_case = get_preview_use_case() if preview else None
-    return score_answers(flow_id, answers.to_domain(), use_case)
+def score_flow(
+    flow_id: str,
+    answers: Answers,
+    preview: Annotated[
+        bool,
+        Query(
+            description="True for calls during the quiz (e.g. drug pop-ups at the drug "
+            "step): scores with the rules, never with the language model."
+        ),
+    ] = False,
+) -> ScoreResult:
+    """Score answers. Stateless: nothing is saved."""
+    return score_answers(flow_id, answers.to_domain(), preview)
 
 
 @router.post("/screenings")
@@ -82,7 +92,8 @@ def create_screening(
     """
     if not body.consent:
         raise HTTPException(status_code=400, detail="Consent is required to save")
-    result = score_answers(body.flow_id, body.answers.to_domain())
+    scored = score_detailed(body.flow_id, body.answers.to_domain())
+    result = scored.result
     screening = Screening(
         user_id=current_user.id,
         flow_id=body.flow_id,
@@ -91,7 +102,8 @@ def create_screening(
         unknown=result.unknown,
         top_disease=result.top.id if result.top else None,
         top_score=result.top.score if result.top else None,
-        engine=result.engine,
+        # What actually produced the scores ("ai", "rules", "ai-fb:timeout", ...).
+        engine=scored.engine[:20],
     )
     repository: ScreeningRepository = SqlModelScreeningRepository(session)
     repository.save(screening)

@@ -8,6 +8,7 @@ import threading
 import time
 from collections import deque
 from collections.abc import Callable
+from functools import cache
 
 
 class QuotaGuard:
@@ -63,3 +64,9 @@ class QuotaGuard:
                 "used_last_24h": len(self._day),
                 "cooldown_left_s": round(max(0.0, self._blocked_until - now), 1),
             }
+
+
+@cache
+def shared_quota(rpm: int, rpd: int, cooldown_s: float) -> QuotaGuard:
+    """One guard per process for every model call (scores and drugs share the quota)."""
+    return QuotaGuard(rpm, rpd, cooldown_s)

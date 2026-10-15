@@ -14,12 +14,23 @@ from app.triage.scoring import ScoreBreakdown, bmi, nutrition
 JOINT_REGIONS = {"wrist_r", "wrist_l", "ankle_r", "ankle_l"}
 
 
-def drug_flags(answers: Answers, content: FlowContent) -> list[str]:
-    """Names of the advice.json drug rules that fire, in file order."""
+def drug_flags(
+    answers: Answers,
+    content: FlowContent,
+    drug_classes: frozenset[str] = frozenset(),
+) -> list[str]:
+    """Names of the advice.json drug rules that fire, in file order.
+
+    A rule matches on a keyword in the drug text, or on a drug class the recognizer
+    found in it (`drug_classes`, e.g. "nsaid" for a brand missing from the keywords).
+    """
     text = answers.drugs.lower()
     out: list[str] = []
     for name, rule in content.advice.drugs.items():
-        if not any(k.lower() in text for k in rule.keywords):
+        if rule.pending_dr:
+            continue
+        keyword = any(k.lower() in text for k in rule.keywords)
+        if not keyword and not drug_classes.intersection(rule.classes):
             continue
         if rule.patterns and answers.pattern not in rule.patterns:
             continue
@@ -27,6 +38,24 @@ def drug_flags(answers: Answers, content: FlowContent) -> list[str]:
             continue
         out.append(name)
     return out
+
+
+def drug_classes_wanted(answers: Answers, content: FlowContent) -> frozenset[str]:
+    """Drug classes that would fire a rule for these answers but that the keywords did
+    not already catch. Empty = no reason to call the drug recognizer."""
+    wanted: set[str] = set()
+    text = answers.drugs.lower()
+    for rule in content.advice.drugs.values():
+        if rule.pending_dr or not rule.classes:
+            continue
+        if rule.patterns and answers.pattern not in rule.patterns:
+            continue
+        if rule.complaints and answers.complaint not in rule.complaints:
+            continue
+        if any(k.lower() in text for k in rule.keywords):
+            continue
+        wanted.update(rule.classes)
+    return frozenset(wanted)
 
 
 def red_flags(answers: Answers) -> list[str]:
@@ -56,13 +85,14 @@ def warnings_for(
     flags: list[str],
     notes: list[str],
     staff_notes: list[str] | None = None,
+    drug_classes: frozenset[str] = frozenset(),
 ) -> tuple[list[Warning], list[Warning]]:
     """(warnings, drug pop-ups). `notes` are the route-upgrade notes and `staff_notes`
     the health-worker notes, both from route_policy."""
     no_thermo, no_bp = missing_vitals(answers, content)
     t = answers.temp if not no_thermo else None
 
-    fired = drug_flags(answers, content)
+    fired = drug_flags(answers, content, drug_classes)
     nut = nutrition(answers, content)
     body = set(answers.body)
     w, wn = content.weights, content.advice.warnings

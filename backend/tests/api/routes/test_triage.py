@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
@@ -96,8 +97,14 @@ def test_save_needs_consent(
 
 
 def test_save_screening(
-    client: TestClient, db: Session, normal_user_token_headers: dict[str, str]
+    client: TestClient,
+    db: Session,
+    normal_user_token_headers: dict[str, str],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    # Pin the rule engine. A developer with TRIAGE_SCORING_ENGINE=ai in .env would
+    # otherwise get "ai" (or "ai-fb:timeout") here; CI has no .env at all.
+    monkeypatch.setattr(settings, "TRIAGE_SCORING_ENGINE", "rules")
     r = client.post(
         f"{API}/screenings",
         headers=normal_user_token_headers,
@@ -108,6 +115,7 @@ def test_save_screening(
     rows = db.exec(select(Screening).where(Screening.top_disease == "malaria")).all()
     assert rows
     assert rows[-1].answers["pattern"] == "malaria"
+    # The engine that actually produced the scores.
     assert rows[-1].engine == "rules"
 
 

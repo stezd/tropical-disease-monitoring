@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { type ReactNode, type Ref, useMemo, useRef, useState } from "react"
 
 import type { FlowPublic, ScoreResult } from "@/client"
-import { previewKey, scoreAnswers } from "../api"
+import { scoreAnswers, scoreKey } from "../api"
 import { hop, Mascot, Sparkles } from "../components/Art"
 import { BodyMap, PainScale } from "../components/Body"
 import { Card, Modal, Options, Rich, StageMap, WarnBox } from "../components/Ui"
@@ -259,7 +259,7 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
       let r: ScoreResult | undefined
       try {
         r = await queryClient.fetchQuery({
-          queryKey: previewKey(api, flow.id),
+          queryKey: scoreKey(api, flow.id, true),
           queryFn: () => scoreAnswers(api, flow.id, true),
           staleTime: Number.POSITIVE_INFINITY,
         })

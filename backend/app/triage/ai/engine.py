@@ -10,23 +10,21 @@ Anything that goes wrong (no key, local quota, 429, timeout, bad JSON) returns
 RuleEngine's breakdown with `meta.fallback = True` and the reason. Red flags never reach
 the model (build_request returns None) and are not a fallback.
 
-Successful AI results are cached in memory (`ResultCache`, keyed by flow, answers,
-prompt version, model, and mode), so the same answers scored again (saving the
-screening, the QR page) give the same result without a new model call.
+Successful AI results are kept in memory for CACHE_TTL_S (keyed by flow and answers,
+without drugs and time), so the same answers scored again (saving the screening, the
+QR page) give the same result without a new model call.
 """
 
-import copy
-import hashlib
 import json
 import logging
+import re
 import threading
 import time
 import uuid
 from collections import OrderedDict
-from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from concurrent.futures import TimeoutError as FuturesTimeout
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from datetime import UTC, datetime
 from functools import cache
 from typing import Any, Literal
@@ -53,7 +51,7 @@ from app.triage.ai.llm import (
     LLMTimeout,
     make_client,
 )
-from app.triage.ai.quota import QuotaGuard
+from app.triage.ai.quota import QuotaGuard, shared_quota
 from app.triage.content import FlowContent
 from app.triage.medgemma import (
     MAX_CANDIDATES,
@@ -92,8 +90,15 @@ class AIMeta:
     notes: dict[str, str] = field(default_factory=dict)
     # IDs the model returned that were not offered (dropped). Should stay 0.
     invalid_ids: int = 0
-    # True = served from the result cache: no model call for this scoring.
+    # True = same answers scored a moment ago (e.g. result page, then saving the
+    # screening): the earlier model result was reused, no new call.
     cached: bool = False
+
+    def label(self) -> str:
+        """Short engine label for the screening table (max 20 characters)."""
+        if self.engine == "ai":
+            return "ai"
+        return f"ai-fb:{self.reason}"[:20] if self.fallback else "rules"
 
 
 @dataclass
@@ -129,62 +134,6 @@ class _Scored:
     note: str
 
 
-class ResultCache:
-    """Successful AI breakdowns by key, least recently used out first, with a TTL.
-
-    In memory and per process: nothing is written to disk. Values are deep copies, so
-    a caller cannot change what the next caller gets.
-    """
-
-    def __init__(
-        self,
-        size: int,
-        ttl_s: float,
-        clock: Callable[[], float] = time.monotonic,
-    ) -> None:
-        self.size = size
-        self.ttl_s = ttl_s
-        self._clock = clock
-        self._data: OrderedDict[str, tuple[float, AIBreakdown]] = OrderedDict()
-        self._lock = threading.Lock()
-
-    def get(self, key: str) -> AIBreakdown | None:
-        if self.size <= 0:
-            return None
-        with self._lock:
-            hit = self._data.get(key)
-            if hit is None:
-                return None
-            stored_at, value = hit
-            if self._clock() - stored_at > self.ttl_s:
-                del self._data[key]
-                return None
-            self._data.move_to_end(key)
-            return copy.deepcopy(value)
-
-    def put(self, key: str, value: AIBreakdown) -> None:
-        if self.size <= 0:
-            return
-        with self._lock:
-            self._data[key] = (self._clock(), copy.deepcopy(value))
-            self._data.move_to_end(key)
-            while len(self._data) > self.size:
-                self._data.popitem(last=False)
-
-    def __len__(self) -> int:
-        return len(self._data)
-
-
-def _normalized(answers: Answers) -> dict[str, Any]:
-    """Answers that change the scores, in a stable form.
-
-    Drugs never reach the scoring prompt and `taken_at` only goes to the summary, so
-    both are left out. List order does not change the facts, so lists are sorted.
-    """
-    data = answers.model_dump(mode="json", exclude={"drugs", "taken_at"})
-    return {k: sorted(v) if isinstance(v, list) else v for k, v in data.items()}
-
-
 def shortlist(
     a: Answers, content: FlowContent, rules: ScoreBreakdown, rule_top: int
 ) -> list[str]:
@@ -196,14 +145,47 @@ def shortlist(
     return list(dict.fromkeys(ids))
 
 
+# Gateways and combos wrap replies in their own way. 9router's "medical" combo
+# (a fusion panel plus a judge) answers a fenced bare array keyed "candidate",
+# where the schema in medgemma.py asks for {"candidates": [{"id": ...}]}, and it
+# may trail prose after the fence. Try every plausible block, strictest first.
+_FENCE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.DOTALL)
+
+
 def _json_object(text: str) -> dict[str, Any]:
-    try:
-        data = json.loads(text)
-    except ValueError as e:
-        raise LLMBadResponse("reply is not valid JSON") from e
-    if not isinstance(data, dict):
-        raise LLMBadResponse("reply is not a JSON object")
-    return data
+    blocks = [text, *(m.group(1) for m in _FENCE.finditer(text))]
+    for open_ch, close_ch in (("{", "}"), ("[", "]")):
+        start, end = text.find(open_ch), text.rfind(close_ch)
+        if start != -1 and end > start:
+            blocks.append(text[start : end + 1])
+    for block in blocks:
+        try:
+            data = json.loads(block)
+        except ValueError:
+            continue
+        if isinstance(data, list):
+            # The judge drops the schema's outer {"candidates": [...]} object.
+            return {"candidates": data}
+        if isinstance(data, dict):
+            return data
+    raise LLMBadResponse("reply is not valid JSON")
+
+
+# Facts sent to the model but never shown to the patient as a reason ("Kenapa aku
+# menebak ini?"): age and sex are context, not evidence for a disease.
+HIDDEN_REASON_LABELS = frozenset({"Pasien"})
+
+
+def _without_patient_line(out: TextOutput, req: TextRequest) -> TextOutput:
+    hidden = {f.id for f in req.facts if f.label in HIDDEN_REASON_LABELS}
+    return TextOutput(
+        candidates=[
+            c.model_copy(
+                update={"evidence": [e for e in c.evidence if e not in hidden]}
+            )
+            for c in out.candidates
+        ]
+    )
 
 
 def _note(raw: Any) -> str:
@@ -226,7 +208,35 @@ class AIEngine:
         )
         self.log = log or CallLog(settings.LOG_PATH)
         self.rules = rules or RuleEngine()
-        self.cache = ResultCache(settings.CACHE_SIZE, settings.CACHE_TTL_S)
+        # (flow, answers) → model result, for CACHE_TTL_S. Only model results, never
+        # fallbacks, so a retry after a failure gets a real attempt.
+        self._cache: OrderedDict[str, tuple[float, AIBreakdown]] = OrderedDict()
+        self._cache_lock = threading.Lock()
+
+    def _cache_key(self, answers: Answers, content: FlowContent) -> str:
+        # Drugs and time are not used for scoring, so they must not force a new call.
+        ignored = {"taken_at", "drugs"}
+        return f"{content.flow.id}|{answers.model_dump_json(exclude=ignored)}"
+
+    def _cached(self, key: str) -> AIBreakdown | None:
+        with self._cache_lock:
+            hit = self._cache.get(key)
+            if hit is None:
+                return None
+            at, b = hit
+            if time.monotonic() - at > self.s.CACHE_TTL_S:
+                del self._cache[key]
+                return None
+            self._cache.move_to_end(key)
+            return b
+
+    def _remember(self, key: str, b: AIBreakdown) -> None:
+        if self.s.CACHE_TTL_S <= 0:
+            return
+        with self._cache_lock:
+            self._cache[key] = (time.monotonic(), b)
+            while len(self._cache) > 2048:
+                self._cache.popitem(last=False)
 
     @property
     def model(self) -> str:
@@ -239,30 +249,13 @@ class AIEngine:
             logger.exception("literature for %s could not be loaded", flow_id)
             return Literature(None)
 
-    def cache_key(self, answers: Answers, content: FlowContent) -> str:
-        raw = json.dumps(
-            [
-                content.flow.id,
-                _normalized(answers),
-                prompts.PROMPT_VERSION,
-                self.model,
-                self.s.MODE,
-            ],
-            sort_keys=True,
-            ensure_ascii=False,
-        )
-        return hashlib.sha256(raw.encode("utf-8")).hexdigest()
-
     # ── ScoringEngine ──────────────────────────────────────────────────────
 
     def score(self, answers: Answers, content: FlowContent) -> AIBreakdown:
-        key = self.cache_key(answers, content)
-        if (hit := self.cache.get(key)) is not None and hit.meta is not None:
-            # Same answers as an earlier successful scoring: same result, no call.
-            hit.meta.cached = True
-            hit.meta.calls = 0
-            hit.meta.latency_ms = 0
-            return hit
+        key = self._cache_key(answers, content)
+        if (hit := self._cached(key)) is not None and hit.meta is not None:
+            meta = replace(hit.meta, cached=True, calls=0, latency_ms=0)
+            return replace(hit, meta=meta)
         start = time.monotonic()
         run = _Run(deadline=start + self.s.DEADLINE_S)
         rid = uuid.uuid4().hex[:12]
@@ -281,6 +274,8 @@ class AIEngine:
         result: ScoreBreakdown = rule_b
         if req is None:
             meta.reason = "skipped:red_flag_or_empty"
+        elif content.flow.id not in self.s.flows():
+            meta.reason = "skipped:flow_off"
         elif self.client is None:
             meta.fallback, meta.reason = True, "model_off"
         else:
@@ -315,16 +310,16 @@ class AIEngine:
         meta.latency_ms = int((time.monotonic() - start) * 1000)
         self._write_log(content, req, rule_b, result, meta, run)
         out = AIBreakdown(
-            result.scores,
-            result.reasons,
-            result.ranked,
-            engine=meta.engine,
+            scores=result.scores,
+            reasons=result.reasons,
+            ranked=result.ranked,
+            engine=meta.label(),
             fallback=meta.fallback,
             meta=meta,
         )
         if meta.engine == "ai":
             # Only real model results: a fallback must not hide a later recovery.
-            self.cache.put(key, out)
+            self._remember(key, out)
         return out
 
     # ── Calls ──────────────────────────────────────────────────────────────
@@ -391,6 +386,9 @@ class AIEngine:
         facts = {f.id for f in req.facts}
         kept: dict[str, ScoredCandidate] = {}
         for item in raw:
+            if isinstance(item, dict) and "id" not in item and "candidate" in item:
+                # The judge names the field after the schema's "candidates" list.
+                item = {**item, "id": item["candidate"]}
             try:
                 c = ScoredCandidate.model_validate(item)
             except ValidationError as e:
@@ -407,7 +405,7 @@ class AIEngine:
         top = sorted(kept.values(), key=lambda c: c.score, reverse=True)[
             :MAX_CANDIDATES
         ]
-        out = TextOutput(candidates=top).restrict_to(req)
+        out = _without_patient_line(TextOutput(candidates=top).restrict_to(req), req)
         for c in out.candidates:
             if c.sources:
                 meta.sources[c.id] = [by_sid[s].citation for s in c.sources]
@@ -494,7 +492,8 @@ class AIEngine:
             if r.chunks:
                 meta.sources[d] = [c.citation for c in r.chunks]
         req = req.model_copy(update={"sources": []})
-        return to_breakdown(TextOutput(candidates=top), req, content)
+        out = _without_patient_line(TextOutput(candidates=top), req)
+        return to_breakdown(out, req, content)
 
     # ── Log ────────────────────────────────────────────────────────────────
 
@@ -532,7 +531,7 @@ class AIEngine:
             "quota": self.quota.snapshot(),
             "rpm_limit": self.s.RPM_LIMIT,
             "rpd_limit": self.s.RPD_LIMIT,
-            "cache_entries": len(self.cache),
+            "cache_entries": len(self._cache),
         }
 
 
@@ -540,4 +539,5 @@ class AIEngine:
 def get_ai_engine() -> AIEngine:
     """One engine per process, so the quota guard sees every request."""
     s = AISettings()
-    return AIEngine(s, make_client(s))
+    quota = shared_quota(s.RPM_LIMIT, s.RPD_LIMIT, s.COOLDOWN_S)
+    return AIEngine(s, make_client(s), quota=quota)

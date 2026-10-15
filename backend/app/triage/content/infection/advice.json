@@ -2,6 +2,7 @@
   "drugs": {
     "antidiarrheal": {
       "keywords": ["lopera", "imodium", "lodia", "motilex", "diatab", "diapet", "entrostop", "attapulg", "lomotil", "diphenox"],
+      "classes": ["antimotilitas"],
       "patterns": ["diare", "amoeba"],
       "level": "y",
       "popup": "**PERHATIAN: Hentikan obat penghenti mencret (mampat).** Jangan gunakan Loperamide, Diapet, atau sejenisnya. **Alasan:** pada diare berlendir/berdarah (disentri), kuman dan racun harus dikeluarkan lewat BAB, bukan ditahan di dalam perut, agar usus tidak bengkak. **Solusi:** segera ganti dengan minum **Oralit** (cegah dehidrasi) dan suplemen **Zinc**.",
@@ -9,6 +10,7 @@
     },
     "nsaid": {
       "keywords": ["ibupro", "proris", "aspirin", "asetosal", "aspilet", "mefenam", "ponstan", "diklofenak", "diclofenac", "voltaren", "piroxicam", "naproxen", "ketoprofen"],
+      "classes": ["nsaid"],
       "complaints": ["A"],
       "level": "r",
       "popup": "**PERINGATAN KRITIS: Suspek Demam Berdarah (DBD).** Hentikan segera penggunaan Aspirin, Ibuprofen, atau Asam Mefenamat! **Alasan:** pada DBD, obat-obatan ini dapat memicu pendarahan lambung yang fatal. **Solusi:** turunkan panas HANYA dengan **Paracetamol**, lakukan kompres hangat, dan perbanyak minum air putih.",
@@ -16,6 +18,7 @@
     },
     "amlodipine": {
       "keywords": ["amlodip", "norvasc", "tensivask", "amdixal"],
+      "classes": ["ccb_dhp"],
       "complaints": ["E"],
       "level": "b",
       "popup": "**INFORMASI OBAT:** Bengkak di pergelangan kaki/tungkai bawah sering merupakan efek samping vasodilatasi Amlodipine. AI akan membedakan kondisi ini dari Filariasis (Bengkak asimetris, menetap >3 bulan, non-pitting) agar tidak terjadi salah rujukan.",
@@ -23,10 +26,38 @@
     },
     "ace_inhibitor": {
       "keywords": ["captopril", "kaptopril", "capoten", "lisinopril", "ramipril", "enalapril", "perindopril", "imidapril"],
+      "classes": ["acei"],
       "complaints": ["B"],
       "level": "b",
       "popup": "**INFORMASI OBAT:** Batuk kering persisten tanpa demam adalah efek samping klasik Captopril akibat akumulasi bradikinin. AI akan memverifikasi adanya gejala konstitusional (keringat malam, BB turun, demam) sebelum menyimpulkan suspek TBC Paru.",
       "result": "**INFORMASI OBAT:** Batuk kering persisten tanpa demam adalah efek samping klasik Captopril akibat akumulasi bradikinin."
+    },
+    "statin_dengue": {
+      "keywords": ["simvastatin", "atorvastatin", "rosuvastatin", "pravastatin", "lovastatin", "fluvastatin", "pitavastatin"],
+      "classes": ["statin"],
+      "complaints": ["A"],
+      "level": "y",
+      "pending_dr": true,
+      "popup": "**INFORMASI OBAT:** Anda rutin minum obat kolesterol (Statin). Bila demam ini ternyata DBD, Statin perlu dievaluasi dokter untuk dihentikan sementara karena dapat memperberat gangguan hati dan otot. Jangan ubah dosis sendiri, sampaikan ke petugas Puskesmas.",
+      "result": "**INFORMASI OBAT:** Statin perlu dievaluasi dokter untuk dihentikan sementara bila suspek DBD (risiko gangguan hati dan otot)."
+    },
+    "diuretic_dengue": {
+      "keywords": ["furosemid", "lasix", "hidroklorotiazid", "hydrochlorothiazide", "hctz", "spironolakton", "spironolactone", "indapamid"],
+      "classes": ["diuretik"],
+      "complaints": ["A"],
+      "level": "y",
+      "pending_dr": true,
+      "popup": "**INFORMASI OBAT:** Anda rutin minum obat diuretik/darah tinggi. Bila demam ini ternyata DBD, obat ini perlu dievaluasi dokter karena dapat memperberat syok saat fase kritis. Jangan ubah dosis sendiri, sampaikan ke petugas Puskesmas.",
+      "result": "**INFORMASI OBAT:** Diuretik/antihipertensi perlu dievaluasi dokter bila suspek DBD (risiko memperberat syok)."
+    },
+    "anticoagulant_dengue": {
+      "keywords": ["warfarin", "simarc", "rivaroxaban", "xarelto", "apixaban", "eliquis", "dabigatran", "clopidogrel", "plavix"],
+      "classes": ["antikoagulan"],
+      "complaints": ["A"],
+      "level": "r",
+      "pending_dr": true,
+      "popup": "**PERINGATAN OBAT:** Anda minum obat pengencer darah. Bila demam ini ternyata DBD, risiko perdarahan meningkat. **Segera periksa ke fasilitas kesehatan** dan bawa obat Anda.",
+      "result": "**PERINGATAN OBAT:** Pengencer darah (mis. Warfarin) pada suspek DBD meningkatkan risiko perdarahan. Perlu pemantauan ketat di fasilitas kesehatan."
     }
   },
   "warnings": {

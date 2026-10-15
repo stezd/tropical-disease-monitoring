@@ -13,7 +13,6 @@ from app.application.use_cases.score_flow import (
 )
 from app.composition.triage_container import (
     get_content_repository,
-    get_preview_use_case,
     get_score_use_case,
     get_scoring_engine,
 )
@@ -88,10 +87,10 @@ def test_composition_container_resolves_defaults() -> None:
     assert get_score_use_case() is not None
 
 
-def test_preview_use_case_always_uses_rules(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_preview_always_uses_rules(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(settings, "TRIAGE_SCORING_ENGINE", "model")
-    result = get_preview_use_case().execute(
-        "infection", Answers(complaint="A", pattern="dbd", temp=38.5)
+    result = get_score_use_case().execute(
+        "infection", Answers(complaint="A", pattern="dbd", temp=38.5), preview=True
     )
     assert (result.engine, result.fallback) == ("rules", False)
 

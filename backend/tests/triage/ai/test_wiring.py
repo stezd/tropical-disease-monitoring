@@ -6,6 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, col, select
 
+from app.api.deps import get_current_active_superuser
 from app.api.routes import ai as ai_route
 from app.composition import triage_container
 from app.core.config import settings
@@ -13,10 +14,18 @@ from app.domain.answers import Answers
 from app.main import app
 from app.models import Screening
 from app.triage.ai.config import AISettings
-from app.triage.ai.engine import AIEngine, ResultCache
+from app.triage.ai.engine import AIEngine
 from app.triage.ai.llm import LLMReply, LLMServerError
 from app.triage.content import get_content
 from tests.triage.ai.test_engine import MALARIA
+
+
+@pytest.fixture
+def as_admin() -> Any:
+    """Skip the login for the admin-only /ai endpoints."""
+    app.dependency_overrides[get_current_active_superuser] = lambda: None
+    yield
+    app.dependency_overrides.pop(get_current_active_superuser, None)
 
 
 class OneShot:
@@ -73,6 +82,17 @@ SCORE = f"{settings.API_V1_STR}/triage/flows/infection/score"
 
 
 @pytest.mark.usefixtures("fake_engine")
+def test_ai_endpoints_need_admin() -> None:
+    with TestClient(app) as client:
+        for path, body in (
+            ("score", {"flow_id": "infection", "answers": MALARIA}),
+            ("drugs", {"text": "bodrex"}),
+        ):
+            r = client.post(f"{settings.API_V1_STR}/ai/{path}", json=body)
+            assert r.status_code == 401, (path, r.text)
+
+
+@pytest.mark.usefixtures("fake_engine", "as_admin")
 def test_ai_score_endpoint() -> None:
     with TestClient(app) as client:
         r = client.post(
@@ -89,7 +109,7 @@ def test_ai_score_endpoint() -> None:
     assert body["scores"]["dbd"] == 0
 
 
-@pytest.mark.usefixtures("fake_engine")
+@pytest.mark.usefixtures("fake_engine", "as_admin")
 def test_ai_score_rejects_unknown_flow() -> None:
     with TestClient(app) as client:
         r = client.post(
@@ -169,20 +189,17 @@ def test_fallback_is_not_cached(
 
 
 def test_cache_expires(fake_engine: AIEngine) -> None:
-    now = {"t": 0.0}
-    fake_engine.cache = ResultCache(2, 60, clock=lambda: now["t"])
     content = get_content("infection")
     answers = Answers.model_validate(MALARIA)
     fake_engine.score(answers, content)
     hit = fake_engine.score(answers, content)
     assert hit.meta is not None and hit.meta.cached and hit.meta.calls == 0
-    now["t"] = 61
+    # Age the entry past the TTL: the next call goes to the model again.
+    key = fake_engine._cache_key(answers, content)
+    _, entry = fake_engine._cache[key]
+    fake_engine._cache[key] = (-1e9, entry)
     fake_engine.score(answers, content)
     assert calls(fake_engine) == 2
-    # Least recently used out first.
-    for age in (30, 31, 32):
-        fake_engine.score(answers.model_copy(update={"age": age}), content)
-    assert len(fake_engine.cache) == 2
 
 
 def test_screening_saves_the_engine_used(
@@ -207,3 +224,28 @@ def test_screening_saves_the_engine_used(
         select(Screening).order_by(col(Screening.created_at).desc()).limit(1)
     ).one()
     assert row.engine == "ai"
+
+
+@pytest.mark.usefixtures("as_admin")
+def test_ai_drugs_endpoint(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from app.triage.ai.drugs import AIDrugRecognizer
+
+    class DrugReply:
+        model = "fake-model"
+
+        def generate_json(
+            self, system: str, user: str, schema: dict[str, Any], timeout: float
+        ) -> LLMReply:
+            text = '{"drugs": [{"mention": "bodrex", "generic": "ibuprofen", "class": "nsaid"}]}'
+            return LLMReply(text=text, model=self.model, latency_ms=1)
+
+    rec = AIDrugRecognizer(
+        AISettings(API_KEY="k", RPM_LIMIT=0, LOG_PATH=tmp_path / "d.jsonl"), DrugReply()
+    )
+    monkeypatch.setattr(ai_route, "get_drug_recognizer", lambda: rec)
+    with TestClient(app) as client:
+        r = client.post(f"{settings.API_V1_STR}/ai/drugs", json={"text": "bodrex"})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert (body["engine"], body["classes"]) == ("ai", ["nsaid"])
+    assert body["drugs"][0]["drug_class"] == "nsaid"

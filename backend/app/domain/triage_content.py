@@ -200,12 +200,18 @@ class Disease(BaseModel):
 
 
 class DrugRule(BaseModel):
-    """Fires when the drug text has a keyword and the answers match.
+    """Fires when the drug text has a keyword, or the drug recognizer (AI) found one of
+    `classes`, and the answers match.
 
     `patterns` / `complaints`: the answer must be one of them (empty = any).
+    `pending_dr`: wording not yet approved by DR. The rule never fires until DR approves
+    the text and the flag is removed.
     """
 
     keywords: list[str]
+    # Drug classes from app.triage.ai.drugs.DRUG_CLASSES, e.g. "nsaid".
+    classes: list[str] = []
+    pending_dr: bool = False
     patterns: list[str] = []
     complaints: list[str] = []
     level: WarningLevel = "y"

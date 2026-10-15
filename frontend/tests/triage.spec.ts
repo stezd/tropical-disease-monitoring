@@ -39,12 +39,13 @@ const facility = (
   name: string,
   dLat: number,
   phone: string | null,
+  kode = "104",
 ) => ({
   satusehat_id: id,
   code: `P31000000${id}`,
   name,
-  jenis_sarana_kode: "102",
-  jenis_sarana_nama: "Puskesmas",
+  jenis_sarana_kode: kode,
+  jenis_sarana_nama: kode === "102" ? "Puskesmas" : "Rumah Sakit",
   province_code: "31",
   province_name: "DKI Jakarta",
   city_name: "Jakarta Pusat",
@@ -55,12 +56,17 @@ const facility = (
   longitude: 106.8,
 })
 
-// Four facilities, listed out of order: only the 3 nearest show, nearest first.
+// Six facilities, listed out of order. Only NEARBY_LIMIT (5) show: WhatsApp
+// holders first (nearest first), then the rest by distance. The farthest one,
+// with no phone, drops out. MSI stores a Puskesmas by its village name alone,
+// in caps: the card has to show "Puskesmas Pasrujambe".
 const FACILITIES = [
   facility("4", "Faskes Jauh Sekali", 0.1, "081200000004"),
   facility("2", "Faskes Sedang", 0.02, "021-3456789"),
   facility("1", "Faskes Dekat", 0.001, "081234567890"),
   facility("3", "Faskes Agak Jauh", 0.05, null),
+  facility("5", "PASRUJAMBE", 0.03, null, "102"),
+  facility("6", "Faskes Terjauh", 0.2, null),
 ]
 
 async function mockFacilities(page: Page) {
@@ -90,13 +96,22 @@ async function startAs(page: Page, age: string) {
 /** WhatsApp, Maps, and phone actions on the nearest-facility card. */
 async function expectFacilityActions(page: Page) {
   await expect(page.locator(".nf-item b")).toHaveText(
-    ["Faskes Dekat", "Faskes Sedang", "Faskes Agak Jauh"],
+    [
+      "Faskes Dekat",
+      "Faskes Jauh Sekali",
+      "Faskes Sedang",
+      "Puskesmas Pasrujambe",
+      "Faskes Agak Jauh",
+    ],
     { timeout: 10_000 },
   )
   const near = page.locator(".nf-item").first()
   await expect(
     near.getByRole("link", { name: /Cari di Google Maps/ }),
-  ).toHaveAttribute("href", /google\.com\/maps\/search\/.*Faskes%20Dekat/)
+  ).toHaveAttribute(
+    "href",
+    /google\.com\/maps\/dir\/.*destination=Faskes%20Dekat%2C%20Jakarta%20Pusat/,
+  )
   const wa = near.getByRole("link", { name: /Kirim rangkuman via WhatsApp/ })
   const href = (await wa.getAttribute("href")) ?? ""
   expect(href).toMatch(/^https:\/\/wa\.me\/6281234567890\?text=/)
@@ -105,7 +120,8 @@ async function expectFacilityActions(page: Page) {
   expect(text).toContain("/ringkasan#d=")
   expect(text).not.toMatch(/diagnosis/i)
   // Landline: a call, not WhatsApp.
-  const landline = page.locator(".nf-item").nth(1)
+  // (Maps links go by name, not coordinates: MSI's pins are off by km.)
+  const landline = page.locator(".nf-item").nth(2)
   await expect(landline.getByRole("link", { name: /Telepon/ })).toHaveAttribute(
     "href",
     /^tel:62213456789$/,
@@ -140,6 +156,9 @@ test("Refused location shows the province picker", async ({ page }) => {
 })
 
 test("Guest finishes the infection quiz and sees a route", async ({ page }) => {
+  // Scoring can take ~45s when TRIAGE_SCORING_ENGINE=ai is set in .env (a model
+  // scores the flow); CI runs the rules engine. test.slow() triples the budget.
+  test.slow()
   await stubGeo(page)
   await mockFacilities(page)
   await startAs(page, "25")
@@ -169,7 +188,7 @@ test("Guest finishes the infection quiz and sees a route", async ({ page }) => {
   await next(page)
 
   await expect(page.getByText("SKRINING SELESAI")).toBeVisible({
-    timeout: 20_000,
+    timeout: 60_000,
   })
   await expect(
     page.getByRole("heading", { name: "Demam Berdarah Dengue (DBD)" }),
@@ -183,7 +202,7 @@ test("Guest finishes the infection quiz and sees a route", async ({ page }) => {
     "href",
     /app\.bpjs\.mobile/,
   )
-  // Location was shared at the gate: the 3 nearest facilities load on their own.
+  // Location was shared at the gate: the nearest facilities load on their own.
   await expectFacilityActions(page)
   // Guests are invited to make an account; there is no save button.
   await expect(page.getByRole("link", { name: /Buat akun/ })).toHaveAttribute(
@@ -240,6 +259,8 @@ test("Red route lists the nearest hospitals with actions", async ({ page }) => {
 })
 
 test("Guest finishes the chronic risk check", async ({ page }) => {
+  // Same as the infection quiz: a model-scored flow takes ~45s locally.
+  test.slow()
   await stubGeo(page)
   await mockFacilities(page)
   await passGate(page, "Cek risiko penyakit jangka panjang")
@@ -275,7 +296,7 @@ test("Guest finishes the chronic risk check", async ({ page }) => {
   await next(page) // no pain
 
   await expect(page.getByText("SKRINING SELESAI")).toBeVisible({
-    timeout: 20_000,
+    timeout: 60_000,
   })
   await expect(
     page.getByRole("heading", { name: "Gout Arthritis (Asam Urat)" }),

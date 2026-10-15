@@ -29,8 +29,13 @@ __all__ = [
 
 
 def build_result(
-    flow_id: str, answers: Answers, content: FlowContent, b: ScoreBreakdown
+    flow_id: str,
+    answers: Answers,
+    content: FlowContent,
+    b: ScoreBreakdown,
+    drug_classes: frozenset[str] = frozenset(),
 ) -> ScoreResult:
+    """`drug_classes`: classes the drug recognizer found in `answers.drugs` (may be empty)."""
     flow, advice = content.flow, content.advice
     flags = red_flag_ids(answers, content)
     ranked = b.ranked
@@ -57,7 +62,15 @@ def build_result(
 
     staff_notes = staff_notes_for(answers, content)
     warns, drug_popups = warnings_for(
-        answers, content, b, route, unknown, flags, notes, staff_notes
+        answers,
+        content,
+        b,
+        route,
+        unknown,
+        flags,
+        notes,
+        staff_notes,
+        drug_classes=drug_classes,
     )
 
     # "Yang perlu dilakukan".
@@ -104,6 +117,6 @@ def build_result(
         analysis_steps=analysis,
         summary=summary_text(rows),
         summary_rows=rows,
-        engine=b.engine,
+        engine=b.engine_id,
         fallback=b.fallback,
     )

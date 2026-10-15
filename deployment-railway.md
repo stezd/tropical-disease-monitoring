@@ -69,7 +69,7 @@ Set these on the **`backend`** service:
 | `FIRST_SUPERUSER_PASSWORD` | random | |
 | `FRONTEND_HOST` | `https://<domain>` | CORS allow-list. Cosmetic in the single-origin setup, but keep it correct |
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID (Web) | Enables "Masuk dengan Google". Add the production domain to Authorized JavaScript origins |
-| `TRIAGE_AI_CACHE_SIZE` / `TRIAGE_AI_CACHE_TTL_S` | optional | Size and TTL (seconds) of the in-memory AI result cache; defaults apply if unset |
+| `TRIAGE_AI_CACHE_TTL_S` | optional | TTL (seconds, default 86400) of the in-memory AI result cache; `0` turns it off |
 | `WEB_CONCURRENCY` | `1` (default) or `2` | Optional. `start.sh` defaults to 1; raise on a larger instance |
 
 Generate secrets:

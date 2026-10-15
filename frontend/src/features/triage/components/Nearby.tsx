@@ -7,7 +7,7 @@
 // name goes to our server, to list that province's facilities.
 import { useCallback, useEffect, useState } from "react"
 
-import { facilityMapsURL, mapsURL, telURL, waURL } from "../links"
+import { facilityName, mapsURL, routeURL, telURL, waURL } from "../links"
 import { cachedCoords, locateCoords } from "../location"
 import {
   facilityKinds,
@@ -170,14 +170,14 @@ function FacilityRow({ f, shareText }: { f: Neighbour; shareText: string }) {
   return (
     <li className="nf-item">
       <div className="nf-head">
-        <b>{f.name}</b>
+        <b>{facilityName(f)}</b>
         <span className="nf-dist">{kmLabel(f.distance_km)}</span>
       </div>
       {sub && <small className="nf-sub">{sub}</small>}
       <div className="nf-actions">
         <a
           className="btn btn-secondary"
-          href={facilityMapsURL(f)}
+          href={routeURL(f)}
           target="_blank"
           rel="noopener"
         >

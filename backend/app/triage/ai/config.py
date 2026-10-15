@@ -37,9 +37,16 @@ class AISettings(BaseSettings):
     API_KEY: SecretStr = SecretStr("")
     # Empty = the provider's default. Required for openai_compat (".../v1").
     BASE_URL: str = ""
+    # Gateways that police abuse want to know who is calling. OpenCode Go
+    # (https://opencode.ai/docs/go/#where-can-i-use-it) requires a stable session
+    # id in `x-opencode-session` and a client user agent of its own, not httpx's.
+    SESSION_ID: str = ""
+    USER_AGENT: str = ""
     # Gemini 3.x thinking level. "" = model default. Lower = faster, fewer tokens.
     THINKING_LEVEL: Literal["", "minimal", "low", "medium", "high"] = "low"
-    TEMPERATURE: float = Field(default=0.0, ge=0, le=2)
+    # Empty = the model's default. Google strongly recommends the default (1.0) for
+    # Gemini 3: lower values can cause looping or degraded reasoning.
+    TEMPERATURE: float | None = Field(default=None, ge=0, le=2)
 
     # "single" = all candidates in one call (1 request per patient).
     # "per_candidate" = one call per shortlisted candidate (about 3 to 6 requests).
@@ -64,14 +71,21 @@ class AISettings(BaseSettings):
     # After a 429 from the provider, skip the model for this many seconds.
     COOLDOWN_S: float = Field(default=60.0, ge=0)
 
-    # In-memory cache of successful AI results, per server process, keyed by the
-    # answers. Saving a screening and the QR page then reuse the patient's result
-    # instead of calling the model again. 0 = no cache. Fallbacks are never cached.
-    CACHE_SIZE: int = Field(default=256, ge=0)
-    CACHE_TTL_S: float = Field(default=3600.0, gt=0)
+    # Seconds a model result is reused for the same answers (result page, QR summary
+    # scanned later by staff, saving the screening), so they all show the same estimate.
+    # In memory: a redeploy clears it. 0 = no reuse.
+    CACHE_TTL_S: float = Field(default=86_400.0, ge=0)
+    # Flows the model scores. The others always use the rules. Comma-separated.
+    FLOWS: str = "infection,chronic"
+
+    # Drug recognition (Q6 free text → drug classes). Needs a model; off = keywords only.
+    DRUGS_ENABLED: bool = True
 
     LITERATURE_DIR: Path = DATA_DIR
     # JSON lines, one per scoring. Empty = write to the "app.triage.ai" logger instead.
     LOG_PATH: Path | None = None
     # Patient facts (option texts, age, sex, province; never name or free text) in the log.
     LOG_FACTS: bool = True
+
+    def flows(self) -> set[str]:
+        return {f.strip() for f in self.FLOWS.split(",") if f.strip()}

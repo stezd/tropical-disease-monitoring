@@ -2,7 +2,7 @@
 
 import { type Client, type Options as Options2, type TDataShape, urlSearchParamsBodySerializer } from './client';
 import { client } from './client.gen';
-import type { aiAiScoreData, aiAiScoreErrors, aiAiScoreResponses, aiAiStatusData, aiAiStatusResponses, facilitiesListFacilitiesData, facilitiesListFacilitiesErrors, facilitiesListFacilitiesResponses, facilitiesNearestFacilitiesData, facilitiesNearestFacilitiesErrors, facilitiesNearestFacilitiesResponses, facilitiesSetFacilityWhatsappData, facilitiesSetFacilityWhatsappErrors, facilitiesSetFacilityWhatsappResponses, loginLoginAccessTokenData, loginLoginAccessTokenErrors, loginLoginAccessTokenResponses, loginLoginGoogleData, loginLoginGoogleErrors, loginLoginGoogleResponses, loginRecoverPasswordData, loginRecoverPasswordErrors, loginRecoverPasswordHtmlContentData, loginRecoverPasswordHtmlContentErrors, loginRecoverPasswordHtmlContentResponses, loginRecoverPasswordResponses, loginResetPasswordData, loginResetPasswordErrors, loginResetPasswordResponses, loginTestTokenData, loginTestTokenResponses, privateCreateUserData, privateCreateUserErrors, privateCreateUserResponses, triageCreateScreeningData, triageCreateScreeningErrors, triageCreateScreeningResponses, triageReadFlowData, triageReadFlowErrors, triageReadFlowResponses, triageReadScreeningsData, triageReadScreeningsErrors, triageReadScreeningsResponses, triageScoreFlowData, triageScoreFlowErrors, triageScoreFlowResponses, usersCreateUserData, usersCreateUserErrors, usersCreateUserResponses, usersDeleteMyScreeningData, usersDeleteMyScreeningErrors, usersDeleteMyScreeningResponses, usersDeleteUserData, usersDeleteUserErrors, usersDeleteUserMeData, usersDeleteUserMeResponses, usersDeleteUserResponses, usersReadMyScreeningsData, usersReadMyScreeningsErrors, usersReadMyScreeningsResponses, usersReadUserByIdData, usersReadUserByIdErrors, usersReadUserByIdResponses, usersReadUserMeData, usersReadUserMeResponses, usersReadUsersData, usersReadUsersErrors, usersReadUsersResponses, usersRegisterUserData, usersRegisterUserErrors, usersRegisterUserResponses, usersUpdatePasswordMeData, usersUpdatePasswordMeErrors, usersUpdatePasswordMeResponses, usersUpdateUserData, usersUpdateUserErrors, usersUpdateUserMeData, usersUpdateUserMeErrors, usersUpdateUserMeResponses, usersUpdateUserResponses, utilsHealthCheckData, utilsHealthCheckResponses, utilsTestEmailData, utilsTestEmailErrors, utilsTestEmailResponses } from './types.gen';
+import type { aiAiDrugsData, aiAiDrugsErrors, aiAiDrugsResponses, aiAiScoreData, aiAiScoreErrors, aiAiScoreResponses, aiAiStatusData, aiAiStatusResponses, facilitiesListFacilitiesData, facilitiesListFacilitiesErrors, facilitiesListFacilitiesResponses, facilitiesNearestFacilitiesData, facilitiesNearestFacilitiesErrors, facilitiesNearestFacilitiesResponses, facilitiesSetFacilityWhatsappData, facilitiesSetFacilityWhatsappErrors, facilitiesSetFacilityWhatsappResponses, loginLoginAccessTokenData, loginLoginAccessTokenErrors, loginLoginAccessTokenResponses, loginLoginGoogleData, loginLoginGoogleErrors, loginLoginGoogleResponses, loginRecoverPasswordData, loginRecoverPasswordErrors, loginRecoverPasswordHtmlContentData, loginRecoverPasswordHtmlContentErrors, loginRecoverPasswordHtmlContentResponses, loginRecoverPasswordResponses, loginResetPasswordData, loginResetPasswordErrors, loginResetPasswordResponses, loginTestTokenData, loginTestTokenResponses, privateCreateUserData, privateCreateUserErrors, privateCreateUserResponses, triageCreateScreeningData, triageCreateScreeningErrors, triageCreateScreeningResponses, triageReadFlowData, triageReadFlowErrors, triageReadFlowResponses, triageReadScreeningsData, triageReadScreeningsErrors, triageReadScreeningsResponses, triageScoreFlowData, triageScoreFlowErrors, triageScoreFlowResponses, usersCreateUserData, usersCreateUserErrors, usersCreateUserResponses, usersDeleteMyScreeningData, usersDeleteMyScreeningErrors, usersDeleteMyScreeningResponses, usersDeleteUserData, usersDeleteUserErrors, usersDeleteUserMeData, usersDeleteUserMeResponses, usersDeleteUserResponses, usersReadMyScreeningsData, usersReadMyScreeningsErrors, usersReadMyScreeningsResponses, usersReadUserByIdData, usersReadUserByIdErrors, usersReadUserByIdResponses, usersReadUserMeData, usersReadUserMeResponses, usersReadUsersData, usersReadUsersErrors, usersReadUsersResponses, usersRegisterUserData, usersRegisterUserErrors, usersRegisterUserResponses, usersUpdatePasswordMeData, usersUpdatePasswordMeErrors, usersUpdatePasswordMeResponses, usersUpdateUserData, usersUpdateUserErrors, usersUpdateUserMeData, usersUpdateUserMeErrors, usersUpdateUserMeResponses, usersUpdateUserResponses, utilsHealthCheckData, utilsHealthCheckResponses, utilsTestEmailData, utilsTestEmailErrors, utilsTestEmailResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -348,9 +348,6 @@ export class TriageService {
      * Score Flow
      *
      * Score answers. Stateless: nothing is saved.
-     *
-     * `preview=true`: always the rule engine, never a model call. For mid-quiz checks
-     * (drug pop-ups); the final result uses the configured engine.
      */
     public static scoreFlow<ThrowOnError extends boolean = true>(options: Options<triageScoreFlowData, ThrowOnError>) {
         return (options.client ?? client).post<triageScoreFlowResponses, triageScoreFlowErrors, ThrowOnError>({
@@ -382,6 +379,13 @@ export class TriageService {
      * Create Screening
      *
      * Save a screening for a logged-in user. Only when they agreed (`consent=true`).
+     *
+     * The score is recomputed here with the configured engine, not copied from the
+     * result the patient saw. With the AI engine the model response is cached by
+     * the same key as /score (flow + answers), so a save with the same answers is a
+     * cache hit: same result, no second Gemini call. If the cache entry has expired
+     * or the engine fell back in between, the saved result can differ from the
+     * one shown.
      */
     public static createScreening<ThrowOnError extends boolean = true>(options: Options<triageCreateScreeningData, ThrowOnError>) {
         return (options.client ?? client).post<triageCreateScreeningResponses, triageCreateScreeningErrors, ThrowOnError>({
@@ -401,13 +405,34 @@ export class AiService {
     /**
      * Ai Score
      *
-     * Score answers with the language model. Falls back to rules, never errors on
-     * model trouble. Stateless: nothing is saved (the call log holds no identity).
+     * Score answers with the language model. Superusers only: each call spends the
+     * shared model quota (the app itself uses /triage/flows/{flow_id}/score). Falls back
+     * to rules, never errors on model trouble. Nothing is saved.
      */
     public static aiScore<ThrowOnError extends boolean = true>(options: Options<aiAiScoreData, ThrowOnError>) {
         return (options.client ?? client).post<aiAiScoreResponses, aiAiScoreErrors, ThrowOnError>({
             responseType: 'json',
+            security: [{ scheme: 'bearer', type: 'http' }],
             url: '/api/v1/ai/score',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+    
+    /**
+     * Ai Drugs
+     *
+     * Recognize drug classes in free text. Superusers only (spends model quota).
+     * Never errors on model trouble.
+     */
+    public static aiDrugs<ThrowOnError extends boolean = true>(options: Options<aiAiDrugsData, ThrowOnError>) {
+        return (options.client ?? client).post<aiAiDrugsResponses, aiAiDrugsErrors, ThrowOnError>({
+            responseType: 'json',
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/api/v1/ai/drugs',
             ...options,
             headers: {
                 'Content-Type': 'application/json',

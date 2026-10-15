@@ -12,7 +12,7 @@ from app.triage.advice import build_result
 from app.triage.ai import prompts
 from app.triage.ai.call_log import CallLog
 from app.triage.ai.config import AISettings
-from app.triage.ai.engine import AIEngine, shortlist
+from app.triage.ai.engine import AIEngine, _json_object, shortlist
 from app.triage.ai.llm import (
     LLMBadResponse,
     LLMReply,
@@ -188,6 +188,24 @@ def test_single_mode_too_many_candidates_keeps_top_five(
 
 
 # ── Per-candidate mode ─────────────────────────────────────────────────────
+
+
+def test_json_object_tolerates_gateway_wrapping() -> None:
+    # The 9router "medical" combo (panel + judge) answers a fenced bare array of
+    # {"candidate": ...} and then appends agent-style prose.
+    assert _json_object('{"candidates": [{"id": "ispa"}]}') == {
+        "candidates": [{"id": "ispa"}]
+    }
+    fenced = '```json\n[{"candidate": "ispa", "score": 85}]\n```\nskipped: nothing.'
+    assert _json_object(fenced) == {"candidates": [{"candidate": "ispa", "score": 85}]}
+    # Bare array, no fence.
+    assert _json_object('[{"candidate": "dbd"}]') == {
+        "candidates": [{"candidate": "dbd"}]
+    }
+    # Prose around the object.
+    assert _json_object('Sure: {"a": 1}. Hope that helps!') == {"a": 1}
+    with pytest.raises(LLMBadResponse):
+        _json_object("no json at all")
 
 
 def test_shortlist_is_cluster_plus_rule_top(
@@ -403,3 +421,120 @@ def test_quota_guard_window() -> None:
     assert not q2.try_acquire()
     now["t"] += 61
     assert q2.try_acquire()
+
+
+# ── Engine label and reuse ─────────────────────────────────────────────────
+
+
+def test_same_answers_reuse_model_result(
+    content: FlowContent, answers: Answers, tmp_path: Path
+) -> None:
+    eng, client = engine(single_reply, tmp_path, MODE="single")
+    first = eng.score(answers, content)
+    again = eng.score(answers.model_copy(update={"taken_at": None}), content)
+    assert len(client.calls) == 1
+    assert first.engine == again.engine == "ai"
+    assert again.meta is not None and again.meta.cached and again.meta.calls == 0
+    assert again.scores == first.scores
+    # Different answers: a new call.
+    eng.score(answers.model_copy(update={"province": "Maluku"}), content)
+    assert len(client.calls) == 2
+
+
+def test_fallbacks_are_not_reused(
+    content: FlowContent, answers: Answers, tmp_path: Path
+) -> None:
+    eng, client = engine(raising(LLMTimeout("slow")), tmp_path, MODE="single")
+    b = eng.score(answers, content)
+    assert b.engine == "ai-fb:timeout"
+    eng.score(answers, content)
+    assert len(client.calls) == 2
+
+
+def test_engine_labels(content: FlowContent, answers: Answers, tmp_path: Path) -> None:
+    assert (
+        AIEngine(settings(), None).score(answers, content).engine == "ai-fb:model_off"
+    )
+    eng, _ = engine(raising(RateLimited("429")), tmp_path, MODE="single")
+    assert eng.score(answers, content).engine == "ai-fb:rate_limited"
+    red = answers.model_copy(update={"red_flags": ["syok"]})
+    assert eng.score(red, content).engine == "rules"
+    assert all(len(x) <= 20 for x in ("ai-fb:rate_limited", "ai-fb:bad_response"))
+
+
+# ── Audit fixes (15 Oct) ───────────────────────────────────────────────────
+
+
+def test_single_prompt_asks_for_alternatives(
+    content: FlowContent, answers: Answers, tmp_path: Path
+) -> None:
+    eng, client = engine(single_reply, tmp_path, MODE="single")
+    eng.score(answers, content)
+    system, _user, schema = client.calls[0]
+    assert "3 to 5" in system
+    arr = schema["properties"]["candidates"]
+    assert (arr["minItems"], arr["maxItems"]) == (3, 5)
+
+
+def test_patient_line_is_never_a_reason(
+    content: FlowContent, answers: Answers, tmp_path: Path
+) -> None:
+    def cites_f1(_s: str, _u: str, _schema: dict[str, Any]) -> str:
+        return json.dumps(
+            {
+                "candidates": [
+                    {
+                        "id": "malaria",
+                        "note": "",
+                        "score": 90,
+                        "evidence": ["F1", "F2", "F4"],
+                        "sources": [],
+                    }
+                ]
+            }
+        )
+
+    eng, _ = engine(cites_f1, tmp_path, MODE="single")
+    b = eng.score(answers, content)
+    assert not any(r.startswith("Pasien:") for r in b.reasons["malaria"])
+    assert "Provinsi tempat tinggal: Papua" in b.reasons["malaria"]
+
+
+def test_drug_text_does_not_bust_the_cache(
+    content: FlowContent, answers: Answers, tmp_path: Path
+) -> None:
+    eng, client = engine(single_reply, tmp_path, MODE="single")
+    eng.score(answers, content)
+    again = eng.score(answers.model_copy(update={"drugs": "Bodrex, CTM"}), content)
+    assert len(client.calls) == 1 and again.meta is not None and again.meta.cached
+
+
+def test_flow_switch(content: FlowContent, answers: Answers, tmp_path: Path) -> None:
+    eng, client = engine(single_reply, tmp_path, MODE="single", FLOWS="chronic")
+    b = eng.score(answers, content)
+    assert not client.calls
+    assert b.meta is not None and b.meta.reason == "skipped:flow_off"
+    assert b.engine == "rules"
+
+
+def test_defaults_follow_google_guidance() -> None:
+    fields = AISettings.model_fields
+    assert fields["TEMPERATURE"].default is None
+    assert fields["CACHE_TTL_S"].default == 86_400.0
+    assert fields["FLOWS"].default == "infection,chronic"
+    flows = AISettings(FLOWS=" infection , chronic,").flows()
+    assert flows == {"infection", "chronic"}
+
+
+def test_call_log_reaches_stdout(capsys: pytest.CaptureFixture[str]) -> None:
+    import logging
+
+    from app.triage.ai import call_log
+
+    call_log._ensure_visible()
+    handlers = [h for h in call_log.logger.handlers if isinstance(h, call_log._Stdout)]
+    assert len(handlers) == 1
+    assert call_log.logger.isEnabledFor(logging.INFO)
+    handlers[0].setStream(__import__("sys").stdout)
+    CallLog(None).write({"x": 1})
+    assert 'ai_call {"x":1}' in capsys.readouterr().out
