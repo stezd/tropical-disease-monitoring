@@ -64,6 +64,12 @@ class AISettings(BaseSettings):
     # After a 429 from the provider, skip the model for this many seconds.
     COOLDOWN_S: float = Field(default=60.0, ge=0)
 
+    # In-memory cache of successful AI results, per server process, keyed by the
+    # answers. Saving a screening and the QR page then reuse the patient's result
+    # instead of calling the model again. 0 = no cache. Fallbacks are never cached.
+    CACHE_SIZE: int = Field(default=256, ge=0)
+    CACHE_TTL_S: float = Field(default=3600.0, gt=0)
+
     LITERATURE_DIR: Path = DATA_DIR
     # JSON lines, one per scoring. Empty = write to the "app.triage.ai" logger instead.
     LOG_PATH: Path | None = None

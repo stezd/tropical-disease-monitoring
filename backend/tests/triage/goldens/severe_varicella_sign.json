@@ -76,7 +76,7 @@
     "Menghitung klasifikasi kecocokan 20 penyakit",
     "Menentukan kondisi rujukan & faskes"
   ],
-  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 9 th · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Kulit\nPola      : Lenting berisi air di seluruh tubuh\nPenyerta  : Lenting menyebar sampai ke area dekat mata\nEkologi   : tidak ada\nObat      : -\nSuhu      : 37.8 °C\nGizi      : proksi: Normal\nPeta nyeri: -\nFoto      : -\nLab       : -\nCatatan petugas: Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata.\nDugaan    : Varicella (Cacar Air) (60%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 9 th · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Kulit\nPola      : Lenting berisi air di seluruh tubuh\nPenyerta  : Lenting menyebar sampai ke area dekat mata\nEkologi   : tidak ada\nObat      : -\nSuhu      : 37.8 °C\nGizi      : proksi: Normal\nPeta nyeri: -\nLab       : -\nCatatan petugas: Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata.\nDugaan    : Varicella (Cacar Air) (60%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
   "summary_rows": [
     {
       "key": "date",
@@ -139,11 +139,6 @@
       "value": "-"
     },
     {
-      "key": "findings",
-      "label": "Foto",
-      "value": "-"
-    },
-    {
       "key": "lab",
       "label": "Lab",
       "value": "-"
@@ -163,5 +158,7 @@
       "label": "Kondisi",
       "value": "KONDISI SEDANG – Puskesmas · Klinik Pratama"
     }
-  ]
+  ],
+  "engine": "rules",
+  "fallback": false
 }

@@ -1,34 +1,32 @@
-from typing import Annotated, Any
+from typing import Any
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.adapters.outbound.sqlmodel.screening_repository import (
     SqlModelScreeningRepository,
 )
-from app.api.deps import SessionDep, get_current_active_superuser
+from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
 from app.application.ports.outbound.screening_repository import ScreeningRepository
 from app.application.use_cases.score_flow import (
     EngineUnavailableError,
+    ScoreFlowUseCase,
     UnknownFlowError,
 )
 from app.composition.triage_container import (
     get_content_repository,
-    get_photo_analyzer,
+    get_preview_use_case,
     get_score_use_case,
 )
-from app.core.config import settings
 from app.domain.answers import Answers as DomainAnswers
 from app.models import Screening, ScreeningPublic, ScreeningsPublic
 from app.triage.content import FlowContent
 from app.triage.schemas import (
     Answers,
     FlowPublic,
-    PhotoAnalysis,
     ScoreResult,
     ScreeningCreate,
     flow_public,
 )
-from app.triage.vision import ALLOWED_TYPES, MAX_PHOTO_BYTES
 
 router = APIRouter(prefix="/triage", tags=["triage"])
 
@@ -40,10 +38,12 @@ def _content(flow_id: str) -> FlowContent:
         raise HTTPException(status_code=404, detail="Flow not found")
 
 
-def score_answers(flow_id: str, answers: DomainAnswers) -> ScoreResult:
-    """Score answers via the use case. Kept for backwards compatibility."""
+def score_answers(
+    flow_id: str, answers: DomainAnswers, use_case: ScoreFlowUseCase | None = None
+) -> ScoreResult:
+    """Score answers via the use case (the configured engine by default)."""
     try:
-        return get_score_use_case().execute(flow_id, answers)
+        return (use_case or get_score_use_case()).execute(flow_id, answers)
     except UnknownFlowError:
         raise HTTPException(status_code=404, detail="Flow not found")
     except EngineUnavailableError as e:
@@ -53,29 +53,45 @@ def score_answers(flow_id: str, answers: DomainAnswers) -> ScoreResult:
 @router.get("/flows/{flow_id}")
 def read_flow(flow_id: str) -> FlowPublic:
     """Questions and options for a flow. Weights are not included."""
-    return flow_public(_content(flow_id), photo_analysis=get_photo_analyzer().available)
+    return flow_public(_content(flow_id))
 
 
 @router.post("/flows/{flow_id}/score")
-def score_flow(flow_id: str, answers: Answers) -> ScoreResult:
-    """Score answers. Stateless: nothing is saved."""
-    return score_answers(flow_id, answers.to_domain())
+def score_flow(flow_id: str, answers: Answers, preview: bool = False) -> ScoreResult:
+    """Score answers. Stateless: nothing is saved.
+
+    `preview=true`: always the rule engine, never a model call. For mid-quiz checks
+    (drug pop-ups); the final result uses the configured engine.
+    """
+    use_case = get_preview_use_case() if preview else None
+    return score_answers(flow_id, answers.to_domain(), use_case)
 
 
 @router.post("/screenings")
-def create_screening(session: SessionDep, body: ScreeningCreate) -> ScoreResult:
-    """Save an anonymous screening. Only when the patient agreed (`consent=true`)."""
+def create_screening(
+    session: SessionDep, current_user: CurrentUser, body: ScreeningCreate
+) -> ScoreResult:
+    """Save a screening for a logged-in user. Only when they agreed (`consent=true`).
+
+    The score is recomputed here with the configured engine, not copied from the
+    result the patient saw. With the AI engine the model response is cached by
+    the same key as /score (flow + answers), so a save with the same answers is a
+    cache hit: same result, no second Gemini call. If the cache entry has expired
+    or the engine fell back in between, the saved result can differ from the
+    one shown.
+    """
     if not body.consent:
         raise HTTPException(status_code=400, detail="Consent is required to save")
     result = score_answers(body.flow_id, body.answers.to_domain())
     screening = Screening(
+        user_id=current_user.id,
         flow_id=body.flow_id,
         answers=body.answers.model_dump(mode="json", exclude_defaults=True),
         route=result.route,
         unknown=result.unknown,
         top_disease=result.top.id if result.top else None,
         top_score=result.top.score if result.top else None,
-        engine=settings.TRIAGE_SCORING_ENGINE,
+        engine=result.engine,
     )
     repository: ScreeningRepository = SqlModelScreeningRepository(session)
     repository.save(screening)
@@ -94,25 +110,3 @@ def read_screenings(session: SessionDep, skip: int = 0, limit: int = 100) -> Any
     return ScreeningsPublic(
         data=[ScreeningPublic.model_validate(r) for r in rows], count=count
     )
-
-
-@router.post("/photo/analyze")
-def analyze_photo(
-    photo: Annotated[UploadFile, File(description="Rash, wound, tongue, or eye")],
-) -> PhotoAnalysis:
-    """Find visible signs in a photo. The photo is never stored.
-
-    Skeleton: returns `available=false` until ST plugs in a model (app/triage/vision.py).
-    """
-    analyzer = get_photo_analyzer()
-    if not analyzer.available:
-        return PhotoAnalysis(
-            available=False, findings=[], message="Analisis foto belum tersedia."
-        )
-    if photo.content_type not in ALLOWED_TYPES:
-        raise HTTPException(status_code=415, detail="Unsupported image type")
-    data = photo.file.read(MAX_PHOTO_BYTES + 1)
-    if len(data) > MAX_PHOTO_BYTES:
-        raise HTTPException(status_code=413, detail="Photo too large")
-    findings = analyzer.analyze(data, photo.content_type)
-    return PhotoAnalysis(available=True, findings=findings, message="")

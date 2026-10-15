@@ -2,6 +2,7 @@ import math
 
 import pytest
 
+from app.domain.vitals import bp_category
 from app.triage.advice import build_result, drug_flags
 from app.triage.content import FLOW_IDS, FlowContent, get_content
 from app.triage.schemas import Answers, ScoreResult
@@ -125,7 +126,6 @@ def test_measles_goes_to_special_route(content: FlowContent) -> None:
         age=6,
         complaint="D",
         pattern="campak",
-        findings=["ruam"],
         temp=38.5,
         nutrition_proxy="normal",
     )
@@ -294,12 +294,6 @@ def test_sth_with_signs_goes_yellow(content: FlowContent, sign: str) -> None:
     assert len(notes) == 1
 
 
-def test_photo_chip_scores_several_diseases(content: FlowContent) -> None:
-    b = RuleEngine().score(Answers(findings=["ruam", "mata"]), content)
-    scored = {d for d, s in b.scores.items() if s > 0}
-    assert scored == {"campak", "dbd", "hepa", "lepto"}
-
-
 def test_no_thermometer_proxies_in_summary(content: FlowContent) -> None:
     r = run(
         content,
@@ -348,7 +342,6 @@ def test_patient_text_never_says_diagnosis(content: FlowContent) -> None:
         age=30,
         complaint="D",
         pattern="kusta",
-        findings=["bercak"],
         no_thermo=True,
     )
     patient_text = [r.summary, *r.todo, *r.reasons, *r.cross_checks, *r.analysis_steps]
@@ -397,7 +390,6 @@ def test_chronic_gout(chronic: FlowContent) -> None:
         sex="L",
         complaint="H",
         pattern="gout",
-        findings=["tofus"],
         bp_sys=130,
         bp_dia=85,
         glucose=110,
@@ -408,10 +400,79 @@ def test_chronic_gout(chronic: FlowContent) -> None:
     assert r.top is not None and r.top.id == "gout"
     assert r.route == "yellow"
     assert any("BERPUASA" in w.text for w in r.warnings)
-    assert "Tensi     : 130/85 mmHg" in r.summary
+    assert "Tensi     : 130/85 mmHg (meningkat)" in r.summary
+    assert "Gula darah sewaktu: 110 mg/dL" in r.summary.splitlines()
     assert "Lingkar perut: 98 cm" in r.summary
     assert "Suhu" not in r.summary
-    assert "Peta nyeri" not in r.summary
+    # The pain map is in both paths now (DR 2026-10-15).
+    assert "Peta nyeri: -" in r.summary
+    assert "Asam urat : -" in r.summary
+    assert r.engine == "rules" and r.fallback is False
+
+
+def test_chronic_labs_and_joints_in_summary(chronic: FlowContent) -> None:
+    r = run(
+        chronic,
+        age=55,
+        complaint="H",
+        pattern="gout",
+        uric_acid=8.5,
+        cholesterol_total=240,
+        body=["knee_r", "elbow_l"],
+        pain=7,
+    )
+    rows = {row.key: row.value for row in r.summary_rows}
+    assert rows["uric_acid"] == "8.5 mg/dL"
+    assert rows["cholesterol_total"] == "240 mg/dL"
+    assert rows["body"] == "Siku kiri, Lutut kanan (nyeri 7/10)"
+    # Recorded, not scored (weights need ST): same scores as without them.
+    plain = run(chronic, age=55, complaint="H", pattern="gout")
+    assert r.top is not None and plain.top is not None
+    assert r.top.score == plain.top.score
+
+
+def test_labs_only_where_asked(content: FlowContent) -> None:
+    r = run(content, complaint="A", pattern="dbd", uric_acid=8.5)
+    assert "uric_acid" not in {row.key for row in r.summary_rows}
+
+
+@pytest.mark.parametrize(
+    ("sys_bp", "dia_bp", "label"),
+    [
+        (110, 70, "normal"),
+        (120, 80, "normal"),
+        (121, 80, "meningkat"),
+        (139, 89, "meningkat"),
+        (135, 90, "tinggi"),
+        (140, 80, "tinggi"),
+        (160, 100, "tinggi"),
+        (161, 95, "sangat tinggi"),
+    ],
+)
+def test_bp_category(sys_bp: int, dia_bp: int, label: str) -> None:
+    assert bp_category(sys_bp, dia_bp) == label
+
+
+@pytest.mark.parametrize(
+    ("glucose", "warned"), [(199, False), (200, True), (310, True)]
+)
+def test_high_random_glucose_warns_without_changing_route(
+    chronic: FlowContent, glucose: float, warned: bool
+) -> None:
+    """GDS ≥ 200 mg/dL (DR 2026-10-15): a yellow notice only."""
+    kw = {"age": 50, "complaint": "G", "pattern": "hipertensi", "no_bp": True}
+    r = run(chronic, glucose=glucose, **kw)
+    plain = run(chronic, **kw)
+    notes = [w for w in r.warnings if "Gula darah sewaktu" in w.text]
+    assert bool(notes) is warned
+    if warned:
+        assert notes[0].level == "y" and f"{glucose:g} mg/dL" in notes[0].text
+    assert r.route == plain.route
+    assert r.top is not None and plain.top is not None
+    assert r.top.score == plain.top.score
+    rows = {row.key: row.value for row in r.summary_rows}
+    suffix = " (≥ 200, tinggi)" if warned else ""
+    assert rows["glucose"] == f"{glucose:g} mg/dL{suffix}"
 
 
 def test_chronic_tengkuk_scores_hypertension_and_lipids(chronic: FlowContent) -> None:
@@ -458,7 +519,12 @@ def test_features_are_numeric(content: FlowContent) -> None:
     assert math.isnan(f["temp"])
     assert math.isnan(f["bp_sys"])
     assert f["vital_temp_menggigil"] == 0.0
+    assert math.isnan(f["uric_acid"]) and math.isnan(f["cholesterol_total"])
+    assert f["body_knee_r"] == 0.0
+    assert not any(k.startswith("finding_") for k in f)
     assert all(isinstance(v, float) for v in f.values())
+    labs = features(Answers(uric_acid=7.2, cholesterol_total=210), content)
+    assert (labs["uric_acid"], labs["cholesterol_total"]) == (7.2, 210.0)
 
 
 def test_cvd_risk_is_a_skeleton(chronic: FlowContent) -> None:

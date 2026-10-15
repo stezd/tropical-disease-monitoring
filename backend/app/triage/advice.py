@@ -104,4 +104,6 @@ def build_result(
         analysis_steps=analysis,
         summary=summary_text(rows),
         summary_rows=rows,
+        engine=b.engine,
+        fallback=b.fallback,
     )

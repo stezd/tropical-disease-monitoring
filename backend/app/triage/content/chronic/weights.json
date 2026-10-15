@@ -2,7 +2,6 @@
   "complaint_base": 10,
   "pattern": 40,
   "companion": 20,
-  "finding": 25,
   "eco": {},
   "province": {},
   "complaint_reason": "Keluhan utama: {name}",

@@ -85,7 +85,7 @@
     "Menghitung klasifikasi kecocokan 20 penyakit",
     "Menentukan kondisi rujukan & faskes"
   ],
-  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · - · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Perut\nPola      : BAB berdarah & berlendir, perih saat mengejan\nPenyerta  : -\nEkologi   : tidak ada\nObat      : imodium\nSuhu      : tidak diukur (tidak punya termometer)\nProksi    : tidak ada\nGizi      : proksi: -\nPeta nyeri: -\nFoto      : -\nLab       : Cek feses mikroskopis\nDugaan    : Amebiasis (Disentri Amuba) (65%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · - · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Perut\nPola      : BAB berdarah & berlendir, perih saat mengejan\nPenyerta  : -\nEkologi   : tidak ada\nObat      : imodium\nSuhu      : tidak diukur (tidak punya termometer)\nProksi    : tidak ada\nGizi      : proksi: -\nPeta nyeri: -\nLab       : Cek feses mikroskopis\nDugaan    : Amebiasis (Disentri Amuba) (65%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
   "summary_rows": [
     {
       "key": "date",
@@ -153,11 +153,6 @@
       "value": "-"
     },
     {
-      "key": "findings",
-      "label": "Foto",
-      "value": "-"
-    },
-    {
       "key": "lab",
       "label": "Lab",
       "value": "Cek feses mikroskopis"
@@ -172,5 +167,7 @@
       "label": "Kondisi",
       "value": "KONDISI SEDANG – Puskesmas · Klinik Pratama"
     }
-  ]
+  ],
+  "engine": "rules",
+  "fallback": false
 }

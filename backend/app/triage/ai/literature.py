@@ -68,9 +68,6 @@ def option_queries(content: FlowContent) -> dict[str, str]:
         for o in opts:
             if o.id != NONE_ID:
                 q[f"vital:{vital}:{o.id}"] = _option_text(o)
-    for o in flow.findings:
-        if o.id != NONE_ID:
-            q[f"finding:{o.id}"] = _option_text(o)
     for r in flow.body_regions:
         q[f"body:{r.id}"] = f"nyeri {r.name}"
     return {k: retrieval_text(v) for k, v in q.items()}
@@ -106,11 +103,6 @@ def answer_keys(a: Answers, content: FlowContent) -> list[str]:
             for o in opts
             if o.id != NONE_ID and o.id in a.vital_proxy
         ]
-    keys += [
-        f"finding:{o.id}"
-        for o in flow.findings
-        if o.id != NONE_ID and o.id in a.findings
-    ]
     keys += [f"body:{r.id}" for r in flow.body_regions if r.id in a.body]
     return keys
 

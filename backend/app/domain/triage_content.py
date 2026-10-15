@@ -18,7 +18,8 @@ from pydantic import BaseModel, model_validator
 
 RouteId = Literal["green", "yellow", "special", "red"]
 WarningLevel = Literal["y", "r", "b"]
-StepId = Literal["who", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"]
+# "labs" = optional exams (uric acid, total cholesterol), chronic path only.
+StepId = Literal["who", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "labs", "q8", "q9"]
 Vital = Literal["temp", "bp", "glucose"]
 NONE_ID = "none"
 
@@ -33,7 +34,8 @@ class Option(BaseModel):
     detail: str | None = None
     reason: str | None = None
     disease: str | None = None
-    # Several diseases for one option (e.g. a photo finding). Overrides `disease`.
+    # Several diseases for one option (e.g. neck stiffness → hypertension and
+    # dyslipidemia). Overrides `disease`.
     diseases: list[str] = []
     child_only: bool = False
     # Inclusive age range in years. None = no limit.
@@ -155,9 +157,9 @@ class Flow(BaseModel):
     vital_proxies: dict[Vital, list[Option]] = {}
     measure_waist: bool = False
     nutrition_proxies: list[Option]
+    # Pain map (step "q9"). Empty = the flow has no pain map.
     body_regions: list[BodyRegion]
     pain_faces: list[PainFace]
-    findings: list[Option]
     routes: dict[RouteId, RouteInfo]
 
     @model_validator(mode="after")
@@ -170,8 +172,14 @@ class Flow(BaseModel):
         self.red_flags.sort(key=lambda f: rank.get(f.id, len(rank)))
         return self
 
+    @model_validator(mode="after")
+    def _pain_map_has_regions(self) -> Self:
+        if "q9" in self.steps and not (self.body_regions and self.pain_faces):
+            raise ValueError("flow.steps has q9 but no body_regions or pain_faces")
+        return self
+
     def all_options(self) -> list[Option]:
-        out = [*self.eco, *self.findings, *self.nutrition_proxies]
+        out = [*self.eco, *self.nutrition_proxies]
         for q in [*self.patterns.values(), *self.companions.values()]:
             out += q.options
         for opts in self.vital_proxies.values():
@@ -218,6 +226,9 @@ class Warnings(BaseModel):
     no_thermo_fever_pattern: str | None = None
     no_thermo_other: str | None = None
     no_bp: str | None = None
+    # Gula darah sewaktu ≥ 200 mg/dL (domain/vitals.py). `{glucose}` = the value.
+    # Notice only: no score or route change. Text needs DR's OK.
+    glucose_high: str | None = None
     no_bmi: str
 
 
@@ -249,7 +260,6 @@ class AnalysisSteps(BaseModel):
     vitals_complete: str
     cross_check: str
     eco: str
-    findings: str
     score: str
     route: str
 
@@ -327,7 +337,6 @@ class Weights(BaseModel):
     complaint_reason: str
     pattern: float
     companion: float
-    finding: float
     eco: dict[str, dict[str, float]]
     province: dict[str, dict[str, float]] = {}
     fever: Fever | None = None
@@ -381,8 +390,6 @@ class FlowContent(BaseModel):
             for o in q.options:
                 need(o.targets(), scored, f"flow.companions[{cid}]")
                 need([o.red_flag] if o.red_flag else [], red, f"flow.companions[{cid}]")
-        for o in self.flow.findings:
-            need(o.targets(), scored, "flow.findings")
         need(list(self.flow.vital_proxies), set(self.flow.vitals), "flow.vital_proxies")
         need(list(self.weights.eco), eco, "weights.eco")
         for k, pts in self.weights.eco.items():

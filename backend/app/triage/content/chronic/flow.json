@@ -2,7 +2,7 @@
   "id": "chronic",
   "title": "Cek risiko penyakit jangka panjang",
   "child_age_limit": 18,
-  "steps": ["who", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q10"],
+  "steps": ["who", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "labs", "q8", "q9"],
   "step_text": {
     "q2": { "say": "Aman! 😊 Ada **keluhan** yang mengganggu?" },
     "q5": {
@@ -11,7 +11,13 @@
       "title": "Mana yang sesuai denganmu?"
     },
     "q7": { "say": "Cek **tensi & gula darah** 🩺" },
-    "q10": { "title": "Foto kulit, luka, atau sendi" }
+    "labs": {
+      "tab": "TAHAP 5 · PEMERIKSAAN OPSIONAL",
+      "say": "Punya hasil cek lab? **Boleh dilewati** 🧪",
+      "title": "Pemeriksaan opsional",
+      "hint": "Isi dari hasil cek terakhir. Kosongkan kalau tidak ada."
+    },
+    "q9": { "say": "Ada **sendi** atau bagian tubuh yang sakit? 👆" }
   },
   "stages": [
     { "emoji": "🚨", "name": "Darurat" },
@@ -106,13 +112,36 @@
     { "id": "gemuk", "emoji": "🧸", "text": "Celana terasa makin sempit di perut / Postur Kelebihan Berat Badan" },
     { "id": "normal", "emoji": "🙂", "text": "Normal" }
   ],
-  "body_regions": [],
-  "pain_faces": [],
-  "findings": [
-    { "id": "borok", "emoji": "🩹", "text": "Luka borok / bernanah / menghitam", "disease": "dm", "reason": "Foto: luka borok / bernanah / menghitam" },
-    { "id": "tofus", "emoji": "🦴", "text": "Benjolan keras di sendi", "disease": "gout", "reason": "Foto: benjolan keras di sendi" },
-    { "id": "leher", "emoji": "🟤", "text": "Lipatan leher hitam menebal", "disease": "dm", "reason": "Foto: lipatan leher hitam menebal" },
-    { "id": "none", "emoji": "🙅", "text": "Tidak ada temuan", "wide": true }
+  "body_regions": [
+    { "id": "head", "name": "Kepala / mata" },
+    { "id": "shoulder_r", "name": "Bahu kanan" },
+    { "id": "shoulder_l", "name": "Bahu kiri" },
+    { "id": "chest", "name": "Dada" },
+    { "id": "ruq", "name": "Perut kanan atas" },
+    { "id": "luq", "name": "Ulu hati / perut kiri atas" },
+    { "id": "low", "name": "Perut tengah/bawah" },
+    { "id": "arm_r", "name": "Lengan kanan" },
+    { "id": "arm_l", "name": "Lengan kiri" },
+    { "id": "elbow_r", "name": "Siku kanan" },
+    { "id": "elbow_l", "name": "Siku kiri" },
+    { "id": "wrist_r", "name": "Pergelangan tangan kanan" },
+    { "id": "wrist_l", "name": "Pergelangan tangan kiri" },
+    { "id": "thigh_r", "name": "Paha kanan" },
+    { "id": "thigh_l", "name": "Paha kiri" },
+    { "id": "knee_r", "name": "Lutut kanan" },
+    { "id": "knee_l", "name": "Lutut kiri" },
+    { "id": "calf_r", "name": "Betis kanan" },
+    { "id": "calf_l", "name": "Betis kiri" },
+    { "id": "ankle_r", "name": "Pergelangan kaki kanan" },
+    { "id": "ankle_l", "name": "Pergelangan kaki kiri" }
+  ],
+  "pain_faces": [
+    { "value": 0, "emoji": "😄", "label": "Tidak sakit" },
+    { "value": 2, "emoji": "🙂", "label": "Sedikit sakit" },
+    { "value": 4, "emoji": "😐", "label": "Agak sakit" },
+    { "value": 6, "emoji": "🙁", "label": "Lebih sakit" },
+    { "value": 8, "emoji": "😣", "label": "Sangat sakit" },
+    { "value": 10, "emoji": "😭", "label": "Sakit sekali" }
   ],
   "routes": {
     "green": { "name": "KONDISI RINGAN", "sub": "Perawatan Mandiri · Apotek", "emoji": "🌿", "color_from": "#4FDDA0", "color_to": "#1FA86E", "place": "Apotek terdekat", "maps_query": "apotek terdekat", "nav_label": "Apotek" },

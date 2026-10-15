@@ -2,7 +2,6 @@
   "complaint_base": 10,
   "pattern": 40,
   "companion": 20,
-  "finding": 25,
   "eco": {
     "timur": { "malaria": 15, "frambusia": 15 },
     "danau": { "skisto": 25 },

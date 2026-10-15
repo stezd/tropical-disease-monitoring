@@ -36,7 +36,6 @@ CASES: dict[str, tuple[str, dict[str, Any]]] = {
             "nutrition_proxy": "longgar",
             "body": ["head"],
             "pain": 4,
-            "findings": ["none"],
         },
     ),
     "amebiasis vs diare": (

@@ -1,4 +1,4 @@
-"""Plain-text summary for the copy button and the QR page. No name, NIK, or photo.
+"""Plain-text summary for the copy button and the QR page. No name, NIK, or coordinates.
 
 `summary_rows` is the structured form (for the QR/staff page); `summary` is the
 plain-text form built from it.
@@ -6,6 +6,7 @@ plain-text form built from it.
 
 from app.domain.answers import Answers
 from app.domain.route_policy import staff_notes_for
+from app.domain.vitals import bp_category, glucose_note
 from app.domain.warnings import missing_vitals
 from app.triage.content import NONE_ID, FlowContent, Option, RouteId
 from app.triage.schemas import RankedDisease, SummaryRow
@@ -23,7 +24,7 @@ def summary_rows(
     top: RankedDisease | None,
     unknown: bool,
 ) -> list[SummaryRow]:
-    """Summary as label/value rows, for the QR page. No name, NIK, or photo.
+    """Summary as label/value rows, for the QR page. No name, NIK, or coordinates.
 
     `key` is stable for the front end; `label` and `value` are shown as is.
     """
@@ -65,7 +66,6 @@ def summary_rows(
         gizi = "proksi: " + (label(flow.nutrition_proxies, a.nutrition_proxy) or "-")
     body = [r.name for r in flow.body_regions if r.id in a.body]
     pain = f" (nyeri {a.pain}/10)" if body and a.pain is not None else ""
-    findings = [o.text for o in flow.findings if o.id in a.findings and o.id != NONE_ID]
     disease = content.diseases[top.id] if top else None
     r = flow.routes[route]
     when = a.taken_at.strftime("%d/%m/%Y %H.%M") if a.taken_at else "-"
@@ -115,25 +115,37 @@ def summary_rows(
         if no_bp:
             bp = "tidak diukur (tidak punya tensimeter)"
         elif a.bp_sys is not None and a.bp_dia is not None:
-            bp = f"{a.bp_sys}/{a.bp_dia} mmHg"
+            bp = f"{a.bp_sys}/{a.bp_dia} mmHg ({bp_category(a.bp_sys, a.bp_dia)})"
         else:
             bp = "-"
         rows.append(("bp", "Tensi", bp))
     if "glucose" in flow.vitals:
-        glucose = _fmt(a.glucose) + " mg/dL" if a.glucose is not None else "-"
-        rows.append(("glucose", "Gula darah", glucose))
+        glucose = (
+            f"{_fmt(a.glucose)} mg/dL{glucose_note(a.glucose)}"
+            if a.glucose is not None
+            else "-"
+        )
+        rows.append(("glucose", "Gula darah sewaktu", glucose))
     if no_thermo or no_bp:
         rows.append(("proxy", "Proksi", "; ".join(proxies) if proxies else "tidak ada"))
+    if "labs" in flow.steps:
+        # Optional exams: recorded only. Cut-offs need DR, weights need ST.
+        for key, lbl, value in (
+            ("uric_acid", "Asam urat", a.uric_acid),
+            ("cholesterol_total", "Kolesterol total", a.cholesterol_total),
+        ):
+            rows.append(
+                (key, lbl, f"{_fmt(value)} mg/dL" if value is not None else "-")
+            )
     rows.append(("nutrition", "Gizi", gizi))
     if flow.measure_waist:
         waist = _fmt(a.waist_cm) + " cm" if a.waist_cm is not None else "-"
         rows.append(("waist", "Lingkar perut", waist))
     if flow.body_regions:
         rows.append(("body", "Peta nyeri", ", ".join(body) + pain if body else "-"))
-    rows += [
-        ("findings", "Foto", ", ".join(findings) if findings else "-"),
-        ("lab", "Lab", "; ".join(disease.lab) if disease and disease.lab else "-"),
-    ]
+    rows.append(
+        ("lab", "Lab", "; ".join(disease.lab) if disease and disease.lab else "-")
+    )
     if notes := staff_notes_for(a, content):
         rows.append(("staff_note", "Catatan petugas", "; ".join(notes)))
     rows += [

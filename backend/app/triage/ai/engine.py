@@ -9,13 +9,21 @@
 Anything that goes wrong (no key, local quota, 429, timeout, bad JSON) returns
 RuleEngine's breakdown with `meta.fallback = True` and the reason. Red flags never reach
 the model (build_request returns None) and are not a fallback.
+
+Successful AI results are cached in memory (`ResultCache`, keyed by flow, answers,
+prompt version, model, and mode), so the same answers scored again (saving the
+screening, the QR page) give the same result without a new model call.
 """
 
+import copy
+import hashlib
 import json
 import logging
 import threading
 import time
 import uuid
+from collections import OrderedDict
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from concurrent.futures import TimeoutError as FuturesTimeout
 from dataclasses import asdict, dataclass, field
@@ -84,6 +92,8 @@ class AIMeta:
     notes: dict[str, str] = field(default_factory=dict)
     # IDs the model returned that were not offered (dropped). Should stay 0.
     invalid_ids: int = 0
+    # True = served from the result cache: no model call for this scoring.
+    cached: bool = False
 
 
 @dataclass
@@ -117,6 +127,62 @@ class _Scored:
     evidence: list[str]
     chunks: list[Chunk]
     note: str
+
+
+class ResultCache:
+    """Successful AI breakdowns by key, least recently used out first, with a TTL.
+
+    In memory and per process: nothing is written to disk. Values are deep copies, so
+    a caller cannot change what the next caller gets.
+    """
+
+    def __init__(
+        self,
+        size: int,
+        ttl_s: float,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
+        self.size = size
+        self.ttl_s = ttl_s
+        self._clock = clock
+        self._data: OrderedDict[str, tuple[float, AIBreakdown]] = OrderedDict()
+        self._lock = threading.Lock()
+
+    def get(self, key: str) -> AIBreakdown | None:
+        if self.size <= 0:
+            return None
+        with self._lock:
+            hit = self._data.get(key)
+            if hit is None:
+                return None
+            stored_at, value = hit
+            if self._clock() - stored_at > self.ttl_s:
+                del self._data[key]
+                return None
+            self._data.move_to_end(key)
+            return copy.deepcopy(value)
+
+    def put(self, key: str, value: AIBreakdown) -> None:
+        if self.size <= 0:
+            return
+        with self._lock:
+            self._data[key] = (self._clock(), copy.deepcopy(value))
+            self._data.move_to_end(key)
+            while len(self._data) > self.size:
+                self._data.popitem(last=False)
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+
+def _normalized(answers: Answers) -> dict[str, Any]:
+    """Answers that change the scores, in a stable form.
+
+    Drugs never reach the scoring prompt and `taken_at` only goes to the summary, so
+    both are left out. List order does not change the facts, so lists are sorted.
+    """
+    data = answers.model_dump(mode="json", exclude={"drugs", "taken_at"})
+    return {k: sorted(v) if isinstance(v, list) else v for k, v in data.items()}
 
 
 def shortlist(
@@ -160,6 +226,7 @@ class AIEngine:
         )
         self.log = log or CallLog(settings.LOG_PATH)
         self.rules = rules or RuleEngine()
+        self.cache = ResultCache(settings.CACHE_SIZE, settings.CACHE_TTL_S)
 
     @property
     def model(self) -> str:
@@ -172,9 +239,30 @@ class AIEngine:
             logger.exception("literature for %s could not be loaded", flow_id)
             return Literature(None)
 
+    def cache_key(self, answers: Answers, content: FlowContent) -> str:
+        raw = json.dumps(
+            [
+                content.flow.id,
+                _normalized(answers),
+                prompts.PROMPT_VERSION,
+                self.model,
+                self.s.MODE,
+            ],
+            sort_keys=True,
+            ensure_ascii=False,
+        )
+        return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
     # ── ScoringEngine ──────────────────────────────────────────────────────
 
     def score(self, answers: Answers, content: FlowContent) -> AIBreakdown:
+        key = self.cache_key(answers, content)
+        if (hit := self.cache.get(key)) is not None and hit.meta is not None:
+            # Same answers as an earlier successful scoring: same result, no call.
+            hit.meta.cached = True
+            hit.meta.calls = 0
+            hit.meta.latency_ms = 0
+            return hit
         start = time.monotonic()
         run = _Run(deadline=start + self.s.DEADLINE_S)
         rid = uuid.uuid4().hex[:12]
@@ -226,7 +314,18 @@ class AIEngine:
         meta.calls = run.calls
         meta.latency_ms = int((time.monotonic() - start) * 1000)
         self._write_log(content, req, rule_b, result, meta, run)
-        return AIBreakdown(result.scores, result.reasons, result.ranked, meta)
+        out = AIBreakdown(
+            result.scores,
+            result.reasons,
+            result.ranked,
+            engine=meta.engine,
+            fallback=meta.fallback,
+            meta=meta,
+        )
+        if meta.engine == "ai":
+            # Only real model results: a fallback must not hide a later recovery.
+            self.cache.put(key, out)
+        return out
 
     # ── Calls ──────────────────────────────────────────────────────────────
 
@@ -433,6 +532,7 @@ class AIEngine:
             "quota": self.quota.snapshot(),
             "rpm_limit": self.s.RPM_LIMIT,
             "rpd_limit": self.s.RPD_LIMIT,
+            "cache_entries": len(self.cache),
         }
 
 

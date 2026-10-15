@@ -62,7 +62,12 @@ TRIAGE_AI_API_KEY=... python scripts/ai_smoke.py
 
 `reason` berawalan `skipped:` artinya model memang tidak perlu dipanggil (tanda bahaya, tidak ada yang bisa dinilai). Itu bukan fallback.
 
-Saran untuk ST: kolom `engine` di tabel `screening` sekarang diisi `settings.TRIAGE_SCORING_ENGINE`. Kalau ingin data uji pengguna akurat, isi dari `meta.engine` dan `meta.reason` saat engine-nya `ai`.
+`ScoreResult` dari `POST /triage/flows/{flow_id}/score` membawa `engine` (`ai` / `rules` / `model`) dan `fallback`. Kolom `engine` di tabel `screening` diisi dari engine yang benar-benar dipakai, bukan dari setelan.
+
+## Cache dan pratinjau
+
+- **Cache hasil:** hasil AI yang sukses disimpan di memori proses (`TRIAGE_AI_CACHE_SIZE`, bawaan 256 entri; `TRIAGE_AI_CACHE_TTL_S`, bawaan 1 jam). Kuncinya: jalur + jawaban (tanpa teks obat dan waktu selesai) + `PROMPT_VERSION` + model + mode. Simpan skrining dan halaman QR dengan jawaban yang sama memakai hasil yang sama tanpa panggilan Gemini baru. Fallback tidak pernah dicache. Cache hit tidak menulis baris log baru. `0` = tanpa cache.
+- **Pratinjau:** `POST /triage/flows/{flow_id}/score?preview=true` selalu memakai `RuleEngine` (misalnya pop-up obat setelah langkah q6), jadi tidak memakai kuota model.
 
 ## Log uji pengguna
 

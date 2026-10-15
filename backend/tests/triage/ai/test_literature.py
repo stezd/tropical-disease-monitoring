@@ -52,7 +52,6 @@ def test_every_answer_key_is_a_known_option(content: FlowContent) -> None:
                 pattern=p,
                 companion=comp,
                 eco=[o.id for o in flow.eco],
-                findings=[o.id for o in flow.findings],
                 body=[r.id for r in flow.body_regions],
                 no_thermo=True,
                 vital_proxy=[o.id for o in flow.vital_proxies["temp"]],

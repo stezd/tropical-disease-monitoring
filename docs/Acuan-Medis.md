@@ -15,6 +15,7 @@ Satu-satunya acuan isi medis aplikasi: pertanyaan, kriteria, rute, peringatan, l
 | `[B-T5]` | Blueprint, Tahap 5 |
 | `[J9]` | Jawaban dokter no. 9 |
 | `[R1]` | Rekomendasi penyelarasan Blueprint vs jawaban dokter, 14 Okt 2026. Sudah diterapkan, **menunggu OK akhir DR** |
+| `[D1]` | Keputusan DR, 15 Okt 2026: gula darah sewaktu, kategori tensi, area sendi di peta nyeri, pemeriksaan opsional |
 | `[Tim]` | Keputusan tim di [AGENTS.md](../AGENTS.md) |
 | `[Sim]` | Berasal dari simulasi HTML, **belum ditinjau DR** |
 
@@ -38,6 +39,17 @@ Sudah jalan di aplikasi. DR tinggal memberi OK akhir.
 | K4 | Varicella + sesak → MERAH. Lenting dekat mata atau bernanah → KUNING + catatan untuk dokter: rujuk segera ke Spesialis Kulit/Mata. | Varicella berkomplikasi bukan kompetensi tuntas Puskesmas (SKDI 4A hanya tanpa komplikasi). Sesak = Pneumonia Varicella. |
 | K6–K7 | Teks pop-up NSAID dan obat mampat: versi gabungan (§7). | Pasien perlu tahu larangan, alasan, dan solusinya. |
 
+### Diputuskan DR 15 Okt 2026 `[D1]`
+
+Sudah diterapkan. Patokan dari DR; **teks yang tampil ke pasien/petugas masih perlu OK akhir DR**, dan semuanya **0 poin** sampai ST memberi bobot (K28).
+
+| No | Keputusan | Di aplikasi |
+| --- | --- | --- |
+| K22a | Gula darah = **gula darah sewaktu (GDS)**, diukur kapan saja tanpa puasa. Patokan **≥ 200 mg/dL = tinggi**. | Label "Gula darah sewaktu" di rangkuman dan fakta MedGemma (`(≥ 200, tinggi)`); catatan kuning di hasil (teks perlu OK DR, §8). Tidak mengubah skor atau rute. |
+| K22b | Tensi sistolik **> 120 dan < 140 = meningkat**. | Kategori tensi di rangkuman dan fakta MedGemma (§8). Label perlu OK DR. Kenaikan rute > 160 mmHg tidak berubah. |
+| K30 | Peta nyeri ditambah **sendi lutut, siku, dan bahu** (kanan/kiri), di **kedua jalur**. | Area baru tanpa bobot. Aturan Chikungunya (pergelangan tangan/kaki) tidak berubah. |
+| K31 | Pemeriksaan opsional: **asam urat** dan **kolesterol total** (mg/dL). | Langkah sendiri di jalur kronis, boleh dilewati. Dicatat di rangkuman dan fakta MedGemma, **belum dinilai**: ambang perlu DR (K32), bobot perlu ST (K28). |
+
 ### Menunggu DR
 
 | No | Topik | Pilihan / masalah | Di aplikasi sekarang |
@@ -56,8 +68,10 @@ Sudah jalan di aplikasi. DR tinggal memberi OK akhir.
 | K18 | Lab, perawatan, dan catatan PTM | Lab PTM `[B-T8]` dipakai sama untuk semua; perawatan hanya Gout dan gaya hidup `[B-T8]`; catatan "tensi tidak diukur" belum ditinjau | sama untuk semua penyakit PTM |
 | K19 | Pertolongan pertama tanda bahaya | Teks `[Sim]` untuk pendarahan, ginjal, napas, otak, dehidrasi; tidak ada untuk krisis hipertensi, koma diabetik, dan mata/kulit sangat kuning | lihat §4 |
 | K20 | Nama obat di teks perawatan | Pirantel Pamoat (STH, `[R1]`), Klotrimazol (Tinea), kalamin (Varicella) tidak ada di daftar aman `[J18]` | tetap tampil |
-| K21 | Chip foto yang hilang | Lidah (Tifoid), terowongan (Skabies), ruam cincin (Tinea) tidak ada lagi sejak chip `[J17]` | tidak dinilai |
-| K22 | Ambang lingkar perut dan gula darah | `[B-T6]` menyebut lingkar perut "parameter wajib sindrom metabolik", tanpa angka batas | dicatat, tidak dinilai |
+| K21 | ~~Chip foto yang hilang~~ | Tidak berlaku lagi: tahap foto dihapus (keputusan tim, 15 Okt 2026) | — |
+| K22 | Ambang lingkar perut | `[B-T6]` menyebut lingkar perut "parameter wajib sindrom metabolik", tanpa angka batas. Gula darah sudah diputuskan (K22a). | dicatat, tidak dinilai |
+| K32 | Ambang asam urat dan kolesterol total | Belum ada patokan "tinggi" (misalnya beda laki-laki/perempuan untuk asam urat) | dicatat, tidak dinilai, tanpa label |
+| K33 | Teks baru yang perlu OK akhir | Catatan GDS ≥ 200 (`chronic/advice.json` `warnings.glucose_high`); label kategori tensi "normal / meningkat / tinggi / sangat tinggi" (`backend/app/domain/vitals.py`) | sudah tampil |
 
 ### Menunggu DR + ST
 
@@ -73,7 +87,7 @@ Sudah jalan di aplikasi. DR tinggal memberi OK akhir.
 | No | Topik |
 | --- | --- |
 | K27 | Bobot provinsi endemis (§6). Daftar provinsi sudah ada `[J10]`. |
-| K28 | Bobot proksi suhu dan tensi, tensi, gula darah, lingkar perut, kehamilan, dan faktor risiko PTM. Sekarang semuanya 0 poin. |
+| K28 | Bobot proksi suhu dan tensi, tensi (termasuk kategori meningkat/tinggi), gula darah sewaktu, asam urat, kolesterol total, lingkar perut, kehamilan, faktor risiko PTM, dan area sendi baru (lutut, siku, bahu). Sekarang semuanya 0 poin. |
 | K29 | Bobot jalur kronis, yang sekarang menyalin angka jalur infeksi. |
 
 ---
@@ -85,7 +99,7 @@ Sudah jalan di aplikasi. DR tinggal memberi OK akhir.
 - Pemeriksaan tanda bahaya, kenaikan rute karena suhu, dan skor rendah → KUNING adalah **aturan tetap**, bukan keluaran model. `[Tim]`
 - Rute MERAH: layar tenang, tanpa animasi dan suara, dengan tombol telepon 119 serta nomor 119 dan 112 yang bisa disalin. `[Tim]` `[B-T8]`
 - Aplikasi berdiri sendiri. Fitur integrasi di Blueprint tidak dibangun (§12), kecuali integrasi SATUSEHAT yang sedang dipertimbangkan tim. `[Tim]`
-- Tidak pernah meminta nama. Foto tidak disimpan. `[Tim]`
+- Tidak pernah meminta nama atau foto. Tahap foto dihapus (15 Okt 2026). `[Tim]`
 
 ---
 
@@ -99,9 +113,9 @@ Sudah jalan di aplikasi. DR tinggal memberi OK akhir.
 | Tahap 3 · Gejala | Pola gejala dan gejala penyerta per klaster (§5). Gejala penyerta tertentu adalah tanda bahaya → langsung MERAH. | `[B-T5]` `[R1]` |
 | Tahap 4 · Ekologi / faktor risiko | Riwayat 1–4 bulan terakhir (§6) | `[B-T4]` |
 | Tahap 4 · Riwayat obat | Obat yang diminum + peringatan (§7) | `[B-T4]` |
-| Tahap 5 · Pengukuran | Suhu, tensi, gula darah, IMT, lingkar perut, proksi (§8) | `[B-T6]` |
-| Tahap 5 · Peta nyeri | Bagian tubuh yang sakit + skala nyeri 0–10. Hanya jalur infeksi. | `[Sim]` `[Tim]` |
-| Tahap 5 · Foto | Chip temuan visual (§8) | `[B-T6]` `[J17]` |
+| Tahap 5 · Pengukuran | Suhu, tensi, gula darah sewaktu, IMT, lingkar perut, proksi (§8) | `[B-T6]` `[D1]` |
+| Tahap 5 · Pemeriksaan opsional | Jalur kronis, setelah tensi dan gula darah: asam urat, kolesterol total. Boleh dilewati (§8). | `[D1]` |
+| Tahap 5 · Peta nyeri | Bagian tubuh yang sakit + skala nyeri 0–10. **Kedua jalur.** Termasuk sendi lutut, siku, dan bahu. | `[Sim]` `[Tim]` `[D1]` |
 | Analisis | Skor + aturan rute (§9) | `[B-T7]` |
 | Hasil | Perkiraan, rute, langkah, lab di rangkuman (§10–11) | `[B-T8]` |
 
@@ -278,7 +292,7 @@ Halaman hasil memakai versi ringkas dari teks yang sama (`advice.json`, kolom `r
 
 ---
 
-## 8. Pengukuran mandiri dan foto
+## 8. Pengukuran mandiri
 
 ### Suhu (jalur infeksi) `[B-T6]` `[J1]`
 
@@ -287,13 +301,30 @@ Halaman hasil memakai versi ringkas dari teks yang sama (`advice.json`, kolom `r
   - "Apakah demam membuat Anda sampai menggigil gemetar hebat, atau berkeringat deras hingga baju basah kuyup?"
   - "Pegang pergelangan tangan, apakah denyut nadi Anda terasa sangat cepat/berdebar keras saat istirahat?" Takikardia adalah tanda demam tinggi/SIRS. ⏳ K11
 
-### Tensi dan gula darah (jalur kronis) `[B-T6]`
+### Tensi dan gula darah (jalur kronis) `[B-T6]` `[D1]`
 
-- Tensi sistolik/diastolik (mmHg), gula darah (mg/dL).
+- Tensi sistolik/diastolik (mmHg).
 - Tanpa tensimeter, tanyakan proksi berikut:
   - Nadi sangat cepat/berdebar keras saat istirahat.
   - Tengkuk terasa sangat tegang.
-- ⏳ K22: ambang gula darah tidak ada di sumber.
+- Kategori tensi (label di rangkuman dan fakta MedGemma; tidak mengubah skor) `[D1]`. Label perlu OK DR (K33).
+
+  | Kategori | Patokan |
+  | --- | --- |
+  | normal | sistolik ≤ 120 |
+  | meningkat | sistolik > 120 dan < 140, diastolik < 90 |
+  | tinggi | sistolik ≥ 140 atau diastolik ≥ 90 |
+  | sangat tinggi | sistolik > 160 (juga menaikkan HIJAU ke KUNING, §9) |
+
+- **Gula darah sewaktu (GDS)**, mg/dL: diukur kapan saja, tidak perlu puasa. **≥ 200 mg/dL = tinggi** `[D1]`.
+  - Rangkuman dan fakta MedGemma: `250 mg/dL (≥ 200, tinggi)`.
+  - Catatan kuning di hasil (teks perlu OK DR, K33): "Gula darah sewaktu {nilai} mg/dL tergolong **tinggi** (≥ 200 mg/dL). Periksakan gula darah ulang di Puskesmas."
+  - Tidak mengubah skor atau rute. Bobot: ST (K28).
+
+### Pemeriksaan opsional (jalur kronis) `[D1]`
+
+- Asam urat (mg/dL, 1–30) dan kolesterol total (mg/dL, 50–600), dari hasil cek terakhir. Boleh dilewati.
+- Dicatat di rangkuman/QR dan fakta MedGemma, **belum dinilai**: ambang perlu DR (K32), bobot perlu ST (K28).
 
 ### Antropometri `[B-T6]` `[J2]` `[J4]`
 
@@ -304,22 +335,9 @@ Halaman hasil memakai versi ringkas dari teks yang sama (`advice.json`, kolom `r
   - "Celana makin sempit di perut / Kelebihan berat badan". Kata "gemuk" diganti `[J2]`; kata "(Obesitas)" dihapus dari teks pilihan atas persetujuan DR (Okt 2026).
 - **Obesitas → risiko malaria berat.** Obesitas adalah faktor risiko komplikasi *P. falciparum* (malaria serebral, ARDS), sesuai WHO dan BMJ Global Health `[J2]`. Juga prediktor hipertensi dan DM `[B-T6]`.
 
-### Foto `[B-T6]` `[J17]`
+### Foto
 
-Foto hanya dianalisis di server sendiri dan tidak disimpan. Sampai analisis foto siap, pasien memilih temuan sendiri. Minta izin dulu. `[Tim]`
-
-| Chip | Mengarah ke | Jalur |
-| --- | --- | --- |
-| Ruam kemerahan / bintik | Campak, DBD | infeksi `[J17]` |
-| Lenting berair / lepuh | Varicella | infeksi `[J17]` |
-| Bercak putih mati rasa | Kusta | infeksi `[J17]` |
-| Luka borok / bernanah | Frambusia | infeksi `[J17]` |
-| Mata kuning / mata merah | Hepatitis (ikterus), Leptospirosis (*conjunctival suffusion*) | infeksi `[J17]` |
-| Luka borok / bernanah / menghitam | Ulkus diabetikum (DM) | kronis `[B-T6]` |
-| Benjolan keras di sendi | Tofus (Gout kronis) | kronis `[B-T6]` |
-| Lipatan leher hitam menebal | Acanthosis nigricans (resistensi insulin, DM) | kronis `[B-T6]` |
-
-⏳ K21: chip yang hilang.
+Tahap foto dihapus (keputusan tim, 15 Okt 2026). Chip temuan visual `[J17]` `[B-T6]` tidak lagi ditanyakan atau dinilai; daftarnya tetap ada di [arsip/Jawaban-Dokter.md](arsip/Jawaban-Dokter.md) no. 17 bila tahap ini dibangun lagi.
 
 ---
 

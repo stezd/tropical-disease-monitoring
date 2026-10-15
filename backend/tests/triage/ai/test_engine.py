@@ -43,7 +43,6 @@ MALARIA = {
     "nutrition_proxy": "longgar",
     "body": ["head"],
     "pain": 4,
-    "findings": ["none"],
 }
 
 
