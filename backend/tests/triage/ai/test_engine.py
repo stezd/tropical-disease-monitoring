@@ -404,3 +404,42 @@ def test_quota_guard_window() -> None:
     assert not q2.try_acquire()
     now["t"] += 61
     assert q2.try_acquire()
+
+
+# ── Engine label and reuse ─────────────────────────────────────────────────
+
+
+def test_same_answers_reuse_model_result(
+    content: FlowContent, answers: Answers, tmp_path: Path
+) -> None:
+    eng, client = engine(single_reply, tmp_path, MODE="single")
+    first = eng.score(answers, content)
+    again = eng.score(answers.model_copy(update={"taken_at": None}), content)
+    assert len(client.calls) == 1
+    assert first.engine == again.engine == "ai"
+    assert again.meta is not None and again.meta.cached and again.meta.calls == 0
+    assert again.scores == first.scores
+    # Different answers: a new call.
+    eng.score(answers.model_copy(update={"province": "Maluku"}), content)
+    assert len(client.calls) == 2
+
+
+def test_fallbacks_are_not_reused(
+    content: FlowContent, answers: Answers, tmp_path: Path
+) -> None:
+    eng, client = engine(raising(LLMTimeout("slow")), tmp_path, MODE="single")
+    b = eng.score(answers, content)
+    assert b.engine == "ai-fb:timeout"
+    eng.score(answers, content)
+    assert len(client.calls) == 2
+
+
+def test_engine_labels(content: FlowContent, answers: Answers, tmp_path: Path) -> None:
+    assert (
+        AIEngine(settings(), None).score(answers, content).engine == "ai-fb:model_off"
+    )
+    eng, _ = engine(raising(RateLimited("429")), tmp_path, MODE="single")
+    assert eng.score(answers, content).engine == "ai-fb:rate_limited"
+    red = answers.model_copy(update={"red_flags": ["syok"]})
+    assert eng.score(red, content).engine == "rules"
+    assert all(len(x) <= 20 for x in ("ai-fb:rate_limited", "ai-fb:bad_response"))

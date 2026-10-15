@@ -248,12 +248,13 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
     sfx.tap()
     if (id === "q6") {
       // Drug warnings come from the server (advice.json). If it is down, carry on.
+      // Preview: scored with the rules; the language model is kept for the result.
       setBusy(true)
       let r: ScoreResult | undefined
       try {
         r = await queryClient.fetchQuery({
-          queryKey: scoreKey(api, flow.id),
-          queryFn: () => scoreAnswers(api, flow.id),
+          queryKey: scoreKey(api, flow.id, true),
+          queryFn: () => scoreAnswers(api, flow.id, true),
           staleTime: Number.POSITIVE_INFINITY,
         })
       } catch {

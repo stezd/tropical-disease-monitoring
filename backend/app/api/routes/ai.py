@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 from app.api.deps import get_current_active_superuser
 from app.composition.triage_container import get_content_repository
 from app.triage.ai import get_ai_engine
+from app.triage.ai.drugs import DrugResult, get_drug_recognizer
 from app.triage.schemas import Answers
 
 router = APIRouter(prefix="/ai", tags=["ai"])
@@ -83,6 +84,62 @@ def ai_score(body: AIScoreRequest) -> AIScoreResponse:
             for r in b.ranked
         ],
         scores=b.scores,
+    )
+
+
+class AIDrugsRequest(BaseModel):
+    flow_id: Literal["infection", "chronic"] = "infection"
+    text: str = Field(max_length=500, description="The patient's free-text drug answer")
+
+
+class AIDrug(BaseModel):
+    mention: str
+    generic: str
+    # nsaid, antimotilitas, ccb_dhp, acei, statin, diuretik, antikoagulan, lain,
+    # tidak_dikenal
+    drug_class: str
+
+
+class AIDrugsResponse(BaseModel):
+    request_id: str
+    # Classes that can fire a rule in advice.json.
+    classes: list[str]
+    drugs: list[AIDrug]
+    # "ai", "keywords" (every item is a known drug: no model call), "none" (empty
+    # text), "fallback" (model not used; the keyword rules still apply).
+    engine: str
+    fallback: bool
+    reason: str | None
+    model: str
+    latency_ms: int
+
+
+@router.post("/drugs")
+def ai_drugs(body: AIDrugsRequest) -> AIDrugsResponse:
+    """Recognize drug classes in free text. Never errors on model trouble."""
+    recognizer = get_drug_recognizer()
+    if recognizer is None:
+        r = DrugResult(
+            request_id="-",
+            classes=[],
+            engine="fallback",
+            fallback=True,
+            reason="model_off",
+        )
+    else:
+        r = recognizer.recognize(body.text, body.flow_id)
+    return AIDrugsResponse(
+        request_id=r.request_id,
+        classes=r.classes,
+        drugs=[
+            AIDrug(mention=d["mention"], generic=d["generic"], drug_class=d["class"])
+            for d in r.drugs
+        ],
+        engine=r.engine,
+        fallback=r.fallback,
+        reason=r.reason,
+        model=r.model,
+        latency_ms=r.latency_ms,
     )
 
 

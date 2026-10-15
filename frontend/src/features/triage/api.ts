@@ -27,18 +27,26 @@ export function useFlow(flowId = FLOW_ID) {
   return { flow, offline: !query.data && query.isError, query }
 }
 
+/** `preview`: a call during the quiz (e.g. drug pop-ups at the drug step). The
+ * server then scores with the rules, never with the language model, so the model
+ * only runs once per patient, for the final result. */
 export async function scoreAnswers(
   answers: Answers,
   flowId: string,
+  preview = false,
 ): Promise<ScoreResult> {
   return (
-    await TriageService.scoreFlow({ path: { flow_id: flowId }, body: answers })
+    await TriageService.scoreFlow({
+      path: { flow_id: flowId },
+      query: preview ? { preview: true } : undefined,
+      body: answers,
+    })
   ).data
 }
 
-export const scoreKey = (answers: Answers, flowId: string) => [
+export const scoreKey = (answers: Answers, flowId: string, preview = false) => [
   "triage",
-  "score",
+  preview ? "score-preview" : "score",
   flowId,
   answers,
 ]
@@ -60,8 +68,8 @@ export function useLiveScore(answers: Answers, flowId: string) {
     !!debounced.complaint &&
     !(debounced.red_flags ?? []).some((x) => x !== "none")
   return useQuery({
-    queryKey: scoreKey(debounced, flowId),
-    queryFn: () => scoreAnswers(debounced, flowId),
+    queryKey: scoreKey(debounced, flowId, true),
+    queryFn: () => scoreAnswers(debounced, flowId, true),
     enabled,
     placeholderData: keepPreviousData,
     staleTime: Number.POSITIVE_INFINITY,
