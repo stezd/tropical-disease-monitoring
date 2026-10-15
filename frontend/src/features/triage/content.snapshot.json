@@ -13,17 +13,9 @@
       "q6",
       "q7",
       "q8",
-      "q9",
-      "q10"
+      "q9"
     ],
-    "step_text": {
-      "q10": {
-        "tab": null,
-        "say": null,
-        "title": "Foto ruam, luka, atau mata",
-        "hint": null
-      }
-    },
+    "step_text": {},
     "stages": [
       {
         "emoji": "🚨",
@@ -1308,6 +1300,14 @@
         "name": "Kepala / mata"
       },
       {
+        "id": "shoulder_r",
+        "name": "Bahu kanan"
+      },
+      {
+        "id": "shoulder_l",
+        "name": "Bahu kiri"
+      },
+      {
         "id": "chest",
         "name": "Dada"
       },
@@ -1332,6 +1332,14 @@
         "name": "Lengan kiri"
       },
       {
+        "id": "elbow_r",
+        "name": "Siku kanan"
+      },
+      {
+        "id": "elbow_l",
+        "name": "Siku kiri"
+      },
+      {
         "id": "wrist_r",
         "name": "Pergelangan tangan kanan"
       },
@@ -1346,6 +1354,14 @@
       {
         "id": "thigh_l",
         "name": "Paha kiri"
+      },
+      {
+        "id": "knee_r",
+        "name": "Lutut kanan"
+      },
+      {
+        "id": "knee_l",
+        "name": "Lutut kiri"
       },
       {
         "id": "calf_r",
@@ -1394,110 +1410,6 @@
         "value": 10,
         "emoji": "😭",
         "label": "Sakit sekali"
-      }
-    ],
-    "findings": [
-      {
-        "id": "ruam",
-        "emoji": "🔴",
-        "text": "Ruam kemerahan / bintik",
-        "detail": null,
-        "reason": "Foto: ruam kemerahan / bintik",
-        "disease": null,
-        "diseases": [
-          "campak",
-          "dbd"
-        ],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "red_flag": null,
-        "staff_note": null,
-        "wide": false
-      },
-      {
-        "id": "lenting",
-        "emoji": "🫧",
-        "text": "Lenting berair / lepuh",
-        "detail": null,
-        "reason": "Foto: lenting berair / lepuh",
-        "disease": "varicella",
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "red_flag": null,
-        "staff_note": null,
-        "wide": false
-      },
-      {
-        "id": "bercak",
-        "emoji": "⚪",
-        "text": "Bercak putih mati rasa",
-        "detail": null,
-        "reason": "Foto: bercak putih mati rasa",
-        "disease": "kusta",
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "red_flag": null,
-        "staff_note": null,
-        "wide": false
-      },
-      {
-        "id": "borok",
-        "emoji": "🩹",
-        "text": "Luka borok / bernanah",
-        "detail": null,
-        "reason": "Foto: luka borok / bernanah",
-        "disease": "frambusia",
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "red_flag": null,
-        "staff_note": null,
-        "wide": false
-      },
-      {
-        "id": "mata",
-        "emoji": "👁️",
-        "text": "Mata kuning / mata merah",
-        "detail": null,
-        "reason": "Foto: mata kuning / mata merah",
-        "disease": null,
-        "diseases": [
-          "hepa",
-          "lepto"
-        ],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "red_flag": null,
-        "staff_note": null,
-        "wide": false
-      },
-      {
-        "id": "none",
-        "emoji": "🙅",
-        "text": "Tidak ada temuan",
-        "detail": null,
-        "reason": null,
-        "disease": null,
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "red_flag": null,
-        "staff_note": null,
-        "wide": true
       }
     ],
     "routes": {
@@ -1643,8 +1555,7 @@
         "emoji": "🐕",
         "route": "red"
       }
-    },
-    "photo_analysis": false
+    }
   },
   "chronic": {
     "id": "chronic",
@@ -1659,8 +1570,9 @@
       "q5",
       "q6",
       "q7",
+      "labs",
       "q8",
-      "q10"
+      "q9"
     ],
     "step_text": {
       "q2": {
@@ -1681,10 +1593,16 @@
         "title": null,
         "hint": null
       },
-      "q10": {
+      "labs": {
+        "tab": "TAHAP 5 · PEMERIKSAAN OPSIONAL",
+        "say": "Punya hasil cek lab? **Boleh dilewati** 🧪",
+        "title": "Pemeriksaan opsional",
+        "hint": "Isi dari hasil cek terakhir. Kosongkan kalau tidak ada."
+      },
+      "q9": {
         "tab": null,
-        "say": null,
-        "title": "Foto kulit, luka, atau sendi",
+        "say": "Ada **sendi** atau bagian tubuh yang sakit? 👆",
+        "title": null,
         "hint": null
       }
     },
@@ -2344,72 +2262,122 @@
         "wide": false
       }
     ],
-    "body_regions": [],
-    "pain_faces": [],
-    "findings": [
+    "body_regions": [
       {
-        "id": "borok",
-        "emoji": "🩹",
-        "text": "Luka borok / bernanah / menghitam",
-        "detail": null,
-        "reason": "Foto: luka borok / bernanah / menghitam",
-        "disease": "dm",
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "red_flag": null,
-        "staff_note": null,
-        "wide": false
+        "id": "head",
+        "name": "Kepala / mata"
       },
       {
-        "id": "tofus",
-        "emoji": "🦴",
-        "text": "Benjolan keras di sendi",
-        "detail": null,
-        "reason": "Foto: benjolan keras di sendi",
-        "disease": "gout",
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "red_flag": null,
-        "staff_note": null,
-        "wide": false
+        "id": "shoulder_r",
+        "name": "Bahu kanan"
       },
       {
-        "id": "leher",
-        "emoji": "🟤",
-        "text": "Lipatan leher hitam menebal",
-        "detail": null,
-        "reason": "Foto: lipatan leher hitam menebal",
-        "disease": "dm",
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "red_flag": null,
-        "staff_note": null,
-        "wide": false
+        "id": "shoulder_l",
+        "name": "Bahu kiri"
       },
       {
-        "id": "none",
-        "emoji": "🙅",
-        "text": "Tidak ada temuan",
-        "detail": null,
-        "reason": null,
-        "disease": null,
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "red_flag": null,
-        "staff_note": null,
-        "wide": true
+        "id": "chest",
+        "name": "Dada"
+      },
+      {
+        "id": "ruq",
+        "name": "Perut kanan atas"
+      },
+      {
+        "id": "luq",
+        "name": "Ulu hati / perut kiri atas"
+      },
+      {
+        "id": "low",
+        "name": "Perut tengah/bawah"
+      },
+      {
+        "id": "arm_r",
+        "name": "Lengan kanan"
+      },
+      {
+        "id": "arm_l",
+        "name": "Lengan kiri"
+      },
+      {
+        "id": "elbow_r",
+        "name": "Siku kanan"
+      },
+      {
+        "id": "elbow_l",
+        "name": "Siku kiri"
+      },
+      {
+        "id": "wrist_r",
+        "name": "Pergelangan tangan kanan"
+      },
+      {
+        "id": "wrist_l",
+        "name": "Pergelangan tangan kiri"
+      },
+      {
+        "id": "thigh_r",
+        "name": "Paha kanan"
+      },
+      {
+        "id": "thigh_l",
+        "name": "Paha kiri"
+      },
+      {
+        "id": "knee_r",
+        "name": "Lutut kanan"
+      },
+      {
+        "id": "knee_l",
+        "name": "Lutut kiri"
+      },
+      {
+        "id": "calf_r",
+        "name": "Betis kanan"
+      },
+      {
+        "id": "calf_l",
+        "name": "Betis kiri"
+      },
+      {
+        "id": "ankle_r",
+        "name": "Pergelangan kaki kanan"
+      },
+      {
+        "id": "ankle_l",
+        "name": "Pergelangan kaki kiri"
+      }
+    ],
+    "pain_faces": [
+      {
+        "value": 0,
+        "emoji": "😄",
+        "label": "Tidak sakit"
+      },
+      {
+        "value": 2,
+        "emoji": "🙂",
+        "label": "Sedikit sakit"
+      },
+      {
+        "value": 4,
+        "emoji": "😐",
+        "label": "Agak sakit"
+      },
+      {
+        "value": 6,
+        "emoji": "🙁",
+        "label": "Lebih sakit"
+      },
+      {
+        "value": 8,
+        "emoji": "😣",
+        "label": "Sangat sakit"
+      },
+      {
+        "value": 10,
+        "emoji": "😭",
+        "label": "Sakit sekali"
       }
     ],
     "routes": {
@@ -2485,7 +2453,6 @@
         "emoji": "🦶",
         "route": "yellow"
       }
-    },
-    "photo_analysis": false
+    }
   }
 }

@@ -98,7 +98,8 @@ export type AIScoredDisease = {
 /**
  * Answers
  *
- * Everything the patient answered. Never holds a name, NIK, BPJS number, or photo.
+ * Everything the patient answered. Never holds a name, NIK, BPJS number, or
+ * coordinates.
  */
 export type Answers = {
     /**
@@ -166,6 +167,14 @@ export type Answers = {
      */
     glucose?: number | null;
     /**
+     * Uric Acid
+     */
+    uric_acid?: number | null;
+    /**
+     * Cholesterol Total
+     */
+    cholesterol_total?: number | null;
+    /**
      * Vital Proxy
      */
     vital_proxy?: Array<string>;
@@ -193,10 +202,6 @@ export type Answers = {
      * Pain
      */
     pain?: number | null;
-    /**
-     * Findings
-     */
-    findings?: Array<string>;
     /**
      * Province
      */
@@ -249,18 +254,6 @@ export type Body_login_login_access_token = {
      * Client Secret
      */
     client_secret?: string | null;
-};
-
-/**
- * Body_triage-analyze_photo
- */
-export type Body_triage_analyze_photo = {
-    /**
-     * Photo
-     *
-     * Rash, wound, tongue, or eye
-     */
-    photo: Blob | File;
 };
 
 /**
@@ -518,7 +511,7 @@ export type FlowPublic = {
     /**
      * Steps
      */
-    steps: Array<'who' | 'q1' | 'q2' | 'q3' | 'q4' | 'q5' | 'q6' | 'q7' | 'q8' | 'q9' | 'q10'>;
+    steps: Array<'who' | 'q1' | 'q2' | 'q3' | 'q4' | 'q5' | 'q6' | 'q7' | 'labs' | 'q8' | 'q9'>;
     /**
      * Step Text
      */
@@ -618,10 +611,6 @@ export type FlowPublic = {
      */
     pain_faces: Array<PainFace>;
     /**
-     * Findings
-     */
-    findings: Array<Option>;
-    /**
      * Routes
      */
     routes: {
@@ -633,10 +622,16 @@ export type FlowPublic = {
     diseases: {
         [key: string]: DiseasePublic;
     };
+};
+
+/**
+ * GoogleLogin
+ */
+export type GoogleLogin = {
     /**
-     * Photo Analysis
+     * Credential
      */
-    photo_analysis: boolean;
+    credential: string;
 };
 
 /**
@@ -751,24 +746,6 @@ export type PainFace = {
      * Label
      */
     label: string;
-};
-
-/**
- * PhotoAnalysis
- */
-export type PhotoAnalysis = {
-    /**
-     * Available
-     */
-    available: boolean;
-    /**
-     * Findings
-     */
-    findings: Array<string>;
-    /**
-     * Message
-     */
-    message: string;
 };
 
 /**
@@ -994,6 +971,14 @@ export type ScoreResult = {
      * Summary Rows
      */
     summary_rows: Array<SummaryRow>;
+    /**
+     * Engine
+     */
+    engine: 'ai' | 'rules' | 'model';
+    /**
+     * Fallback
+     */
+    fallback: boolean;
 };
 
 /**
@@ -1011,6 +996,40 @@ export type ScreeningCreate = {
      * Must be true. The patient agreed to save.
      */
     consent: boolean;
+};
+
+/**
+ * ScreeningHistoryItem
+ */
+export type ScreeningHistoryItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Flow Id
+     */
+    flow_id: string;
+    /**
+     * Route
+     */
+    route: string;
+    /**
+     * Unknown
+     */
+    unknown: boolean;
+    /**
+     * Top Disease
+     */
+    top_disease: string | null;
+    /**
+     * Top Score
+     */
+    top_score: number | null;
+    /**
+     * Created At
+     */
+    created_at?: string | null;
 };
 
 /**
@@ -1055,6 +1074,20 @@ export type ScreeningPublic = {
      * Created At
      */
     created_at?: string | null;
+};
+
+/**
+ * ScreeningsHistoryPublic
+ */
+export type ScreeningsHistoryPublic = {
+    /**
+     * Data
+     */
+    data: Array<ScreeningHistoryItem>;
+    /**
+     * Count
+     */
+    count: number;
 };
 
 /**
@@ -1354,6 +1387,31 @@ export type loginLoginAccessTokenResponses = {
 
 export type loginLoginAccessTokenResponse = loginLoginAccessTokenResponses[keyof loginLoginAccessTokenResponses];
 
+export type loginLoginGoogleData = {
+    body: GoogleLogin;
+    path?: never;
+    query?: never;
+    url: '/api/v1/login/google';
+};
+
+export type loginLoginGoogleErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type loginLoginGoogleError = loginLoginGoogleErrors[keyof loginLoginGoogleErrors];
+
+export type loginLoginGoogleResponses = {
+    /**
+     * Successful Response
+     */
+    200: Token;
+};
+
+export type loginLoginGoogleResponse = loginLoginGoogleResponses[keyof loginLoginGoogleResponses];
+
 export type loginTestTokenData = {
     body?: never;
     path?: never;
@@ -1596,6 +1654,70 @@ export type usersUpdatePasswordMeResponses = {
 
 export type usersUpdatePasswordMeResponse = usersUpdatePasswordMeResponses[keyof usersUpdatePasswordMeResponses];
 
+export type usersReadMyScreeningsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/users/me/screenings';
+};
+
+export type usersReadMyScreeningsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type usersReadMyScreeningsError = usersReadMyScreeningsErrors[keyof usersReadMyScreeningsErrors];
+
+export type usersReadMyScreeningsResponses = {
+    /**
+     * Successful Response
+     */
+    200: ScreeningsHistoryPublic;
+};
+
+export type usersReadMyScreeningsResponse = usersReadMyScreeningsResponses[keyof usersReadMyScreeningsResponses];
+
+export type usersDeleteMyScreeningData = {
+    body?: never;
+    path: {
+        /**
+         * Screening Id
+         */
+        screening_id: string;
+    };
+    query?: never;
+    url: '/api/v1/users/me/screenings/{screening_id}';
+};
+
+export type usersDeleteMyScreeningErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type usersDeleteMyScreeningError = usersDeleteMyScreeningErrors[keyof usersDeleteMyScreeningErrors];
+
+export type usersDeleteMyScreeningResponses = {
+    /**
+     * Successful Response
+     */
+    200: Message;
+};
+
+export type usersDeleteMyScreeningResponse = usersDeleteMyScreeningResponses[keyof usersDeleteMyScreeningResponses];
+
 export type usersRegisterUserData = {
     body: UserRegister;
     path?: never;
@@ -1797,7 +1919,12 @@ export type triageScoreFlowData = {
          */
         flow_id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Preview
+         */
+        preview?: boolean;
+    };
     url: '/api/v1/triage/flows/{flow_id}/score';
 };
 
@@ -1877,31 +2004,6 @@ export type triageCreateScreeningResponses = {
 };
 
 export type triageCreateScreeningResponse = triageCreateScreeningResponses[keyof triageCreateScreeningResponses];
-
-export type triageAnalyzePhotoData = {
-    body: Body_triage_analyze_photo;
-    path?: never;
-    query?: never;
-    url: '/api/v1/triage/photo/analyze';
-};
-
-export type triageAnalyzePhotoErrors = {
-    /**
-     * Validation Error
-     */
-    422: HTTPValidationError;
-};
-
-export type triageAnalyzePhotoError = triageAnalyzePhotoErrors[keyof triageAnalyzePhotoErrors];
-
-export type triageAnalyzePhotoResponses = {
-    /**
-     * Successful Response
-     */
-    200: PhotoAnalysis;
-};
-
-export type triageAnalyzePhotoResponse = triageAnalyzePhotoResponses[keyof triageAnalyzePhotoResponses];
 
 export type aiAiScoreData = {
     body: AIScoreRequest;
