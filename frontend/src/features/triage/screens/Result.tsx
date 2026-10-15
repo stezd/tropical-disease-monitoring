@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { Link, useRouterState } from "@tanstack/react-router"
 import { useEffect, useMemo, useRef, useState } from "react"
-
 import { type FlowPublic, TriageService } from "@/client"
 import { isLoggedIn } from "@/hooks/useAuth"
 import { scoreAnswers, scoreKey } from "../api"
@@ -13,6 +12,7 @@ import { confetti, sfx, vibrate } from "../fx"
 import { isAndroid, jknURL, mapsURL } from "../links"
 import { type QuizAnswers, toApi } from "../model"
 import { resultShareText } from "../share"
+import { useGrowScroll } from "../useGrowScroll"
 import "@/styles/result.css"
 
 const DISCLAIMER =
@@ -41,6 +41,7 @@ export function ResultScreen({
   })
   const r = score.data
   const host = useRef<HTMLDivElement>(null)
+  const growRef = useGrowScroll()
   const [grow, setGrow] = useState(false)
 
   // Celebrate the first result only, not each re-score.
@@ -89,6 +90,16 @@ export function ResultScreen({
     } else toast('Gagal menyalin — buka "Lihat rangkuman lengkap".')
   }
 
+  const downloadPdf = async () => {
+    try {
+      const { downloadSummaryPdf } = await import("../pdf")
+      await downloadSummaryPdf(flow, r)
+      toast("⬇️ PDF diunduh!")
+    } catch {
+      toast("Gagal membuat PDF. Coba lagi.")
+    }
+  }
+
   // Phones read top to bottom: hero (route + estimate), what to do, nearest
   // facilities, notes, QR, other possibilities, why, save, summary, restart. From 640px the
   // hero spans the width; below it "what to do" sits left and "QR + why"
@@ -114,7 +125,7 @@ export function ResultScreen({
         </button>
         <div className="htitle">Hasil Skrining</div>
       </div>
-      <div className="rscroll">
+      <div className="rscroll" ref={growRef}>
         <div className="banner">✨ SKRINING SELESAI! ✨</div>
         <div className={`rcols res ${endRight ? "end-right" : ""}`}>
           <section className="card rhero" aria-label="Hasil skrining">
@@ -295,6 +306,13 @@ export function ResultScreen({
                 onClick={copySummary}
               >
                 📋 Salin Rangkuman
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={downloadPdf}
+              >
+                ⬇️ Unduh PDF
               </button>
             </Card>
 

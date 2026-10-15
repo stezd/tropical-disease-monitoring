@@ -34,6 +34,7 @@ import {
   uricValid,
   visible,
 } from "../model"
+import { useGrowScroll } from "../useGrowScroll"
 import { quiz, useQuiz } from "../store"
 import "@/styles/fe-extra.css"
 
@@ -539,6 +540,7 @@ export function QuizFrame({
   foot: ReactNode
   overlay?: ReactNode
   children: ReactNode
+  const growRef = useGrowScroll()
 }) {
   return (
     <div className="screen bg-quiz">
@@ -564,7 +566,9 @@ export function QuizFrame({
           </div>
         </div>
         <div className="qmain">
-          <div className="qwrap">{children}</div>
+          <div className="qwrap" ref={growRef}>
+            {children}
+          </div>
           <div className="foot">{foot}</div>
         </div>
       </div>

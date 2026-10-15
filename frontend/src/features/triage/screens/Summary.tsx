@@ -8,11 +8,11 @@ import { useQuery } from "@tanstack/react-query"
 import { Link, useRouterState } from "@tanstack/react-router"
 import { AxiosError } from "axios"
 import { useMemo } from "react"
-
 import type { ScoreResult, SummaryRow } from "@/client"
 import { scoreAnswers, useFlow } from "../api"
 import { Card, copyText, Rich, toast, WarnBox } from "../components/Ui"
 import { readSummaryHash, unpackAnswers } from "../qr"
+import { useGrowScroll } from "../useGrowScroll"
 
 /** The API refused these answers (unknown flow, number out of range). */
 const isBadCode = (e: unknown) =>
@@ -25,6 +25,7 @@ const EMPTY = new Set(["-", ""])
 const QR_TODO = /QR rangkuman/
 
 export function SummaryScreen() {
+  const growRef = useGrowScroll()
   const hash = useRouterState({ select: (s) => s.location.hash })
   const packed = useMemo(() => {
     const code = readSummaryHash(hash)
@@ -56,7 +57,7 @@ export function SummaryScreen() {
         </Link>
         <div className="htitle">Rangkuman Pasien</div>
       </div>
-      <div className="rscroll">
+      <div className="rscroll" ref={growRef}>
         {!answers || score.isError ? (
           <Card tab="TIDAK BISA DIBACA" className="card-solo">
             <p className="saveinfo">
