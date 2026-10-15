@@ -68,6 +68,8 @@ Set these on the **`backend`** service:
 | `FIRST_SUPERUSER` | admin email | Used only for ST's screening-data export; login is optional for patients |
 | `FIRST_SUPERUSER_PASSWORD` | random | |
 | `FRONTEND_HOST` | `https://<domain>` | CORS allow-list. Cosmetic in the single-origin setup, but keep it correct |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID (Web) | Enables "Masuk dengan Google". Add the production domain to Authorized JavaScript origins |
+| `TRIAGE_AI_CACHE_SIZE` / `TRIAGE_AI_CACHE_TTL_S` | optional | Size and TTL (seconds) of the in-memory AI result cache; defaults apply if unset |
 | `WEB_CONCURRENCY` | `1` (default) or `2` | Optional. `start.sh` defaults to 1; raise on a larger instance |
 
 Generate secrets:
@@ -75,6 +77,10 @@ Generate secrets:
 ```bash
 python -c "import secrets; print(secrets.token_urlsafe(32))"
 ```
+
+**Frontend build-time variable:** `VITE_GOOGLE_CLIENT_ID` (same client ID) must be present when the image is built, because Vite inlines it. Changing it needs a rebuild.
+
+**Migration on deploy:** Alembic revision `b7d2e4f19a6c` (adds `screening.user_id`) runs automatically via `prestart.sh` on the next deploy.
 
 ### Two traps
 
@@ -215,8 +221,8 @@ Rates: RAM $10/GB/month, CPU $20/vCPU/month, egress $0.05/GB. **Builds are free.
 ## 10. What this app deliberately does not do
 
 - No BPJS API, telemedicine, or faskes integrations — plain links only (Google Maps search, opening Mobile JKN).
-- Photos are never stored; the photo analyzer is a skeleton returning `available: false`.
-- Nothing is sent outside our own server. SATUSEHAT integration is under consideration and not covered by this rule.
+- No photo feature: it was removed by team decision on 2026-10-15, so no images are uploaded or stored.
+- Screening text may be sent to the Gemini API for AI scoring (stated in the consent text). SATUSEHAT integration is under consideration and not covered by this rule.
 
 See `AGENTS.md` for the full "Must not break" list.
 
