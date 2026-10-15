@@ -380,6 +380,20 @@ export type DiseasePublic = {
 };
 
 /**
+ * FacilitiesNearestPublic
+ */
+export type FacilitiesNearestPublic = {
+    /**
+     * Data
+     */
+    data: Array<FacilityNearestPublic>;
+    /**
+     * Count
+     */
+    count: number;
+};
+
+/**
  * FacilitiesPublic
  */
 export type FacilitiesPublic = {
@@ -391,6 +405,96 @@ export type FacilitiesPublic = {
      * Count
      */
     count: number;
+};
+
+/**
+ * FacilityNearestPublic
+ */
+export type FacilityNearestPublic = {
+    /**
+     * Satusehat Id
+     */
+    satusehat_id: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Jenis Sarana Kode
+     */
+    jenis_sarana_kode: string;
+    /**
+     * Jenis Sarana Nama
+     */
+    jenis_sarana_nama: string;
+    /**
+     * Province Code
+     */
+    province_code: string;
+    /**
+     * Province Name
+     */
+    province_name: string;
+    /**
+     * City Name
+     */
+    city_name: string | null;
+    /**
+     * Address
+     */
+    address: string | null;
+    /**
+     * Phone
+     */
+    phone: string | null;
+    /**
+     * Wa Number
+     */
+    wa_number?: string | null;
+    /**
+     * Status Sarana
+     */
+    status_sarana?: string | null;
+    /**
+     * Latitude
+     */
+    latitude: number | null;
+    /**
+     * Longitude
+     */
+    longitude: number | null;
+    /**
+     * Distance Km
+     */
+    distance_km: number;
+};
+
+/**
+ * FacilityNearestRequest
+ */
+export type FacilityNearestRequest = {
+    /**
+     * Latitude
+     */
+    latitude: number;
+    /**
+     * Longitude
+     */
+    longitude: number;
+    /**
+     * Kind
+     *
+     * Facility kind: 'puskesmas' (102), 'rs' (104), 'apotek' (105)
+     */
+    kind?: string | null;
+    /**
+     * Limit
+     */
+    limit?: number;
 };
 
 /**
@@ -438,6 +542,14 @@ export type FacilityPublic = {
      */
     phone: string | null;
     /**
+     * Wa Number
+     */
+    wa_number?: string | null;
+    /**
+     * Status Sarana
+     */
+    status_sarana?: string | null;
+    /**
      * Latitude
      */
     latitude: number | null;
@@ -445,6 +557,18 @@ export type FacilityPublic = {
      * Longitude
      */
     longitude: number | null;
+};
+
+/**
+ * FacilityWhatsappUpdate
+ */
+export type FacilityWhatsappUpdate = {
+    /**
+     * Wa Number
+     *
+     * Indonesian mobile number (08… / +62 8…), or null/empty to clear. Stored in international form (628…).
+     */
+    wa_number?: string | null;
 };
 
 /**
@@ -1952,6 +2076,12 @@ export type facilitiesListFacilitiesData = {
          * Skip
          */
         skip?: number;
+        /**
+         * With Coords
+         *
+         * Only facilities that have coordinates (needed to sort by distance; most Apotek rows lack them)
+         */
+        with_coords?: boolean;
     };
     url: '/api/v1/facilities/';
 };
@@ -1973,6 +2103,61 @@ export type facilitiesListFacilitiesResponses = {
 };
 
 export type facilitiesListFacilitiesResponse = facilitiesListFacilitiesResponses[keyof facilitiesListFacilitiesResponses];
+
+export type facilitiesNearestFacilitiesData = {
+    body: FacilityNearestRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/facilities/nearest';
+};
+
+export type facilitiesNearestFacilitiesErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type facilitiesNearestFacilitiesError = facilitiesNearestFacilitiesErrors[keyof facilitiesNearestFacilitiesErrors];
+
+export type facilitiesNearestFacilitiesResponses = {
+    /**
+     * Successful Response
+     */
+    200: FacilitiesNearestPublic;
+};
+
+export type facilitiesNearestFacilitiesResponse = facilitiesNearestFacilitiesResponses[keyof facilitiesNearestFacilitiesResponses];
+
+export type facilitiesSetFacilityWhatsappData = {
+    body: FacilityWhatsappUpdate;
+    path: {
+        /**
+         * Satusehat Id
+         */
+        satusehat_id: string;
+    };
+    query?: never;
+    url: '/api/v1/facilities/{satusehat_id}/whatsapp';
+};
+
+export type facilitiesSetFacilityWhatsappErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type facilitiesSetFacilityWhatsappError = facilitiesSetFacilityWhatsappErrors[keyof facilitiesSetFacilityWhatsappErrors];
+
+export type facilitiesSetFacilityWhatsappResponses = {
+    /**
+     * Successful Response
+     */
+    200: FacilityPublic;
+};
+
+export type facilitiesSetFacilityWhatsappResponse = facilitiesSetFacilityWhatsappResponses[keyof facilitiesSetFacilityWhatsappResponses];
 
 export type privateCreateUserData = {
     body: PrivateUserCreate;

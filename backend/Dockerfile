@@ -13,6 +13,9 @@ RUN bun install
 COPY ./frontend /app/frontend
 
 ARG VITE_API_URL=
+# "true" -> the app ranks nearest facilities on the server (coords leave the
+# device); default/empty -> it ranks in the browser. See docs/SATUSEHAT.md §3.
+ARG VITE_FACILITIES_SERVER_NEAREST=
 
 RUN bun run build
 

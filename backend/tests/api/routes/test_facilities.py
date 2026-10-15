@@ -148,6 +148,18 @@ def test_filter_by_kind_code(client: TestClient) -> None:
 
 
 @pytest.mark.usefixtures("seeded")
+def test_with_coords_filters_out_unrankable_rows(client: TestClient) -> None:
+    # Without the flag the coordinate-less row is still listed (count 2)...
+    r = client.get(f"{API}/", params={"province": "DKI Jakarta"})
+    assert r.json()["count"] == 2
+    # ...with it, only rows that can be distance-sorted remain.
+    r = client.get(f"{API}/", params={"province": "DKI Jakarta", "with_coords": "true"})
+    body = r.json()
+    assert body["count"] == 1
+    assert [f["name"] for f in body["data"]] == ["Puskesmas Menteng"]
+
+
+@pytest.mark.usefixtures("seeded")
 def test_yogyakarta_alias(client: TestClient) -> None:
     for province in ("Yogyakarta", "Daerah Istimewa Yogyakarta", "34"):
         r = client.get(f"{API}/", params={"province": province})
