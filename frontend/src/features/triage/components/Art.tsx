@@ -185,28 +185,28 @@ export function Scene() {
             x2="0"
             y2="800"
           >
-            <stop offset="0" stopColor="#5D52D9" />
-            <stop offset=".3" stopColor="#9A62D8" />
-            <stop offset=".52" stopColor="#F0839A" />
-            <stop offset=".68" stopColor="#FFA97A" />
-            <stop offset=".8" stopColor="#FFD08A" />
+            <stop offset="0" stopColor="#CFC6F8" />
+            <stop offset=".3" stopColor="#DAD2FA" />
+            <stop offset=".52" stopColor="#E3DCFD" />
+            <stop offset=".68" stopColor="#F3DFF8" />
+            <stop offset=".8" stopColor="#FDE3F1" />
           </linearGradient>
           <radialGradient id="glow">
-            <stop offset="0" stopColor="#FFF1B8" stopOpacity=".95" />
-            <stop offset=".4" stopColor="#FFD27A" stopOpacity=".5" />
-            <stop offset="1" stopColor="#FFB27A" stopOpacity="0" />
+            <stop offset="0" stopColor="#FFFFFF" stopOpacity=".95" />
+            <stop offset=".4" stopColor="#FDE3F1" stopOpacity=".7" />
+            <stop offset="1" stopColor="#FDE3F1" stopOpacity="0" />
           </radialGradient>
           <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#FFB88A" />
-            <stop offset="1" stopColor="#E77FA2" />
+            <stop offset="0" stopColor="#D8EEFC" />
+            <stop offset="1" stopColor="#BFE2F8" />
           </linearGradient>
         </defs>
         <rect x="-1300" y="-900" width="3000" height="1800" fill="url(#sky)" />
         <circle cx="200" cy="530" r="190" fill="url(#glow)" />
-        <circle cx="200" cy="535" r="62" fill="#FFE9A6" />
+        <circle cx="200" cy="535" r="62" fill="#F7A8D0" />
         <g
           fill="none"
-          stroke="#fff"
+          stroke="#FFFFFF"
           strokeWidth="2.4"
           strokeLinecap="round"
           opacity=".55"
@@ -218,7 +218,7 @@ export function Scene() {
           <path d="M560 320q6-6 12 0q6-6 12 0" />
           <path d="M640 260q8-8 16 0q8-8 16 0" />
         </g>
-        <g fill="#fff" opacity=".35">
+        <g fill="#fff" opacity=".8">
           <ellipse cx="90" cy="420" rx="60" ry="12" />
           <ellipse cx="320" cy="390" rx="70" ry="13" />
           <ellipse cx="290" cy="440" rx="40" ry="8" />
@@ -228,44 +228,44 @@ export function Scene() {
           <ellipse cx="820" cy="370" rx="70" ry="12" />
         </g>
         <rect x="-1300" y="560" width="3000" height="70" fill="url(#sea)" />
-        <g stroke="#FFE7B0" strokeWidth="3" strokeLinecap="round" opacity=".7">
+        <g stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" opacity=".7">
           <path d="M150 578h40" />
           <path d="M210 592h50" />
           <path d="M170 606h30" />
           <path d="M-120 585h50" />
           <path d="M520 590h60" />
         </g>
-        <SideHill a={30} step={130} yL={585} yR={548} fill="#C46FB0" op={0.9} />
+        <SideHill a={30} step={130} yL={585} yR={548} fill="#E3DCFD" op={0.9} />
         <path
           d="M0 585Q70 548 140 572T280 560T400 548V800H0Z"
-          fill="#C46FB0"
+          fill="#E3DCFD"
           opacity=".9"
         />
-        <SideHill a={34} step={260} yL={630} yR={612} fill="#9554BC" />
-        <path d="M0 630Q110 590 220 628T400 612V800H0Z" fill="#9554BC" />
+        <SideHill a={34} step={260} yL={630} yR={612} fill="#CFC6F8" />
+        <path d="M0 630Q110 590 220 628T400 612V800H0Z" fill="#CFC6F8" />
         <g transform="translate(262 560)">
-          <rect x="0" y="22" width="78" height="44" rx="6" fill="#FFF1E4" />
-          <path d="M-8 26L39 -4L86 26Z" fill="#F0778A" />
-          <rect x="31" y="40" width="16" height="26" rx="3" fill="#8F5BD6" />
-          <rect x="8" y="34" width="15" height="13" rx="3" fill="#FFD36E" />
-          <rect x="55" y="34" width="15" height="13" rx="3" fill="#FFD36E" />
+          <rect x="0" y="22" width="78" height="44" rx="6" fill="#FFFFFF" />
+          <path d="M-8 26L39 -4L86 26Z" fill="#3F38E6" />
+          <rect x="31" y="40" width="16" height="26" rx="3" fill="#8E88F0" />
+          <rect x="8" y="34" width="15" height="13" rx="3" fill="#D3E8FA" />
+          <rect x="55" y="34" width="15" height="13" rx="3" fill="#D3E8FA" />
           <circle cx="39" cy="12" r="9" fill="#fff" />
-          <path d="M37 6h4v4h4v4h-4v4h-4v-4h-4v-4h4z" fill="#26C4B1" />
+          <path d="M37 6h4v4h4v4h-4v4h-4v-4h-4v-4h4z" fill="#F7A8D0" />
         </g>
-        <SideHill a={36} step={325} yL={690} yR={680} fill="#6E3DA6" />
-        <path d="M0 690Q130 650 250 690T400 680V800H0Z" fill="#6E3DA6" />
-        <Palm x={52} y={700} s={1.05} c="#4A2683" />
-        <Palm x={368} y={690} s={0.85} c="#4A2683" />
-        <Palm x={330} y={705} s={0.6} c="#5A3196" />
-        <Palm x={-140} y={705} s={0.95} c="#4A2683" />
-        <Palm x={-300} y={690} s={0.7} c="#5A3196" />
-        <Palm x={-480} y={705} s={1.1} c="#4A2683" />
-        <Palm x={560} y={705} s={1} c="#4A2683" />
-        <Palm x={700} y={690} s={0.72} c="#5A3196" />
-        <Palm x={880} y={705} s={1.1} c="#4A2683" />
-        <SideHill a={22} step={260} yL={740} yR={742} fill="#4A2683" />
-        <path d="M0 740Q140 712 400 742V800H0Z" fill="#4A2683" />
-        <g fill="#3B1E6E">
+        <SideHill a={36} step={325} yL={690} yR={680} fill="#BDB2F3" />
+        <path d="M0 690Q130 650 250 690T400 680V800H0Z" fill="#BDB2F3" />
+        <Palm x={52} y={700} s={1.05} c="#9D90EC" />
+        <Palm x={368} y={690} s={0.85} c="#9D90EC" />
+        <Palm x={330} y={705} s={0.6} c="#AFA4F0" />
+        <Palm x={-140} y={705} s={0.95} c="#9D90EC" />
+        <Palm x={-300} y={690} s={0.7} c="#AFA4F0" />
+        <Palm x={-480} y={705} s={1.1} c="#9D90EC" />
+        <Palm x={560} y={705} s={1} c="#9D90EC" />
+        <Palm x={700} y={690} s={0.72} c="#AFA4F0" />
+        <Palm x={880} y={705} s={1.1} c="#9D90EC" />
+        <SideHill a={22} step={260} yL={740} yR={742} fill="#9D90EC" />
+        <path d="M0 740Q140 712 400 742V800H0Z" fill="#9D90EC" />
+        <g fill="#8478E4">
           <path d="M90 742q8-30 14 0z" />
           <path d="M100 742q12-26 16 0z" />
           <path d="M300 744q6-24 12 0z" />

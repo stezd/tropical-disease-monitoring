@@ -40,8 +40,8 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-sans: "Nunito", "Segoe UI", system-ui, sans-serif;
-  --font-heading: "Fredoka", ui-rounded, "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-heading: "Source Serif 4", Georgia, "Times New Roman", serif;
 
   /* Type scale and breakpoints from DESIGN.md (Units, Type). */
   --text-2xs: 0.6875rem;
@@ -52,38 +52,38 @@
 :root {
   /* shadcn theme mapped to TropiCare colors (DESIGN.md). Light only. */
   --radius: 1rem;
-  --background: #f6f3ff;
-  --foreground: #3a2e6e;
-  --card: #ffffff;
-  --card-foreground: #3a2e6e;
+  --background: #fdfcff;
+  --foreground: #1c1b3f;
+  --card: #eee9fd;
+  --card-foreground: #1c1b3f;
   --popover: #ffffff;
-  --popover-foreground: #3a2e6e;
-  --primary: #8b4dff;
+  --popover-foreground: #1c1b3f;
+  --primary: #3f38e6;
   --primary-foreground: #ffffff;
-  /* Every button is purple (DESIGN.md); shadcn "secondary" = deeper purple. */
-  --secondary: #6427d6;
-  --secondary-foreground: #ffffff;
-  --muted: #f6f3ff;
-  --muted-foreground: #6e6898;
-  --accent: #eeebff;
-  --accent-foreground: #3a2e6e;
-  --destructive: #ff4b5c;
-  --border: #e7e2ff;
-  --input: #e7e2ff;
-  --ring: #8b4dff;
-  --chart-1: #8b4dff;
-  --chart-2: #26c4b1;
+  /* Every button is indigo (DESIGN.md); shadcn "secondary" = indigo-soft. */
+  --secondary: #dedbfd;
+  --secondary-foreground: #2d26c4;
+  --muted: #eee9fd;
+  --muted-foreground: #55547f;
+  --accent: #fde3f1;
+  --accent-foreground: #1c1b3f;
+  --destructive: #e8384f;
+  --border: #dcd4fa;
+  --input: #dcd4fa;
+  --ring: #3f38e6;
+  --chart-1: #3f38e6;
+  --chart-2: #1f9d66;
   --chart-3: #ffc531;
   --chart-4: #ff8f3d;
-  --chart-5: #ff4b5c;
+  --chart-5: #e5484d;
   --sidebar: #ffffff;
-  --sidebar-foreground: #3a2e6e;
-  --sidebar-primary: #8b4dff;
+  --sidebar-foreground: #1f2a5c;
+  --sidebar-primary: #3b41c9;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eeebff;
-  --sidebar-accent-foreground: #3a2e6e;
-  --sidebar-border: #e7e2ff;
-  --sidebar-ring: #8b4dff;
+  --sidebar-accent: #dcebfa;
+  --sidebar-accent-foreground: #1f2a5c;
+  --sidebar-border: #d9e2f5;
+  --sidebar-ring: #3b41c9;
 }
 
 .dark {
