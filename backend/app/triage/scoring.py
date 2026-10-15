@@ -34,6 +34,9 @@ class ScoreBreakdown:
     reasons: dict[str, list[str]]
     # Diseases with a positive score, highest first.
     ranked: list[Ranked] = field(default_factory=list)
+    # What produced the scores, saved with a screening: "rules", "model", "ai", or
+    # "ai-fb:<reason>" when the AI engine fell back to rules. At most 20 characters.
+    engine: str = "rules"
 
 
 class ScoringEngine(Protocol):

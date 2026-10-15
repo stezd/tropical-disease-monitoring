@@ -64,6 +64,13 @@ class AISettings(BaseSettings):
     # After a 429 from the provider, skip the model for this many seconds.
     COOLDOWN_S: float = Field(default=60.0, ge=0)
 
+    # Seconds a model result is reused for the exact same answers (result page, QR
+    # summary, saving the screening). 0 = no reuse.
+    CACHE_TTL_S: float = Field(default=900.0, ge=0)
+
+    # Drug recognition (Q6 free text → drug classes). Needs a model; off = keywords only.
+    DRUGS_ENABLED: bool = True
+
     LITERATURE_DIR: Path = DATA_DIR
     # JSON lines, one per scoring. Empty = write to the "app.triage.ai" logger instead.
     LOG_PATH: Path | None = None

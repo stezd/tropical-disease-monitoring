@@ -5,6 +5,78 @@ export type ClientOptions = {
 };
 
 /**
+ * AIDrug
+ */
+export type AIDrug = {
+    /**
+     * Mention
+     */
+    mention: string;
+    /**
+     * Generic
+     */
+    generic: string;
+    /**
+     * Drug Class
+     */
+    drug_class: string;
+};
+
+/**
+ * AIDrugsRequest
+ */
+export type AIDrugsRequest = {
+    /**
+     * Flow Id
+     */
+    flow_id?: 'infection' | 'chronic';
+    /**
+     * Text
+     *
+     * The patient's free-text drug answer
+     */
+    text: string;
+};
+
+/**
+ * AIDrugsResponse
+ */
+export type AIDrugsResponse = {
+    /**
+     * Request Id
+     */
+    request_id: string;
+    /**
+     * Classes
+     */
+    classes: Array<string>;
+    /**
+     * Drugs
+     */
+    drugs: Array<AIDrug>;
+    /**
+     * Engine
+     */
+    engine: string;
+    /**
+     * Fallback
+     */
+    fallback: boolean;
+    /**
+     * Reason
+     */
+    reason: string | null;
+    /**
+     * Model
+     */
+    model: string;
+    /**
+     * Latency Ms
+     */
+    latency_ms: number;
+};
+
+/**
  * AIScoreRequest
  */
 export type AIScoreRequest = {
@@ -1673,7 +1745,14 @@ export type triageScoreFlowData = {
          */
         flow_id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Preview
+         *
+         * True for calls during the quiz (e.g. drug pop-ups at the drug step): scores with the rules, never with the language model.
+         */
+        preview?: boolean;
+    };
     url: '/api/v1/triage/flows/{flow_id}/score';
 };
 
@@ -1803,6 +1882,31 @@ export type aiAiScoreResponses = {
 };
 
 export type aiAiScoreResponse = aiAiScoreResponses[keyof aiAiScoreResponses];
+
+export type aiAiDrugsData = {
+    body: AIDrugsRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ai/drugs';
+};
+
+export type aiAiDrugsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type aiAiDrugsError = aiAiDrugsErrors[keyof aiAiDrugsErrors];
+
+export type aiAiDrugsResponses = {
+    /**
+     * Successful Response
+     */
+    200: AIDrugsResponse;
+};
+
+export type aiAiDrugsResponse = aiAiDrugsResponses[keyof aiAiDrugsResponses];
 
 export type aiAiStatusData = {
     body?: never;

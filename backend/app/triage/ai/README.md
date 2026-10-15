@@ -68,6 +68,28 @@ Saran untuk ST: kolom `engine` di tabel `screening` sekarang diisi `settings.TRI
 
 Satu baris JSON per penilaian, ke logger `app.triage.ai` atau ke file `TRIAGE_AI_LOG_PATH`. Isinya `request_id`, mode, model, versi prompt dan literatur, skor model, skor aturan untuk pembanding, kandidat pendek, catatan singkat model per penyakit, sumber yang dikutip, latensi, token, dan baris fakta (`TRIAGE_AI_LOG_FACTS`). Tidak pernah berisi nama, NIK, BPJS, koordinat, foto, atau teks bebas obat.
 
+## Satu panggilan model per pasien
+
+Frontend memanggil endpoint skor beberapa kali: di langkah obat (q6) untuk pop-up peringatan obat, di layar "Kak Tropi sedang menebak", lalu backend menghitung ulang saat screening disimpan.
+
+- Langkah obat memanggil dengan `?preview=true`. Skornya dihitung dengan `RuleEngine`, tidak pernah dengan model.
+- Hasil model untuk jawaban yang persis sama dipakai ulang selama `TRIAGE_AI_CACHE_TTL_S` (bawaan 15 menit), jadi halaman hasil, ringkasan QR, dan simpan screening tidak memanggil Gemini lagi. Hasil fallback tidak disimpan, supaya percobaan berikutnya tetap mencoba model.
+- Kolom `engine` di tabel `screening` sekarang berisi engine yang benar-benar dipakai: `ai`, `rules`, atau `ai-fb:<alasan>` (misalnya `ai-fb:timeout`).
+
+## Pengenalan obat (`/drugs`)
+
+Teks bebas langkah obat (Q6) dibaca model menjadi golongan: `nsaid`, `antimotilitas`, `ccb_dhp`, `acei`, `statin`, `diuretik`, `antikoagulan` (serta `lain` dan `tidak_dikenal`, yang tidak memicu apa pun).
+
+- Model **hanya menyebut golongan**. Pop-up dan teks peringatan tetap dari `advice.json`: sebuah aturan menyala kalau kata kuncinya cocok **atau** golongannya ditemukan (`"classes"` di aturan).
+- Model hanya dipanggil kalau ada aturan yang masih bisa menyala untuk jawaban itu dan belum tertangkap kata kunci. Contoh: NSAID hanya relevan untuk keluhan demam (A); pasien dengan keluhan kulit tidak memicu panggilan.
+- Kalau semua item adalah obat yang sudah dikenal (chip obat atau kata kunci), model tidak dipanggil. Teks yang sama di-cache.
+- Berjalan paralel dengan penilaian skor, dan tidak bergantung pada `TRIAGE_SCORING_ENGINE`: aktif kalau ada API key dan `TRIAGE_AI_DRUGS_ENABLED=true` (bawaan).
+- Gagal (timeout, kuota, JSON salah) = golongan kosong; aturan kata kunci tetap berjalan seperti sebelumnya.
+- Log hanya berisi nama generik dan golongan, bukan tulisan asli pasien.
+- `POST /api/v1/ai/drugs` untuk mencoba langsung.
+
+Tiga aturan baru dari Referensi Medis (Tahap 4, Sub-Trigger 1B) sudah ada di `advice.json` dengan `"pending_dr": true`: Statin, Diuretik, dan Antikoagulan pada pasien demam. **Aturan ini tidak akan menyala** sampai DR menyetujui teksnya dan baris `pending_dr` dihapus.
+
 ## Literatur
 
 ```bash
