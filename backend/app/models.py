@@ -118,6 +118,10 @@ class Facility(SQLModel, table=True):
     city_name: str | None = Field(default=None, max_length=100)
     address: str | None = Field(default=None, max_length=500)
     phone: str | None = Field(default=None, max_length=100)
+    # Curated WhatsApp number, set by an admin (PUT /facilities/{id}/whatsapp).
+    # MSI has no WhatsApp field and its `telp` is usually a landline, so this is
+    # never written by the sync -- it survives re-syncs untouched.
+    wa_number: str | None = Field(default=None, max_length=32)
     latitude: float | None = Field(default=None, index=True)
     longitude: float | None = Field(default=None, index=True)
     operational: bool = Field(default=True)
@@ -139,12 +143,27 @@ class FacilityPublic(SQLModel):
     city_name: str | None
     address: str | None
     phone: str | None
+    # Curated mobile number for the WhatsApp button, when an admin has set one.
+    wa_number: str | None = None
+    # MSI data-confidence marker ("verified"/"valid"), used to break near-ties
+    # when two facilities are about the same distance away.
+    status_sarana: str | None = None
     latitude: float | None
     longitude: float | None
 
 
 class FacilitiesPublic(SQLModel):
     data: list[FacilityPublic]
+    count: int
+
+
+# A facility picked by distance, with how far it is (straight-line km).
+class FacilityNearestPublic(FacilityPublic):
+    distance_km: float
+
+
+class FacilitiesNearestPublic(SQLModel):
+    data: list[FacilityNearestPublic]
     count: int
 
 

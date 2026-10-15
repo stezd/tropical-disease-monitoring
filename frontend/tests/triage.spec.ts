@@ -72,6 +72,75 @@ test("Red flag opens the red route without the server", async ({ page }) => {
   await expect(page.locator(".conf")).toHaveCount(0)
 })
 
+// The nearest-facility card is progressive: it asks for location on demand and
+// ranks the province's facilities in the browser. Both are stubbed here so the
+// test does not depend on a synced mirror or the patient's real position.
+test("Nearest facilities show WhatsApp and Maps actions", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["geolocation"])
+  await context.setGeolocation({ latitude: -6.2, longitude: 106.8 })
+  await page.route("**/api/v1/facilities**", (route) =>
+    route.fulfill({
+      json: {
+        data: [
+          {
+            satusehat_id: "1",
+            code: "R3100000001",
+            name: "RSUD Contoh Dekat",
+            jenis_sarana_kode: "104",
+            jenis_sarana_nama: "Rumah Sakit",
+            province_code: "31",
+            province_name: "DKI Jakarta",
+            city_name: "Jakarta Pusat",
+            address: "Jl. Contoh No. 1",
+            phone: "081234567890",
+            status_sarana: "verified",
+            latitude: -6.2005,
+            longitude: 106.8,
+          },
+          {
+            satusehat_id: "2",
+            code: "R3100000002",
+            name: "RSUD Contoh Jauh",
+            jenis_sarana_kode: "104",
+            jenis_sarana_nama: "Rumah Sakit",
+            province_code: "31",
+            province_name: "DKI Jakarta",
+            city_name: "Jakarta Selatan",
+            address: null,
+            phone: null,
+            status_sarana: "valid",
+            latitude: -6.26,
+            longitude: 106.81,
+          },
+        ],
+        count: 2,
+      },
+    }),
+  )
+
+  await startAs(page, "40")
+  await page.getByText("Sesak napas sangat berat").click()
+  await next(page)
+  await expect(
+    page.getByRole("heading", { name: "KONDISI DARURAT" }),
+  ).toBeVisible()
+
+  await page.getByRole("button", { name: /Temukan rumah sakit/ }).click()
+  await expect(page.getByText("RSUD Contoh Dekat")).toBeVisible({
+    timeout: 10_000,
+  })
+  // Mobile number -> WhatsApp; the coordinates -> a maps route, not a search.
+  await expect(
+    page.getByRole("link", { name: /WhatsApp/ }).first(),
+  ).toHaveAttribute("href", "https://wa.me/6281234567890")
+  await expect(
+    page.getByRole("link", { name: /Rute/ }).first(),
+  ).toHaveAttribute("href", /google\.com\/maps\/dir\/.*-6\.2005/)
+})
+
 test("Guest finishes the chronic risk check", async ({ page }) => {
   await page.goto("/")
   await page.getByText("Cek risiko penyakit jangka panjang").click()

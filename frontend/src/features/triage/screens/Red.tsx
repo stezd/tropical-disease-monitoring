@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 
 import type { FlowPublic } from "@/client"
+import { NearestFacilities } from "../components/Nearby"
 import { Card, copyText, RED_TAB, toast } from "../components/Ui"
 import { vibrate } from "../fx"
 import { mapsURL } from "../links"
@@ -106,6 +107,7 @@ export function RedScreen({
                 💉 Cari Rabies Center (VAR)
               </a>
             )}
+            <NearestFacilities route="red" tone="red" />
           </div>
           <div className="redcol">
             <Card

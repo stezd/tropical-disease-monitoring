@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { type FlowPublic, TriageService } from "@/client"
 import { scoreAnswers, scoreKey } from "../api"
 import { Sparkles } from "../components/Art"
+import { NearestFacilities } from "../components/Nearby"
 import { PhotoCard } from "../components/PhotoCard"
 import { QrCard } from "../components/QrCard"
 import { Card, copyText, Rich, toast, WarnBox } from "../components/Ui"
@@ -210,6 +211,8 @@ export function ResultScreen({
                 )}
               </div>
             </Card>
+
+            <NearestFacilities route={r.route} />
 
             {r.warnings.length > 0 && (
               <Card tab="CATATAN PENTING" className="rnotes">
