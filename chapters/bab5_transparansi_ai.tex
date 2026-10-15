@@ -8,13 +8,13 @@
 
 Sejalan dengan standar integritas akademik dan regulasi kompetisi JOINTS 2026, tim pengembang menyatakan secara terbuka pemanfaatan kecerdasan buatan pada dua ranah:
 \begin{enumerate}
-    \item \textbf{Akselerasi Rekayasa Kode (\textit{AI-assisted coding}):} Sebagian besar penulisan basis kode purwarupa dikembangkan secara intensif berbantuan model Claude dan Gemini. Akselerasi sintaksis ini diimbangi secara sadar dengan disiplin rekayasa perangkat lunak yang ketat: tim menerapkan rangkaian pengujian otomatis komprehensif (\textit{automated test suite}) dengan cakupan uji (\textit{test coverage}) melampaui \textbf{90\% pada backend}, pengujian regresi kasus emas (\textit{golden test snapshots}), serta penerapan pola arsitektur \textit{ports and adapters} guna menjamin keandalan sistem tetap terverifikasi.
+    \item \textbf{Akselerasi Rekayasa Kode (\textit{AI-assisted coding}):} Sebagian besar penulisan basis kode purwarupa dikembangkan berbantuan model Claude dan Gemini. Akselerasi sintaksis ini diimbangi disiplin rekayasa yang ketat: \textbf{304 kasus uji} dengan cakupan uji (\textit{test coverage}) \textbf{96\% pada backend}, pengujian regresi kasus emas (\textit{golden test snapshots}), serta pola arsitektur \textit{ports and adapters} guna menjamin keandalan sistem tetap terverifikasi.
     \item \textbf{Model Inferensi Triase pada Purwarupa:} Pada demo dan pengujian, penalaran gejala kompleks dilayani model medis bobot terbuka \textbf{MedGemma 4B} yang dihosting tim sendiri melalui API bergaya OpenAI (vLLM). Arsitektur penyedianya dapat ditukar hanya lewat konfigurasi, termasuk ke Google Gemini atau DeepSeek, tanpa mengubah kode aplikasi (Tabel~\ref{tab:transparansi_ai}).
 \end{enumerate}
 
 \begin{table}[H]
 \centering
-\small
+\footnotesize
 \caption{Matriks Transparansi Pemanfaatan AI dalam Siklus Proyek}\label{tab:transparansi_ai}
 \vspace{3pt}
 \begin{tabularx}{\textwidth}{p{3.2cm} X X}
@@ -25,9 +25,9 @@ Sejalan dengan standar integritas akademik dan regulasi kompetisi JOINTS 2026, t
 \midrule
 \textbf{Penyusunan Proposal} & Perumusan draf awal kalimat, perbaikan tata bahasa formal, dan penataan struktur tabel komparasi. & Penyuntingan substansial, verifikasi silang dokumen regulasi (UU PDP, UU Kesehatan, KMK PPK FKTP), dan penulisan ulang analisis kausal oleh tim. \\
 \midrule
-\textbf{Rekayasa Kode \& Otomasi Pengujian} & Generasi sintaksis berbantuan AI (Claude \& Gemini) untuk rute FastAPI, komponen React PWA, dan skema JSON. & Perancangan arsitektur domain mandiri, isolasi logika klinis, audit kode baris-demi-baris, serta pembuatan pengujian otomatis dengan cakupan $>90\%$ \textit{coverage} pada backend (\textit{pytest} \& \textit{golden snapshots}) untuk mencegah regresi logika. \\
+\textbf{Rekayasa Kode \& Otomasi Pengujian} & Generasi sintaksis berbantuan AI (Claude \& Gemini) untuk rute FastAPI, komponen React PWA, dan skema JSON. & Perancangan arsitektur domain mandiri, isolasi logika klinis, audit kode baris-demi-baris, serta 304 kasus uji otomatis dengan cakupan 96\% pada backend (\textit{pytest} \& \textit{golden snapshots}) untuk mencegah regresi logika. \\
 \midrule
-\textbf{Inferensi Klinis pada Demo} & Model medis \textbf{MedGemma 4B} yang dihosting tim sendiri lewat API bergaya OpenAI (vLLM). Penyedia lain seperti Gemini dan DeepSeek dapat ditukar lewat konfigurasi. & Pengambilan kutipan pedoman lewat indeks BM25 atas korpus KMK 1186/2022, validasi skema JSON keluaran, serta pemutusan 100\% tanpa AI untuk kasus gawat darurat (\textit{Red Flags bypass}). \\
+\textbf{Inferensi Klinis pada Demo} & Model medis \textbf{MedGemma 4B} yang dihosting tim sendiri lewat API bergaya OpenAI (vLLM). Penyedia lain seperti Gemini dan DeepSeek dapat ditukar lewat konfigurasi. & Pengambilan kutipan pedoman lewat indeks BM25 atas korpus KMK 1186/2022, validasi skema JSON keluaran, serta pemutusan tanpa AI untuk kasus gawat darurat (\textit{Red Flags bypass}). \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -38,7 +38,7 @@ Tim TropiCare menegaskan bahwa kecerdasan buatan hanyalah alat bantu (\textit{as
 
 \begin{enumerate}
     \item \textbf{Validasi Medis oleh Kolaborator Klinis:} Seluruh logika pohon keputusan klinis, pembagian 20 penyakit tropis, penetapan 11 kriteria tanda bahaya (\textit{Red Flags}), dan alur rujukan dikurasi langsung oleh kolaborator mahasiswa kedokteran berdasarkan KMK No. HK.01.07/MENKES/1186/2022 \citep{Kemenkes2022a} dan KMK No. HK.01.07/MENKES/1936/2022 \citep{Kemenkes2022b}. Hal ini menjamin kepatuhan pada Standar Kompetensi Dokter Indonesia \citep{KKI2012}.
-    \item \textbf{Rekayasa Perangkat Lunak Terkendali \& Uji Regresi Backend $>90\%$:} Meskipun sintaksis kode dipercepat menggunakan generator AI, struktur arsitektur dikendalikan penuh oleh tim manusia melalui pola \textit{Ports and Adapters} (arsitektur heksagonal). Logika inti diproteksi oleh skema validasi Pydantic v2 yang ketat dan ratusan pengujian unit otomatis dengan \textit{coverage} di atas 90\%, menjamin tidak ada kode yang berjalan di luar kendali (\textit{uncontrolled behavior}).
+    \item \textbf{Rekayasa Perangkat Lunak Terkendali \& Uji Regresi Backend:} Meskipun sintaksis kode dipercepat menggunakan generator AI, struktur arsitektur dikendalikan penuh oleh tim manusia melalui pola \textit{Ports and Adapters} (arsitektur heksagonal). Logika inti diproteksi oleh skema validasi Pydantic v2 yang ketat dan 304 pengujian otomatis dengan cakupan 96\%, menjamin tidak ada kode yang berjalan di luar kendali (\textit{uncontrolled behavior}).
     \item \textbf{Keputusan Etis Pembatasan Fitur:} Tim secara sadar menghapus fitur kamera ruam kulit demi mematuhi UU Pelindungan Data Pribadi No. 27/2022 \citep{UUPDP2022} mengenai data biometrik sensitif dan mencegah bias warna kulit sawo matang/gelap, serta menolak penyimpanan nomor KTP/NIK di server demi keamanan privasi masyarakat.
 \end{enumerate}
 
@@ -48,7 +48,7 @@ Operasionalisasi TropiCare berpedoman teguh pada empat pilar etika kecerdasan bu
 
 \begin{table}[H]
 \centering
-\small
+\footnotesize
 \caption{Keselarasan Implementasi TropiCare dengan Prinsip Etika AI Nasional dan Global}\label{tab:etika_ai}
 \vspace{3pt}
 \begin{tabularx}{\textwidth}{p{3.5cm} X X}

@@ -12,18 +12,18 @@ Rincian sasaran strategis kuartalan dirangkum pada Tabel~\ref{tab:roadmap}.
 
 \begin{table}[H]
 \centering
-\small
+\footnotesize
 \caption{Peta Jalan Pengembangan dan Implementasi TropiCare 12 Bulan}\label{tab:roadmap}
 \vspace{3pt}
 \begin{tabularx}{\textwidth}{p{2.3cm} p{3.2cm} X p{4cm}}
 \toprule
 \textbf{Periode} & \textbf{Fokus Strategis} & \textbf{Aktivitas Utama} & \textbf{Luaran Kunci (\textit{Milestone})} \\
 \midrule
-\textbf{Kuartal I\newline(Bulan 1--3)} & Validasi Klinis \& Audit Sistem & Uji akurasi menggunakan 100 kartu kasus dokter spesialis; uji kemudahan pakai antarmuka pada warga; audit keamanan kode backend dan frontend. & Akurasi triase $>92\%$ (0\% salah deteksi darurat); skor SUS $>80$ (\textit{Grade A}); kode bebas celah keamanan kritis. \\
+\textbf{Kuartal I\newline(Bulan 1--3)} & Validasi Klinis \& Audit Sistem & Uji akurasi menggunakan 100 kartu kasus dokter spesialis; uji kemudahan pakai antarmuka pada warga; audit keamanan kode backend dan frontend. & Akurasi triase $>92\%$ tanpa kasus darurat terlewat; skor SUS $>80$ (\textit{Grade A}); kode bebas celah keamanan kritis. \\
 \midrule
-\textbf{Kuartal II\newline(Bulan 4--6)} & Uji Lapangan Terbatas (\textit{Pilot Project}) & Penerapan di 10 Puskesmas wilayah endemis (Jawa Barat dan NTT); pelatihan kader Posyandu untuk pemindaian QR luring; verifikasi kontak WhatsApp resmi faskes. & Operasional di 10 FKTP; scan QR loket $<1$ detik; 100\% nomor WhatsApp faskes terverifikasi aktif. \\
+\textbf{Kuartal II\newline(Bulan 4--6)} & Uji Lapangan Terbatas (\textit{Pilot Project}) & Penerapan di 10 Puskesmas wilayah endemis (Jawa Barat dan NTT); pelatihan kader Posyandu untuk pemindaian QR; pengumpulan kontak WhatsApp resmi faskes. & Operasional di 10 FKTP; pemindaian QR cepat di loket; kontak faskes pada pilot terverifikasi. \\
 \midrule
-\textbf{Kuartal III\newline(Bulan 7--9)} & Regulasi \& Interoperabilitas & Pendaftaran ke \textit{Regulatory Sandbox} Kemenkes RI klaster telekesehatan; integrasi tautan rujukan langsung ke antrean Mobile JKN BPJS Kesehatan. & Status peserta resmi \textit{Regulatory Sandbox}; integrasi pendaftaran poli via Mobile JKN. \\
+\textbf{Kuartal III\newline(Bulan 7--9)} & Regulasi \& Interoperabilitas & Pendaftaran ke \textit{Regulatory Sandbox} Kemenkes RI klaster telekesehatan; pemetaan ringkasan skrining ke HL7 FHIR R4 dan injeksi ke sistem informasi Puskesmas; integrasi tautan rujukan ke antrean Mobile JKN BPJS Kesehatan. & Status peserta resmi \textit{Regulatory Sandbox}; serah terima data berstandar FHIR R4; integrasi pendaftaran poli via Mobile JKN. \\
 \midrule
 \textbf{Kuartal IV\newline(Bulan 10--12)} & Perluasan Nasional \& Komunitas & Perluasan ke 100+ Puskesmas di berbagai provinsi; integrasi data skrining mandiri dengan Posbindu PTM dan program Cek Kesehatan Gratis (CKG). & Adopsi aktif di 100+ Puskesmas; deteksi dini tren penyakit komunitas tanpa pengumpulan NIK. \\
 \bottomrule
@@ -36,7 +36,7 @@ Penerapan kecerdasan buatan pada sektor kesehatan memerlukan mitigasi risiko ber
 
 \begin{table}[H]
 \centering
-\small
+\footnotesize
 \caption{Matriks Analisis Risiko dan Mitigasi TropiCare}\label{tab:risiko}
 \vspace{3pt}
 \begin{tabularx}{\textwidth}{p{2.8cm} X X p{3.2cm}}
@@ -47,9 +47,9 @@ Penerapan kecerdasan buatan pada sektor kesehatan memerlukan mitigasi risiko ber
 \midrule
 \textbf{Risiko Privasi \& Hukum} & Kebocoran data kesehatan sensitif atau nomor identitas kependudukan (NIK). & Arsitektur \textit{Zero-NIK}; hitung jarak faskes lokal di HP tanpa kirim GPS ke peladen; pertukaran data via QR Code luring tanpa simpan data di cloud. & UU Pelindungan Data Pribadi No. 27/2022 \citep{UUPDP2022}. \\
 \midrule
-\textbf{Risiko Teknis} & Internet terputus (\textit{blank spot}) di daerah terpencil saat pasien membutuhkan bantuan. & Logika 11 tanda bahaya darurat dan navigasi faskes 100\% luring di peramban; jawaban non-darurat tersimpan di memori ponsel sampai koneksi pulih. & Cetak Biru DTO Kemenkes 2024--2030 \citep{KemenkesDTO2024}. \\
+\textbf{Risiko Teknis} & Internet terputus (\textit{blank spot}) di daerah terpencil saat pasien membutuhkan bantuan. & Logika 11 tanda bahaya darurat dan navigasi faskes berjalan di peramban tanpa jaringan; jawaban non-darurat tersimpan di memori ponsel sampai koneksi pulih. & Cetak Biru DTO Kemenkes 2024--2030 \citep{KemenkesDTO2024}. \\
 \midrule
-\textbf{Risiko Adopsi Puskesmas} & Petugas loket menolak memakai sistem karena menambah beban pengetikan manual. & Alur \textit{Zero-Retyping}: petugas cukup memindai QR Code di layar HP pasien dalam 1 detik untuk memunculkan keluhan terstruktur di komputer. & Permenkes No. 24/2022 tentang Rekam Medis \citep{Permenkes2022}. \\
+\textbf{Risiko Adopsi Puskesmas} & Petugas loket menolak memakai sistem karena menambah beban pengetikan manual. & Alur \textit{Zero-Retyping}: petugas memindai kode QR di layar HP pasien dan ringkasan terstruktur langsung tampil di layar, tanpa entri ulang. & Permenkes No. 24/2022 tentang Rekam Medis \citep{Permenkes2022}. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -60,14 +60,14 @@ Keberhasilan implementasi TropiCare diukur menggunakan lima indikator kinerja ut
 
 \begin{table}[H]
 \centering
-\small
+\footnotesize
 \caption{Indikator Kinerja Utama (KPI) Implementasi TropiCare}\label{tab:kpi}
 \vspace{3pt}
 \begin{tabularx}{\textwidth}{p{1.4cm} p{4.2cm} p{2.2cm} X}
 \toprule
 \textbf{Kode} & \textbf{Indikator Kinerja} & \textbf{Target} & \textbf{Metode Pengukuran} \\
 \midrule
-\textbf{KPI-1} & Akurasi Triase terhadap Dokter Spesialis & $\mathbf{>92\%}$ & Uji buta ganda kesesuaian rekomendasi triase pada 100 kartu kasus klinis dan rekam medis (sensitivitas darurat wajib 100\%). \\
+\textbf{KPI-1} & Akurasi Triase terhadap Dokter Spesialis & $\mathbf{>92\%}$ & Uji buta ganda kesesuaian rekomendasi triase pada 100 kartu kasus klinis dan rekam medis, dengan syarat tidak ada satu pun kasus darurat yang terlewat. \\
 \midrule
 \textbf{KPI-2} & Pengurangan Waktu Tunggu Loket Puskesmas & $\mathbf{\ge 40\%}$ & Pengukuran waktu registrasi pasien pengguna QR TropiCare dibandingkan pendaftaran konvensional. \\
 \midrule

@@ -16,10 +16,10 @@ TropiCare dirancang inklusif untuk menjangkau ekosistem layanan kesehatan primer
     Keluarga atau pengasuh (\textit{caregiver}) yang merawat lansia dengan penyakit kronis atau anak sakit. Segmen ini dipandu oleh sistem farmakovigilans untuk mencegah bahaya swamedikasi bebas (seperti larangan mutlak NSAID pada anak suspek demam berdarah dan larangan antimotilitas pada diare akut \citep{Alam2022,Koo2007}), serta memperoleh mandat puasa 10--12 jam sebelum mendampingi lansia cek lab darah di FKTP \citep{PERKENI2024}.
     
     \item \textbf{Masyarakat Wilayah Kepulauan, Pedalaman, dan Daerah 3T:} 
-    Warga di kawasan endemis penyakit tropis terabaikan (seperti Lembah Napu/Lindu Sulawesi Tengah untuk Skistosomiasis, serta NTT dan Papua untuk Malaria dan Frambusia). Menghadapi kendala jarak dan tingginya biaya transportasi, kemampuan luring (\textit{offline-first} PWA) memastikan rute rujukan tepat sasaran ke Puskesmas penyedia obat program (OAT, MDT, Praziquantel).
+    Warga di kawasan endemis penyakit tropis terabaikan (seperti Lembah Napu/Lindu Sulawesi Tengah untuk Skistosomiasis, serta NTT dan Papua untuk Malaria dan Frambusia). Menghadapi kendala jarak dan tingginya biaya transportasi, rute rujukan yang tepat sasaran memastikan warga langsung menuju fasilitas yang menyelenggarakan layanan program, sehingga terhindar dari perjalanan jauh yang sia-sia.
     
     \item \textbf{Tenaga Kesehatan dan Pengelola FKTP (Puskesmas dan Klinik Pratama):} 
-    Dokter, perawat, petugas loket pendaftaran, serta kader Posyandu/Posbindu. Nakes loket memanfaatkan pemindai web (\textit{Web Scanner}) untuk mengekstrak data triase dari kode QR dalam waktu $<1$ detik secara terstruktur (HL7 FHIR R4), mengeliminasi kelelahan administratif akibat pengetikan ulang data anamnesis secara manual ke SIMPUS.
+    Dokter, perawat, petugas loket pendaftaran, serta kader Posyandu/Posbindu. Nakes loket memanfaatkan pemindai web (\textit{Web Scanner}) untuk membaca kode QR pasien dan menampilkan ringkasan triase terstruktur, sehingga tidak perlu mengetik ulang data anamnesis secara manual.
 \end{enumerate}
 
 \subsection{Manfaat yang Diharapkan}
@@ -31,7 +31,7 @@ Implementasi TropiCare memberikan dampak terukur pada tiga tingkatan ekosistem k
     Menyediakan akses triase mandiri cepat ($<3\text{ menit}$) tanpa biaya alat diagnostik; mencegah kematian akibat keterlambatan melalui deteksi tanda bahaya ($<500\text{ ms}$); meniadakan komplikasi perdarahan lambung fatal akibat NSAID pada dengue dan \textit{toxic megacolon} pada disentri; serta meningkatkan kepatuhan puasa pra-laboratorium hingga $>85\%$ guna menghemat waktu dan biaya transportasi pasien lansia.
 
     \item \textbf{Manfaat bagi Tenaga Kesehatan dan Puskesmas (Efisiensi Operasional):}
-    Mendekongesti 30\%--40\% antrean FKTP dengan menyaring kasus ringan non-komplikasi (SKDI 4A) ke Rute Hijau teredukasi di rumah; memangkas durasi registrasi dan anamnesis ulang nakes $>50\%$ melalui alur \textit{zero-retyping} pindaian QR Code berstandar HL7 FHIR R4; serta mencegah rujukan salah sasaran ke faskes tanpa stok obat program eliminasi.
+    Mendekongesti 30\%--40\% antrean FKTP dengan menyaring kasus ringan non-komplikasi (SKDI 4A) ke Rute Hijau teredukasi di rumah; memangkas durasi registrasi dan anamnesis ulang nakes melalui alur \textit{zero-retyping} pindaian kode QR; serta mencegah rujukan salah sasaran ke faskes yang tidak menyelenggarakan layanan program eliminasi.
 
     \item \textbf{Manfaat bagi Sistem Kesehatan Nasional dan Kebijakan Publik (Makro dan Strategis):}
     Mengendalikan beban pembiayaan katastropik BPJS Kesehatan melalui penapisan dini risiko kardiovaskular 10-tahun (WHO CVD Risk Chart SEAR-B); memperkuat Sistem Kewaspadaan Dini dan Respon (SKDR) Ditjen P2P Kemenkes RI via telemetri anonim (Zero-NIK) untuk deteksi KLB \textit{real-time}; serta mengakselerasi transformasi kesehatan digital berstandar internasional sesuai UU No. 27 Tahun 2022.

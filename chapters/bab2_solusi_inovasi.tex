@@ -16,13 +16,13 @@ TropiCare adalah platform triase mandiri berbasis web progresif (\textit{Progres
     Jika tidak ada tanda bahaya, sistem memilah keluhan ke dalam 5 klaster infeksi tropis (demam, batuk/napas, diare/cerna, ruam kulit, dan bengkak kaki) serta 3 klaster penyakit kronis (gula/diabetes, tensi darah tinggi, dan sendi/asam urat) \citep{PERKENI2024}. Sistem menanyakan faktor lingkungan: riwayat berkunjung ke daerah endemis (seperti Sulawesi Tengah untuk cacingan skistosomiasis, serta NTT dan Papua untuk malaria), riwayat genangan banjir untuk leptospirosis, kontak serumah dengan pasien TBC, serta lingkungan padat untuk skabies \citep{Permenkes2026}.
 
     \item \textbf{Peringatan Bahaya Obat Bebas \& Proksi Fisik Tanpa Alat Medis:} 
-    Sistem memeriksa obat yang diminum mandiri oleh pasien di rumah. Jika pasien suspek demam berdarah meminum obat pereda nyeri golongan NSAID (Ibuprofen, Aspirin), sistem memunculkan peringatan merah untuk segera menghentikannya karena risiko memicu pendarahan lambung fatal \citep{Alam2022,Mohiuddin2023,Tovar2024}. Jika pasien diare meminum obat mampat (Loperamide), sistem memberi peringatan kuning bahaya komplikasi usus \citep{Koo2007,Schiller2020}. Sistem juga membedakan efek samping obat rutin, seperti bengkak kaki akibat obat hipertensi Amlodipine vs filariasis \citep{Liang2022,Savage2020,Sica2003}, serta batuk kering akibat Captopril vs gejala TBC \citep{Dicpinigaitis2014}. Bagi masyarakat yang tidak memiliki alat ukur medis di rumah \citep{Kemenkes2024}, sistem menggunakan proksi fisik: menggigil hebat sebagai proksi demam tinggi, denyut nadi cepat saat istirahat, baju melonggar drastis sebagai tanda penurunan berat badan ekstrem, dan celana menyempit di pinggang sebagai tanda penumpukan lemak perut \citep{PERKENI2024}.
+    Sistem memeriksa obat yang diminum mandiri, dengan tujuh aturan pemicu berdasarkan kelas obat. Suspek demam berdarah yang meminum NSAID (Ibuprofen, Aspirin) atau obat komorbid (statin, diuretik, antikoagulan) memunculkan peringatan merah \citep{Alam2022,Mohiuddin2023,Tovar2024}. Diare yang ditahan dengan Loperamide memunculkan peringatan kuning bahaya komplikasi usus \citep{Koo2007,Schiller2020}. Sistem juga membedakan efek samping obat rutin, yakni bengkak kaki akibat Amlodipine yang menyerupai filariasis \citep{Liang2022,Savage2020,Sica2003} dan batuk kering akibat Captopril yang menyerupai gejala TBC \citep{Dicpinigaitis2014}. Bagi rumah tangga tanpa alat ukur medis \citep{Kemenkes2024}, sistem memakai proksi fisik: menggigil hebat, nadi cepat saat istirahat, baju melonggar drastis, dan celana menyempit di pinggang \citep{PERKENI2024}.
 
     \item \textbf{Orkestrasi 4 Rute Rujukan \& Navigasi Faskes Presisi:} 
     Sistem menyimpulkan kondisi ke dalam empat rute rujukan:
     \begin{itemize}
         \item \textbf{Rute Merah (IGD \& Ambulans 119):} Pasien gawat darurat langsung diarahkan ke IGD rumah sakit terdekat.
-        \item \textbf{Rute Kuning Khusus (Poli Program Nasional Puskesmas):} Pasien suspek TBC, Kusta, Frambusia, Filariasis, atau Skistosomiasis diarahkan ke Puskesmas yang memiliki stok obat program pemerintah (OAT, MDT, Praziquantel).
+        \item \textbf{Rute Kuning Khusus (Layanan Program Nasional):} Pasien suspek TBC, Kusta, Frambusia, Filariasis, atau Skistosomiasis diarahkan ke Puskesmas untuk layanan program pemerintah (pengobatan TBC, kusta, dan penyakit tropis terabaikan).
         \item \textbf{Rute Kuning (Puskesmas / Klinik Pratama):} Pasien memerlukan pemeriksaan dokter dan tes laboratorium; dilengkapi instruksi wajib berpuasa 10--12 jam sebelum cek darah agar pemeriksaan glukosa dan kolesterol tidak gagal \citep{PERKENI2024}.
         \item \textbf{Rute Hijau (Perawatan Mandiri / Apotek):} Pasien keluhan ringan non-komplikasi dipandu merawat diri di rumah dan diarahkan ke apotek terdekat.
     \end{itemize}
@@ -49,7 +49,7 @@ TropiCare dirancang untuk dapat digunakan dengan mudah oleh seluruh lapisan masy
     % Lower layer
     \node[box, text width=4.5cm, below=0.8cm of input] (offline) {\textbf{Mode Luring (PWA)}\\Tetap Jalan di Pelosok 3T Tanpa Sinyal Internet};
     \node[box, text width=4.8cm, below=0.8cm of engine] (msi) {\textbf{13.930 Faskes SATUSEHAT}\\Cari Faskes Terdekat \& Kirim WhatsApp Otomatis};
-    \node[box, text width=4.5cm, below=0.8cm of output] (puskesmas) {\textbf{Loket Puskesmas}\\Scan QR Pasien $<1$ Detik Tanpa Ketik Ulang (SIMPUS)};
+    \node[box, text width=4.5cm, below=0.8cm of output] (puskesmas) {\textbf{Rangkuman QR Pasien}\\Pemindai web di loket, tanpa ketik ulang};
 
     % Arrows
     \draw[arrow] (input) -- (engine);
@@ -65,11 +65,11 @@ TropiCare dirancang untuk dapat digunakan dengan mudah oleh seluruh lapisan masy
 
 Keunggulan rekayasa perangkat lunak TropiCare mencakup lima pilar utama:
 \begin{enumerate}
-    \item \textbf{Aplikasi Web Ringan \& Ketahanan Luring Sisi Klien (\textit{Client-Side Offline Resilience}):} Pasien tidak perlu mengunduh aplikasi berukuran besar dari toko aplikasi. Penapisan kondisi gawat darurat (11 \textit{Red Flags}), kalkulasi jarak geodesik faskes terdekat, dan penerbitan kode QR rujukan dieksekusi 100\% secara luring di memori peramban ponsel. Sementara itu, inferensi AI klinis mendalam (MedGemma di peladen sendiri, atau Gemini dan DeepSeek sebagai alternatif) dieksekusi di sisi peladen saat terhubung jaringan, dengan penyimpanan jawaban lokal efemeral yang mencegah kehilangan data jika sinyal terputus di tengah jalan.
+    \item \textbf{Aplikasi Web Ringan \& Ketahanan Luring Sisi Klien:} Pasien tidak perlu mengunduh aplikasi dari toko aplikasi. Penapisan 11 tanda bahaya darurat, kalkulasi jarak faskes terdekat, dan penerbitan kode QR rujukan berjalan di memori peramban tanpa jaringan. Inferensi AI klinis mendalam berjalan di peladen saat terhubung, dengan jawaban pasien tersimpan lokal agar tidak hilang jika sinyal terputus.
     \item \textbf{Kedaulatan Privasi Pasien (\textit{Zero-NIK Architecture}):} Pasien tidak pernah dimintai NIK KTP, nama lengkap, atau foto wajah. Koordinat lokasi GPS pengguna dihitung secara lokal di ponsel untuk menentukan 5 fasilitas kesehatan terdekat; server TropiCare tidak pernah menyimpan data lokasi pengguna demi mematuhi UU Pelindungan Data Pribadi No. 27 Tahun 2022 \citep{UUPDP2022}.
     \item \textbf{Integrasi Direktori Resmi 13.930 Faskes SATUSEHAT MSI:} Sistem memuat direktori lengkap seluruh Puskesmas, Klinik, dan Rumah Sakit resmi dari Kementerian Kesehatan RI. Pengguna langsung mendapatkan tombol navigasi Google Maps, tombol telepon resmi, dan tombol kirim pesan WhatsApp ringkasan skrining ke faskes tujuan.
     \item \textbf{Kecerdasan Buatan Terkendali \& Terikat Pedoman Medis:} Pada demonstrasi, penalaran klinis dilayani model medis bobot terbuka \textbf{MedGemma 4B} yang dijalankan di peladen sendiri lewat API bergaya OpenAI (vLLM). Konfigurasinya bisa diganti tanpa mengubah kode, misalnya ke Google Gemini atau DeepSeek. Berbeda dari obrolan bebas yang rawan mengarang jawaban palsu (\textit{hallucination}), keluaran model diikat pada buku Panduan Praktik Klinis Dokter di FKTP (KMK 1186/2022) melalui \textit{Retrieval-Augmented Generation}: indeks BM25 atas 203 kutipan pedoman dibangun sekali dari korpus resmi, lalu kutipan yang cocok dengan jawaban pasien disisipkan ke dalam prompt sebagai sumber bernomor. Model hanya menilai kecocokan gejala terhadap kutipan tersebut, sedangkan penetapan rute rujukan dan 11 tanda bahaya tetap dijalankan aturan deterministik, bukan oleh model.
-    \item \textbf{Integrasi Sekali Pindai di Loket Puskesmas (\textit{Zero-Retyping}):} Seluruh rangkuman skrining pasien dikemas ke dalam gambar kode QR di layar ponsel. Saat pasien tiba di Puskesmas, petugas loket cukup memindai kode QR tersebut dengan alat pemindai web. Dalam waktu kurang dari 1 detik, data keluhan dan riwayat obat langsung masuk ke sistem komputer Puskesmas (SIMPUS) standar HL7 FHIR R4 tanpa petugas mengetik ulang manual.
+    \item \textbf{Rangkuman Ringkas untuk Petugas (\textit{Zero-Retyping}):} Rangkuman skrining dikemas ke dalam kode QR di layar ponsel, tanpa nama, NIK, maupun foto. Petugas Puskesmas memindai kode tersebut dengan pemindai web; keluhan dan riwayat obat langsung tampil terstruktur di layar, tanpa ketik ulang. Pemetaan ke standar HL7 FHIR R4 direncanakan pada tahap implementasi nasional (Kuartal III).
 \end{enumerate}
 
 \subsection{Matriks Keunggulan Inovasi (\textit{Unique Value Proposition})}
@@ -93,11 +93,11 @@ Perbandingan keunggulan TropiCare dengan solusi layanan kesehatan yang ada saat 
 \midrule
 \textbf{Pemeriksaan Obat Bebas} & Mengabaikan riwayat obat bebas yang diminum pasien secara mandiri di rumah. & Peringatan aktif bahaya obat: stop NSAID pada suspek demam berdarah dan stop obat diare pada disentri \citep{Alam2022,Koo2007}. \\
 \midrule
-\textbf{Navigasi Faskes Tujuan} & Tautan pencarian acak di peta yang kerap mengarahkan ke faskes tanpa stok obat program. & Terhubung ke 13.930 faskes SATUSEHAT MSI; memilah faskes penyedia obat TBC/Kusta dan tombol Mobile JKN. \\
+\textbf{Navigasi Faskes Tujuan} & Tautan pencarian acak di peta tanpa data resmi jenis dan kontak faskes. & Terhubung ke 13.930 faskes SATUSEHAT MSI dengan jenis sarana, alamat, dan kontak; tersedia tombol WhatsApp atau telepon dan tombol Mobile JKN. \\
 \midrule
-\textbf{Alur Loket Puskesmas} & Pasien menceritakan ulang keluhan; nakes mengetik ulang satu per satu di loket pendaftaran. & Cukup pindai QR Code di layar HP pasien dalam 1 detik untuk memasukkan data ke rekam medis Puskesmas. \\
+\textbf{Serah Terima di Loket} & Pasien menceritakan ulang keluhan; nakes mengetik ulang satu per satu di loket pendaftaran. & Cukup pindai QR Code di layar HP pasien; ringkasan keluhan dan riwayat obat langsung tampil terstruktur di layar petugas. \\
 \midrule
-\textbf{Ketahanan Daerah 3T} & Gagal berfungsi saat sinyal internet lambat atau terputus di wilayah pelosok. & Deteksi darurat, navigasi faskes terdekat, dan penerbitan QR rujukan beroperasi 100\% luring di peramban tanpa internet. \\
+\textbf{Ketahanan Daerah 3T} & Gagal berfungsi saat sinyal internet lambat atau terputus di wilayah pelosok. & Deteksi darurat, navigasi faskes terdekat, dan penerbitan QR rujukan tetap berjalan di peramban tanpa internet. \\
 \bottomrule
 \end{tabularx}
 \end{table}
