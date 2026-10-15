@@ -4,6 +4,8 @@ The scorer never knows which provider it talks to. Add a provider by writing a c
 with the same method and returning it from `make_client`.
 """
 
+import json
+import re
 import time
 from dataclasses import dataclass
 from typing import Any, Protocol
@@ -61,6 +63,44 @@ class LLMClient(Protocol):
     def generate_json(
         self, system: str, user: str, schema: dict[str, Any], timeout: float
     ) -> LLMReply: ...
+
+
+# Gateways and combos wrap replies in their own way. 9router's "medical" combo
+# (a fusion panel plus a judge) answers a fenced bare array keyed "candidate",
+# where the schema in medgemma.py asks for {"candidates": [{"id": ...}]}, and it
+# may trail prose after the fence. Endpoints that accept `response_format` but do
+# not enforce the schema (OpenRouter's free Gemma) can fence the JSON as well.
+# Try every plausible block, strictest first.
+_FENCE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.DOTALL)
+
+
+def json_object(text: str) -> dict[str, Any]:
+    blocks = [text, *(m.group(1) for m in _FENCE.finditer(text))]
+    for open_ch, close_ch in (("{", "}"), ("[", "]")):
+        start, end = text.find(open_ch), text.rfind(close_ch)
+        if start != -1 and end > start:
+            blocks.append(text[start : end + 1])
+    for block in blocks:
+        try:
+            data = json.loads(block)
+        except ValueError:
+            continue
+        if isinstance(data, list):
+            # The judge drops the schema's outer {"candidates": [...]} object.
+            return {"candidates": data}
+        if isinstance(data, dict):
+            return data
+    raise LLMBadResponse("reply is not valid JSON")
+
+
+def _schema_instruction(schema: dict[str, Any]) -> str:
+    """Spells the schema out for endpoints that take `response_format` but do not
+    enforce it, so the model still knows the exact shape and the allowed IDs."""
+    compact = json.dumps(schema, ensure_ascii=False, separators=(",", ":"))
+    return (
+        "\n\nOutput format: one JSON object that validates against this JSON Schema. "
+        "No markdown fences, no text before or after it.\n" + compact
+    )
 
 
 def _short(text: str, n: int = 300) -> str:
@@ -197,7 +237,13 @@ class GeminiClient:
 
 class OpenAICompatClient:
     """Any server with an OpenAI-style /chat/completions and JSON Schema output,
-    e.g. vLLM serving MedGemma (`--guided-decoding-backend` supports json_schema)."""
+    e.g. vLLM serving MedGemma (`--guided-decoding-backend` supports json_schema),
+    or OpenRouter (https://openrouter.ai/api/v1).
+
+    `fallback_models` is OpenRouter's `models` list: when the main model errors or is
+    rate limited, OpenRouter tries these in order within the same request.
+    `schema_in_prompt` also writes the schema into the system message, for endpoints
+    that accept `response_format` without enforcing it (OpenRouter's free Gemma 4)."""
 
     def __init__(
         self,
@@ -207,6 +253,8 @@ class OpenAICompatClient:
         temperature: float | None = None,
         http: httpx.Client | None = None,
         extra_headers: dict[str, str] | None = None,
+        fallback_models: list[str] | None = None,
+        schema_in_prompt: bool = False,
     ) -> None:
         if not base_url:
             raise ValueError("TRIAGE_AI_BASE_URL is required for openai_compat")
@@ -215,11 +263,15 @@ class OpenAICompatClient:
         self._key = api_key
         self._temperature = temperature
         self._headers = dict(extra_headers or {})
+        self._fallbacks = [m for m in (fallback_models or []) if m and m != model]
+        self._schema_in_prompt = schema_in_prompt
         self._http = http or httpx.Client()
 
     def generate_json(
         self, system: str, user: str, schema: dict[str, Any], timeout: float
     ) -> LLMReply:
+        if self._schema_in_prompt:
+            system += _schema_instruction(schema)
         body: dict[str, Any] = {
             "model": self.model,
             # Explicit: some gateways (9router, most proxies) default to SSE
@@ -238,6 +290,8 @@ class OpenAICompatClient:
                 },
             },
         }
+        if self._fallbacks:
+            body["models"] = [self.model, *self._fallbacks]
         if self._temperature is not None:
             body["temperature"] = self._temperature
         headers = dict(self._headers)
@@ -285,7 +339,13 @@ def make_client(s: AISettings) -> LLMClient | None:
             if s.USER_AGENT:
                 headers["User-Agent"] = s.USER_AGENT
             return OpenAICompatClient(
-                s.MODEL, s.BASE_URL, key, s.TEMPERATURE, extra_headers=headers
+                s.MODEL,
+                s.BASE_URL,
+                key,
+                s.TEMPERATURE,
+                extra_headers=headers,
+                fallback_models=[s.FALLBACK_MODEL] if s.FALLBACK_MODEL else None,
+                schema_in_prompt=s.SCHEMA_IN_PROMPT,
             )
         case _:
             return None

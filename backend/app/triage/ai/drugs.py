@@ -8,7 +8,6 @@ Saves quota and keeps names out of the request: when every item in the text is a
 a known drug (a drug chip or an advice.json keyword), no model call is made.
 """
 
-import json
 import logging
 import re
 import threading
@@ -24,7 +23,13 @@ from pydantic import BaseModel, ValidationError
 
 from app.triage.ai.call_log import CallLog
 from app.triage.ai.config import AISettings
-from app.triage.ai.llm import LLMClient, LLMError, LLMRateLimited, make_client
+from app.triage.ai.llm import (
+    LLMClient,
+    LLMError,
+    LLMRateLimited,
+    json_object,
+    make_client,
+)
 from app.triage.ai.quota import QuotaGuard, shared_quota
 from app.triage.content import get_content
 
@@ -228,7 +233,7 @@ class AIDrugRecognizer:
                 schema(),
                 min(self.s.CALL_TIMEOUT_S, self.s.DEADLINE_S),
             )
-            raw = json.loads(reply.text).get("drugs")
+            raw = json_object(reply.text).get("drugs")
             if not isinstance(raw, list):
                 raise ValueError("no drugs list")
             drugs = [_Drug.parse(x) for x in raw[:12]]

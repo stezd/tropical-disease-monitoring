@@ -14,6 +14,7 @@ from app.triage.ai.llm import (
     LLMServerError,
     LLMTimeout,
     OpenAICompatClient,
+    json_object,
     make_client,
 )
 
@@ -269,3 +270,66 @@ def test_temperature_left_to_the_model_by_default() -> None:
     assert "temperature" not in seen["body"]["generationConfig"]
     gemini(handler, temperature=0.2).generate_json("S", "U", SCHEMA, 3)
     assert seen["body"]["generationConfig"]["temperature"] == 0.2
+
+
+def test_openai_compat_openrouter_options() -> None:
+    """OpenRouter's free Gemma 4 takes `response_format` but does not enforce the
+    schema, so the schema also goes into the system message; FALLBACK_MODEL becomes
+    OpenRouter's `models` fallback list."""
+    seen: dict[str, Any] = {}
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        seen["body"] = json.loads(req.content)
+        return httpx.Response(
+            200,
+            json={
+                "model": "google/gemma-4-26b-a4b-it:free",
+                "choices": [
+                    {
+                        "message": {"content": '```json\n{"score": 1}\n```'},
+                        "finish_reason": "stop",
+                    }
+                ],
+            },
+        )
+
+    c = make_client(
+        AISettings(
+            PROVIDER="openai_compat",
+            BASE_URL="https://openrouter.ai/api/v1",
+            API_KEY="sk-or-x",
+            MODEL="google/gemma-4-26b-a4b-it:free",
+            FALLBACK_MODEL="google/gemma-4-26b-a4b-it",
+            SCHEMA_IN_PROMPT=True,
+        )
+    )
+    assert isinstance(c, OpenAICompatClient)
+    c._http = httpx.Client(transport=httpx.MockTransport(handler))
+    r = c.generate_json("S", "U", SCHEMA, 3)
+    body = seen["body"]
+    assert body["models"] == [
+        "google/gemma-4-26b-a4b-it:free",
+        "google/gemma-4-26b-a4b-it",
+    ]
+    system = body["messages"][0]["content"]
+    assert (
+        system.startswith("S") and json.dumps(SCHEMA, separators=(",", ":")) in system
+    )
+    # The fenced reply still parses.
+    assert json_object(r.text) == {"score": 1}
+
+
+def test_openai_compat_defaults_unchanged() -> None:
+    """Without the new settings, vLLM and other gateways get the same body as before."""
+    seen: dict[str, Any] = {}
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        seen["body"] = json.loads(req.content)
+        return httpx.Response(200, json={"choices": [{"message": {"content": "{}"}}]})
+
+    c = OpenAICompatClient(
+        "m", "http://gpu/v1", http=httpx.Client(transport=httpx.MockTransport(handler))
+    )
+    c.generate_json("S", "U", SCHEMA, 3)
+    assert "models" not in seen["body"]
+    assert seen["body"]["messages"][0]["content"] == "S"

@@ -32,7 +32,9 @@ class AISettings(BaseSettings):
     # answered 503 three times in a row. Flash can be the main model with Flash-Lite
     # as FALLBACK_MODEL once it is reachable.
     MODEL: str = "gemini-3.5-flash-lite"
-    # Gemini only. Tried once when MODEL answers 503 or 429. Empty = no second model.
+    # Gemini: tried once when MODEL answers 503 or 429. openai_compat: sent as
+    # OpenRouter's `models` fallback list (OpenRouter only; vLLM ignores or rejects it).
+    # Empty = no second model.
     FALLBACK_MODEL: str = ""
     API_KEY: SecretStr = SecretStr("")
     # Empty = the provider's default. Required for openai_compat (".../v1").
@@ -42,6 +44,10 @@ class AISettings(BaseSettings):
     # id in `x-opencode-session` and a client user agent of its own, not httpx's.
     SESSION_ID: str = ""
     USER_AGENT: str = ""
+    # openai_compat only. Also write the output JSON Schema into the system message.
+    # Turn on for endpoints that accept `response_format` but do not enforce the schema,
+    # e.g. OpenRouter's google/gemma-4-26b-a4b-it:free (no `structured_outputs`).
+    SCHEMA_IN_PROMPT: bool = False
     # Gemini 3.x thinking level. "" = model default. Lower = faster, fewer tokens.
     THINKING_LEVEL: Literal["", "minimal", "low", "medium", "high"] = "low"
     # Empty = the model's default. Google strongly recommends the default (1.0) for

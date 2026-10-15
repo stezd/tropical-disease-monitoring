@@ -15,9 +15,7 @@ without drugs and time), so the same answers scored again (saving the screening,
 QR page) give the same result without a new model call.
 """
 
-import json
 import logging
-import re
 import threading
 import time
 import uuid
@@ -49,6 +47,7 @@ from app.triage.ai.llm import (
     LLMRateLimited,
     LLMReply,
     LLMTimeout,
+    json_object,
     make_client,
 )
 from app.triage.ai.quota import QuotaGuard, shared_quota
@@ -145,30 +144,8 @@ def shortlist(
     return list(dict.fromkeys(ids))
 
 
-# Gateways and combos wrap replies in their own way. 9router's "medical" combo
-# (a fusion panel plus a judge) answers a fenced bare array keyed "candidate",
-# where the schema in medgemma.py asks for {"candidates": [{"id": ...}]}, and it
-# may trail prose after the fence. Try every plausible block, strictest first.
-_FENCE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.DOTALL)
-
-
-def _json_object(text: str) -> dict[str, Any]:
-    blocks = [text, *(m.group(1) for m in _FENCE.finditer(text))]
-    for open_ch, close_ch in (("{", "}"), ("[", "]")):
-        start, end = text.find(open_ch), text.rfind(close_ch)
-        if start != -1 and end > start:
-            blocks.append(text[start : end + 1])
-    for block in blocks:
-        try:
-            data = json.loads(block)
-        except ValueError:
-            continue
-        if isinstance(data, list):
-            # The judge drops the schema's outer {"candidates": [...]} object.
-            return {"candidates": data}
-        if isinstance(data, dict):
-            return data
-    raise LLMBadResponse("reply is not valid JSON")
+# Tolerant JSON extraction lives with the clients: see llm.json_object.
+_json_object = json_object
 
 
 # Facts sent to the model but never shown to the patient as a reason ("Kenapa aku
