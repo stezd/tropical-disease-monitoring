@@ -371,12 +371,14 @@ export class AiService {
     /**
      * Ai Score
      *
-     * Score answers with the language model. Falls back to rules, never errors on
-     * model trouble. Stateless: nothing is saved (the call log holds no identity).
+     * Score answers with the language model. Superusers only: each call spends the
+     * shared model quota (the app itself uses /triage/flows/{flow_id}/score). Falls back
+     * to rules, never errors on model trouble. Nothing is saved.
      */
     public static aiScore<ThrowOnError extends boolean = true>(options: Options<aiAiScoreData, ThrowOnError>) {
         return (options.client ?? client).post<aiAiScoreResponses, aiAiScoreErrors, ThrowOnError>({
             responseType: 'json',
+            security: [{ scheme: 'bearer', type: 'http' }],
             url: '/api/v1/ai/score',
             ...options,
             headers: {
@@ -389,11 +391,13 @@ export class AiService {
     /**
      * Ai Drugs
      *
-     * Recognize drug classes in free text. Never errors on model trouble.
+     * Recognize drug classes in free text. Superusers only (spends model quota).
+     * Never errors on model trouble.
      */
     public static aiDrugs<ThrowOnError extends boolean = true>(options: Options<aiAiDrugsData, ThrowOnError>) {
         return (options.client ?? client).post<aiAiDrugsResponses, aiAiDrugsErrors, ThrowOnError>({
             responseType: 'json',
+            security: [{ scheme: 'bearer', type: 'http' }],
             url: '/api/v1/ai/drugs',
             ...options,
             headers: {

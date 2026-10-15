@@ -12,7 +12,7 @@ from app.triage.medgemma import FLOW_LABEL, Fact, Source, TextRequest
 from app.triage.scoring import companion_shown, visible
 
 # Bump when a prompt, the message layout, or a schema changes. Goes to the call log.
-PROMPT_VERSION = "ai-1"
+PROMPT_VERSION = "ai-2"
 
 _SCALE = "0 = no match, 30 = weak, 50 = plausible, 70 = strong, 90 = textbook match"
 
@@ -27,8 +27,10 @@ Rules:
   it is about. Use it to judge how typical the facts are for that disease.
 - Similar diseases must be separated by the facts that differ between them.
 - evidence: fact IDs that support the score. sources: literature IDs you relied on.
-- Use only the listed candidate, fact, and source IDs. Return at most 5 candidates,
-  highest score first.
+- Use only the listed candidate, fact, and source IDs.
+- Return the 3 to 5 best-matching candidates, highest score first. Always include the
+  closest alternatives too, even when their scores are low (e.g. 10-30): staff need to
+  see what else to rule out.
 - note: one short sentence in Indonesian on why, for the review team.
 Reply with JSON only."""
 
@@ -200,7 +202,14 @@ def single_schema(req: TextRequest, max_candidates: int) -> dict[str, Any]:
     return {
         "type": "object",
         "properties": {
-            "candidates": {"type": "array", "maxItems": max_candidates, "items": item}
+            "candidates": {
+                "type": "array",
+                # At least 3 so the result page has alternatives (fewer if the flow
+                # has fewer candidates).
+                "minItems": min(3, len(req.candidates), max_candidates),
+                "maxItems": max_candidates,
+                "items": item,
+            }
         },
         "required": ["candidates"],
         "additionalProperties": False,

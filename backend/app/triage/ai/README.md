@@ -26,7 +26,7 @@ TRIAGE_AI_API_KEY=... python scripts/ai_smoke.py
 |---|---|
 | `TRIAGE_SCORING_ENGINE=ai` | `POST /triage/flows/{flow_id}/score` langsung memakai model. Tidak ada kode backend yang perlu diubah. |
 | `get_ai_engine().score(answers, content)` | Impor langsung. Hasilnya `AIBreakdown` = `ScoreBreakdown` + `meta`. |
-| `POST /api/v1/ai/score` | Lewat HTTP: skor, alasan, sumber, dan penanda fallback. |
+| `POST /api/v1/ai/score` | Lewat HTTP: skor, alasan, sumber, dan penanda fallback. Superuser saja, karena setiap panggilan memakai kuota model. |
 | `GET /api/v1/ai/status` | Model, mode, pemakaian kuota lokal. Superuser saja. |
 
 ## Alur
@@ -66,14 +66,14 @@ Saran untuk ST: kolom `engine` di tabel `screening` sekarang diisi `settings.TRI
 
 ## Log uji pengguna
 
-Satu baris JSON per penilaian, ke logger `app.triage.ai` atau ke file `TRIAGE_AI_LOG_PATH`. Isinya `request_id`, mode, model, versi prompt dan literatur, skor model, skor aturan untuk pembanding, kandidat pendek, catatan singkat model per penyakit, sumber yang dikutip, latensi, token, dan baris fakta (`TRIAGE_AI_LOG_FACTS`). Tidak pernah berisi nama, NIK, BPJS, koordinat, foto, atau teks bebas obat.
+Satu baris JSON per penilaian, diawali `ai_call`, ke output server (di Railway: tab Logs, cari `ai_call`) atau ke file `TRIAGE_AI_LOG_PATH`. File di Railway hilang setiap deploy, jadi pakai output server. Isinya `request_id`, mode, model, versi prompt dan literatur, skor model, skor aturan untuk pembanding, kandidat pendek, catatan singkat model per penyakit, sumber yang dikutip, latensi, token, dan baris fakta (`TRIAGE_AI_LOG_FACTS`). Tidak pernah berisi nama, NIK, BPJS, koordinat, foto, atau teks bebas obat.
 
 ## Satu panggilan model per pasien
 
 Frontend memanggil endpoint skor beberapa kali: di langkah obat (q6) untuk pop-up peringatan obat, di layar "Kak Tropi sedang menebak", lalu backend menghitung ulang saat screening disimpan.
 
 - Langkah obat memanggil dengan `?preview=true`. Skornya dihitung dengan `RuleEngine`, tidak pernah dengan model.
-- Hasil model untuk jawaban yang persis sama dipakai ulang selama `TRIAGE_AI_CACHE_TTL_S` (bawaan 15 menit), jadi halaman hasil, ringkasan QR, dan simpan screening tidak memanggil Gemini lagi. Hasil fallback tidak disimpan, supaya percobaan berikutnya tetap mencoba model.
+- Hasil model untuk jawaban yang sama dipakai ulang selama `TRIAGE_AI_CACHE_TTL_S` (bawaan 24 jam), jadi halaman hasil, ringkasan QR yang dipindai petugas belakangan, dan simpan screening menampilkan perkiraan yang sama tanpa memanggil Gemini lagi. Teks obat dan waktu pengisian tidak ikut dicocokkan. Cache ada di memori: deploy ulang mengosongkannya. Hasil fallback tidak disimpan, supaya percobaan berikutnya tetap mencoba model.
 - Kolom `engine` di tabel `screening` sekarang berisi engine yang benar-benar dipakai: `ai`, `rules`, atau `ai-fb:<alasan>` (misalnya `ai-fb:timeout`).
 
 ## Pengenalan obat (`/drugs`)
@@ -98,6 +98,12 @@ python scripts/build_literature.py --flow infection \
 ```
 
 Pembangun sementara memakai BM25 per penyakit. Notebook Colab (EmbeddingGemma) bisa menggantikannya selama menulis format yang sama (lihat docstring `literature.py`); service tidak perlu diubah. Judul lengkap dokumen 54, 20, dan 57 masih perlu diisi di `SOURCE_TITLES` dan disetujui DR. Jalur kronis belum punya literatur, jadi model menilai tanpa sumber.
+
+## Pengaturan lain
+
+- `TRIAGE_AI_FLOWS`: jalur yang dinilai model, bawaan `infection,chronic`. Jalur lain selalu memakai aturan (`reason=skipped:flow_off`).
+- `TRIAGE_AI_TEMPERATURE`: kosong = bawaan model. Google sangat menyarankan bawaan (1.0) untuk Gemini 3; nilai rendah bisa membuat model berputar-putar atau penalarannya menurun.
+- Model diminta menilai 3 sampai 5 kandidat teratas, termasuk yang skornya rendah, supaya "Kemungkinan lain" terisi. Data diri pasien (usia, jenis kelamin) dikirim ke model tapi tidak ditampilkan sebagai alasan.
 
 ## Ganti model
 

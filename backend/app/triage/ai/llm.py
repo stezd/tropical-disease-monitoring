@@ -110,7 +110,7 @@ class GeminiClient:
         api_key: str,
         base_url: str = "",
         thinking_level: str = "",
-        temperature: float = 0.0,
+        temperature: float | None = None,
         http: httpx.Client | None = None,
         fallback_model: str = "",
     ) -> None:
@@ -147,8 +147,9 @@ class GeminiClient:
         config: dict[str, Any] = {
             "responseMimeType": "application/json",
             "responseJsonSchema": schema,
-            "temperature": self._temperature,
         }
+        if self._temperature is not None:
+            config["temperature"] = self._temperature
         if self._thinking:
             config["thinkingConfig"] = {"thinkingLevel": self._thinking}
         body = {
@@ -203,7 +204,7 @@ class OpenAICompatClient:
         model: str,
         base_url: str,
         api_key: str = "",
-        temperature: float = 0.0,
+        temperature: float | None = None,
         http: httpx.Client | None = None,
     ) -> None:
         if not base_url:
@@ -217,9 +218,8 @@ class OpenAICompatClient:
     def generate_json(
         self, system: str, user: str, schema: dict[str, Any], timeout: float
     ) -> LLMReply:
-        body = {
+        body: dict[str, Any] = {
             "model": self.model,
-            "temperature": self._temperature,
             "messages": [
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},
@@ -233,6 +233,8 @@ class OpenAICompatClient:
                 },
             },
         }
+        if self._temperature is not None:
+            body["temperature"] = self._temperature
         headers = {"Authorization": f"Bearer {self._key}"} if self._key else {}
         data, latency = _post(
             self._http, f"{self._base}/chat/completions", body, headers, timeout

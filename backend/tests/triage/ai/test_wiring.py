@@ -5,6 +5,7 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
+from app.api.deps import get_current_active_superuser
 from app.api.routes import ai as ai_route
 from app.composition import triage_container
 from app.core.config import settings
@@ -13,6 +14,14 @@ from app.triage.ai.config import AISettings
 from app.triage.ai.engine import AIEngine
 from app.triage.ai.llm import LLMReply
 from tests.triage.ai.test_engine import MALARIA
+
+
+@pytest.fixture
+def as_admin() -> Any:
+    """Skip the login for the admin-only /ai endpoints."""
+    app.dependency_overrides[get_current_active_superuser] = lambda: None
+    yield
+    app.dependency_overrides.pop(get_current_active_superuser, None)
 
 
 class OneShot:
@@ -49,6 +58,17 @@ def fake_engine(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> AIEngine:
 
 
 @pytest.mark.usefixtures("fake_engine")
+def test_ai_endpoints_need_admin() -> None:
+    with TestClient(app) as client:
+        for path, body in (
+            ("score", {"flow_id": "infection", "answers": MALARIA}),
+            ("drugs", {"text": "bodrex"}),
+        ):
+            r = client.post(f"{settings.API_V1_STR}/ai/{path}", json=body)
+            assert r.status_code == 401, (path, r.text)
+
+
+@pytest.mark.usefixtures("fake_engine", "as_admin")
 def test_ai_score_endpoint() -> None:
     with TestClient(app) as client:
         r = client.post(
@@ -65,7 +85,7 @@ def test_ai_score_endpoint() -> None:
     assert body["scores"]["dbd"] == 0
 
 
-@pytest.mark.usefixtures("fake_engine")
+@pytest.mark.usefixtures("fake_engine", "as_admin")
 def test_ai_score_rejects_unknown_flow() -> None:
     with TestClient(app) as client:
         r = client.post(
@@ -87,6 +107,7 @@ def test_engine_setting_ai(
     assert r.json()["top"]["id"] == "malaria"
 
 
+@pytest.mark.usefixtures("as_admin")
 def test_ai_drugs_endpoint(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     from app.triage.ai.drugs import AIDrugRecognizer
 
