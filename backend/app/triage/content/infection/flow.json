@@ -2,10 +2,7 @@
   "id": "infection",
   "title": "Skrining penyakit infeksi tropis",
   "child_age_limit": 18,
-  "steps": ["who", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"],
-  "step_text": {
-    "q10": { "title": "Foto ruam, luka, atau mata" }
-  },
+  "steps": ["who", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9"],
   "stages": [
     { "emoji": "🚨", "name": "Darurat" },
     { "emoji": "🧭", "name": "Keluhan" },
@@ -180,16 +177,22 @@
   ],
   "body_regions": [
     { "id": "head", "name": "Kepala / mata" },
+    { "id": "shoulder_r", "name": "Bahu kanan" },
+    { "id": "shoulder_l", "name": "Bahu kiri" },
     { "id": "chest", "name": "Dada" },
     { "id": "ruq", "name": "Perut kanan atas" },
     { "id": "luq", "name": "Ulu hati / perut kiri atas" },
     { "id": "low", "name": "Perut tengah/bawah" },
     { "id": "arm_r", "name": "Lengan kanan" },
     { "id": "arm_l", "name": "Lengan kiri" },
+    { "id": "elbow_r", "name": "Siku kanan" },
+    { "id": "elbow_l", "name": "Siku kiri" },
     { "id": "wrist_r", "name": "Pergelangan tangan kanan" },
     { "id": "wrist_l", "name": "Pergelangan tangan kiri" },
     { "id": "thigh_r", "name": "Paha kanan" },
     { "id": "thigh_l", "name": "Paha kiri" },
+    { "id": "knee_r", "name": "Lutut kanan" },
+    { "id": "knee_l", "name": "Lutut kiri" },
     { "id": "calf_r", "name": "Betis kanan" },
     { "id": "calf_l", "name": "Betis kiri" },
     { "id": "ankle_r", "name": "Pergelangan kaki kanan" },
@@ -202,14 +205,6 @@
     { "value": 6, "emoji": "🙁", "label": "Lebih sakit" },
     { "value": 8, "emoji": "😣", "label": "Sangat sakit" },
     { "value": 10, "emoji": "😭", "label": "Sakit sekali" }
-  ],
-  "findings": [
-    { "id": "ruam", "emoji": "🔴", "text": "Ruam kemerahan / bintik", "diseases": ["campak", "dbd"], "reason": "Foto: ruam kemerahan / bintik" },
-    { "id": "lenting", "emoji": "🫧", "text": "Lenting berair / lepuh", "disease": "varicella", "reason": "Foto: lenting berair / lepuh" },
-    { "id": "bercak", "emoji": "⚪", "text": "Bercak putih mati rasa", "disease": "kusta", "reason": "Foto: bercak putih mati rasa" },
-    { "id": "borok", "emoji": "🩹", "text": "Luka borok / bernanah", "disease": "frambusia", "reason": "Foto: luka borok / bernanah" },
-    { "id": "mata", "emoji": "👁️", "text": "Mata kuning / mata merah", "diseases": ["hepa", "lepto"], "reason": "Foto: mata kuning / mata merah" },
-    { "id": "none", "emoji": "🙅", "text": "Tidak ada temuan", "wide": true }
   ],
   "routes": {
     "green": { "name": "KONDISI RINGAN", "sub": "Perawatan Mandiri · Apotek", "emoji": "🌿", "color_from": "#4FDDA0", "color_to": "#1FA86E", "place": "Apotek terdekat", "maps_query": "apotek terdekat", "nav_label": "Apotek" },

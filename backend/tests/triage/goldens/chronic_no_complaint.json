@@ -36,7 +36,7 @@
     "Menghitung klasifikasi kecocokan 6 kondisi",
     "Menentukan kondisi rujukan & faskes"
   ],
-  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 45 th · -\nTanda bahaya: tidak ada\nKeluhan   : tidak ada keluhan (cek risiko)\nPola      : -\nPenyerta  : -\nFaktor risiko: Merokok aktif / mantan perokok; Jarang olahraga + pola makan berisiko sindrom metabolik\nObat      : -\nTensi     : tidak diukur (tidak punya tensimeter)\nGula darah: -\nProksi    : tidak ada\nGizi      : proksi: -\nLingkar perut: -\nFoto      : -\nLab       : -\nDugaan    : belum dapat ditentukan\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 45 th · -\nTanda bahaya: tidak ada\nKeluhan   : tidak ada keluhan (cek risiko)\nPola      : -\nPenyerta  : -\nFaktor risiko: Merokok aktif / mantan perokok; Jarang olahraga + pola makan berisiko sindrom metabolik\nObat      : -\nTensi     : tidak diukur (tidak punya tensimeter)\nGula darah sewaktu: -\nProksi    : tidak ada\nAsam urat : -\nKolesterol total: -\nGizi      : proksi: -\nLingkar perut: -\nPeta nyeri: -\nLab       : -\nDugaan    : belum dapat ditentukan\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
   "summary_rows": [
     {
       "key": "date",
@@ -85,13 +85,23 @@
     },
     {
       "key": "glucose",
-      "label": "Gula darah",
+      "label": "Gula darah sewaktu",
       "value": "-"
     },
     {
       "key": "proxy",
       "label": "Proksi",
       "value": "tidak ada"
+    },
+    {
+      "key": "uric_acid",
+      "label": "Asam urat",
+      "value": "-"
+    },
+    {
+      "key": "cholesterol_total",
+      "label": "Kolesterol total",
+      "value": "-"
     },
     {
       "key": "nutrition",
@@ -104,8 +114,8 @@
       "value": "-"
     },
     {
-      "key": "findings",
-      "label": "Foto",
+      "key": "body",
+      "label": "Peta nyeri",
       "value": "-"
     },
     {
@@ -123,5 +133,7 @@
       "label": "Kondisi",
       "value": "KONDISI SEDANG – Puskesmas · Klinik Pratama"
     }
-  ]
+  ],
+  "engine": "rules",
+  "fallback": false
 }

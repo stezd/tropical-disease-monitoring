@@ -56,8 +56,6 @@ def analysis_steps(
     analysis.append(
         steps.eco.format(count=len([e for e in answers.eco if e != NONE_ID]))
     )
-    if [f for f in answers.findings if f != NONE_ID]:
-        analysis.append(steps.findings)
     analysis.append(steps.score)
     analysis.append(steps.route)
     return analysis

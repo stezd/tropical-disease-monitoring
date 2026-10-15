@@ -45,7 +45,7 @@ export const RED_TAB: CSSProperties = {
   boxShadow: "0 4px 0 #FFAAB3",
 }
 
-export type Choice = {
+type Choice = {
   id: string
   emoji: string
   text: string

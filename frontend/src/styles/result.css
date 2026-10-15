@@ -3,8 +3,8 @@
    .why, .xval, .warn, details.sum, .footdisc, .rt-*) live there.
 
    Order (phones, top to bottom): hero (route + estimate) → what to do +
-   buttons → notes → QR → other possibilities → why → photo → save → summary
-   → restart. From 640px the hero spans the width, .rg-act sits left, .rg-info
+   buttons → notes → nearest facilities → QR → other possibilities → why →
+   save (account) → summary → restart. From 40rem the hero spans the width, .rg-act sits left, .rg-info
    right, and .rg-end under the shorter column (.end-right, set in Result). */
 
 /* ---- Layout */
@@ -15,7 +15,7 @@
   gap: var(--card-gap);
 }
 .rcols.res {
-  max-width: 600px;
+  max-width: 37.5rem;
   margin: var(--sp-5) auto 0;
 }
 .res > *,
@@ -36,8 +36,9 @@
   color: #fff;
   font-family: var(--tc-fh);
   font-weight: 700;
-  font-size: var(--fs-md);
-  letter-spacing: 1px;
+  font-size: var(--fs-xl);
+  line-height: var(--lh-tight);
+  letter-spacing: 0.0625rem;
   padding: var(--sp-2) var(--sp-5);
   border-radius: var(--r-pill);
   background: rgba(30, 15, 80, 0.35);
@@ -61,11 +62,11 @@
   flex: none;
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
+  width: 3.25rem;
+  height: 3.25rem;
   border-radius: var(--r-md);
   background: rgba(255, 255, 255, 0.55);
-  font-size: 30px;
+  font-size: 1.875rem;
 }
 .rhero .rhead h3 {
   margin: 0;
@@ -73,7 +74,7 @@
   line-height: var(--lh-tight);
 }
 .rhero .rhead p {
-  margin: 2px 0 0;
+  margin: 0.125rem 0 0;
   font-size: var(--fs-sm);
   line-height: var(--lh-base);
 }
@@ -82,13 +83,13 @@
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--sp-3);
-  padding: var(--sp-4) var(--sp-4) var(--sp-5);
+  padding: var(--sp-4) var(--sp-3h) var(--sp-5);
 }
 .est-txt h2 {
   margin: 0;
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-lg);
+  font-size: var(--fs-2xl);
   line-height: var(--lh-tight);
   color: var(--tc-ink);
   overflow-wrap: anywhere;
@@ -96,7 +97,7 @@
 .est-txt .lead {
   margin: 0 0 var(--sp-1);
   font-weight: 800;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   line-height: var(--lh-tight);
   color: var(--tc-ink2);
 }
@@ -105,12 +106,12 @@
   line-height: var(--lh-base);
 }
 .bigemo {
-  width: 56px;
-  height: 56px;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: var(--r-md);
   display: grid;
   place-items: center;
-  font-size: 32px;
+  font-size: 2rem;
   background: var(--tc-tabbg);
   box-shadow: 0 4px 0 #ddd5fb;
   animation: flip 0.9s cubic-bezier(0.2, 1.3, 0.4, 1);
@@ -130,10 +131,10 @@
   flex-direction: column;
   align-items: center;
   gap: var(--sp-1);
-  width: 84px;
+  width: 5.25rem;
 }
 .score small {
-  font-size: var(--fs-xs);
+  font-size: var(--fs-2xs);
   font-weight: 900;
   line-height: var(--lh-tight);
   text-align: center;
@@ -141,16 +142,16 @@
 }
 .score-ring {
   --p: 70;
-  width: 72px;
-  height: 72px;
+  width: 4.5rem;
+  height: 4.5rem;
   border-radius: 50%;
   display: grid;
   place-items: center;
   background: conic-gradient(var(--tc-purple) calc(var(--p) * 1%), #eee8ff 0);
 }
 .score-ring div {
-  width: 56px;
-  height: 56px;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: 50%;
   background: #fff;
   display: grid;
@@ -177,7 +178,7 @@
 }
 .place .pe {
   flex: none;
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 .place small {
   display: block;
@@ -188,7 +189,7 @@
 .ractions {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-3);
+  gap: var(--sp-3h);
   margin-top: var(--sp-4);
 }
 .ractions .jkn-hint {
@@ -206,7 +207,7 @@
   display: block;
   margin: 0 auto;
   width: 100%;
-  max-width: 220px;
+  max-width: 13.75rem;
   aspect-ratio: 1;
   image-rendering: pixelated;
   border-radius: var(--r-sm);
@@ -224,7 +225,7 @@
   display: block;
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-md);
+  font-size: var(--fs-base);
   color: var(--tc-ink);
 }
 .qrbtns {
@@ -235,7 +236,7 @@
 }
 /* Side by side when both fit on one line, stacked in narrow columns. */
 .qrbtns .btn {
-  flex: 1 1 130px;
+  flex: 1 1 8.125rem;
   padding-left: var(--sp-3);
   padding-right: var(--sp-3);
 }
@@ -254,8 +255,8 @@
   font-size: var(--fs-sm);
 }
 .bar .be {
-  font-size: 20px;
-  width: 28px;
+  font-size: 1.25rem;
+  width: 1.75rem;
   text-align: center;
   flex: none;
 }
@@ -264,7 +265,7 @@
   min-width: 0;
 }
 .bar .bt {
-  height: 10px;
+  height: 0.625rem;
   border-radius: var(--r-pill);
   background: #f0ecff;
   overflow: hidden;
@@ -285,9 +286,26 @@
   flex: none;
 }
 
-/* ---- Save, summary, restart */
+/* ---- Save (account), summary, restart
+   Guest: <p class="saveinfo">…</p>
+          <div class="save-btns"><a class="btn btn-primary">Buat akun</a>
+                                 <a class="btn btn-secondary">Masuk</a></div>
+   Logged in: <div class="save-btns"><button class="btn btn-primary">Simpan
+              ke riwayatku</button></div>, then a "Lihat riwayat" link/button.
+   Buttons sit side by side when both fit, stacked in narrow columns. */
 .saveinfo.err {
   color: #b3122e;
+}
+.save-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+.save-btns .btn {
+  flex: 1 1 8.125rem;
+  padding-left: var(--sp-3);
+  padding-right: var(--sp-3);
 }
 .rsum details.sum {
   margin: 0 0 var(--sp-4);
@@ -296,10 +314,10 @@
   margin-top: var(--sp-6);
 }
 
-/* ===== ≥640px: tablet looks like desktop (two columns) ===== */
-@media (min-width: 640px) {
+/* ===== ≥40rem: tablet looks like desktop (two columns) ===== */
+@media (min-width: 40rem) {
   .rcols.res {
-    max-width: 1080px;
+    max-width: 67.5rem;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-rows: auto auto 1fr;
@@ -329,19 +347,22 @@
     grid-area: end;
   }
   .score {
-    width: 96px;
+    width: 6rem;
+  }
+  .score small {
+    font-size: var(--fs-xs);
   }
   .score-ring {
-    width: 84px;
-    height: 84px;
+    width: 5.25rem;
+    height: 5.25rem;
   }
   .score-ring div {
-    width: 66px;
-    height: 66px;
+    width: 4.125rem;
+    height: 4.125rem;
   }
 }
-/* Between 640 and 960 the columns are narrow: tighter card padding. */
-@media (min-width: 640px) and (max-width: 959px) {
+/* Between 40rem and 60rem the columns are narrow: tighter card padding. */
+@media (min-width: 40rem) and (max-width: 59.9375rem) {
   .res .card {
     padding-left: var(--sp-4);
     padding-right: var(--sp-4);
@@ -350,11 +371,11 @@
     padding: 0;
   }
 }
-/* ≥960px: hero becomes one strip, route left and estimate right, lined up
+/* ≥60rem: hero becomes one strip, route left and estimate right, lined up
    with the columns below. */
-@media (min-width: 960px) {
+@media (min-width: 60rem) {
   .rcols.res {
-    column-gap: 28px;
+    column-gap: 1.75rem;
   }
   .card.rhero {
     display: grid;

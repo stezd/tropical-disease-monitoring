@@ -25,7 +25,10 @@ const handleApiError = (error: Error) => {
     [401, 403].includes(error.response?.status ?? 0)
   ) {
     localStorage.removeItem("access_token")
-    window.location.href = "/login"
+    const path = window.location.pathname + window.location.search
+    window.location.href = path.startsWith("/login")
+      ? "/login"
+      : `/login?redirect=${encodeURIComponent(path)}`
   }
 }
 const queryClient = new QueryClient({

@@ -4,7 +4,7 @@ from typing import Any
 
 from pydantic import EmailStr
 from sqlalchemy import JSON, DateTime
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 
 def get_datetime_utc() -> datetime:
@@ -53,10 +53,23 @@ class UpdatePassword(SQLModel):
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
+    # Google account ("sub" claim) linked to this user; null = never linked.
+    google_sub: str | None = Field(
+        default=None, unique=True, index=True, max_length=255
+    )
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
     )
+    # Deleting an account deletes its saved screenings too.
+    screenings: list[Screening] = Relationship(
+        back_populates="user", cascade_delete=True
+    )
+
+
+# Sign in with a Google ID token from Google Identity Services.
+class GoogleLogin(SQLModel):
+    credential: str = Field(min_length=1)
 
 
 # Properties to return via API, id is always required
@@ -70,10 +83,15 @@ class UsersPublic(SQLModel):
     count: int
 
 
-# Anonymous screening result, saved only after the patient agrees.
-# No user link, name, NIK, BPJS number, or photo.
+# Screening result, saved only after the patient agrees.
+# Linked to the account when a signed-in user saves it.
+# No name, NIK, BPJS number, or photo.
 class Screening(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    user_id: uuid.UUID | None = Field(
+        default=None, foreign_key="user.id", ondelete="CASCADE", index=True
+    )
+    user: User | None = Relationship(back_populates="screenings")
     flow_id: str = Field(max_length=20, index=True)
     answers: dict[str, Any] = Field(sa_type=JSON)
     route: str = Field(max_length=10)
@@ -101,6 +119,22 @@ class ScreeningPublic(SQLModel):
 
 class ScreeningsPublic(SQLModel):
     data: list[ScreeningPublic]
+    count: int
+
+
+# One row in the signed-in user's history. No raw answers.
+class ScreeningHistoryItem(SQLModel):
+    id: uuid.UUID
+    flow_id: str
+    route: str
+    unknown: bool
+    top_disease: str | None
+    top_score: float | None
+    created_at: datetime | None = None
+
+
+class ScreeningsHistoryPublic(SQLModel):
+    data: list[ScreeningHistoryItem]
     count: int
 
 

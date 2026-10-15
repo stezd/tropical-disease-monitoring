@@ -100,7 +100,7 @@ test("Logged-out user cannot access protected routes", async ({ page }) => {
   await expect(page.getByTestId("user-menu")).not.toBeVisible()
 
   await page.goto("/settings")
-  await page.waitForURL("/login")
+  await page.waitForURL(/\/login/)
 })
 
 test("Redirects to /login when token is wrong", async ({ page }) => {
@@ -109,6 +109,7 @@ test("Redirects to /login when token is wrong", async ({ page }) => {
     localStorage.setItem("access_token", "invalid_token")
   })
   await page.goto("/settings")
-  await page.waitForURL("/login")
-  await expect(page).toHaveURL("/login")
+  // The guard keeps ?redirect=/settings so the user lands back after login.
+  await page.waitForURL(/\/login/)
+  await expect(page).toHaveURL(/\/login/)
 })

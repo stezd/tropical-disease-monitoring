@@ -114,7 +114,6 @@
     "vitals_complete": "Data vital lengkap — tanpa imputasi",
     "cross_check": "Validasi silang: {title}",
     "eco": "Memetakan risiko One Health ({count} faktor)",
-    "findings": "Menggabungkan temuan foto",
     "score": "Menghitung klasifikasi kecocokan 20 penyakit",
     "route": "Menentukan kondisi rujukan & faskes"
   }

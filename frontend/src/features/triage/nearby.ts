@@ -92,7 +92,9 @@ export function rankNearest(
   return scored.slice(0, limit)
 }
 
-const USE_SERVER = import.meta.env.VITE_FACILITIES_SERVER_NEAREST === "true"
+/** Opt-in: rank on our server (the coordinates leave the device). */
+export const USE_SERVER =
+  import.meta.env.VITE_FACILITIES_SERVER_NEAREST === "true"
 
 const PAGE = 500
 // Guard rail: no province needs more than a few thousand rows, and this keeps a

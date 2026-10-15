@@ -6,6 +6,7 @@ comes from content/<flow>/advice.json (DR).
 """
 
 from app.domain.answers import Answers
+from app.domain.vitals import glucose_high
 from app.triage.content import NONE_ID, FlowContent, RouteId
 from app.triage.schemas import Warning
 from app.triage.scoring import ScoreBreakdown, bmi, nutrition
@@ -124,6 +125,17 @@ def warnings_for(
     ):
         warns.append(
             Warning(level="r", icon="🌡️", text=wn.high_fever.format(temp=f"{t:.1f}"))
+        )
+    g = answers.glucose
+    if (
+        wn.glucose_high
+        and "glucose" in content.flow.vitals
+        and g is not None
+        and glucose_high(g)
+    ):
+        # Notice only (DR 2026-10-15): scores and route stay as they are.
+        warns.append(
+            Warning(level="y", icon="🩸", text=wn.glucose_high.format(glucose=f"{g:g}"))
         )
     if not unknown and not flags:
         warns.extend(

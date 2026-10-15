@@ -1,11 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
 import {
   createFileRoute,
   Link as RouterLink,
   redirect,
+  useNavigate,
 } from "@tanstack/react-router"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { type UserRegister, UsersService } from "@/client"
 import { AuthLayout } from "@/components/Common/AuthLayout"
 import {
   Form,
@@ -18,7 +21,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { LoadingButton } from "@/components/ui/loading-button"
 import { PasswordInput } from "@/components/ui/password-input"
-import useAuth, { isLoggedIn } from "@/hooks/useAuth"
+import { GoogleButton } from "@/features/auth/GoogleButton"
+import { validateRedirectSearch } from "@/features/auth/session"
+import { isLoggedIn } from "@/hooks/useAuth"
+import useCustomToast from "@/hooks/useCustomToast"
+import { handleError } from "@/utils"
 
 const formSchema = z
   .object({
@@ -41,11 +48,11 @@ type FormData = z.infer<typeof formSchema>
 
 export const Route = createFileRoute("/signup")({
   component: SignUp,
-  beforeLoad: async () => {
+  // ?redirect= is passed on to /login, then back to the result page.
+  validateSearch: validateRedirectSearch,
+  beforeLoad: async ({ search }) => {
     if (isLoggedIn()) {
-      throw redirect({
-        to: "/",
-      })
+      throw redirect({ href: search.redirect ?? "/" })
     }
   },
   head: () => ({
@@ -58,7 +65,17 @@ export const Route = createFileRoute("/signup")({
 })
 
 function SignUp() {
-  const { signUpMutation } = useAuth()
+  const { redirect: back } = Route.useSearch()
+  const navigate = useNavigate()
+  const { showErrorToast } = useCustomToast()
+  const loginSearch = back ? { redirect: back } : {}
+  // Same as useAuth's sign-up, but keeps ?redirect= for the login page.
+  const signUpMutation = useMutation({
+    mutationFn: (data: UserRegister) =>
+      UsersService.registerUser({ body: data }),
+    onSuccess: () => navigate({ to: "/login", search: loginSearch }),
+    onError: handleError.bind(showErrorToast),
+  })
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
@@ -89,6 +106,11 @@ function SignUp() {
           <div className="flex flex-col items-center gap-2 text-center">
             <h1 className="text-2xl font-bold">Create an account</h1>
           </div>
+
+          <GoogleButton
+            text="signup_with"
+            onDone={() => navigate({ href: back ?? "/" })}
+          />
 
           <div className="grid gap-4">
             <FormField
@@ -176,7 +198,11 @@ function SignUp() {
 
           <div className="text-center text-sm">
             Already have an account?{" "}
-            <RouterLink to="/login" className="underline underline-offset-4">
+            <RouterLink
+              to="/login"
+              search={loginSearch}
+              className="underline underline-offset-4"
+            >
               Log in
             </RouterLink>
           </div>

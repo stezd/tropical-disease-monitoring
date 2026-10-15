@@ -47,11 +47,36 @@ def test_bad_id_is_rejected() -> None:
         FlowContent.model_validate(raw)
 
 
-def test_bad_finding_disease_is_rejected() -> None:
-    raw = raw_content("infection")
-    raw["flow"]["findings"][0]["diseases"] = ["campak", "measles"]
-    with pytest.raises(ValueError, match="measles"):
+def test_bad_option_disease_is_rejected() -> None:
+    raw = raw_content("chronic")
+    raw["flow"]["patterns"]["G"]["options"][0]["diseases"] = ["hipertensi", "htn"]
+    with pytest.raises(ValueError, match="htn"):
         FlowContent.model_validate(raw)
+
+
+def test_pain_map_step_needs_regions() -> None:
+    raw = raw_content("chronic")
+    raw["flow"]["body_regions"] = []
+    with pytest.raises(ValueError, match="q9"):
+        FlowContent.model_validate(raw)
+
+
+JOINTS = {"knee_r", "knee_l", "elbow_r", "elbow_l", "shoulder_r", "shoulder_l"}
+
+
+@pytest.mark.parametrize("flow_id", FLOW_IDS)
+def test_pain_map_has_joints(flow_id: str) -> None:
+    """DR 2026-10-15: knee, elbow, and shoulder on the pain map, in both paths."""
+    flow = get_content(flow_id).flow
+    assert "q9" in flow.steps
+    assert JOINTS <= {r.id for r in flow.body_regions}
+    assert "q10" not in flow.steps
+
+
+def test_chronic_has_optional_labs_step() -> None:
+    steps = get_content("chronic").flow.steps
+    assert steps[steps.index("q7") + 1] == "labs"
+    assert "labs" not in get_content("infection").flow.steps
 
 
 def test_frontend_snapshot_is_current() -> None:

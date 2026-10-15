@@ -8,6 +8,7 @@ import {
   type UserRegister,
   UsersService,
 } from "@/client"
+import { quiz } from "@/features/triage/store"
 import { handleError } from "@/utils"
 import useCustomToast from "./useCustomToast"
 
@@ -48,6 +49,7 @@ const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess: () => {
+      queryClient.removeQueries({ queryKey: ["myScreenings"] })
       navigate({ to: "/" })
     },
     onError: handleError.bind(showErrorToast),
@@ -56,6 +58,8 @@ const useAuth = () => {
   const logout = () => {
     localStorage.removeItem("access_token")
     queryClient.removeQueries({ queryKey: ["currentUser"] })
+    queryClient.removeQueries({ queryKey: ["myScreenings"] })
+    quiz.reset()
     navigate({ to: "/" })
   }
 

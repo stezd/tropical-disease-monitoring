@@ -35,7 +35,7 @@
     "Menghitung klasifikasi kecocokan 20 penyakit",
     "Menentukan kondisi rujukan & faskes"
   ],
-  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · - · -\nProvinsi  : -\nTanda bahaya: Sesak napas sangat berat\nKeluhan   : Napas\nPola      : Kurang dari 2 minggu, hidung tersumbat, bersin, tenggorokan gatal\nPenyerta  : -\nEkologi   : tidak ada\nObat      : -\nSuhu      : -\nGizi      : proksi: -\nPeta nyeri: -\nFoto      : -\nLab       : -\nDugaan    : -\nKondisi   : KONDISI DARURAT – Kedaruratan · IGD Rumah Sakit",
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · - · -\nProvinsi  : -\nTanda bahaya: Sesak napas sangat berat\nKeluhan   : Napas\nPola      : Kurang dari 2 minggu, hidung tersumbat, bersin, tenggorokan gatal\nPenyerta  : -\nEkologi   : tidak ada\nObat      : -\nSuhu      : -\nGizi      : proksi: -\nPeta nyeri: -\nLab       : -\nDugaan    : -\nKondisi   : KONDISI DARURAT – Kedaruratan · IGD Rumah Sakit",
   "summary_rows": [
     {
       "key": "date",
@@ -98,11 +98,6 @@
       "value": "-"
     },
     {
-      "key": "findings",
-      "label": "Foto",
-      "value": "-"
-    },
-    {
       "key": "lab",
       "label": "Lab",
       "value": "-"
@@ -117,5 +112,7 @@
       "label": "Kondisi",
       "value": "KONDISI DARURAT – Kedaruratan · IGD Rumah Sakit"
     }
-  ]
+  ],
+  "engine": "rules",
+  "fallback": false
 }

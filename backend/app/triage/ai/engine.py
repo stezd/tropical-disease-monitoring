@@ -9,6 +9,10 @@
 Anything that goes wrong (no key, local quota, 429, timeout, bad JSON) returns
 RuleEngine's breakdown with `meta.fallback = True` and the reason. Red flags never reach
 the model (build_request returns None) and are not a fallback.
+
+Successful AI results are kept in memory for CACHE_TTL_S (keyed by flow and answers,
+without drugs and time), so the same answers scored again (saving the screening, the
+QR page) give the same result without a new model call.
 """
 
 import json
@@ -310,9 +314,11 @@ class AIEngine:
             reasons=result.reasons,
             ranked=result.ranked,
             engine=meta.label(),
+            fallback=meta.fallback,
             meta=meta,
         )
         if meta.engine == "ai":
+            # Only real model results: a fallback must not hide a later recovery.
             self._remember(key, out)
         return out
 
@@ -525,6 +531,7 @@ class AIEngine:
             "quota": self.quota.snapshot(),
             "rpm_limit": self.s.RPM_LIMIT,
             "rpd_limit": self.s.RPD_LIMIT,
+            "cache_entries": len(self._cache),
         }
 
 

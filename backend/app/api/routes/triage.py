@@ -1,11 +1,11 @@
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.adapters.outbound.sqlmodel.screening_repository import (
     SqlModelScreeningRepository,
 )
-from app.api.deps import SessionDep, get_current_active_superuser
+from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
 from app.application.ports.outbound.screening_repository import ScreeningRepository
 from app.application.use_cases.score_flow import (
     EngineUnavailableError,
@@ -14,7 +14,6 @@ from app.application.use_cases.score_flow import (
 )
 from app.composition.triage_container import (
     get_content_repository,
-    get_photo_analyzer,
     get_score_use_case,
 )
 from app.domain.answers import Answers as DomainAnswers
@@ -23,12 +22,10 @@ from app.triage.content import FlowContent
 from app.triage.schemas import (
     Answers,
     FlowPublic,
-    PhotoAnalysis,
     ScoreResult,
     ScreeningCreate,
     flow_public,
 )
-from app.triage.vision import ALLOWED_TYPES, MAX_PHOTO_BYTES
 
 router = APIRouter(prefix="/triage", tags=["triage"])
 
@@ -61,7 +58,7 @@ def score_detailed(
 @router.get("/flows/{flow_id}")
 def read_flow(flow_id: str) -> FlowPublic:
     """Questions and options for a flow. Weights are not included."""
-    return flow_public(_content(flow_id), photo_analysis=get_photo_analyzer().available)
+    return flow_public(_content(flow_id))
 
 
 @router.post("/flows/{flow_id}/score")
@@ -81,13 +78,24 @@ def score_flow(
 
 
 @router.post("/screenings")
-def create_screening(session: SessionDep, body: ScreeningCreate) -> ScoreResult:
-    """Save an anonymous screening. Only when the patient agreed (`consent=true`)."""
+def create_screening(
+    session: SessionDep, current_user: CurrentUser, body: ScreeningCreate
+) -> ScoreResult:
+    """Save a screening for a logged-in user. Only when they agreed (`consent=true`).
+
+    The score is recomputed here with the configured engine, not copied from the
+    result the patient saw. With the AI engine the model response is cached by
+    the same key as /score (flow + answers), so a save with the same answers is a
+    cache hit: same result, no second Gemini call. If the cache entry has expired
+    or the engine fell back in between, the saved result can differ from the
+    one shown.
+    """
     if not body.consent:
         raise HTTPException(status_code=400, detail="Consent is required to save")
     scored = score_detailed(body.flow_id, body.answers.to_domain())
     result = scored.result
     screening = Screening(
+        user_id=current_user.id,
         flow_id=body.flow_id,
         answers=body.answers.model_dump(mode="json", exclude_defaults=True),
         route=result.route,
@@ -114,25 +122,3 @@ def read_screenings(session: SessionDep, skip: int = 0, limit: int = 100) -> Any
     return ScreeningsPublic(
         data=[ScreeningPublic.model_validate(r) for r in rows], count=count
     )
-
-
-@router.post("/photo/analyze")
-def analyze_photo(
-    photo: Annotated[UploadFile, File(description="Rash, wound, tongue, or eye")],
-) -> PhotoAnalysis:
-    """Find visible signs in a photo. The photo is never stored.
-
-    Skeleton: returns `available=false` until ST plugs in a model (app/triage/vision.py).
-    """
-    analyzer = get_photo_analyzer()
-    if not analyzer.available:
-        return PhotoAnalysis(
-            available=False, findings=[], message="Analisis foto belum tersedia."
-        )
-    if photo.content_type not in ALLOWED_TYPES:
-        raise HTTPException(status_code=415, detail="Unsupported image type")
-    data = photo.file.read(MAX_PHOTO_BYTES + 1)
-    if len(data) > MAX_PHOTO_BYTES:
-        raise HTTPException(status_code=413, detail="Photo too large")
-    findings = analyzer.analyze(data, photo.content_type)
-    return PhotoAnalysis(available=True, findings=findings, message="")

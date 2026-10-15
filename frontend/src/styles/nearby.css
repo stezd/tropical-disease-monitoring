@@ -1,6 +1,24 @@
 /* Nearest facilities (components/Nearby.tsx). Uses the tokens from tropicek.css
    :root. Works inside a white .card on both the result screen and the red
-   emergency screen. */
+   emergency screen.
+   <Card tab="FASILITAS TERDEKAT" className="nf">
+     <p class="nf-lead">…</p> [<button class="btn btn-primary">📍 …</button>]
+     <ul class="nf-list">
+       <li class="nf-item">
+         <div class="nf-head"><b>Name</b><span class="nf-dist">1.2 km</span></div>
+         <small class="nf-sub">Puskesmas · address · city</small>
+         <div class="nf-actions">
+           <a class="btn btn-secondary">🗺 Cari di Google Maps</a>
+           <a class="btn btn-wa">💬 Kirim rangkuman via WhatsApp</a>  (or 📞 Telepon)
+         </div>
+       </li>
+     </ul>
+     <p class="nf-note">…</p>
+   </Card>
+   Actions flow by the card's own width, not the viewport (two-column result
+   layouts make the card narrow at tablet width): side by side when each gets
+   ≥ 13rem, stacked otherwise, so a label wraps to 2 lines at most. A lone
+   action spans the row. Tap targets stay ≥ 2.75rem (.btn min height). */
 .nf-lead {
   margin: 0;
   font-weight: 800;
@@ -35,9 +53,10 @@
   min-width: 0;
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-md);
+  font-size: var(--fs-base);
   line-height: var(--lh-tight);
   color: var(--tc-ink);
+  overflow-wrap: anywhere;
 }
 .nf-dist {
   flex: none;
@@ -46,9 +65,10 @@
   background: var(--tc-purpleSh);
   color: #fff;
   border-radius: var(--r-pill);
-  padding: 2px 10px;
+  padding: var(--sp-0) var(--sp-2h);
   font-weight: 800;
   font-size: var(--fs-xs);
+  line-height: 1.4;
   white-space: nowrap;
 }
 .nf-sub {
@@ -56,34 +76,30 @@
   margin-top: var(--sp-1);
   font-size: var(--fs-xs);
   font-weight: 800;
-  line-height: 1.35;
+  line-height: 1.4;
   color: var(--tc-ink2);
 }
 .nf-actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
   gap: var(--sp-2);
   margin-top: var(--sp-3);
 }
 .nf-actions .btn {
-  flex: 1 1 120px;
   min-height: var(--h-ctl);
-  padding: 10px 12px;
-  font-size: var(--fs-sm);
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-base);
 }
 .nf-note {
   margin: var(--sp-3) 0 0;
   font-size: var(--fs-xs);
   font-weight: 800;
+  line-height: 1.4;
   color: var(--tc-ink2);
 }
-
-/* WhatsApp action: the app's own success green (DESIGN.md token, not an
-   off-palette brand green), with a matching solid bottom shadow so it sits in
-   the same 3D button family. Dark ink keeps contrast ~7.8:1. */
-.btn-wa {
-  --_sh: #1c9a66;
-  background: var(--tc-green);
-  color: var(--tc-ink-strong);
-  border: 0;
+.nf-actions > .btn:only-child {
+  grid-column: 1 / -1;
 }
+
+/* .btn-wa (WhatsApp) is purple like every other button; its colors live with
+   .btn-secondary in tropicek.css. */

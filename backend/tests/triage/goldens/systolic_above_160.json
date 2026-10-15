@@ -54,7 +54,7 @@
     "Menghitung klasifikasi kecocokan 20 penyakit",
     "Menentukan kondisi rujukan & faskes"
   ],
-  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 50 th · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Napas\nPola      : Kurang dari 2 minggu, hidung tersumbat, bersin, tenggorokan gatal\nPenyerta  : -\nEkologi   : tidak ada\nObat      : -\nSuhu      : 37.0 °C\nGizi      : proksi: Normal\nPeta nyeri: -\nFoto      : -\nLab       : -\nDugaan    : ISPA (Infeksi Saluran Pernapasan Akut) (88%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 50 th · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Napas\nPola      : Kurang dari 2 minggu, hidung tersumbat, bersin, tenggorokan gatal\nPenyerta  : -\nEkologi   : tidak ada\nObat      : -\nSuhu      : 37.0 °C\nGizi      : proksi: Normal\nPeta nyeri: -\nLab       : -\nDugaan    : ISPA (Infeksi Saluran Pernapasan Akut) (88%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
   "summary_rows": [
     {
       "key": "date",
@@ -117,11 +117,6 @@
       "value": "-"
     },
     {
-      "key": "findings",
-      "label": "Foto",
-      "value": "-"
-    },
-    {
       "key": "lab",
       "label": "Lab",
       "value": "-"
@@ -136,5 +131,7 @@
       "label": "Kondisi",
       "value": "KONDISI SEDANG – Puskesmas · Klinik Pratama"
     }
-  ]
+  ],
+  "engine": "rules",
+  "fallback": false
 }

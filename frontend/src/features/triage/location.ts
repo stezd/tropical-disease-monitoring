@@ -1,5 +1,5 @@
 // User location → province, in the browser (AGENTS.md "Data diri · Lokasi").
-// Asked in step "who" when the flow has `ask_province` (infection path only).
+// Asked right after the privacy tick (screens/Consent.tsx), on both paths.
 // The server passes the province to MedGemma as the fact "Provinsi tempat
 // tinggal" (backend/app/triage/medgemma.py, docs/Format-MedGemma.md). No
 // per-province weights.

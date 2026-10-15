@@ -1,26 +1,34 @@
-// Nearest facilities for a result route: name, distance, and one-tap WhatsApp /
-// call and Google Maps directions. Progressive and consent-first: it only runs
-// on its own when location was already granted during the quiz, and it never
-// breaks the screen — on any failure it points to the plain Maps search link.
+// Nearest facilities for a result route: name, distance, a Google Maps search,
+// and "Kirim rangkuman via WhatsApp" (mobile number) or a call (landline).
+// Location is asked at the privacy gate; when it was granted this card runs on
+// its own. Otherwise "Lihat faskes terdekat" asks again. It never breaks the
+// screen: on any failure it points to the plain Maps search link.
+// Coordinates stay in memory on the device (location.ts); only the province
+// name goes to our server, to list that province's facilities.
 import { useCallback, useEffect, useState } from "react"
 
-import { facilityName, routeURL, telURL, waURL } from "../links"
+import { facilityName, mapsURL, routeURL, telURL, waURL } from "../links"
 import { cachedCoords, locateCoords } from "../location"
 import {
   facilityKinds,
   fetchNearest,
   NEARBY_LIMIT,
   type Neighbour,
+  USE_SERVER,
 } from "../nearby"
 import { Card, RED_TAB } from "./Ui"
 import "@/styles/nearby.css"
 
+// How to turn location back on: browsers do not ask twice once it is blocked.
+const ALLOW_HINT =
+  "Untuk mengizinkan: ketuk ikon gembok atau ⓘ di sebelah alamat web, pilih Izin/Lokasi, lalu Izinkan. Setelah itu tekan tombol di bawah lagi."
+
 const LOCATE_FAILED: Record<string, string> = {
-  denied:
-    "Izin lokasi ditolak. Pakai tombol peta di atas untuk mencari sendiri.",
+  denied: `Izin lokasi ditolak. ${ALLOW_HINT}`,
   unsupported:
-    "Perangkat ini tidak bisa membagikan lokasi. Pakai tombol peta di atas.",
-  unavailable: "Lokasi belum bisa diambil. Pakai tombol peta di atas, ya.",
+    "Perangkat ini tidak bisa membagikan lokasi. Cari lewat Google Maps saja, ya.",
+  unavailable:
+    "Lokasi belum bisa diambil. Coba lagi, atau cari lewat Google Maps.",
 }
 
 const KIND_NOUN: Record<string, string> = {
@@ -33,14 +41,16 @@ type Status = "idle" | "locating" | "loading" | "ready" | "empty" | "error"
 
 export function NearestFacilities({
   route,
+  mapsQuery,
+  shareText,
   tone,
-  summary,
 }: {
   route: string
+  /** Plain Google Maps search used when location is not available. */
+  mapsQuery: string
+  /** Prefilled WhatsApp message (short screening summary, no identity). */
+  shareText: string
   tone?: "red"
-  /** Screening summary pre-filled into the WhatsApp message, when we have one
-   * (the red screen has no score yet, so it sends a plain message). */
-  summary?: string
 }) {
   const [status, setStatus] = useState<Status>("idle")
   const [items, setItems] = useState<Neighbour[]>([])
@@ -66,10 +76,21 @@ export function NearestFacilities({
     }
   }, [route])
 
-  // Auto-run only when the patient already shared their location this session.
+  // Runs on its own only when location was already shared this session.
   useEffect(() => {
     if (cachedCoords()) void run()
   }, [run])
+
+  const searchLink = (
+    <a
+      className="btn btn-secondary"
+      href={mapsURL(mapsQuery)}
+      target="_blank"
+      rel="noopener"
+    >
+      🧭 Cari {noun} di Google Maps
+    </a>
+  )
 
   return (
     <Card
@@ -84,7 +105,7 @@ export function NearestFacilities({
             tempatmu.
           </p>
           <button type="button" className="btn btn-primary" onClick={run}>
-            📍 Temukan {noun} terdekat
+            📍 Lihat faskes terdekat
           </button>
         </>
       )}
@@ -98,26 +119,38 @@ export function NearestFacilities({
       )}
 
       {status === "empty" && (
-        <p className="nf-lead">
-          Belum ada data {noun} di sekitarmu. Pakai tombol peta di atas, ya.
-        </p>
+        <>
+          <p className="nf-lead">
+            Belum ada data {noun} di sekitarmu. Cari lewat Google Maps, ya.
+          </p>
+          {searchLink}
+        </>
       )}
 
       {status === "error" && (
-        <p className="nf-lead">
-          {note ?? "Gagal mencari faskes terdekat. Pakai tombol peta di atas."}
-        </p>
+        <>
+          <p className="nf-lead" role="status">
+            {note ??
+              "Gagal mencari faskes terdekat. Cari lewat Google Maps, ya."}
+          </p>
+          <button type="button" className="btn btn-primary" onClick={run}>
+            📍 Lihat faskes terdekat
+          </button>
+          {searchLink}
+        </>
       )}
 
       {status === "ready" && (
         <>
           <ul className="nf-list">
             {items.map((f) => (
-              <FacilityRow key={f.satusehat_id} f={f} summary={summary} />
+              <FacilityRow key={f.satusehat_id} f={f} shareText={shareText} />
             ))}
           </ul>
           <p className="nf-note">
-            Lokasimu hanya dipakai untuk menghitung jarak, tidak disimpan.
+            {USE_SERVER
+              ? "Lokasimu dikirim ke server TropiCare hanya untuk menghitung jarak, tidak disimpan."
+              : "Lokasimu hanya dipakai di perangkat ini untuk menghitung jarak, tidak dikirim atau disimpan."}
           </p>
         </>
       )}
@@ -131,7 +164,7 @@ function kmLabel(km: number): string {
     : `${km.toFixed(1)} km`
 }
 
-function FacilityRow({ f, summary }: { f: Neighbour; summary?: string }) {
+function FacilityRow({ f, shareText }: { f: Neighbour; shareText: string }) {
   const sub =
     [f.address, f.city_name].filter(Boolean).join(" · ") || f.jenis_sarana_nama
   return (
@@ -142,14 +175,22 @@ function FacilityRow({ f, summary }: { f: Neighbour; summary?: string }) {
       </div>
       {sub && <small className="nf-sub">{sub}</small>}
       <div className="nf-actions">
+        <a
+          className="btn btn-secondary"
+          href={routeURL(f)}
+          target="_blank"
+          rel="noopener"
+        >
+          🧭 Cari di Google Maps
+        </a>
         {f.whatsapp ? (
           <a
             className="btn btn-wa"
-            href={waURL(f.whatsapp, summary)}
+            href={waURL(f.whatsapp, shareText)}
             target="_blank"
             rel="noopener"
           >
-            💬 WhatsApp
+            💬 Kirim rangkuman via WhatsApp
           </a>
         ) : (
           f.phone && (
@@ -158,14 +199,6 @@ function FacilityRow({ f, summary }: { f: Neighbour; summary?: string }) {
             </a>
           )
         )}
-        <a
-          className="btn btn-secondary"
-          href={routeURL(f)}
-          target="_blank"
-          rel="noopener"
-        >
-          🧭 Rute
-        </a>
       </div>
     </li>
   )

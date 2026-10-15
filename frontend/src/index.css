@@ -5,10 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 0.25rem);
+  --radius-md: calc(var(--radius) - 0.125rem);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 0.25rem);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -42,6 +42,11 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --font-sans: "Nunito", "Segoe UI", system-ui, sans-serif;
   --font-heading: "Fredoka", ui-rounded, "Segoe UI", system-ui, sans-serif;
+
+  /* Type scale and breakpoints from DESIGN.md (Units, Type). */
+  --text-2xs: 0.6875rem;
+  --text-note: 0.8125rem;
+  --breakpoint-lg: 60rem;
 }
 
 :root {
@@ -55,7 +60,8 @@
   --popover-foreground: #3a2e6e;
   --primary: #8b4dff;
   --primary-foreground: #ffffff;
-  --secondary: #26c4b1;
+  /* Every button is purple (DESIGN.md); shadcn "secondary" = deeper purple. */
+  --secondary: #6427d6;
   --secondary-foreground: #ffffff;
   --muted: #f6f3ff;
   --muted-foreground: #6e6898;

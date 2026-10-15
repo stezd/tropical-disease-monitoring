@@ -62,7 +62,12 @@ TRIAGE_AI_API_KEY=... python scripts/ai_smoke.py
 
 `reason` berawalan `skipped:` artinya model memang tidak perlu dipanggil (tanda bahaya, tidak ada yang bisa dinilai). Itu bukan fallback.
 
-Saran untuk ST: kolom `engine` di tabel `screening` sekarang diisi `settings.TRIAGE_SCORING_ENGINE`. Kalau ingin data uji pengguna akurat, isi dari `meta.engine` dan `meta.reason` saat engine-nya `ai`.
+`ScoreResult` dari `POST /triage/flows/{flow_id}/score` membawa `engine` (`ai` / `rules` / `model`) dan `fallback`. Kolom `engine` di tabel `screening` diisi dari engine yang benar-benar dipakai, bukan dari setelan.
+
+## Cache dan pratinjau
+
+- **Cache hasil:** hasil AI yang sukses disimpan di memori proses (maks. 2048 entri; `TRIAGE_AI_CACHE_TTL_S`, bawaan 24 jam, `0` = tanpa cache). Kuncinya: jalur + jawaban (tanpa teks obat dan waktu selesai). Simpan skrining dan halaman QR dengan jawaban yang sama memakai hasil yang sama tanpa panggilan Gemini baru. Fallback tidak pernah dicache.
+- **Pratinjau:** `POST /triage/flows/{flow_id}/score?preview=true` selalu memakai `RuleEngine` (misalnya pop-up obat setelah langkah q6), jadi tidak memakai kuota model.
 
 ## Log uji pengguna
 
@@ -111,6 +116,6 @@ Bawaan: `gemini-3.5-flash-lite`. Model ini sudah dicoba dengan key sungguhan pad
 
 Cara lain cukup lewat config: `TRIAGE_AI_MODEL`, atau `TRIAGE_AI_PROVIDER=openai_compat` + `TRIAGE_AI_BASE_URL=http://<server-gpu>:8000/v1` untuk MedGemma di vLLM. Naikkan `PROMPT_VERSION` di `prompts.py` setiap kali prompt atau skema berubah.
 
-## Privasi (perlu keputusan tim)
+## Privasi
 
-`AGENTS.md` menulis bahwa model berjalan di server sendiri dan tidak ada data keluar. Dengan Gemini API, fakta pasien (teks pilihan, usia, jenis kelamin, provinsi; tanpa identitas) dikirim ke Google. Menurut Google, data di kuota gratis dipakai untuk memperbaiki produknya dan bisa dibaca peninjau manusia. Ini perlu disebut di teks persetujuan dan di klaim deck, atau diganti ke `openai_compat` di server sendiri.
+Data boleh keluar server (keputusan tim). Dengan Gemini API, fakta pasien (teks pilihan, usia, jenis kelamin, provinsi; tanpa identitas) dikirim ke Google. Menurut Google, data di kuota gratis dipakai untuk memperbaiki produknya dan bisa dibaca peninjau manusia. Sebutkan ini di teks persetujuan dan di klaim deck.

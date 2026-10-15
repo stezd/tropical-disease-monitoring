@@ -13,10 +13,10 @@ from app.application.use_cases.score_flow import (
 )
 from app.composition.triage_container import (
     get_content_repository,
-    get_photo_analyzer,
     get_score_use_case,
     get_scoring_engine,
 )
+from app.core.config import settings
 from app.domain.answers import Answers
 from app.domain.triage_content import FlowContent
 from app.triage.content import get_content
@@ -84,8 +84,15 @@ def test_use_case_raises_on_unimplemented_engine() -> None:
 def test_composition_container_resolves_defaults() -> None:
     assert get_content_repository() is not None
     assert get_scoring_engine() is not None
-    assert get_photo_analyzer() is not None
     assert get_score_use_case() is not None
+
+
+def test_preview_always_uses_rules(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(settings, "TRIAGE_SCORING_ENGINE", "model")
+    result = get_score_use_case().execute(
+        "infection", Answers(complaint="A", pattern="dbd", temp=38.5), preview=True
+    )
+    assert (result.engine, result.fallback) == ("rules", False)
 
 
 def test_default_use_case_scores_a_real_flow() -> None:

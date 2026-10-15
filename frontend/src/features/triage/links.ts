@@ -49,8 +49,8 @@ export function whatsappNumber(phone?: string | null): string | null {
   return intl.length >= 10 && intl.length <= 15 ? intl : null
 }
 
-/** WhatsApp chat with a facility. `text` pre-fills the message so the patient
- * can send their own screening summary; staff then do not have to ask twice. */
+/** WhatsApp chat with a prefilled message. The patient opens it and presses
+ * send themself; our server sends nothing. */
 export const waURL = (number: string, text?: string) =>
   `https://wa.me/${number}${text ? `?text=${encodeURIComponent(text)}` : ""}`
 
