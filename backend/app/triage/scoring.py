@@ -15,9 +15,8 @@ import math
 from dataclasses import dataclass, field
 from typing import Protocol
 
-from app.core.config import settings
+from app.domain.answers import Answers
 from app.triage.content import NONE_ID, FlowContent, Option, Question
-from app.triage.schemas import Answers
 
 
 @dataclass
@@ -107,89 +106,135 @@ def rank(scores: dict[str, float], temperature: float) -> list[Ranked]:
     return sorted(ranked, key=lambda r: r.score, reverse=True)
 
 
+@dataclass(frozen=True)
+class Contribution:
+    """One points award. An immutable fact; accumulation happens afterwards."""
+
+    disease: str
+    points: float
+    reason: str | None = None
+
+
+def accumulate(
+    contributions: list[Contribution], scored: list[str]
+) -> tuple[dict[str, float], dict[str, list[str]]]:
+    """Fold contributions into per-disease scores and ordered, de-duplicated reasons.
+
+    Pure: reads only its arguments and returns fresh dicts. Diseases outside `scored`
+    are ignored, and each disease's reasons keep the order the contributions were made
+    in — both as in the previous mutating implementation.
+    """
+    scores = {
+        d: sum((c.points for c in contributions if c.disease == d), 0.0) for d in scored
+    }
+    reasons = {
+        d: list(
+            dict.fromkeys(
+                c.reason for c in contributions if c.disease == d and c.reason
+            )
+        )
+        for d in scored
+    }
+    return scores, reasons
+
+
 class RuleEngine:
     def score(self, answers: Answers, content: FlowContent) -> ScoreBreakdown:
         w = content.weights
         flow = content.flow
-        scores = dict.fromkeys(content.scored_diseases, 0.0)
-        reasons: dict[str, list[str]] = {k: [] for k in scores}
+        contrib: list[Contribution] = []
 
-        def add(disease: str, points: float, reason: str | None = None) -> None:
-            if disease not in scores:
-                return
-            scores[disease] += points
-            if reason and reason not in reasons[disease]:
-                reasons[disease].append(reason)
-
-        def add_all(points: dict[str, float], reason: str | None) -> None:
-            for d, p in points.items():
-                add(d, p, reason)
-
-        def add_each(diseases: list[str], points: float, reason: str | None) -> None:
-            for d in diseases:
-                add(d, points, reason)
-
-        cluster = next((c for c in flow.clusters if c.id == answers.complaint), None)
+        cluster = next((x for x in flow.clusters if x.id == answers.complaint), None)
         if cluster:
-            for d in cluster.members:
-                add(d, w.complaint_base, w.complaint_reason.format(name=cluster.name))
+            contrib += [
+                Contribution(
+                    d, w.complaint_base, w.complaint_reason.format(name=cluster.name)
+                )
+                for d in cluster.members
+            ]
             pattern_q = flow.patterns.get(cluster.id)
             if pattern_q:
                 opt = next(
                     (o for o in pattern_q.options if o.id == answers.pattern), None
                 )
                 if opt and visible(opt, answers, content):
-                    add_each(opt.targets(opt.id), w.pattern, opt.reason)
+                    contrib += [
+                        Contribution(d, w.pattern, opt.reason)
+                        for d in opt.targets(opt.id)
+                    ]
             companion_q = flow.companions.get(cluster.id)
             if companion_q and companion_shown(companion_q, answers):
-                for o in companion_q.options:
-                    if o.id in answers.companion:
-                        add_each(o.targets(), w.companion, o.reason)
+                contrib += [
+                    Contribution(d, w.companion, o.reason)
+                    for o in companion_q.options
+                    if o.id in answers.companion
+                    for d in o.targets()
+                ]
 
-        for o in flow.eco:
-            if o.id in answers.eco and visible(o, answers, content):
-                add_all(w.eco.get(o.id, {}), o.reason)
+        contrib += [
+            Contribution(d, p, o.reason)
+            for o in flow.eco
+            if o.id in answers.eco and visible(o, answers, content)
+            for d, p in w.eco.get(o.id, {}).items()
+        ]
 
         if answers.province:
             # Pending DR + ST. Empty until endemic provinces and weights are approved.
-            add_all(w.province.get(answers.province, {}), None)
+            contrib += [
+                Contribution(d, p)
+                for d, p in w.province.get(answers.province, {}).items()
+            ]
 
         # Vital proxies, blood pressure, glucose, and waist score nothing until ST sets
         # weights. They are still in the summary and in features().
         t = answers.temp
         fever = w.fever
         if fever and not answers.no_thermo and t is not None and t >= fever.min_temp:
-            add_all(fever.points, fever.reason.format(temp=f"{t:.1f}"))
-            add_all(fever.silent_points, None)
+            fever_reason = fever.reason.format(temp=f"{t:.1f}")
+            contrib += [
+                Contribution(d, p, fever_reason) for d, p in fever.points.items()
+            ]
+            contrib += [Contribution(d, p) for d, p in fever.silent_points.items()]
 
         nut = nutrition(answers, content)
         n = w.nutrition
         if nut == "kurus":
-            reason = (
+            thin_reason = (
                 n.thin_reason_bmi if bmi(answers) is not None else n.thin_reason_proxy
             )
-            add_all(n.thin, reason)
+            contrib += [Contribution(d, p, thin_reason) for d, p in n.thin.items()]
         elif nut == "obes":
-            add_all(n.obese, n.obese_reason)
+            contrib += [Contribution(d, p, n.obese_reason) for d, p in n.obese.items()]
 
         if bw := w.body:
             body = set(answers.body)
             pain = answers.pain if answers.pain is not None else 0
             j = bw.joints
             if body & set(j.regions):
-                points = j.points_high_pain if pain >= j.high_pain_from else j.points
-                add(j.disease, points, j.reason.format(pain=pain))
-            for rule in bw.rules:
-                if body & set(rule.any):
-                    add_all(rule.points, rule.reason)
+                j_points = j.points_high_pain if pain >= j.high_pain_from else j.points
+                contrib.append(
+                    Contribution(j.disease, j_points, j.reason.format(pain=pain))
+                )
+            contrib += [
+                Contribution(d, p, rule.reason)
+                for rule in bw.rules
+                if body & set(rule.any)
+                for d, p in rule.points.items()
+            ]
             asym = bw.asymmetry
             if bool(body & set(asym.right)) != bool(body & set(asym.left)):
-                add_all(asym.points, asym.reason)
+                contrib += [
+                    Contribution(d, p, asym.reason) for d, p in asym.points.items()
+                ]
 
-        for o in flow.findings:
-            if o.id in answers.findings:
-                add_each(o.targets(), w.finding, o.reason)
+        contrib += [
+            Contribution(d, w.finding, o.reason)
+            for o in flow.findings
+            if o.id in answers.findings
+            for d in o.targets()
+        ]
 
+        scores, reasons = accumulate(contrib, content.scored_diseases)
         return ScoreBreakdown(scores, reasons, rank(scores, w.softmax_temperature))
 
 
@@ -278,9 +323,3 @@ class ModelEngine:
         raise NotImplementedError(
             "ModelEngine is a skeleton. Set TRIAGE_SCORING_ENGINE=rules until ST plugs in a model."
         )
-
-
-def get_engine() -> ScoringEngine:
-    if settings.TRIAGE_SCORING_ENGINE == "model":
-        return ModelEngine(settings.TRIAGE_MODEL_PATH)
-    return RuleEngine()

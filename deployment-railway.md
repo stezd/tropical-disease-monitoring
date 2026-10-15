@@ -281,3 +281,52 @@ pyproject.toml
 A docs-only or workflow-only commit is **skipped**: the service keeps its previous deployment instead of rebuilding a 358 MB image for a README edit. The root `package.json`/`bun.lock`/`uv.lock`/`pyproject.toml` are included because the Dockerfile copies them into the build.
 
 Watch paths live on the **service instance**, so they are set per environment - changing them means updating `development` and `production` separately. A skipped push still records a deployment, with status `SKIPPED` (visible in `railway deployment list`), and the service keeps running its previous deployment - so a `SKIPPED` entry is the expected result for a docs-only commit, not a failure.
+
+## 14. The `facility-sync` cron service
+
+A **second service** in the project mirrors the SATUSEHAT Master Sarana Index into the `facility` table (see [docs/SATUSEHAT.md](docs/SATUSEHAT.md)). It is a normal Railway service with a cron schedule, not a separate scheduler primitive: Railway starts the container on schedule, runs the start command, and stops it when the process exits.
+
+Created 2026-10-14 in the **`development`** environment only. **Production still needs its own** (§12's branch gate means it is a separate service instance, so create it per environment).
+
+| Setting | Value |
+| --- | --- |
+| Source | `stezd/tropical-disease-monitoring` |
+| `RAILWAY_DOCKERFILE_PATH` | `backend/Dockerfile` (same image as the web app) |
+| Start command | `python scripts/sync_facilities.py` |
+| Cron schedule | `0 19 * * *` = **02:00 WIB**. Railway cron is always UTC - this offset is deliberate, not a typo |
+| Restart policy | `NEVER` - it must not restart after finishing |
+| Auto-deploy | **off** |
+
+Variables are **references**, not copies, so no secret is duplicated:
+
+```
+DATABASE_URL            = ${{Postgres.DATABASE_URL}}
+PROJECT_NAME            = ${{fullstack.PROJECT_NAME}}
+SECRET_KEY              = ${{fullstack.SECRET_KEY}}
+FIRST_SUPERUSER         = ${{fullstack.FIRST_SUPERUSER}}
+FIRST_SUPERUSER_PASSWORD= ${{fullstack.FIRST_SUPERUSER_PASSWORD}}
+SATUSEHAT_ENV           = ${{fullstack.SATUSEHAT_ENV}}
+SATUSEHAT_CLIENT_ID     = ${{fullstack.SATUSEHAT_CLIENT_ID}}
+SATUSEHAT_CLIENT_SECRET = ${{fullstack.SATUSEHAT_CLIENT_SECRET}}
+SATUSEHAT_ORG_ID        = ${{fullstack.SATUSEHAT_ORG_ID}}
+```
+
+`SECRET_KEY` and `FIRST_SUPERUSER*` are required only because `sync_facilities.py` imports `app.core.config`, which validates them at import. Referencing the app's real values avoids the `changethis` guard.
+
+Inspect, trigger, and watch:
+
+```bash
+railway cron list -s facility-sync -e development     # schedule + recent runs
+railway cron run  -s facility-sync -e development -y  # off-schedule run ("Run now" in the dashboard)
+railway logs      -s facility-sync -e development --since 2026-10-14T16:52:20Z
+```
+
+A healthy run takes ~10 s and ends with `Sync complete. Total facilities synced: 13930`.
+
+### Three traps
+
+- **Editing `sync_facilities.py` does not update the cron.** Auto-deploy is off (deliberately, so pushes don't rebuild a 358 MB image), so the cron keeps running its old image until someone triggers a deploy. Redeploy the service after changing the script.
+- **`variableUpsert` queues a deployment per variable unless `skipDeploys: true` is set.** Setting ten variables without it queued ten sequential builds and the service sat `QUEUED` for four minutes. Pass `skipDeploys: true`, or set variables before the first deploy.
+- **The cron builds the whole web Dockerfile**, frontend stages included, even though it only runs a Python script. Harmless (built once, reused by every run) but it makes the first build a couple of minutes. A slim `backend/Dockerfile.cron` that skips the frontend stages would fix it if more cron jobs are added.
+
+**Migrations are not this service's job.** `fullstack` runs `alembic upgrade head` on boot (§4), so the `facility` table exists before the first sync. If the cron ever runs against a database where the table is missing, it fails with `UndefinedTable` rather than creating it.

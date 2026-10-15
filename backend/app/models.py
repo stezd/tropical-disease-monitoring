@@ -104,6 +104,50 @@ class ScreeningsPublic(SQLModel):
     count: int
 
 
+# Verified health facility from SATUSEHAT Master Sarana Index (MSI).
+# Mirrored locally to keep referral routing working offline and protect coordinates.
+class Facility(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    satusehat_id: str = Field(max_length=64, unique=True, index=True)
+    code: str = Field(max_length=64, index=True)
+    name: str = Field(max_length=255, index=True)
+    jenis_sarana_kode: str = Field(max_length=10, index=True)
+    jenis_sarana_nama: str = Field(max_length=100)
+    province_code: str = Field(max_length=10, index=True)
+    province_name: str = Field(max_length=100, index=True)
+    city_name: str | None = Field(default=None, max_length=100)
+    address: str | None = Field(default=None, max_length=500)
+    phone: str | None = Field(default=None, max_length=100)
+    latitude: float | None = Field(default=None, index=True)
+    longitude: float | None = Field(default=None, index=True)
+    operational: bool = Field(default=True)
+    status_sarana: str | None = Field(default=None, max_length=50)
+    updated_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+
+
+class FacilityPublic(SQLModel):
+    satusehat_id: str
+    code: str
+    name: str
+    jenis_sarana_kode: str
+    jenis_sarana_nama: str
+    province_code: str
+    province_name: str
+    city_name: str | None
+    address: str | None
+    phone: str | None
+    latitude: float | None
+    longitude: float | None
+
+
+class FacilitiesPublic(SQLModel):
+    data: list[FacilityPublic]
+    count: int
+
+
 # Generic message
 class Message(SQLModel):
     message: str

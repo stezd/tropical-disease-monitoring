@@ -1,0 +1,176 @@
+{
+  "flow_id": "infection",
+  "route": "yellow",
+  "unknown": false,
+  "top": {
+    "id": "amoeba",
+    "name": "Amebiasis (Disentri Amuba)",
+    "emoji": "🦠",
+    "score": 50.0,
+    "pct": 65
+  },
+  "others": [
+    {
+      "id": "diare",
+      "name": "Diare Akut",
+      "emoji": "💧",
+      "score": 10.0,
+      "pct": 9
+    },
+    {
+      "id": "tifoid",
+      "name": "Demam Tifoid (Tipes)",
+      "emoji": "🍲",
+      "score": 10.0,
+      "pct": 9
+    },
+    {
+      "id": "hepa",
+      "name": "Hepatitis Akut",
+      "emoji": "🟡",
+      "score": 10.0,
+      "pct": 9
+    }
+  ],
+  "meter_candidates": 5,
+  "meter_pct": 65,
+  "reasons": [
+    "Keluhan utama: Perut",
+    "BAB berdarah-lendir dengan tenesmus"
+  ],
+  "cross_checks": [
+    "Tifoid vs DBD: demam stepladder + nyeri perut vs demam pelana kuda + petekie → condong ke **Tifoid**",
+    "Diare vs Amebiasis: deteksi lendir/darah & tenesmus → condong ke **Amebiasis (darah-lendir + tenesmus)**"
+  ],
+  "warnings": [
+    {
+      "level": "y",
+      "icon": "💊",
+      "text": "**Hentikan obat mampat** (Loperamide, Diapet, dan sejenisnya): kuman dan racun harus dikeluarkan lewat BAB. Ganti dengan Oralit dan Zinc."
+    },
+    {
+      "level": "b",
+      "icon": "🌡️",
+      "text": "Suhu tidak diukur. Klasifikasi tetap dihitung dari **jawaban lainnya**."
+    },
+    {
+      "level": "b",
+      "icon": "🤖",
+      "text": "IMT tidak diisi — AI memakai **proksi kelonggaran pakaian**."
+    }
+  ],
+  "drug_popups": [
+    {
+      "level": "y",
+      "icon": "⚠️",
+      "text": "**PERHATIAN: Hentikan obat penghenti mencret (mampat).** Jangan gunakan Loperamide, Diapet, atau sejenisnya. **Alasan:** pada diare berlendir/berdarah (disentri), kuman dan racun harus dikeluarkan lewat BAB, bukan ditahan di dalam perut, agar usus tidak bengkak. **Solusi:** segera ganti dengan minum **Oralit** (cegah dehidrasi) dan suplemen **Zinc**."
+    }
+  ],
+  "todo": [
+    "JANGAN minum obat mampat (Loperamide)",
+    "Oralit & Zinc untuk mencegah dehidrasi",
+    "Rebus air minum hingga mendidih",
+    "Tunjukkan QR rangkuman ke petugas pendaftaran"
+  ],
+  "place": "Poli Umum Puskesmas dengan laboratorium",
+  "maps_query": "puskesmas terdekat",
+  "nav_label": "Puskesmas",
+  "analysis_steps": [
+    "Membaca seluruh jawaban kuesioner",
+    "Suhu tidak diukur: dihitung tanpa suhu",
+    "Imputasi gizi dari proksi kelonggaran baju",
+    "Validasi silang: Tifoid vs DBD",
+    "Validasi silang: Diare vs Amebiasis",
+    "Memetakan risiko One Health (0 faktor)",
+    "Menghitung klasifikasi kecocokan 20 penyakit",
+    "Menentukan kondisi rujukan & faskes"
+  ],
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · - · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Perut\nPola      : BAB berdarah & berlendir, perih saat mengejan\nPenyerta  : -\nEkologi   : tidak ada\nObat      : imodium\nSuhu      : tidak diukur (tidak punya termometer)\nProksi    : tidak ada\nGizi      : proksi: -\nPeta nyeri: -\nFoto      : -\nLab       : Cek feses mikroskopis\nDugaan    : Amebiasis (Disentri Amuba) (65%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
+  "summary_rows": [
+    {
+      "key": "date",
+      "label": "Tanggal",
+      "value": "-"
+    },
+    {
+      "key": "patient",
+      "label": "Pasien",
+      "value": "- · - · -"
+    },
+    {
+      "key": "province",
+      "label": "Provinsi",
+      "value": "-"
+    },
+    {
+      "key": "red_flags",
+      "label": "Tanda bahaya",
+      "value": "tidak ada"
+    },
+    {
+      "key": "complaint",
+      "label": "Keluhan",
+      "value": "Perut"
+    },
+    {
+      "key": "pattern",
+      "label": "Pola",
+      "value": "BAB berdarah & berlendir, perih saat mengejan"
+    },
+    {
+      "key": "companion",
+      "label": "Penyerta",
+      "value": "-"
+    },
+    {
+      "key": "eco",
+      "label": "Ekologi",
+      "value": "tidak ada"
+    },
+    {
+      "key": "drugs",
+      "label": "Obat",
+      "value": "imodium"
+    },
+    {
+      "key": "temp",
+      "label": "Suhu",
+      "value": "tidak diukur (tidak punya termometer)"
+    },
+    {
+      "key": "proxy",
+      "label": "Proksi",
+      "value": "tidak ada"
+    },
+    {
+      "key": "nutrition",
+      "label": "Gizi",
+      "value": "proksi: -"
+    },
+    {
+      "key": "body",
+      "label": "Peta nyeri",
+      "value": "-"
+    },
+    {
+      "key": "findings",
+      "label": "Foto",
+      "value": "-"
+    },
+    {
+      "key": "lab",
+      "label": "Lab",
+      "value": "Cek feses mikroskopis"
+    },
+    {
+      "key": "estimate",
+      "label": "Dugaan",
+      "value": "Amebiasis (Disentri Amuba) (65%)"
+    },
+    {
+      "key": "route",
+      "label": "Kondisi",
+      "value": "KONDISI SEDANG – Puskesmas · Klinik Pratama"
+    }
+  ]
+}

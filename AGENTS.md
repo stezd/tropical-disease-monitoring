@@ -18,9 +18,14 @@ Gamified quiz that screens Indonesian patients and tells them where to go.
 | What                                  | Where                             |
 | ------------------------------------- | --------------------------------- |
 | Backend (FastAPI, SQLModel)           | `backend/app`                   |
-| Frontend (React, Tailwind, shadcn/ui) | `frontend/src`                  |
+| — API routes                          | `backend/app/api/routes/`         |
+| — Use cases (orchestration)          | `backend/app/application/use_cases/` |
+| — Domain rules (route, warnings, etc) | `backend/app/domain/`            |
+| — Adapters (JSON disk, SQLModel DB)   | `backend/app/adapters/`          |
+| — Composition root (wire-up / DI)     | `backend/app/composition/`       |
 | Questions, options, weights (JSON)    | `backend/app/triage/content/`   |
-| Scoring (owned by ST)                 | `backend/app/triage/scoring.py` |
+| Scoring engines (Rule / Model)        | `backend/app/triage/scoring.py` |
+| Frontend (React, Tailwind, shadcn/ui) | `frontend/src`                  |
 | API client — generated, don't edit   | `frontend/src/client`           |
 
 Template leftovers (`items`, template README): delete, don't build on them.
@@ -40,8 +45,35 @@ uv run bash scripts/lint.sh              # lint
 # frontend (from repo root)
 bun install
 bun run dev                              # localhost:5173
+bun run lint                             # biome: format + lint, rewrites files
 bash scripts/generate-client.sh          # after API changes
+
+# everything CI checks (from repo root)
+uv run prek run --all-files              # pre-commit hooks over every file
 ```
+
+## Lolos CI (sebelum push)
+
+CI runs pre-commit only on the files a PR changes, and **treats a hook that rewrites a file as a failure**. Run these before pushing:
+
+```bash
+uv run prek run --all-files              # from repo root
+uv run bash scripts/lint.sh              # from backend/
+uv run bash scripts/test.sh              # from backend/
+bun run lint && bun test                 # from repo root
+```
+
+- If prek or biome rewrites a file, `git add` it and commit again. This is the most common red CI.
+- Words CI flags as typos but are real Indonesian (`maks`, `tabel`, `oktober`, …) live in `[tool.typos.default.extend-words]` in `pyproject.toml`. Add the word there, don't change the UI copy.
+- `frontend/src/client/` and `frontend/public/data/` are generated/vendored and excluded from the formatters. Don't reformat them.
+
+## Traps (don't rediscover these)
+
+- **Use `127.0.0.1`, never `localhost`, in `DATABASE_URL`.** On Windows with Docker Desktop, `localhost` resolves to IPv6 `::1` first; the port forward accepts the SYN but never completes the handshake, so the OS waits out a ~21s TCP timeout before falling back to IPv4. One connection costs **~130s instead of ~0.015s**. This alone made the backend suite take 260s instead of 7s. `.env` and `.env.example` already use `127.0.0.1`. Linux CI is unaffected, so don't "fix" the workflow files.
+- **`bash` does not work on Windows here.** It resolves to the WSL shim, and the default distro is `docker-desktop`, which has no `/bin/bash`. So `scripts/*.sh` fail, and the `generate-frontend-sdk` pre-commit hook is always red locally. Run the underlying command instead (`bun run generate-client` after dumping `openapi.json`), and expect that one hook to fail locally only.
+- **Running `pytest` empties the `facility` mirror.** The `clean_facilities` fixture deletes every row on setup and teardown. Re-run `scripts/sync_facilities.py` after tests, before demoing, or the facilities endpoint returns an empty list.
+- **`except A, B:` without parentheses is valid on Python 3.14** (PEP 758). `ruff format` normalises to it. Don't "fix" it to `except (A, B):` — ruff will revert it.
+- **`uv run` is not free.** It re-resolves the environment on every call. For a tight dev loop, activate `.venv` once and call `python -m pytest` directly. Also skip `scripts/test.sh` while iterating: it runs `coverage`, which instruments every line.
 
 ## How it fits together
 
@@ -52,6 +84,13 @@ bash scripts/generate-client.sh          # after API changes
 - **Login is optional.** Guests can do the whole quiz. Offer login on the home page.
 - **Ask age and sex first.** They change which questions and options appear.
 - **Low score** → "belum dapat ditentukan" + route KUNING.
+- **Backend changes follow ports & adapters:**
+  - Route handlers (`api/routes/triage.py`) stay dumb: parse the request, call `get_score_use_case().execute(...)`, return schemas.
+  - Triage orchestration lives in `application/use_cases/score_flow.py`, not in route functions.
+  - Business rules live in `domain/`: `route_policy.py` (which route wins), `warnings.py` (which alerts fire), `narration.py` (mascot bubble text), `answers.py` (raw intake).
+  - Outbound data access lives in `adapters/` and implements the interfaces in `application/ports/`. Never import an adapter from `domain/`.
+  - Wire-up happens in `composition/triage_container.py`. Swap engines or repositories there, not in application code.
+  - Triage behavior is protected by frozen snapshot tests in `backend/tests/triage/test_goldens.py`. If a change intentionally alters scoring output for existing cases, update the corresponding `goldens/<name>.json`.
 
 ## Must not break
 
@@ -86,7 +125,7 @@ bash scripts/generate-client.sh          # after API changes
 - [ ] Tampilan enak di HP
 - [ ] Pertanyaan lengkap
 - [ ] Pemindai QR diarahkan ke halaman rangkuman yang ringkas, jelas, menarik, dan sederhana tanpa mengorbankan kualitas
-- [ ] Sedang mencoba mengintegrasikan ke SATUSEHAT
+- [ ] Integrasi SATUSEHAT Master Sarana Index (MSI): desain & probe sudah tervalidasi, mirror faskes + endpoint sedang dikerjakan. Rencana: routing faskes terverifikasi (Puskesmas/RS/Apotek) dengan koordinat presisi via batch mirror lokal. Push FHIR pasien sengaja dihindari demi privasi (no-NIK) dan prinsip skrining non-diagnosis. Detail: [docs/SATUSEHAT.md](docs/SATUSEHAT.md).
 
 ## Fitur (in Indonesian)
 
