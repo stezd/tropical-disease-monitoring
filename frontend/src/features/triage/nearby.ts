@@ -8,7 +8,11 @@ import { FacilitiesService, type FacilityPublic } from "@/client"
 import { whatsappNumber } from "./links"
 import { type Coords, provinceFromCoords } from "./location"
 
-export const NEARBY_LIMIT = 3
+export const NEARBY_LIMIT = 5
+
+// What to ask POST /facilities/nearest for, before re-ranking. 20 is that
+// endpoint's cap; the extra room lets a WhatsApp-holder further out reach the top.
+const FETCH_POOL = 20
 
 export type Neighbour = FacilityPublic & {
   distance_km: number
@@ -53,8 +57,21 @@ function quality(f: FacilityPublic): number {
   return phone + address + verified
 }
 
-/** Nearest `limit` facilities to `here`, distance first and data quality to
- * break near-ties. Facilities without coordinates cannot be ranked and drop out. */
+/** WhatsApp-holders first — those are the ones a patient can actually reach
+ * from home — then distance, with data quality breaking near-ties. The distance
+ * part mirrors the backend adapter so both paths order the same way. */
+function compare(a: Neighbour, b: Neighbour): number {
+  const wa = Number(!a.whatsapp) - Number(!b.whatsapp)
+  if (wa !== 0) return wa
+  const band =
+    Math.floor(a.distance_km / TIE_KM) - Math.floor(b.distance_km / TIE_KM)
+  if (band !== 0) return band
+  const q = quality(b) - quality(a)
+  return q !== 0 ? q : a.distance_km - b.distance_km
+}
+
+/** Nearest `limit` facilities to `here`. Facilities without coordinates cannot
+ * be ranked and drop out. */
 export function rankNearest(
   rows: FacilityPublic[],
   here: Coords,
@@ -71,14 +88,7 @@ export function rankNearest(
       whatsapp: whatsappNumber(f.wa_number || f.phone),
     })
   }
-  scored.sort((a, b) => {
-    const band =
-      Math.floor(a.distance_km / TIE_KM) - Math.floor(b.distance_km / TIE_KM)
-    if (band !== 0) return band
-    const q = quality(b) - quality(a)
-    if (q !== 0) return q
-    return a.distance_km - b.distance_km
-  })
+  scored.sort(compare)
   return scored.slice(0, limit)
 }
 
@@ -119,12 +129,20 @@ async function serverNearest(
         latitude: here.latitude,
         longitude: here.longitude,
         kind,
-        limit: NEARBY_LIMIT,
+        // More than we show: a WhatsApp-holder that is not the closest still
+        // has to be able to reach the top of the list.
+        limit: FETCH_POOL,
       },
     })
     const rows = res.data?.data ?? []
     if (rows.length) {
-      return rows.map((f) => ({ ...f, whatsapp: whatsappNumber(f.phone) }))
+      return rows
+        .map((f) => ({
+          ...f,
+          whatsapp: whatsappNumber(f.wa_number || f.phone),
+        }))
+        .sort(compare)
+        .slice(0, NEARBY_LIMIT)
     }
   }
   return []

@@ -4,7 +4,7 @@
 // breaks the screen — on any failure it points to the plain Maps search link.
 import { useCallback, useEffect, useState } from "react"
 
-import { routeURL, telURL, waURL } from "../links"
+import { facilityName, routeURL, telURL, waURL } from "../links"
 import { cachedCoords, locateCoords } from "../location"
 import {
   facilityKinds,
@@ -34,9 +34,13 @@ type Status = "idle" | "locating" | "loading" | "ready" | "empty" | "error"
 export function NearestFacilities({
   route,
   tone,
+  summary,
 }: {
   route: string
   tone?: "red"
+  /** Screening summary pre-filled into the WhatsApp message, when we have one
+   * (the red screen has no score yet, so it sends a plain message). */
+  summary?: string
 }) {
   const [status, setStatus] = useState<Status>("idle")
   const [items, setItems] = useState<Neighbour[]>([])
@@ -109,7 +113,7 @@ export function NearestFacilities({
         <>
           <ul className="nf-list">
             {items.map((f) => (
-              <FacilityRow key={f.satusehat_id} f={f} />
+              <FacilityRow key={f.satusehat_id} f={f} summary={summary} />
             ))}
           </ul>
           <p className="nf-note">
@@ -127,13 +131,13 @@ function kmLabel(km: number): string {
     : `${km.toFixed(1)} km`
 }
 
-function FacilityRow({ f }: { f: Neighbour }) {
+function FacilityRow({ f, summary }: { f: Neighbour; summary?: string }) {
   const sub =
     [f.address, f.city_name].filter(Boolean).join(" · ") || f.jenis_sarana_nama
   return (
     <li className="nf-item">
       <div className="nf-head">
-        <b>{f.name}</b>
+        <b>{facilityName(f)}</b>
         <span className="nf-dist">{kmLabel(f.distance_km)}</span>
       </div>
       {sub && <small className="nf-sub">{sub}</small>}
@@ -141,7 +145,7 @@ function FacilityRow({ f }: { f: Neighbour }) {
         {f.whatsapp ? (
           <a
             className="btn btn-wa"
-            href={waURL(f.whatsapp)}
+            href={waURL(f.whatsapp, summary)}
             target="_blank"
             rel="noopener"
           >

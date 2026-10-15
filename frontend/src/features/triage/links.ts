@@ -49,21 +49,48 @@ export function whatsappNumber(phone?: string | null): string | null {
   return intl.length >= 10 && intl.length <= 15 ? intl : null
 }
 
-export const waURL = (number: string) => `https://wa.me/${number}`
+/** WhatsApp chat with a facility. `text` pre-fills the message so the patient
+ * can send their own screening summary; staff then do not have to ask twice. */
+export const waURL = (number: string, text?: string) =>
+  `https://wa.me/${number}${text ? `?text=${encodeURIComponent(text)}` : ""}`
 
 export const telURL = (phone: string) => `tel:${toIntl(phone)}`
 
-/** Directions straight to one facility: exact coordinates when the mirror has
- * them, otherwise a search by name. Shareable, no API key. */
+const ROMAN = /^[ivx]{1,4}$/
+
+const titleCase = (name: string) =>
+  name
+    .toLowerCase()
+    .split(" ")
+    .map((w) =>
+      ROMAN.test(w) ? w.toUpperCase() : w.replace(/^./, (c) => c.toUpperCase()),
+    )
+    .join(" ")
+
+/** MSI names a Puskesmas by its village alone, in caps ("PASRUJAMBE"), so the
+ * kind has to come from us — patients know what a "Puskesmas" is, not a bare
+ * "PASRUJAMBE". 10.440 of 10.462 rows are all caps; "MASARAN I" needs the roman
+ * numeral kept. */
+export function facilityName(f: {
+  name: string
+  jenis_sarana_kode?: string | null
+}): string {
+  return f.jenis_sarana_kode === "102" && !/puskesmas/i.test(f.name)
+    ? `Puskesmas ${titleCase(f.name)}`
+    : f.name
+}
+
+/** Directions straight to one facility, by name. Shareable, no API key.
+ *
+ * Deliberately not an exact-coordinate pin: MSI coordinates are off by whole
+ * kilometres (one Puskesmas was 3 km away; docs/SATUSEHAT.md §5), and Maps
+ * resolves the name + city to the real place itself. The mirror's coordinates
+ * are still fine for *ranking* by distance, which shrugs off that error. */
 export function routeURL(f: {
-  latitude?: number | null
-  longitude?: number | null
   name: string
   city_name?: string | null
+  jenis_sarana_kode?: string | null
 }): string {
-  const dest =
-    f.latitude != null && f.longitude != null
-      ? `${f.latitude},${f.longitude}`
-      : [f.name, f.city_name].filter(Boolean).join(", ")
+  const dest = [facilityName(f), f.city_name].filter(Boolean).join(", ")
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&travelmode=driving`
 }

@@ -15,6 +15,9 @@ async function startAs(page: Page, age: string) {
 }
 
 test("Guest finishes the infection quiz and sees a route", async ({ page }) => {
+  // Scoring can take ~45s when TRIAGE_SCORING_ENGINE=ai is set in .env (a model
+  // scores the flow); CI runs the rules engine. test.slow() triples the budget.
+  test.slow()
   await startAs(page, "25")
   await page.getByText("Tidak ada, saya aman").click()
   await next(page)
@@ -39,7 +42,7 @@ test("Guest finishes the infection quiz and sees a route", async ({ page }) => {
   await next(page) // no photo
 
   await expect(page.getByText("SKRINING SELESAI")).toBeVisible({
-    timeout: 20_000,
+    timeout: 60_000,
   })
   await expect(
     page.getByRole("heading", { name: "Demam Berdarah Dengue (DBD)" }),
@@ -127,8 +130,23 @@ test("Nearest facilities show WhatsApp and Maps actions", async ({ page }) => {
             latitude: -6.26,
             longitude: 106.81,
           },
+          {
+            satusehat_id: "3",
+            code: "P3100000003",
+            name: "PASRUJAMBE",
+            jenis_sarana_kode: "102",
+            jenis_sarana_nama: "Pusat Kesehatan Masyarakat",
+            province_code: "31",
+            province_name: "DKI Jakarta",
+            city_name: "Jakarta Timur",
+            address: "Jl. Pasrujambe No. 3",
+            phone: null,
+            status_sarana: "valid",
+            latitude: -6.35,
+            longitude: 106.85,
+          },
         ],
-        count: 2,
+        count: 3,
       },
     }),
   )
@@ -144,16 +162,28 @@ test("Nearest facilities show WhatsApp and Maps actions", async ({ page }) => {
   await expect(page.getByText("RSUD Contoh Dekat")).toBeVisible({
     timeout: 10_000,
   })
-  // Mobile number -> WhatsApp; the coordinates -> a maps route, not a search.
+  // Mobile number -> WhatsApp. The map link searches by *name*: MSI's
+  // coordinates are off by kilometres (docs/SATUSEHAT.md §5), so a wrong pin is
+  // worse than letting Maps resolve the name itself.
   await expect(
     page.getByRole("link", { name: /WhatsApp/ }).first(),
   ).toHaveAttribute("href", "https://wa.me/6281234567890")
-  await expect(
-    page.getByRole("link", { name: /Rute/ }).first(),
-  ).toHaveAttribute("href", /google\.com\/maps\/dir\/.*-6\.2005/)
+  const rute = await page
+    .getByRole("link", { name: /Rute/ })
+    .first()
+    .getAttribute("href")
+  expect(rute).toContain(
+    "destination=RSUD%20Contoh%20Dekat%2C%20Jakarta%20Pusat",
+  )
+  expect(rute).not.toContain("-6.2005")
+  // MSI stores a Puskesmas by its village name alone, in caps, so the label has
+  // to put the kind back: "Puskesmas Pasrujambe".
+  await expect(page.getByText("Puskesmas Pasrujambe")).toBeVisible()
 })
 
 test("Guest finishes the chronic risk check", async ({ page }) => {
+  // Same as the infection quiz: a model-scored flow takes ~45s locally.
+  test.slow()
   await page.goto("/")
   await page.getByText("Cek risiko penyakit jangka panjang").click()
   await page.getByText("Saya sendiri").click()
@@ -183,7 +213,7 @@ test("Guest finishes the chronic risk check", async ({ page }) => {
   await next(page) // no photo
 
   await expect(page.getByText("SKRINING SELESAI")).toBeVisible({
-    timeout: 20_000,
+    timeout: 60_000,
   })
   await expect(
     page.getByRole("heading", { name: "Gout Arthritis (Asam Urat)" }),
