@@ -37,6 +37,11 @@ class AISettings(BaseSettings):
     API_KEY: SecretStr = SecretStr("")
     # Empty = the provider's default. Required for openai_compat (".../v1").
     BASE_URL: str = ""
+    # Gateways that police abuse want to know who is calling. OpenCode Go
+    # (https://opencode.ai/docs/go/#where-can-i-use-it) requires a stable session
+    # id in `x-opencode-session` and a client user agent of its own, not httpx's.
+    SESSION_ID: str = ""
+    USER_AGENT: str = ""
     # Gemini 3.x thinking level. "" = model default. Lower = faster, fewer tokens.
     THINKING_LEVEL: Literal["", "minimal", "low", "medium", "high"] = "low"
     # Empty = the model's default. Google strongly recommends the default (1.0) for

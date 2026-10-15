@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
@@ -68,7 +69,12 @@ def test_save_needs_consent(client: TestClient) -> None:
     assert r.status_code == 400
 
 
-def test_save_screening(client: TestClient, db: Session) -> None:
+def test_save_screening(
+    client: TestClient, db: Session, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Pin the rule engine. A developer with TRIAGE_SCORING_ENGINE=ai in .env would
+    # otherwise get "ai" (or "ai-fb:timeout") here; CI has no .env at all.
+    monkeypatch.setattr(settings, "TRIAGE_SCORING_ENGINE", "rules")
     r = client.post(
         f"{API}/screenings",
         json={"flow_id": "infection", "answers": ANSWERS, "consent": True},

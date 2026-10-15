@@ -206,6 +206,7 @@ class OpenAICompatClient:
         api_key: str = "",
         temperature: float | None = None,
         http: httpx.Client | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> None:
         if not base_url:
             raise ValueError("TRIAGE_AI_BASE_URL is required for openai_compat")
@@ -213,6 +214,7 @@ class OpenAICompatClient:
         self._base = base_url.rstrip("/")
         self._key = api_key
         self._temperature = temperature
+        self._headers = dict(extra_headers or {})
         self._http = http or httpx.Client()
 
     def generate_json(
@@ -220,6 +222,9 @@ class OpenAICompatClient:
     ) -> LLMReply:
         body: dict[str, Any] = {
             "model": self.model,
+            # Explicit: some gateways (9router, most proxies) default to SSE
+            # streaming, which is not JSON and breaks the parse below.
+            "stream": False,
             "messages": [
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},
@@ -235,7 +240,9 @@ class OpenAICompatClient:
         }
         if self._temperature is not None:
             body["temperature"] = self._temperature
-        headers = {"Authorization": f"Bearer {self._key}"} if self._key else {}
+        headers = dict(self._headers)
+        if self._key:
+            headers["Authorization"] = f"Bearer {self._key}"
         data, latency = _post(
             self._http, f"{self._base}/chat/completions", body, headers, timeout
         )
@@ -272,6 +279,13 @@ def make_client(s: AISettings) -> LLMClient | None:
                 fallback_model=s.FALLBACK_MODEL,
             )
         case "openai_compat" if s.BASE_URL:
-            return OpenAICompatClient(s.MODEL, s.BASE_URL, key, s.TEMPERATURE)
+            headers = {}
+            if s.SESSION_ID:
+                headers["x-opencode-session"] = s.SESSION_ID
+            if s.USER_AGENT:
+                headers["User-Agent"] = s.USER_AGENT
+            return OpenAICompatClient(
+                s.MODEL, s.BASE_URL, key, s.TEMPERATURE, extra_headers=headers
+            )
         case _:
             return None

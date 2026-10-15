@@ -212,7 +212,7 @@ export function ResultScreen({
               </div>
             </Card>
 
-            <NearestFacilities route={r.route} />
+            <NearestFacilities route={r.route} summary={r.summary} />
 
             {r.warnings.length > 0 && (
               <Card tab="CATATAN PENTING" className="rnotes">

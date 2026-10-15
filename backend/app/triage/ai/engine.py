@@ -13,6 +13,7 @@ the model (build_request returns None) and are not a fallback.
 
 import json
 import logging
+import re
 import threading
 import time
 import uuid
@@ -140,14 +141,30 @@ def shortlist(
     return list(dict.fromkeys(ids))
 
 
+# Gateways and combos wrap replies in their own way. 9router's "medical" combo
+# (a fusion panel plus a judge) answers a fenced bare array keyed "candidate",
+# where the schema in medgemma.py asks for {"candidates": [{"id": ...}]}, and it
+# may trail prose after the fence. Try every plausible block, strictest first.
+_FENCE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.DOTALL)
+
+
 def _json_object(text: str) -> dict[str, Any]:
-    try:
-        data = json.loads(text)
-    except ValueError as e:
-        raise LLMBadResponse("reply is not valid JSON") from e
-    if not isinstance(data, dict):
-        raise LLMBadResponse("reply is not a JSON object")
-    return data
+    blocks = [text, *(m.group(1) for m in _FENCE.finditer(text))]
+    for open_ch, close_ch in (("{", "}"), ("[", "]")):
+        start, end = text.find(open_ch), text.rfind(close_ch)
+        if start != -1 and end > start:
+            blocks.append(text[start : end + 1])
+    for block in blocks:
+        try:
+            data = json.loads(block)
+        except ValueError:
+            continue
+        if isinstance(data, list):
+            # The judge drops the schema's outer {"candidates": [...]} object.
+            return {"candidates": data}
+        if isinstance(data, dict):
+            return data
+    raise LLMBadResponse("reply is not valid JSON")
 
 
 # Facts sent to the model but never shown to the patient as a reason ("Kenapa aku
@@ -363,6 +380,9 @@ class AIEngine:
         facts = {f.id for f in req.facts}
         kept: dict[str, ScoredCandidate] = {}
         for item in raw:
+            if isinstance(item, dict) and "id" not in item and "candidate" in item:
+                # The judge names the field after the schema's "candidates" list.
+                item = {**item, "id": item["candidate"]}
             try:
                 c = ScoredCandidate.model_validate(item)
             except ValidationError as e:
