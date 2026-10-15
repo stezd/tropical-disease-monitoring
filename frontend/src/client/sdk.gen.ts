@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape, urlSearchParamsBodySerializer } from './client';
 import { client } from './client.gen';
-import type { facilitiesListFacilitiesData, facilitiesListFacilitiesErrors, facilitiesListFacilitiesResponses, loginLoginAccessTokenData, loginLoginAccessTokenErrors, loginLoginAccessTokenResponses, loginRecoverPasswordData, loginRecoverPasswordErrors, loginRecoverPasswordHtmlContentData, loginRecoverPasswordHtmlContentErrors, loginRecoverPasswordHtmlContentResponses, loginRecoverPasswordResponses, loginResetPasswordData, loginResetPasswordErrors, loginResetPasswordResponses, loginTestTokenData, loginTestTokenResponses, privateCreateUserData, privateCreateUserErrors, privateCreateUserResponses, triageAnalyzePhotoData, triageAnalyzePhotoErrors, triageAnalyzePhotoResponses, triageCreateScreeningData, triageCreateScreeningErrors, triageCreateScreeningResponses, triageReadFlowData, triageReadFlowErrors, triageReadFlowResponses, triageReadScreeningsData, triageReadScreeningsErrors, triageReadScreeningsResponses, triageScoreFlowData, triageScoreFlowErrors, triageScoreFlowResponses, usersCreateUserData, usersCreateUserErrors, usersCreateUserResponses, usersDeleteUserData, usersDeleteUserErrors, usersDeleteUserMeData, usersDeleteUserMeResponses, usersDeleteUserResponses, usersReadUserByIdData, usersReadUserByIdErrors, usersReadUserByIdResponses, usersReadUserMeData, usersReadUserMeResponses, usersReadUsersData, usersReadUsersErrors, usersReadUsersResponses, usersRegisterUserData, usersRegisterUserErrors, usersRegisterUserResponses, usersUpdatePasswordMeData, usersUpdatePasswordMeErrors, usersUpdatePasswordMeResponses, usersUpdateUserData, usersUpdateUserErrors, usersUpdateUserMeData, usersUpdateUserMeErrors, usersUpdateUserMeResponses, usersUpdateUserResponses, utilsHealthCheckData, utilsHealthCheckResponses, utilsTestEmailData, utilsTestEmailErrors, utilsTestEmailResponses } from './types.gen';
+import type { aiAiScoreData, aiAiScoreErrors, aiAiScoreResponses, aiAiStatusData, aiAiStatusResponses, facilitiesListFacilitiesData, facilitiesListFacilitiesErrors, facilitiesListFacilitiesResponses, loginLoginAccessTokenData, loginLoginAccessTokenErrors, loginLoginAccessTokenResponses, loginRecoverPasswordData, loginRecoverPasswordErrors, loginRecoverPasswordHtmlContentData, loginRecoverPasswordHtmlContentErrors, loginRecoverPasswordHtmlContentResponses, loginRecoverPasswordResponses, loginResetPasswordData, loginResetPasswordErrors, loginResetPasswordResponses, loginTestTokenData, loginTestTokenResponses, privateCreateUserData, privateCreateUserErrors, privateCreateUserResponses, triageAnalyzePhotoData, triageAnalyzePhotoErrors, triageAnalyzePhotoResponses, triageCreateScreeningData, triageCreateScreeningErrors, triageCreateScreeningResponses, triageReadFlowData, triageReadFlowErrors, triageReadFlowResponses, triageReadScreeningsData, triageReadScreeningsErrors, triageReadScreeningsResponses, triageScoreFlowData, triageScoreFlowErrors, triageScoreFlowResponses, usersCreateUserData, usersCreateUserErrors, usersCreateUserResponses, usersDeleteUserData, usersDeleteUserErrors, usersDeleteUserMeData, usersDeleteUserMeResponses, usersDeleteUserResponses, usersReadUserByIdData, usersReadUserByIdErrors, usersReadUserByIdResponses, usersReadUserMeData, usersReadUserMeResponses, usersReadUsersData, usersReadUsersErrors, usersReadUsersResponses, usersRegisterUserData, usersRegisterUserErrors, usersRegisterUserResponses, usersUpdatePasswordMeData, usersUpdatePasswordMeErrors, usersUpdatePasswordMeResponses, usersUpdateUserData, usersUpdateUserErrors, usersUpdateUserMeData, usersUpdateUserMeErrors, usersUpdateUserMeResponses, usersUpdateUserResponses, utilsHealthCheckData, utilsHealthCheckResponses, utilsTestEmailData, utilsTestEmailErrors, utilsTestEmailResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -363,6 +363,40 @@ export class TriageService {
                 'Content-Type': null,
                 ...options.headers
             }
+        });
+    }
+}
+
+export class AiService {
+    /**
+     * Ai Score
+     *
+     * Score answers with the language model. Falls back to rules, never errors on
+     * model trouble. Stateless: nothing is saved (the call log holds no identity).
+     */
+    public static aiScore<ThrowOnError extends boolean = true>(options: Options<aiAiScoreData, ThrowOnError>) {
+        return (options.client ?? client).post<aiAiScoreResponses, aiAiScoreErrors, ThrowOnError>({
+            responseType: 'json',
+            url: '/api/v1/ai/score',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+    
+    /**
+     * Ai Status
+     *
+     * Model, mode, and local quota use. Superusers only. No secrets.
+     */
+    public static aiStatus<ThrowOnError extends boolean = true>(options?: Options<aiAiStatusData, ThrowOnError>) {
+        return (options?.client ?? client).get<aiAiStatusResponses, unknown, ThrowOnError>({
+            responseType: 'json',
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/api/v1/ai/status',
+            ...options
         });
     }
 }

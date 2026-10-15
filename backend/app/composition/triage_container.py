@@ -11,6 +11,7 @@ from app.adapters.outbound.json_files.content_repository import (
 from app.application.ports.outbound.content_repository import ContentRepository
 from app.application.use_cases.score_flow import ScoreFlowUseCase
 from app.core.config import settings
+from app.triage.ai import get_ai_engine
 from app.triage.scoring import ModelEngine, RuleEngine, ScoringEngine
 from app.triage.vision import PhotoAnalyzer, UnavailableAnalyzer
 
@@ -24,6 +25,9 @@ def get_scoring_engine() -> ScoringEngine:
     """The configured scoring engine."""
     if settings.TRIAGE_SCORING_ENGINE == "model":
         return ModelEngine(settings.TRIAGE_MODEL_PATH)
+    if settings.TRIAGE_SCORING_ENGINE == "ai":
+        # Cached: one quota guard per process.
+        return get_ai_engine()
     return RuleEngine()
 
 

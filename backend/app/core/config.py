@@ -62,7 +62,8 @@ class Settings(BaseSettings):
         return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
 
     # Triage. "rules" = weights in app/triage/content. "model" = ST's trained model (skeleton).
-    TRIAGE_SCORING_ENGINE: Literal["rules", "model"] = "rules"
+    # "ai" = language model scoring (app/triage/ai, settings TRIAGE_AI_*), falls back to rules.
+    TRIAGE_SCORING_ENGINE: Literal["rules", "model", "ai"] = "rules"
     TRIAGE_MODEL_PATH: str | None = None
     # Photo analysis is a skeleton until ST plugs in a model. "none" = not available.
     TRIAGE_PHOTO_ANALYZER: Literal["none"] = "none"

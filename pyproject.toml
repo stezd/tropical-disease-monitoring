@@ -20,6 +20,8 @@ extend-exclude = [
     "backend/coverage/",
     "backend/htmlcov/",
     "backend/app/frontend/",
+    # Literature excerpts extracted from PDFs (hyphenation, author names): data, not prose.
+    "backend/app/triage/ai/data/",
     "frontend/dist/",
     "frontend/public/assets/images/",
 ]
@@ -46,6 +48,7 @@ fase = "fase"
 foto = "foto"
 hav = "hav"
 implementasi = "implementasi"
+jaring = "jaring"
 jus = "jus"
 lokal = "lokal"
 makin = "makin"
@@ -57,6 +60,7 @@ oktober = "oktober"
 operasional = "operasional"
 ot = "ot"
 paket = "paket"
+paralel = "paralel"
 persisten = "persisten"
 poin = "poin"
 rute = "rute"
