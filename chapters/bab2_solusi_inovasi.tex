@@ -52,20 +52,34 @@
 
 [Tampilkan keunggulan komparatif solusi dibandingkan platform konvensional yang ada di pasaran saat ini].
 
-\begin{table}[H]
-\centering
-\small
-\begin{tabularx}{\textwidth}{p{3.2cm} X X}
+\begin{footnotesize}
+\begin{xltabular}{\textwidth}{p{3cm} X X}
+\caption{Matriks Keunggulan Inovasi Solusi}\label{tab:keunggulan} \\
 \toprule
 \textbf{Parameter Komparasi} & \textbf{Solusi Konvensional} & \textbf{Inovasi yang Diajukan} \\
 \midrule
-\textbf{Akurasi Inferensi AI} & Model prediktif bebas / rawan halusinasi klinis & \textit{Evidence-Grounded RAG} berbasis literatur resmi Kemenkes dengan sitasi bab \\
-\textbf{Tanggap Darurat} & Memerlukan seluruh kuesioner selesai sebelum ada peringatan & \textit{Client-side Red Flag bypass}: langsung ke rute darurat 119 dalam 1 ketukan \\
-\textbf{Keamanan Data \& Privasi} & Mewajibkan pendaftaran NIK dan data sensitif & \textit{Privacy-Preserving}, tanpa NIK/BPJS, koordinat tidak disimpan di server \\
-\textbf{Farmakovigilans} & Mengabaikan riwayat obat bebas yang diminum & Peringatan aktif interaksi obat berisiko tinggi (NSAID, anti-diare, obat antihipertensi) \\
-\textbf{Navigasi Faskes} & Tautan pencarian kata kunci acak di peta & Mirror 13.930 faskes terverifikasi SATUSEHAT MSI + *One-Tap WhatsApp* ringkasan triase \\
+\endfirsthead
+
+\multicolumn{3}{c}{\footnotesize\tablename\ \thetable\ -- \textit{Lanjutan}} \\[4pt]
+\toprule
+\textbf{Parameter Komparasi} & \textbf{Solusi Konvensional} & \textbf{Inovasi yang Diajukan} \\
+\midrule
+\endhead
+
 \bottomrule
-\end{tabularx}
-\caption{Matriks Keunggulan Inovasi Solusi}
-\label{tab:keunggulan}
-\end{table}
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+\textbf{Akurasi Inferensi AI} & Model prediktif bebas / rawan halusinasi klinis & \textit{Evidence-Grounded RAG} berbasis literatur resmi Kemenkes dengan sitasi bab \\
+\midrule
+\textbf{Tanggap Darurat} & Memerlukan seluruh kuesioner selesai sebelum ada peringatan & \textit{Client-side Red Flag bypass}: langsung ke rute darurat 119 dalam 1 ketukan \\
+\midrule
+\textbf{Keamanan Data \& Privasi} & Mewajibkan pendaftaran NIK dan data sensitif & \textit{Privacy-Preserving}, tanpa NIK/BPJS, koordinat tidak disimpan di server \\
+\midrule
+\textbf{Farmakovigilans} & Mengabaikan riwayat obat bebas yang diminum & Peringatan aktif interaksi obat berisiko tinggi (NSAID, anti-diare, obat antihipertensi) \\
+\midrule
+\textbf{Navigasi Faskes} & Tautan pencarian kata kunci acak di peta & Mirror 13.930 faskes terverifikasi SATUSEHAT MSI + *One-Tap WhatsApp* ringkasan triase \\
+\end{xltabular}
+\end{footnotesize}
