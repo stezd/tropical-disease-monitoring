@@ -37,9 +37,9 @@ TropiCare dirancang untuk dapat digunakan dengan mudah oleh seluruh lapisan masy
 \resizebox{0.95\textwidth}{!}{%
 \begin{tikzpicture}[
     node distance=0.6cm and 0.5cm,
-    box/.style={rectangle, draw=ipbblue, fill=lightbg, rounded corners=2mm, text centered, font=\small, minimum height=0.9cm, line width=0.8pt},
-    cloud/.style={rectangle, draw=accentteal, fill=accentteal!10, rounded corners=2mm, text centered, font=\small\bfseries, minimum height=0.9cm, line width=0.8pt},
-    arrow/.style={-{Stealth[scale=0.85]}, draw=ipbblue, line width=0.8pt}
+    box/.style={rectangle, draw=black!70, fill=black!4, rounded corners=2mm, text centered, font=\small, minimum height=0.9cm, line width=0.8pt},
+    cloud/.style={rectangle, draw=black, fill=black!10, rounded corners=2mm, text centered, font=\small\bfseries, minimum height=0.9cm, line width=0.8pt},
+    arrow/.style={-{Stealth[scale=0.85]}, draw=black!70, line width=0.8pt}
 ]
     % Pipeline
     \node[box, text width=4.5cm] (input) {\textbf{Pasien Buka Web di HP}\\Persetujuan Privasi \& 11 Tanda Bahaya ($<500\text{ ms}$)};
@@ -65,7 +65,7 @@ TropiCare dirancang untuk dapat digunakan dengan mudah oleh seluruh lapisan masy
 
 Keunggulan rekayasa perangkat lunak TropiCare mencakup lima pilar utama:
 \begin{enumerate}
-    \item \textbf{Aplikasi Web Ringan \& Berfungsi Tanpa Internet (\textit{Offline-First PWA}):} Pasien tidak perlu mengunduh aplikasi berukuran besar dari toko aplikasi. Begitu tautan dibuka di peramban, sistem otomatis menyimpan data penting di memori ponsel. Di daerah pelosok yang mengalami putus sinyal internet, triase dan petunjuk faskes tetap beroperasi penuh.
+    \item \textbf{Aplikasi Web Ringan \& Ketahanan Luring Sisi Klien (\textit{Client-Side Offline Resilience}):} Pasien tidak perlu mengunduh aplikasi berukuran besar dari toko aplikasi. Penapisan kondisi gawat darurat (11 \textit{Red Flags}), kalkulasi jarak geodesik faskes terdekat, dan penerbitan kode QR rujukan dieksekusi 100\% secara luring di memori peramban ponsel. Sementara itu, inferensi AI klinis mendalam (Google Gemini, DeepSeek, MedGemma) dieksekusi di sisi peladen saat terhubung jaringan, dengan penyimpanan jawaban lokal efemeral yang mencegah kehilangan data jika sinyal terputus di tengah jalan.
     \item \textbf{Kedaulatan Privasi Pasien (\textit{Zero-NIK Architecture}):} Pasien tidak pernah dimintai NIK KTP, nama lengkap, atau foto wajah. Koordinat lokasi GPS pengguna dihitung secara lokal di ponsel untuk menentukan 5 fasilitas kesehatan terdekat; server TropiCare tidak pernah menyimpan data lokasi pengguna demi mematuhi UU Pelindungan Data Pribadi No. 27 Tahun 2022 \citep{UUPDP2022}.
     \item \textbf{Integrasi Direktori Resmi 13.930 Faskes SATUSEHAT MSI:} Sistem memuat direktori lengkap seluruh Puskesmas, Klinik, dan Rumah Sakit resmi dari Kementerian Kesehatan RI. Pengguna langsung mendapatkan tombol navigasi Google Maps, tombol telepon resmi, dan tombol kirim pesan WhatsApp ringkasan skrining ke faskes tujuan.
     \item \textbf{Kecerdasan Buatan Terkendali \& Terikat Pedoman Medis:} Arsitektur sistem mendukung integrasi model medis yang fleksibel, baik melalui API awan berkecepatan tinggi (Google Gemini dan DeepSeek untuk penalaran cepat saat demonstrasi) maupun model bobot terbuka lokal (\textit{on-premise open weights} MedGemma / Gemma). Berbeda dari model obrolan bebas yang rawan mengarang jawaban palsu (\textit{hallucination}), model kecerdasan buatan TropiCare diikat secara ketat pada basis pengetahuan buku Panduan Praktik Klinis Dokter di FKTP (KMK 1186/2022) melalui teknik \textit{Retrieval-Augmented Generation} (RAG). Sistem hanya mencocokkan gejala klinis dengan literatur resmi pemerintah dan mengeluarkan rekomendasi rute rujukan yang transparan.
@@ -97,7 +97,7 @@ Perbandingan keunggulan TropiCare dengan solusi layanan kesehatan yang ada saat 
 \midrule
 \textbf{Alur Loket Puskesmas} & Pasien menceritakan ulang keluhan; nakes mengetik ulang satu per satu di loket pendaftaran. & Cukup pindai QR Code di layar HP pasien dalam 1 detik untuk memasukkan data ke rekam medis Puskesmas. \\
 \midrule
-\textbf{Ketahanan Daerah 3T} & Gagal berfungsi saat sinyal internet lambat atau terputus di wilayah pelosok. & Teknologi PWA \textit{Offline-First} tetap berfungsi normal meskipun tidak ada koneksi internet. \\
+\textbf{Ketahanan Daerah 3T} & Gagal berfungsi saat sinyal internet lambat atau terputus di wilayah pelosok. & Deteksi darurat, navigasi faskes terdekat, dan penerbitan QR rujukan beroperasi 100\% luring di peramban tanpa internet. \\
 \bottomrule
 \end{tabularx}
 \end{table}

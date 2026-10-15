@@ -96,3 +96,6 @@ frontend/src/routeTree.gen.ts
 # Temporary Guidebook Pages
 inbox/guidebook_pages/
 
+# Local agent tooling (skills installed per-project)
+.agents/
+
