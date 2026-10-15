@@ -78,8 +78,8 @@ export function ConsentScreen({ flow }: { flow: FlowPublic }) {
       foot={null}
     >
       <Card tab="PRIVASI" className="pop consent-gate">
-        <h2 className="qt">Baca dulu, ya</h2>
-        <p className="qh">Centang setuju untuk mulai. Lokasi boleh ditolak.</p>
+        <h2 className="qt">Privasi Pengguna</h2>
+        <br />
         {/* Full height: the card fits the text, the page scrolls. */}
         <section className="consent-text" aria-label="Kebijakan privasi">
           <PrivacyText />
@@ -90,10 +90,7 @@ export function ConsentScreen({ flow }: { flow: FlowPublic }) {
             checked={agreed}
             onChange={(e) => tick(e.target.checked)}
           />
-          <span>
-            Saya setuju dengan kebijakan privasi di atas, termasuk izin lokasi
-            untuk mencari faskes terdekat.
-          </span>
+          <span>Saya setuju dengan kebijakan privasi di atas.</span>
         </label>
         <div aria-live="polite">
           {loc.s === "locating" && (
