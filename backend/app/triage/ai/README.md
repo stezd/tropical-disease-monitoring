@@ -116,6 +116,28 @@ Bawaan: `gemini-3.5-flash-lite`. Model ini sudah dicoba dengan key sungguhan pad
 
 Cara lain cukup lewat config: `TRIAGE_AI_MODEL`, atau `TRIAGE_AI_PROVIDER=openai_compat` + `TRIAGE_AI_BASE_URL=http://<server-gpu>:8000/v1` untuk MedGemma di vLLM. Naikkan `PROMPT_VERSION` di `prompts.py` setiap kali prompt atau skema berubah.
 
+## OpenRouter (Gemma 4 gratis)
+
+Pindah dari Gemini ke OpenRouter cukup lewat `.env`, tanpa mengubah kode:
+
+```bash
+TRIAGE_AI_PROVIDER=openai_compat
+TRIAGE_AI_BASE_URL=https://openrouter.ai/api/v1
+TRIAGE_AI_MODEL=google/gemma-4-26b-a4b-it:free
+TRIAGE_AI_API_KEY=sk-or-...
+TRIAGE_AI_SCHEMA_IN_PROMPT=true
+TRIAGE_AI_RPM_LIMIT=20
+TRIAGE_AI_RPD_LIMIT=50
+TRIAGE_AI_CALL_TIMEOUT_S=30
+TRIAGE_AI_DEADLINE_S=40
+```
+
+- **Batas model `:free`:** 20 permintaan per menit, 50 per hari. Setelah akun pernah membeli minimal 10 kredit, batas harian naik jadi 1.000. Kuota ini dipakai bersama oleh skoring (1 panggilan per pasien di mode `single`) dan pengenalan obat (paling banyak 1 panggilan lagi). Set `TRIAGE_AI_DRUGS_ENABLED=false` kalau kuota harus hemat; pop-up obat tetap jalan lewat kata kunci.
+- **Skema JSON tidak dijamin.** Endpoint gratisnya (Google AI Studio) menerima `response_format` tapi tidak mendukung `structured_outputs`. `TRIAGE_AI_SCHEMA_IN_PROMPT=true` menulis skema ke pesan sistem, dan balasan yang dibungkus ```json tetap terbaca. Validasi ID di engine tetap berjalan seperti biasa.
+- **Fallback berbayar (opsional):** `TRIAGE_AI_FALLBACK_MODEL=google/gemma-4-26b-a4b-it` dikirim sebagai daftar `models` OpenRouter. Kalau versi gratis kena 429 atau error, OpenRouter mencoba versi berbayar dalam permintaan yang sama (kira-kira Rp20–30 per pasien, butuh saldo kredit).
+- **404 "No endpoints found matching your data policy":** buka pengaturan privasi OpenRouter dan izinkan endpoint gratis.
+- Uji dulu dengan `python scripts/ai_smoke.py single` memakai kunci OpenRouter.
+
 ## Privasi
 
-Data boleh keluar server (keputusan tim). Dengan Gemini API, fakta pasien (teks pilihan, usia, jenis kelamin, provinsi; tanpa identitas) dikirim ke Google. Menurut Google, data di kuota gratis dipakai untuk memperbaiki produknya dan bisa dibaca peninjau manusia. Sebutkan ini di teks persetujuan dan di klaim deck.
+Data boleh keluar server (keputusan tim). Dengan Gemini API atau OpenRouter, fakta pasien (teks pilihan, usia, jenis kelamin, provinsi; tanpa identitas) dikirim ke Google (lewat OpenRouter bila memakai OpenRouter). Menurut Google, data di kuota gratis dipakai untuk memperbaiki produknya dan bisa dibaca peninjau manusia. Sebutkan ini di teks persetujuan dan di klaim deck.
