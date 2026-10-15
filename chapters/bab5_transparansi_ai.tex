@@ -9,7 +9,7 @@
 Sejalan dengan standar integritas akademik dan regulasi kompetisi JOINTS 2026, tim pengembang menyatakan secara terbuka pemanfaatan kecerdasan buatan pada dua ranah:
 \begin{enumerate}
     \item \textbf{Akselerasi Rekayasa Kode (\textit{AI-assisted coding}):} Sebagian besar penulisan basis kode purwarupa dikembangkan secara intensif berbantuan model Claude dan Gemini. Akselerasi sintaksis ini diimbangi secara sadar dengan disiplin rekayasa perangkat lunak yang ketat: tim menerapkan rangkaian pengujian otomatis komprehensif (\textit{automated test suite}) dengan cakupan uji (\textit{test coverage}) melampaui \textbf{90\% pada backend}, pengujian regresi kasus emas (\textit{golden test snapshots}), serta penerapan pola arsitektur \textit{ports and adapters} guna menjamin keandalan sistem tetap terverifikasi.
-    \item \textbf{Model Inferensi Triase pada Purwarupa \& Demo:} Untuk memproses penalaran klinis gejala kompleks secara responsif pada tahap demonstrasi dan pengujian, sistem mengintegrasikan model bahasa mutakhir meliputi \textbf{Google Gemini}, \textbf{DeepSeek}, serta model medis bobot terbuka \textbf{MedGemma / Gemma} yang diikat ketat oleh korpus resmi Kemenkes RI (Tabel~\ref{tab:transparansi_ai}).
+    \item \textbf{Model Inferensi Triase pada Purwarupa:} Pada demo dan pengujian, penalaran gejala kompleks dilayani model medis bobot terbuka \textbf{MedGemma 4B} yang dihosting tim sendiri melalui API bergaya OpenAI (vLLM). Arsitektur penyedianya dapat ditukar hanya lewat konfigurasi, termasuk ke Google Gemini atau DeepSeek, tanpa mengubah kode aplikasi (Tabel~\ref{tab:transparansi_ai}).
 \end{enumerate}
 
 \begin{table}[H]
@@ -27,7 +27,7 @@ Sejalan dengan standar integritas akademik dan regulasi kompetisi JOINTS 2026, t
 \midrule
 \textbf{Rekayasa Kode \& Otomasi Pengujian} & Generasi sintaksis berbantuan AI (Claude \& Gemini) untuk rute FastAPI, komponen React PWA, dan skema JSON. & Perancangan arsitektur domain mandiri, isolasi logika klinis, audit kode baris-demi-baris, serta pembuatan pengujian otomatis dengan cakupan $>90\%$ \textit{coverage} pada backend (\textit{pytest} \& \textit{golden snapshots}) untuk mencegah regresi logika. \\
 \midrule
-\textbf{Inferensi Klinis pada Demo Fungsional} & Eksekusi penalaran gejala kompleks memanfaatkan model Google Gemini, DeepSeek, dan MedGemma / Gemma. & Pemagaran mutlak dengan korpus KMK 1186/2022 via RAG BM25, validasi skema JSON keluaran, serta pemutusan 100\% tanpa AI untuk kasus gawat darurat (\textit{Red Flags bypass}). \\
+\textbf{Inferensi Klinis pada Demo} & Model medis \textbf{MedGemma 4B} yang dihosting tim sendiri lewat API bergaya OpenAI (vLLM). Penyedia lain seperti Gemini dan DeepSeek dapat ditukar lewat konfigurasi. & Pengambilan kutipan pedoman lewat indeks BM25 atas korpus KMK 1186/2022, validasi skema JSON keluaran, serta pemutusan 100\% tanpa AI untuk kasus gawat darurat (\textit{Red Flags bypass}). \\
 \bottomrule
 \end{tabularx}
 \end{table}
