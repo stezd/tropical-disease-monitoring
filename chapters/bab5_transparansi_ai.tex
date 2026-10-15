@@ -6,7 +6,7 @@
 
 \subsection{Pernyataan Transparansi AI dalam Siklus Pengembangan}
 
-Sejalan dengan standar integritas akademik dan arahan Kementerian Kesehatan RI mengenai etika kecerdasan buatan, tim pengembang menyampaikan pernyataan terbuka terkait pemanfaatan alat bantu AI generatif dalam proses perancangan, penulisan proposal, dan rekayasa TropiCare. AI diposisikan secara ketat sebagai akselerator kognitif, penyunting tata bahasa, dan asisten kode (\textit{coding copilot}), tanpa menggantikan orisinalitas pemikiran, pertimbangan klinis, maupun tanggung jawab tim manusia (Tabel~\ref{tab:transparansi_ai}).
+Sejalan dengan standar integritas akademik dan regulasi kompetisi JOINTS 2026, tim pengembang menyatakan secara terbuka bahwa sebagian besar basis kode purwarupa dikembangkan melalui pendekatan berbantuan kecerdasan buatan (\textit{vibe coding} memanfaatkan \textit{AI coding agents} seperti Claude dan Gemini). Akselerasi penulisan kode ini diimbangi secara sadar dengan disiplin rekayasa perangkat lunak yang ketat: tim menerapkan rangkaian pengujian otomatis komprehensif (\textit{automated test suite}) dengan cakupan uji (\textit{test coverage}) melampaui \textbf{90\% pada backend}, pengujian regresi kasus emas (\textit{golden test snapshots}), serta penerapan pola arsitektur \textit{ports and adapters} guna menjamin keandalan sistem tetap terverifikasi (Tabel~\ref{tab:transparansi_ai}).
 
 \begin{table}[H]
 \centering
@@ -15,13 +15,13 @@ Sejalan dengan standar integritas akademik dan arahan Kementerian Kesehatan RI m
 \vspace{3pt}
 \begin{tabularx}{\textwidth}{p{3.2cm} X X}
 \toprule
-\textbf{Fase Aktivitas} & \textbf{Kontribusi Alat Bantu AI} & \textbf{Verifikasi \& Pengawasan Manusia} \\
+\textbf{Fase Aktivitas} & \textbf{Kontribusi Alat Bantu AI} & \textbf{Verifikasi \& Disiplin Mutu Tim} \\
 \midrule
 \textbf{Perancangan Ide \& Konsep} & Eksplorasi skenario risiko (\textit{edge-cases}), simulasi variasi kosakata awam untuk uji ketahanan leksikal, dan komparasi literatur sistem triase global. & Seleksi kritis oleh tim berdasarkan realitas faskes primer Indonesia dan keselarasan dengan regulasi Kemenkes RI. \\
 \midrule
 \textbf{Penyusunan Proposal} & Perumusan draf awal kalimat, perbaikan tata bahasa formal, dan penataan struktur matriks komparasi. & Penyuntingan substansial, verifikasi silang dokumen regulasi (UU PDP, UU Kesehatan, KMK PPK FKTP), dan penulisan ulang analisis kausal oleh tim. \\
 \midrule
-\textbf{Rekayasa Kode \& Desain} & Optimasi sintaksis dokumen LaTeX/TikZ serta generasi kerangka kode dasar (\textit{boilerplate}) FastAPI dan React. & Penulisan mandiri logika inti (algoritma pencocokan KMK, \textit{rule-engine} 11 \textit{Red Flags}, serialisasi QR), tinjauan kode baris-demi-baris, dan pengujian unit. \\
+\textbf{Rekayasa Kode (Vibe Coding Seimbang)} & Generasi sintaksis cepat (\textit{vibe coding}) untuk kerangka rute FastAPI, komponen antarmuka React PWA, skema serialisasi JSON, dan skrip sinkronisasi data. & Perancangan arsitektur domain mandiri, isolasi logika bisnis klinis, audit kode baris-demi-baris, serta pembangunan pengujian otomatis dengan cakupan $>90\%$ \textit{coverage} pada backend (\textit{pytest} \& \textit{golden snapshots}) untuk mencegah regresi logika. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -32,7 +32,7 @@ Tim TropiCare menegaskan bahwa kecerdasan buatan hanyalah alat bantu (\textit{as
 
 \begin{enumerate}
     \item \textbf{Validasi Medis oleh Kolaborator Klinis:} Seluruh logika pohon keputusan klinis, pembagian 20 penyakit tropis, penetapan 11 kriteria tanda bahaya (\textit{Red Flags}), dan alur rujukan dikurasi langsung oleh kolaborator mahasiswa kedokteran berdasarkan KMK No. HK.01.07/MENKES/1186/2022 \citep{Kemenkes2022a} dan KMK No. HK.01.07/MENKES/1936/2022 \citep{Kemenkes2022b}. Hal ini menjamin kepatuhan pada Standar Kompetensi Dokter Indonesia \citep{KKI2012}.
-    \item \textbf{Rekayasa Perangkat Lunak Deterministik:} Arsitektur backend FastAPI, frontend React, basis data direktori 13.930 faskes SATUSEHAT MSI, dan pencarian faskes terdekat dirancang mandiri oleh mahasiswa ilmu komputer tanpa ketergantungan logika otonom pihak ketiga.
+    \item \textbf{Rekayasa Perangkat Lunak Terkendali \& Uji Regresi Backend $>90\%$:} Meskipun sintaksis kode dipercepat menggunakan AI (\textit{vibe coding}), struktur arsitektur dikendalikan penuh oleh tim melalui pola \textit{Ports and Adapters} (arsitektur heksagonal). Logika inti diproteksi oleh skema validasi Pydantic v2 yang ketat dan ratusan pengujian unit otomatis dengan \textit{coverage} di atas 90\%, menjamin tidak ada kode yang berjalan di luar kendali (\textit{uncontrolled behavior}).
     \item \textbf{Keputusan Etis Pembatasan Fitur:} Tim secara sadar menghapus fitur kamera ruam kulit demi mematuhi UU Pelindungan Data Pribadi No. 27/2022 \citep{UUPDP2022} mengenai data biometrik sensitif dan mencegah bias warna kulit sawo matang/gelap, serta menolak penyimpanan nomor KTP/NIK di server demi keamanan privasi masyarakat.
 \end{enumerate}
 
