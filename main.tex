@@ -9,7 +9,7 @@
 % Compiler yang direkomendasikan: pdfLaTeX
 %================================================================
 
-\documentclass[10pt,a4paper,oneside]{article}
+\documentclass[11pt,a4paper,oneside]{article}
 
 %--------------------------------------------------------------
 % # 1. Encoding & Bahasa
@@ -20,17 +20,17 @@
 \usepackage[indonesian, provide=*]{babel}
 
 %--------------------------------------------------------------
-% # 2. Tipografi & Font (Times New Roman Standar Publikasi)
+% # 2. Tipografi & Font (Times New Roman Standar Bersih)
 %--------------------------------------------------------------
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{mathptmx}
 \usepackage{microtype}
+\usepackage{xcolor}
 
 %--------------------------------------------------------------
 % # 3. Ukuran Halaman & Margin
 % - Margin 2 cm pada semua sisi
-% - Pemisah Kolom Jurnal (columnsep) 0.65 cm
 %--------------------------------------------------------------
 \usepackage[
   a4paper,
@@ -40,24 +40,15 @@
   bottom=2cm,
   headheight=15pt
 ]{geometry}
-\setlength{\columnsep}{0.65cm}
-
-% Parameter Float Jurnal Kompak (Cegah Halaman Kosong Akibat Float)
-\renewcommand{\topfraction}{0.95}
-\renewcommand{\bottomfraction}{0.85}
-\renewcommand{\textfraction}{0.05}
-\renewcommand{\floatpagefraction}{0.85}
-\renewcommand{\dbltopfraction}{0.95}
-\renewcommand{\dblfloatpagefraction}{0.85}
 
 %--------------------------------------------------------------
-% # 4. Spasi & Paragraf Gaya Jurnal
+% # 4. Spasi & Paragraf (Nyaman Dibaca Juri)
 %--------------------------------------------------------------
 \usepackage{setspace}
-\setstretch{1.05}                % Spasi 1.05 standar publikasi ilmiah
+\setstretch{1.15}                % Spasi 1.15 nyaman dan lega
 \usepackage{indentfirst}         % Indentasi paragraf pertama
-\setlength{\parindent}{0.4cm}    % Indentasi standar jurnal
-\setlength{\parskip}{0pt}        % Tanpa jeda kosong antar paragraf gaya jurnal
+\setlength{\parindent}{0.6cm}    % Indentasi wajar
+\setlength{\parskip}{2pt plus 1pt minus 1pt} % Jarak antar paragraf proporsional
 
 %--------------------------------------------------------------
 % # 5. Header & Footer (fancyhdr)
@@ -65,7 +56,7 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\fontsize{8pt}{10pt}\selectfont\textit{Proposal Inovasi TropiCare -- Hackathon 2026}}
+\fancyhead[L]{\fontsize{8.5pt}{11pt}\selectfont\textit{TropiCare -- Proposal Inovasi Hackathon JOINTS 2026}}
 \fancyhead[R]{\fontsize{9pt}{11pt}\selectfont\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0pt}
@@ -77,37 +68,34 @@
 }
 
 %--------------------------------------------------------------
-% # 6. Format Judul Bab & Subbab (Gaya Jurnal Ilmiah)
+% # 6. Format Judul Bab & Subbab (Elegan & Berwarna)
 %--------------------------------------------------------------
 \usepackage{titlesec}
+\definecolor{ipbblue}{RGB}{20, 52, 114}
+\definecolor{accentteal}{RGB}{0, 128, 128}
+\definecolor{lightbg}{RGB}{248, 250, 252}
 
 \titleformat{\section}
-  {\fontsize{10.5pt}{12.5pt}\selectfont\bfseries}
+  {\fontsize{11.5pt}{14pt}\selectfont\bfseries\color{ipbblue}}
   {\thesection}
-  {0.6em}
+  {0.8em}
   {\MakeUppercase}
 
 \titleformat{\subsection}
-  {\fontsize{10pt}{12pt}\selectfont\bfseries}
+  {\fontsize{10.5pt}{13pt}\selectfont\bfseries\color{ipbblue}}
   {\thesubsection}
-  {0.6em}
+  {0.8em}
   {}
 
 \titleformat{\subsubsection}
-  {\fontsize{9.5pt}{11.5pt}\selectfont\bfseries\itshape}
+  {\fontsize{10pt}{12pt}\selectfont\bfseries\itshape}
   {\thesubsubsection}
   {0.6em}
   {}
 
-\titlespacing*{\section}{0pt}{8pt}{3pt}
-\titlespacing*{\subsection}{0pt}{6pt}{2pt}
-\titlespacing*{\subsubsection}{0pt}{4pt}{1pt}
-
-% Spasi Formula Matematika Kompak
-\setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}
-\setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}
-\setlength{\abovedisplayshortskip}{1pt}
-\setlength{\belowdisplayshortskip}{1pt}
+\titlespacing*{\section}{0pt}{10pt}{4pt}
+\titlespacing*{\subsection}{0pt}{8pt}{3pt}
+\titlespacing*{\subsubsection}{0pt}{5pt}{2pt}
 
 % Format penomoran: BAB I -> 1.1 -> 1.1.1
 \renewcommand{\thesection}{BAB \Roman{section}}
@@ -121,7 +109,7 @@
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage{multirow}
-\renewcommand{\arraystretch}{0.92} % Kerapatan baris tabel
+\renewcommand{\arraystretch}{1.02} % Jeda baris tabel nyaman
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{tikz}
@@ -139,16 +127,13 @@
   justification   = justified,
   singlelinecheck = true
 }
-\captionsetup[table]{name=Tabel, position=above, skip=3pt}
-\captionsetup[figure]{name=Gambar, position=below, skip=4pt}
+\captionsetup[table]{name=Tabel, position=above, skip=4pt}
+\captionsetup[figure]{name=Gambar, position=below, skip=5pt}
 
 %--------------------------------------------------------------
 % # 8. Kotak Sorotan / Callout Box Modern (tcolorbox)
 %--------------------------------------------------------------
 \usepackage[most]{tcolorbox}
-\definecolor{ipbblue}{RGB}{20, 52, 114}
-\definecolor{accentteal}{RGB}{0, 128, 128}
-\definecolor{lightbg}{RGB}{248, 250, 252}
 
 \newtcolorbox{highlightbox}[1][]{
   colback=lightbg,
@@ -157,10 +142,10 @@
   coltitle=white,
   boxrule=0.6pt,
   arc=1.5mm,
-  left=6pt,
-  right=6pt,
-  top=4pt,
-  bottom=4pt,
+  left=8pt,
+  right=8pt,
+  top=5pt,
+  bottom=5pt,
   #1
 }
 
@@ -168,7 +153,8 @@
 % # 9. Referensi & Sitasi (Gaya IEEE Numerik [1], [2])
 %--------------------------------------------------------------
 \usepackage[numbers,sort&compress]{natbib}
-\setlength{\bibsep}{1.2pt}
+\setlength{\bibsep}{2pt}
+\usepackage{multicol}
 
 %--------------------------------------------------------------
 % # 10. Hyperlink
@@ -178,13 +164,13 @@
   linkcolor=ipbblue,
   citecolor=ipbblue,
   urlcolor=ipbblue,
-  pdfauthor={Tim Pengusul IPB},
-  pdftitle={Proposal Inovasi Hackathon}
+  pdfauthor={Tim Pengusul},
+  pdftitle={Proposal Inovasi TropiCare - Hackathon JOINTS 2026}
 ]{hyperref}
 
 % Kontrol List / Poin
 \usepackage{enumitem}
-\setlist{nosep, leftmargin=1.2em}
+\setlist{nosep, leftmargin=1.5em}
 
 %==============================================================
 % # DOKUMEN UTAMA
@@ -193,9 +179,6 @@
 
 % 1. Halaman Sampul (Cover)
 \input{chapters/cover}
-
-\clearpage
-\twocolumn
 
 % Mulai penomoran halaman isi
 \setcounter{page}{2}
@@ -215,12 +198,15 @@
 % 6. Bab V: Transparansi Penggunaan AI (Syarat Wajib Hackathon)
 \input{chapters/bab5_transparansi_ai}
 
-% 7. Daftar Pustaka
+% 7. Daftar Pustaka (2 Kolom Kompak di Akhir)
+\vspace{10pt}
 \section*{DAFTAR PUSTAKA}
 \renewcommand{\bibsection}{}
-\renewcommand{\bibfont}{\scriptsize}
-\setlength{\bibsep}{1.2pt}
+\renewcommand{\bibfont}{\footnotesize}
+\setlength{\bibsep}{1.5pt}
+\begin{multicols}{2}
 \bibliographystyle{ieeetr}
 \bibliography{refs/daftar_pustaka}
+\end{multicols}
 
 \end{document}
