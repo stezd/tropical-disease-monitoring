@@ -134,7 +134,7 @@ Kandidat:
 - diare: Diare Akut
 - tifoid: Demam Tifoid (Tipes)
 - amoeba: Amebiasis (Disentri Amuba)
-- hepa: Hepatitis A/B
+- hepa: Hepatitis Akut
 - sth: Cacingan (STH)
 - scabies: Skabies (Kudis)
 - tinea: Tinea (Jamur Kulit)

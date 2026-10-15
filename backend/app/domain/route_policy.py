@@ -7,7 +7,7 @@ answers (DR no. 15, Blueprint Tahap 7) and never the model.
 from app.domain.answers import Answers
 from app.domain.warnings import missing_vitals
 from app.triage.content import ROUTE_LEVEL, FlowContent, Option, RouteId
-from app.triage.scoring import ScoreBreakdown, companion_shown, visible
+from app.triage.scoring import ScoreBreakdown, companion_shown, red_flag_ids, visible
 
 
 def picked_options(answers: Answers, content: FlowContent) -> list[Option]:
@@ -26,6 +26,14 @@ def picked_options(answers: Answers, content: FlowContent) -> list[Option]:
     if companion_q and companion_shown(companion_q, answers):
         out += [o for o in companion_q.options if o.id in answers.companion]
     return out
+
+
+def staff_notes_for(answers: Answers, content: FlowContent) -> list[str]:
+    """Notes for the health worker from the picked options, without repeats."""
+    if red_flag_ids(answers, content):
+        return []
+    notes = [o.staff_note for o in picked_options(answers, content) if o.staff_note]
+    return list(dict.fromkeys(notes))
 
 
 def decide_route(

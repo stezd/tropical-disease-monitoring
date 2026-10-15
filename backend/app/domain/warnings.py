@@ -54,8 +54,10 @@ def warnings_for(
     unknown: bool,
     flags: list[str],
     notes: list[str],
+    staff_notes: list[str] | None = None,
 ) -> tuple[list[Warning], list[Warning]]:
-    """(warnings, drug pop-ups). `notes` are the route-upgrade notes from route_policy."""
+    """(warnings, drug pop-ups). `notes` are the route-upgrade notes and `staff_notes`
+    the health-worker notes, both from route_policy."""
     no_thermo, no_bp = missing_vitals(answers, content)
     t = answers.temp if not no_thermo else None
 
@@ -99,6 +101,7 @@ def warnings_for(
             for n in content.advice.route_notes.get(route, [])
         )
     warns.extend(Warning(level="b", icon="⬆️", text=n) for n in notes)
+    warns.extend(Warning(level="y", icon="🩺", text=n) for n in staff_notes or [])
     if no_thermo and wn.no_thermo_fever_pattern and wn.no_thermo_other:
         warns.append(
             Warning(

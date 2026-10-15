@@ -72,7 +72,7 @@
     "care": ["JANGAN minum obat mampat (Loperamide)", "Oralit & Zinc untuk mencegah dehidrasi", "Rebus air minum hingga mendidih"]
   },
   "hepa": {
-    "name": "Hepatitis A/B",
+    "name": "Hepatitis Akut",
     "emoji": "🟡",
     "route": "yellow",
     "lab": ["Fungsi hati (SGOT/SGPT, bilirubin)", "HBsAg", "Anti-HAV IgM"],
@@ -83,7 +83,7 @@
     "emoji": "🪱",
     "route": "green",
     "lab": [],
-    "care": ["Obat cacing (Albendazol) dari apotek/Puskesmas", "Potong kuku, cuci tangan sebelum makan", "Selalu pakai alas kaki"]
+    "care": ["Obat cacing dari apotek (mis. Pirantel Pamoat), dosis sesuai kemasan", "Potong kuku, cuci tangan sebelum makan", "Selalu pakai alas kaki"]
   },
   "scabies": {
     "name": "Skabies (Kudis)",

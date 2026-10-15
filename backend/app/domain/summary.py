@@ -5,10 +5,11 @@ plain-text form built from it.
 """
 
 from app.domain.answers import Answers
+from app.domain.route_policy import staff_notes_for
 from app.domain.warnings import missing_vitals
 from app.triage.content import NONE_ID, FlowContent, Option, RouteId
 from app.triage.schemas import RankedDisease, SummaryRow
-from app.triage.scoring import bmi, companion_shown
+from app.triage.scoring import bmi, companion_shown, red_flag_ids
 
 
 def _fmt(n: float) -> str:
@@ -48,7 +49,8 @@ def summary_rows(
         else []
     )
     eco = [o.reason or o.text for o in flow.eco if o.id in a.eco and o.id != NONE_ID]
-    flags = [f for f in flow.red_flags if f.id in a.red_flags]
+    flag_ids = red_flag_ids(a, content)
+    flags = [f for f in flow.red_flags if f.id in flag_ids]
     b = bmi(a)
     no_thermo, no_bp = missing_vitals(a, content)
     proxies = [
@@ -131,6 +133,10 @@ def summary_rows(
     rows += [
         ("findings", "Foto", ", ".join(findings) if findings else "-"),
         ("lab", "Lab", "; ".join(disease.lab) if disease and disease.lab else "-"),
+    ]
+    if notes := staff_notes_for(a, content):
+        rows.append(("staff_note", "Catatan petugas", "; ".join(notes)))
+    rows += [
         ("estimate", "Dugaan", dugaan),
         ("route", "Kondisi", f"{r.name} – {r.sub}"),
     ]

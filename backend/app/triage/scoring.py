@@ -86,6 +86,18 @@ def companion_shown(q: Question, answers: Answers) -> bool:
     return q.patterns is None or answers.pattern in q.patterns
 
 
+def red_flag_ids(answers: Answers, content: FlowContent) -> list[str]:
+    """Danger signs picked in step q1, plus picked companion options that are one
+    (e.g. very yellow eyes with fever). Any of them means route MERAH."""
+    out = [f for f in answers.red_flags if f != NONE_ID]
+    q = content.flow.companions.get(answers.complaint or "")
+    if q and companion_shown(q, answers):
+        for o in q.options:
+            if o.red_flag and o.id in answers.companion and o.red_flag not in out:
+                out.append(o.red_flag)
+    return out
+
+
 def rank(scores: dict[str, float], temperature: float) -> list[Ranked]:
     positive = [(k, s) for k, s in scores.items() if s > 0]
     z = sum(math.exp(s / temperature) for _, s in positive)

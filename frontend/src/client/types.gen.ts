@@ -507,6 +507,14 @@ export type Option = {
      */
     min_route?: 'green' | 'yellow' | 'special' | 'red' | null;
     /**
+     * Red Flag
+     */
+    red_flag?: string | null;
+    /**
+     * Staff Note
+     */
+    staff_note?: string | null;
+    /**
      * Wide
      */
     wide?: boolean;
@@ -654,6 +662,10 @@ export type RedFlag = {
      * Dont
      */
     dont?: string | null;
+    /**
+     * Listed
+     */
+    listed?: boolean;
 };
 
 /**

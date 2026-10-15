@@ -26,7 +26,7 @@
     },
     {
       "id": "hepa",
-      "name": "Hepatitis A/B",
+      "name": "Hepatitis Akut",
       "emoji": "🟡",
       "score": 10.0,
       "pct": 9
@@ -46,7 +46,7 @@
     {
       "level": "y",
       "icon": "💊",
-      "text": "**Hentikan obat mampat.** Infeksi usus butuh dikeluarkan. Ganti dengan Oralit & Zinc."
+      "text": "**Hentikan obat mampat** (Loperamide, Diapet, dan sejenisnya): kuman dan racun harus dikeluarkan lewat BAB. Ganti dengan Oralit dan Zinc."
     },
     {
       "level": "b",
@@ -63,7 +63,7 @@
     {
       "level": "y",
       "icon": "⚠️",
-      "text": "**Hentikan obat mampat.** Infeksi usus butuh dikeluarkan. Ganti dengan **Oralit & Zinc**."
+      "text": "**PERHATIAN: Hentikan obat penghenti mencret (mampat).** Jangan gunakan Loperamide, Diapet, atau sejenisnya. **Alasan:** pada diare berlendir/berdarah (disentri), kuman dan racun harus dikeluarkan lewat BAB, bukan ditahan di dalam perut, agar usus tidak bengkak. **Solusi:** segera ganti dengan minum **Oralit** (cegah dehidrasi) dan suplemen **Zinc**."
     }
   ],
   "todo": [
