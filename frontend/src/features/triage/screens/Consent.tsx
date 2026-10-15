@@ -75,30 +75,13 @@ export function ConsentScreen({ flow }: { flow: FlowPublic }) {
       stage={0}
       say="Sebelum mulai, ini cara aku **menjaga datamu** 🔒"
       onHome={home}
-      foot={
-        <>
-          <BackButton onClick={home} />
-          <button
-            type="button"
-            className="btn big btn-primary"
-            disabled={!agreed}
-            onClick={next}
-          >
-            Lanjut ▶
-          </button>
-        </>
-      }
+      foot={null}
     >
       <Card tab="PRIVASI" className="pop consent-gate">
         <h2 className="qt">Baca dulu, ya</h2>
         <p className="qh">Centang setuju untuk mulai. Lokasi boleh ditolak.</p>
-        {/* Scrollable: focusable so keyboard users can scroll it. */}
-        <section
-          className="consent-text"
-          // biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable region must be keyboard-scrollable
-          tabIndex={0}
-          aria-label="Kebijakan privasi"
-        >
+        {/* Full height: the card fits the text, the page scrolls. */}
+        <section className="consent-text" aria-label="Kebijakan privasi">
           <PrivacyText />
         </section>
         <label className="chk">
@@ -157,6 +140,18 @@ export function ConsentScreen({ flow }: { flow: FlowPublic }) {
             </div>
           </label>
         )}
+        {/* Buttons live inside the card: the patient scrolls past the whole text. */}
+        <div className="foot">
+          <BackButton onClick={home} />
+          <button
+            type="button"
+            className="btn big btn-primary"
+            disabled={!agreed}
+            onClick={next}
+          >
+            Lanjut ▶
+          </button>
+        </div>
       </Card>
     </QuizFrame>
   )

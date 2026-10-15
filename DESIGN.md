@@ -16,8 +16,8 @@ Visual guide for the React app. Source: [docs/TropiCek-Simulasi.html](docs/Tropi
 
 ### Why the reference feels calm (keep these rules)
 
-1. **White cards on a pale sheet, with soft depth.** Cards are `white`, with a 1px `line` hairline and a soft teal-tinted shadow. Color does not fill whole cards.
-2. **The backdrop is pale mint-teal**, not white and not grey. It holds the home hero and the margins around the app column on desktop, with soft lighter blobs and faint white `+` marks and dot grids as decoration.
+1. **White cards on a teal sheet, with soft depth.** Cards are `white`, with a 1px `line` hairline and a soft teal-tinted shadow. Color does not fill whole cards.
+2. **The backdrop is pale mint-teal** and the sheet is a deeper teal with a touch of white; neither is white or grey. The backdrop holds the home hero and Thinking. On desktop the margins around the app column use the lighter `backdrop-glow`, with soft lighter blobs and faint white `+` marks and dot grids as decoration.
 3. **One action color: deep teal** `#0F6B66`, flat. Primary buttons, selected state, checkbox, focus ring, round icon controls, current stage dot. Nothing else is that strong.
 4. **Color lives in small pastel circles.** Icons sit in round pastel badges (rose, mint, sky, butter, lavender), like the reference's category circles. Rotate the hues so neighbours differ.
 5. **Greys are teal-tinted.** Hint text, hairlines, and disabled states lean toward teal (`ink2`, `muted`, `line`), never pure grey.
@@ -36,7 +36,7 @@ Put these in `frontend/src/styles/tropicek.css` `:root` and map them to the shad
 | `backdrop` | `#CDE8E3` | Home hero, Thinking, desktop margins around the app column |
 | `backdrop-glow` | `#E4F4F1` | Lighter blobs and the glow at the top of the backdrop |
 | `backdrop-deep` | `#A9D7D0` | Darker decorative blobs on the backdrop (never behind text) |
-| `sheet` | `#F5FAF9` | The app "screen" behind cards (quiz, result, history, privacy), and the home bottom sheet |
+| `sheet` | `#B8DFD9` | The app "screen" behind cards (quiz, result, history, privacy), and the home bottom sheet |
 | `white` | `#FFFFFF` | Cards, bubbles on the backdrop, inputs |
 | `field` | `#F3F8F7` | Options and inputs sitting **on** a white card |
 | `line` | `#E1EDEA` | The only hairline (cards, options, dividers) |
@@ -88,8 +88,8 @@ Routes use the pastel-pair idea: a **pastel band** with a **solid icon chip** an
 
 ### Screen backgrounds
 
-- **Home:** like the reference's first phone. Top = `backdrop` hero (gradient `backdrop-glow` → `backdrop`) with soft round blobs (`backdrop-glow`, `backdrop-deep` at low opacity) and a few white `+` marks / dot grids. Title, mascot, and bubble sit in the hero. The path buttons sit on a `sheet` panel that rises from the bottom with a 1.625rem top radius.
-- **Quiz, Result, History, Privacy:** `sheet` `#F5FAF9`, flat. Color comes from the teal actions and the pastel circles on white cards. From 40rem, the area outside the content column is `backdrop` (with the same soft blobs), and the column is a `sheet` panel with radius 2rem and a soft shadow `0 20px 50px rgba(15,107,102,0.18)`. No colored frame.
+- **Home:** like the reference's first phone. Top = `backdrop` hero (gradient `backdrop-glow` → `backdrop`) with soft round blobs (`backdrop-glow`, `backdrop-deep` at low opacity) and a few white `+` marks / dot grids. Title, mascot, and bubble sit in the hero. The path buttons sit on a pale `#F5FAF9` panel (token `--tc-sheet-home`, unchanged by the teal `sheet`) that rises from the bottom with a 1.625rem top radius.
+- **Quiz, Result, History, Privacy:** `sheet` `#B8DFD9`, flat. Color comes from the teal actions and the pastel circles on white cards. From 40rem, the area outside the content column is `backdrop-glow` (lighter than the sheet), and the column is a `sheet` panel with radius 2rem and a soft shadow `0 20px 50px rgba(15,107,102,0.18)`. No colored frame.
 - **Thinking:** `backdrop` with a radial `backdrop-glow` behind the orb. Steps are white pills; the running step is `teal-soft`, done steps get a `mint` check.
 - **Red route:** solid `#C8203A → #D42A42` (white text passes 4.5:1 across the whole gradient). Calm: no sparkles, no blobs.
 

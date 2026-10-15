@@ -54,7 +54,7 @@
 :root {
   /* shadcn theme mapped to TropiCare colors (DESIGN.md). Light only. */
   --radius: 1rem;
-  --background: #f5faf9;
+  --background: #b8dfd9;
   --foreground: #15323a;
   --card: #ffffff;
   --card-foreground: #15323a;
