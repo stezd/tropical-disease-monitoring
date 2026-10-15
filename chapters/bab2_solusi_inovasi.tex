@@ -2,84 +2,117 @@
 % BAB II SOLUSI DAN INOVASI YANG DITAWARKAN
 %==============================================================
 
-\section{Solusi dan Inovasi yang Ditawarkan}
+\section{Solusi dan Inovasi\\yang Ditawarkan}
 
 \subsection{Deskripsi Solusi dan Alur Klinis Berjenjang}
 
-[Deskripsikan konsep solusi yang ditawarkan. Jelaskan sistem kerja platform web triase mandiri berorientasi keselamatan pasien (*safety-first*) melalui empat lapisan klinis berurutan].
+TropiCare dirancang sebagai platform triase mandiri pra-hospital berbasis \textit{Progressive Web App} (PWA) yang mengedepankan keselamatan pasien (\textit{safety-first}) dan kepatuhan mediko-legal. Seluruh alur penalaran klinis mengacu ketat pada KMK No. HK.01.07/MENKES/1186/2022 tentang Panduan Praktik Klinis bagi Dokter di FKTP \citep{Kemenkes2022a} serta Permenkes No. 3 Tahun 2026 tentang Penanggulangan Penyakit \citep{Permenkes2026}. Sistem menyaring kondisi pasien melalui empat lapisan klinis berurutan:
 
 \begin{enumerate}
-    \item \textbf{Lapisan 1 -- Gerbang Privasi \& \textit{Client-Side Emergency Check}:} [Persetujuan privasi mandiri dan evaluasi 11 tanda bahaya gawat darurat langsung di peramban pengguna tanpa bergantung pada server].
-    \item \textbf{Lapisan 2 -- Pemetaan Gejala Sindromik \& Spasio-Ekologis:} [Pengelompokan 5 klaster infeksi dan 3 klaster PTM serta faktor risiko lingkungan endemis].
-    \item \textbf{Lapisan 3 -- Farmakovigilans \& Proksi Fisik Tanpa Alat Medis:} [Sistem pakar keamanan obat dan proksi antropometri kelonggaran pakaian/tanda vital].
-    \item \textbf{Lapisan 4 -- Orkestrasi 4 Rute Rujukan Medis:} [Klasifikasi rujukan Merah, Kuning Khusus, Kuning, dan Hijau beserta instruksi perawatan].
+    \item \textbf{Lapisan 1 -- Gerbang Privasi \& Evaluasi 11 Tanda Bahaya Sisi Klien (\textit{Client-Side Red Flags}):} 
+    Sebelum kuesioner dimulai, pengguna wajib mencentang persetujuan privasi (\textit{informed consent}). Selanjutnya, sistem mengevaluasi 11 indikator kegawatdaruratan mutlak (\textit{Primary Survey}): syok hipovolemik dengue (akral dingin, nadi filiform), perdarahan saluran cerna masif, gagal ginjal akut (anuria), distres pernapasan berat, penurunan kesadaran/kejang, dehidrasi berat, luka gigitan hewan penular rabies (GHPR), sindrom koroner akut (\textit{Code STEMI}), stroke akut (SeGeRa Ke RS), krisis hipertensi ensefalopati, dan koma diabetik \citep{Kemenkes2022a}. Satu saja tanda bahaya terkonfirmasi, sistem seketika memutus kuesioner dan melompat ke Rute Merah. Evaluasi ini dieksekusi 100\% di peramban (\textit{in-browser}) dalam waktu $<500\text{ ms}$ tanpa menunggu komunikasi jaringan peladen.
+    
+    \item \textbf{Lapisan 2 -- Pemetaan Gejala Sindromik Dinamis \& Determinan Spasio-Ekologis \textit{One Health}:} 
+    Bagi pasien non-darurat, sistem memilah keluhan ke dalam 5 klaster infeksi tropis (demam vektor/zoonosis, saluran napas/dada, pencernaan/hepatobilier, kulit/mukosa, pembengkakan ekstremitas) dan 3 klaster kronis PTM (gula/saraf, tekanan darah/vaskular, sendi/gout) \citep{PERKENI2024}. Sistem memadukan determinan spatio-ekologis \textit{One Health}: riwayat kawasan endemis (Lembah Napu/Lindu untuk Skistosomiasis, Indonesia Timur untuk Malaria dan Frambusia), paparan banjir untuk Leptospirosis, hunian padat untuk TBC/Skabies, serta kontak vektor lingkungan \citep{Permenkes2026}.
+    
+    \item \textbf{Lapisan 3 -- Farmakovigilans Obat Aktif \& Proksi Fisik Tanpa Alat Medis:} 
+    Untuk mencegah keparahan swamedikasi bebas, sistem menerapkan 5 pemicu keamanan obat: kontraindikasi mutlak NSAID (Ibuprofen/Aspirin) pada suspek dengue yang memicu perdarahan lambung masif \citep{Alam2022,Mohiuddin2023,Tovar2024}; larangan antimotilitas (Loperamide) pada disentri yang memicu \textit{toxic megacolon} \citep{Koo2007,Schiller2020}; serta diferensiasi efek samping obat rutin (edema Amlodipine vs filariasis \citep{Liang2022,Savage2020,Sica2003} dan batuk Captopril vs TBC \citep{Dicpinigaitis2014}). Mengatasi minimnya alat medis rumah tangga \citep{Kemenkes2024}, sistem menyediakan proksi fisik: menggigil gemetar (\textit{rigors}) sebagai proksi demam tinggi, denyut nadi istirahat sebagai proksi takikardia, pakaian melonggar drastis sebagai proksi malnutrisi/hiperkatabolisme (IMT $<18,5\text{ kg/m}^2$), dan celana menyempit sebagai proksi obesitas sentral \citep{PERKENI2024}.
+    
+    \item \textbf{Lapisan 4 -- Orkestrasi 4 Rute Rujukan Medis dan Navigasi Faskes Presisi:} 
+    Sistem menetapkan status triase ke dalam empat rute: \textbf{Rute Merah} (IGD/119, aktivasi sirene visual dan instruksi Bantuan Hidup Dasar); \textbf{Rute Kuning Khusus} (Poli Program Nasional Kemenkes: TBC, Kusta, Frambusia, Filariasis, Skistosomiasis dengan navigasi faskes penyedia obat program OAT/\allowbreak MDT/\allowbreak Praziquantel); \textbf{Rute Kuning} (Puskesmas/Klinik Pratama dengan mandat puasa 10--12 jam sebelum uji lab glukosa/lipid \citep{PERKENI2024}); serta \textbf{Rute Hijau} (Perawatan Mandiri/Apotek untuk kasus ringan SKDI 4A).
 \end{enumerate}
 
-\subsection{Inovasi Teknologi dan Arsitektur Sistem}
+\subsection{Arsitektur Sistem Skala Nasional dan Rekayasa Data}
 
-[Jelaskan inovasi teknis yang menjadi pembeda utama: arsitektur *Evidence-Grounded Retrieval-Augmented Generation* (RAG) berbasis korpus PPK FKTP Kemenkes 2022, pembatasan JSON schema ketat, dan integrasi direktori SATUSEHAT Master Sarana Index (MSI) local mirror].
+Untuk melayani skala nasional (280 juta penduduk melintasi 38 provinsi kepulauan), arsitektur TropiCare dirancang berdasarkan prinsip keandalan, skalabilitas, dan pemeliharaan sistem data intensif \citep{Kleppmann2017}, serta efisiensi inferensi model bahasa terkini \citep{Kwon2023} (Gambar~\ref{fig:arsitektur}).
 
-\begin{figure}[H]
+\begin{figure*}[t]
 \centering
 \resizebox{0.95\textwidth}{!}{%
 \begin{tikzpicture}[
-    node distance=1.0cm and 0.6cm,
-    block/.style={rectangle, draw=ipbblue, fill=lightbg, rounded corners=2mm, text centered, font=\footnotesize, minimum height=0.9cm, text width=2.6cm, line width=0.8pt},
-    cloud/.style={rectangle, draw=accentteal, fill=accentteal!10, rounded corners=2mm, text centered, font=\footnotesize\bfseries, minimum height=0.9cm, text width=2.8cm, line width=0.8pt},
-    arrow/.style={-{Stealth[scale=0.9]}, draw=ipbblue, line width=0.8pt}
+    node distance=0.45cm and 0.4cm,
+    box/.style={rectangle, draw=ipbblue, fill=lightbg, rounded corners=1.5mm, text centered, font=\scriptsize, minimum height=0.72cm, line width=0.6pt},
+    cloud/.style={rectangle, draw=accentteal, fill=accentteal!10, rounded corners=1.5mm, text centered, font=\scriptsize\bfseries, minimum height=0.72cm, line width=0.6pt},
+    arrow/.style={-{Stealth[scale=0.75]}, draw=ipbblue, line width=0.65pt}
 ]
-    % Node Diagram
-    \node[block] (input) {Input Pasien\\(Gejala \& Obat)};
-    \node[block, right=of input] (facts) {Fakta Medis\\($F_1 \dots F_n$)};
-    \node[block, below=of facts] (rag) {Mesin BM25 RAG\\(PPK FKTP)};
-    \node[cloud, right=of facts] (llm) {Medical LLM\\Reasoning};
-    \node[block, right=of llm] (output) {Output Skor\\JSON Schema};
-    \node[block, below=of output] (faskes) {SATUSEHAT MSI\\(Maps \& WA)};
+    % Row 1: Edge & Client Tier
+    \node[box, text width=3.4cm] (client1) {\textbf{PWA Edge (WASM/JS)}\\11 Red Flags ($<500\text{ ms}$)};
+    \node[box, text width=3.4cm, right=of client1] (client2) {\textbf{Spasial Geodesik Lokal}\\13.930 Faskes MSI (Haversine)};
+    \node[box, text width=3.4cm, right=of client2] (client3) {\textbf{Distributed Bearer}\\QR Luring HL7 FHIR R4};
 
-    % Alur Panah
-    \draw[arrow] (input) -- (facts);
-    \draw[arrow] (facts) -- (llm);
-    \draw[arrow] (rag) -- (facts);
-    \draw[arrow] (llm) -- (output);
-    \draw[arrow] (output) -- (faskes);
+    % Row 2: Gateway & Stateless Compute Tier
+    \node[cloud, text width=3.4cm, below=0.55cm of client1] (gateway) {\textbf{API Gateway (Envoy)}\\Rate Limiting \& Geo-Routing};
+    \node[cloud, text width=3.4cm, right=of gateway] (k8s) {\textbf{FastAPI Pods (K8s HPA)}\\Pydantic v2 \& BM25 Engine};
+    \node[cloud, text width=3.4cm, right=of k8s] (vllm) {\textbf{vLLM GPU Cluster}\\PagedAttention \& Prefix Cache};
+
+    % Row 3: Data, Streaming & External Systems
+    \node[box, text width=3.4cm, below=0.55cm of gateway] (redis) {\textbf{Redis Geo \& Read Replicas}\\PostGIS Multi-Region Sharding};
+    \node[box, text width=3.4cm, right=of redis] (kafka) {\textbf{Event Streaming}\\Apache Kafka \& Flink (KLB)};
+    \node[box, text width=3.4cm, right=of kafka] (satusehat) {\textbf{Ekosistem Kemenkes}\\SIMPUS \& Peta Panas P2P};
+
+    % Connectors
+    \draw[arrow] (client1) -- (gateway);
+    \draw[arrow] (client2) -- (gateway);
+    \draw[arrow] (gateway) -- (k8s);
+    \draw[arrow] (k8s) -- (vllm);
+    \draw[arrow] (k8s) -- (redis);
+    \draw[arrow] (k8s) -- (kafka);
+    \draw[arrow] (kafka) -- (satusehat);
+    \draw[arrow] (client3.south) -- (satusehat.north);
 \end{tikzpicture}%
 }
-\caption{Diagram Arsitektur Sistem dan Alur Inferensi Cerdas}
+\vspace{-4pt}
+\caption{Arsitektur Nasional TropiCare Berbasis DDIA dan Inferensi vLLM}
 \label{fig:arsitektur}
-\end{figure}
+\vspace{-4pt}
+\end{figure*}
+
+\begin{enumerate}
+    \item \textbf{Lapisan Komputasi Tanpa Status (\textit{Stateless Shared-Nothing}):} 
+    Triase publik TropiCare beroperasi murni bebas status \citep{Kleppmann2017}. Vektor gejala dikirim mandiri tanpa ketergantungan sesi peladen. Pod FastAPI berjalan di atas Kubernetes multi-wilayah dengan \textit{Horizontal Pod Autoscaler} (HPA), mereplikasi simpul komputasi secara elastis saat terjadi lonjakan beban puncak KLB.
+    
+    \item \textbf{Partisi Geospasial Konsisten (\textit{Consistent Hashing}):} 
+    Data regional dipartisi melintasi 3 zona makro (WIB, WITA, WIT). Algoritma \textit{Consistent Hashing} berbasis MurmurHash3 mendistribusikan beban secara merata dan mengisolasi titik panas kueri (\textit{hot-spots}) saat terjadi wabah lokal di suatu daerah \citep{Kleppmann2017}.
+    
+    \item \textbf{Replikasi Asinkron Direktori 13.930 Faskes SATUSEHAT MSI:} 
+    Dengan rasio baca-tulis $>10.000 : 1$, sistem menerapkan \textit{Single-Leader Multi-Follower Replication} \citep{Kleppmann2017} pada PostgreSQL + PostGIS, dipadukan dengan \textit{in-memory cache} Redis Geospatial (`GEOSEARCH`) berlatensi $<1\text{ ms}$. Salinan direktori terkompresi Brotli (1,2 MB) disimpan di peramban untuk kalkulasi jarak Haversine luring.
+    
+    \item \textbf{Hierarki Inferensi Model Medis Bertingkat (\textit{Tiered Model Serving}):} 
+    Mencegah inefisiensi biaya awan, sistem menerapkan empat tingkat eksekusi: \textit{Tier 0} (WASM/JS in-browser untuk 11 Red Flags dan 5 pemicu farmakovigilans; $<500\text{ ms}$, 0 USD biaya awan); \textit{Tier 1} (CPU Pods untuk mesin aturan dan temu balik leksikal BM25 terhadap KMK 1186/2022; $<20\text{ ms}$); \textit{Tier 2} (GPU vLLM Cluster dengan model terkuantisasi MedGemma/\allowbreak BioMistral 4-bit AWQ menggunakan \textit{PagedAttention} yang melenyapkan fragmentasi memori KV cache \citep{Kwon2023}, \textit{Continuous Batching}, dan \textit{Static Prefix Caching} teks regulasi yang melipatgandakan \textit{throughput} $4\times - 8\times$); serta \textit{Tier 3} (antrean asinkron Kafka/Celery untuk audit kasus langka).
+    
+    \item \textbf{Pemrosesan Aliran Data \& Surveilans Epidemiologi Real-Time:} 
+    Triase tuntas memancarkan telemetri anonim (Zero-NIK: sindrom, usia, gender, wilayah) ke Apache Kafka / Redpanda \citep{Kleppmann2017}. Mesin pemroses aliran Apache Flink menghitung deret waktu jendela bergeser (1--6 jam) untuk mendeteksi lonjakan kasus dan memicu peringatan dini ke SKDR Ditjen P2P Kemenkes RI.
+    
+    \item \textbf{Kedaulatan Data, Kerahasiaan Zero-NIK, dan Handover Luring:} 
+    TropiCare tidak menyimpan NIK di peladen pusat. Hasil triase dikompresi ke gambar kode matriks dua dimensi (\textit{2D QR Code}) di peramban sebagai kantung data terdistribusi. Nakes loket Puskesmas memindai QR Code untuk menginjeksi data klinis terstruktur (HL7 FHIR R4) ke SIMPUS dalam $<1$ detik tanpa ketik ulang (\textit{zero-retyping}).
+\end{enumerate}
 
 \subsection{Matriks Keunggulan Inovasi (\textit{Unique Value Proposition})}
 
-[Tampilkan keunggulan komparatif solusi dibandingkan platform konvensional yang ada di pasaran saat ini].
+Keunggulan komparatif TropiCare dirangkum pada Tabel~\ref{tab:keunggulan}.
 
-\begin{footnotesize}
-\begin{xltabular}{\textwidth}{p{3cm} X X}
-\caption{Matriks Keunggulan Inovasi Solusi}\label{tab:keunggulan} \\
+\begin{table*}[t]
+\centering
+\footnotesize
+\caption{Matriks Keunggulan Inovasi Solusi TropiCare}\label{tab:keunggulan}
+\vspace{3pt}
+\begin{tabularx}{\textwidth}{p{2.8cm} X X}
 \toprule
-\textbf{Parameter Komparasi} & \textbf{Solusi Konvensional} & \textbf{Inovasi yang Diajukan} \\
+\textbf{Parameter Komparasi} & \textbf{Solusi Konvensional} & \textbf{Inovasi TropiCare} \\
 \midrule
-\endfirsthead
-
-\multicolumn{3}{c}{\footnotesize\tablename\ \thetable\ -- \textit{Lanjutan}} \\[4pt]
-\toprule
-\textbf{Parameter Komparasi} & \textbf{Solusi Konvensional} & \textbf{Inovasi yang Diajukan} \\
+\textbf{Akurasi \& Batasan AI} & Model generatif probabilitas bebas rawan halusinasi klinis atau sistem pakar kaku berbasis skor biner. & \textit{Evidence-Grounded Hybrid RAG} berbasis BM25 dan LLM terikat sitasi bab KMK No. 1186/2022 \citep{Kemenkes2022a} berformat JSON ketat. \\
 \midrule
-\endhead
-
+\textbf{Tanggap Darurat} & Mengharuskan seluruh kuesioner terisi lengkap sebelum memunculkan peringatan sistem. & \textit{Client-Side 11 Red Flags Bypass} langsung memutus kuesioner ke rute darurat IGD/119 dalam $<500\text{ ms}$ di peramban tanpa latensi server. \\
+\midrule
+\textbf{Privasi Pasien} & Mewajibkan registrasi NIK, nomor telepon, dan unggahan foto biometrik ke peladen pusat. & Arsitektur \textbf{Zero-NIK}; kalkulasi GPS efemeral di peramban, tanpa simpan NIK di server, dan eliminasi fitur kamera foto kulit. \\
+\midrule
+\textbf{Farmakovigilans} & Mengabaikan riwayat obat bebas yang sedang dikonsumsi pasien di rumah. & Peringatan aktif 5 pemicu interaksi obat berisiko tinggi (NSAID-Dengue, Loperamide-Disentri, Amlodipine-Edema, Captopril-Batuk) \citep{Alam2022,Koo2007,Liang2022,Dicpinigaitis2014}. \\
+\midrule
+\textbf{Navigasi Rujukan} & Tautan pencarian kata kunci acak di Google Maps tanpa verifikasi kapabilitas faskes. & Integrasi \textit{local mirror} 13.930 faskes terverifikasi SATUSEHAT MSI, rute Poli Program (OAT/MDT), tombol janji Mobile JKN, dan WhatsApp faskes. \\
+\midrule
+\textbf{Integrasi Faskes} & Pasien mengulang wawancara keluhan; nakes mengetik ulang manual di loket Puskesmas. & Alur \textit{Zero-Retyping} via pindaian QR Code luring berstandar HL7 FHIR R4 yang menginjeksi data klinis ke SIMPUS dalam $<1$ detik. \\
+\midrule
+\textbf{Ketahanan 3T} & Bergantung mutlak pada internet stabil; gagal beroperasi di area \textit{blank spot}. & Arsitektur PWA \textit{Offline-First} yang menyimpan basis data mini faskes dan mesin aturan di memori peramban, beroperasi penuh tanpa internet. \\
 \bottomrule
-\endfoot
-
-\bottomrule
-\endlastfoot
-
-\textbf{Akurasi Inferensi AI} & Model prediktif bebas / rawan halusinasi klinis & \textit{Evidence-Grounded RAG} berbasis literatur resmi Kemenkes dengan sitasi bab \\
-\midrule
-\textbf{Tanggap Darurat} & Memerlukan seluruh kuesioner selesai sebelum ada peringatan & \textit{Client-side Red Flag bypass}: langsung ke rute darurat 119 dalam 1 ketukan \\
-\midrule
-\textbf{Keamanan Data \& Privasi} & Mewajibkan pendaftaran NIK dan data sensitif & \textit{Privacy-Preserving}, tanpa NIK/BPJS, koordinat tidak disimpan di server \\
-\midrule
-\textbf{Farmakovigilans} & Mengabaikan riwayat obat bebas yang diminum & Peringatan aktif interaksi obat berisiko tinggi (NSAID, anti-diare, obat antihipertensi) \\
-\midrule
-\textbf{Navigasi Faskes} & Tautan pencarian kata kunci acak di peta & Mirror 13.930 faskes terverifikasi SATUSEHAT MSI + *One-Tap WhatsApp* ringkasan triase \\
-\end{xltabular}
-\end{footnotesize}
+\end{tabularx}
+\end{table*}
