@@ -6,7 +6,11 @@
 
 \subsection{Pernyataan Transparansi AI dalam Siklus Pengembangan}
 
-Sejalan dengan standar integritas akademik dan regulasi kompetisi JOINTS 2026, tim pengembang menyatakan secara terbuka bahwa sebagian besar penulisan basis kode purwarupa dikembangkan secara intensif melalui akselerasi kecerdasan buatan (\textit{AI-assisted coding} memanfaatkan model Claude dan Gemini). Akselerasi penulisan kode ini diimbangi secara sadar dengan disiplin rekayasa perangkat lunak yang ketat: tim menerapkan rangkaian pengujian otomatis komprehensif (\textit{automated test suite}) dengan cakupan uji (\textit{test coverage}) melampaui \textbf{90\% pada backend}, pengujian regresi kasus emas (\textit{golden test snapshots}), serta penerapan pola arsitektur \textit{ports and adapters} guna menjamin keandalan sistem tetap terverifikasi (Tabel~\ref{tab:transparansi_ai}).
+Sejalan dengan standar integritas akademik dan regulasi kompetisi JOINTS 2026, tim pengembang menyatakan secara terbuka pemanfaatan kecerdasan buatan pada dua ranah:
+\begin{enumerate}
+    \item \textbf{Akselerasi Rekayasa Kode (\textit{AI-assisted coding}):} Sebagian besar penulisan basis kode purwarupa dikembangkan secara intensif berbantuan model Claude dan Gemini. Akselerasi sintaksis ini diimbangi secara sadar dengan disiplin rekayasa perangkat lunak yang ketat: tim menerapkan rangkaian pengujian otomatis komprehensif (\textit{automated test suite}) dengan cakupan uji (\textit{test coverage}) melampaui \textbf{90\% pada backend}, pengujian regresi kasus emas (\textit{golden test snapshots}), serta penerapan pola arsitektur \textit{ports and adapters} guna menjamin keandalan sistem tetap terverifikasi.
+    \item \textbf{Model Inferensi Triase pada Purwarupa \& Demo:} Untuk memproses penalaran klinis gejala kompleks secara responsif pada tahap demonstrasi dan pengujian, sistem mengintegrasikan model bahasa mutakhir meliputi **Google Gemini**, **DeepSeek**, serta model medis bobot terbuka **MedGemma / Gemma** yang diikat ketat oleh korpus resmi Kemenkes RI (Tabel~\ref{tab:transparansi_ai}).
+\end{enumerate}
 
 \begin{table}[H]
 \centering
@@ -15,13 +19,15 @@ Sejalan dengan standar integritas akademik dan regulasi kompetisi JOINTS 2026, t
 \vspace{3pt}
 \begin{tabularx}{\textwidth}{p{3.2cm} X X}
 \toprule
-\textbf{Fase Aktivitas} & \textbf{Kontribusi Alat Bantu AI} & \textbf{Verifikasi \& Disiplin Mutu Tim} \\
+\textbf{Fase Aktivitas} & \textbf{Alat Bantu \& Model AI} & \textbf{Verifikasi \& Disiplin Mutu Tim} \\
 \midrule
-\textbf{Perancangan Ide \& Konsep} & Eksplorasi skenario risiko (\textit{edge-cases}), simulasi variasi kosakata awam untuk uji ketahanan leksikal, dan komparasi literatur sistem triase global. & Seleksi kritis oleh tim berdasarkan realitas faskes primer Indonesia dan keselarasan dengan regulasi Kemenkes RI. \\
+\textbf{Perancangan Ide \& Konsep} & Eksplorasi skenario risiko (\textit{edge-cases}) dan simulasi variasi kosakata awam berbasis LLM. & Seleksi kritis oleh tim berdasarkan realitas faskes primer Indonesia dan keselarasan dengan regulasi Kemenkes RI. \\
 \midrule
-\textbf{Penyusunan Proposal} & Perumusan draf awal kalimat, perbaikan tata bahasa formal, dan penataan struktur matriks komparasi. & Penyuntingan substansial, verifikasi silang dokumen regulasi (UU PDP, UU Kesehatan, KMK PPK FKTP), dan penulisan ulang analisis kausal oleh tim. \\
+\textbf{Penyusunan Proposal} & Perumusan draf awal kalimat, perbaikan tata bahasa formal, dan penataan struktur tabel komparasi. & Penyuntingan substansial, verifikasi silang dokumen regulasi (UU PDP, UU Kesehatan, KMK PPK FKTP), dan penulisan ulang analisis kausal oleh tim. \\
 \midrule
-\textbf{Rekayasa Kode \& Otomasi Pengujian} & Generasi sintaksis cepat berbantuan AI untuk kerangka rute FastAPI, komponen antarmuka React PWA, skema serialisasi JSON, dan skrip sinkronisasi data. & Perancangan arsitektur domain mandiri, isolasi logika bisnis klinis, audit kode baris-demi-baris, serta pembangunan pengujian otomatis dengan cakupan $>90\%$ \textit{coverage} pada backend (\textit{pytest} \& \textit{golden snapshots}) untuk mencegah regresi logika. \\
+\textbf{Rekayasa Kode \& Otomasi Pengujian} & Generasi sintaksis berbantuan AI (Claude \& Gemini) untuk rute FastAPI, komponen React PWA, dan skema JSON. & Perancangan arsitektur domain mandiri, isolasi logika klinis, audit kode baris-demi-baris, serta pembuatan pengujian otomatis dengan cakupan $>90\%$ \textit{coverage} pada backend (\textit{pytest} \& \textit{golden snapshots}) untuk mencegah regresi logika. \\
+\midrule
+\textbf{Inferensi Klinis pada Demo Fungsional} & Eksekusi penalaran gejala kompleks memanfaatkan model Google Gemini, DeepSeek, dan MedGemma / Gemma. & Pemagaran mutlak dengan korpus KMK 1186/2022 via RAG BM25, validasi skema JSON keluaran, serta pemutusan 100\% tanpa AI untuk kasus gawat darurat (\textit{Red Flags bypass}). \\
 \bottomrule
 \end{tabularx}
 \end{table}
