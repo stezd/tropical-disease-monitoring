@@ -1,0 +1,71 @@
+%==============================================================
+% BAB II SOLUSI DAN INOVASI YANG DITAWARKAN
+%==============================================================
+
+\section{Solusi dan Inovasi yang Ditawarkan}
+
+\subsection{Deskripsi Solusi dan Alur Klinis Berjenjang}
+
+[Deskripsikan konsep solusi yang ditawarkan. Jelaskan sistem kerja platform web triase mandiri berorientasi keselamatan pasien (*safety-first*) melalui empat lapisan klinis berurutan].
+
+\begin{enumerate}
+    \item \textbf{Lapisan 1 -- Gerbang Privasi \& \textit{Client-Side Emergency Check}:} [Persetujuan privasi mandiri dan evaluasi 11 tanda bahaya gawat darurat langsung di peramban pengguna tanpa bergantung pada server].
+    \item \textbf{Lapisan 2 -- Pemetaan Gejala Sindromik \& Spasio-Ekologis:} [Pengelompokan 5 klaster infeksi dan 3 klaster PTM serta faktor risiko lingkungan endemis].
+    \item \textbf{Lapisan 3 -- Farmakovigilans \& Proksi Fisik Tanpa Alat Medis:} [Sistem pakar keamanan obat dan proksi antropometri kelonggaran pakaian/tanda vital].
+    \item \textbf{Lapisan 4 -- Orkestrasi 4 Rute Rujukan Medis:} [Klasifikasi rujukan Merah, Kuning Khusus, Kuning, dan Hijau beserta instruksi perawatan].
+\end{enumerate}
+
+\subsection{Inovasi Teknologi dan Arsitektur Sistem}
+
+[Jelaskan inovasi teknis yang menjadi pembeda utama: arsitektur *Evidence-Grounded Retrieval-Augmented Generation* (RAG) berbasis korpus PPK FKTP Kemenkes 2022, pembatasan JSON schema ketat, dan integrasi direktori SATUSEHAT Master Sarana Index (MSI) local mirror].
+
+\begin{figure}[H]
+\centering
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[
+    node distance=1.0cm and 0.6cm,
+    block/.style={rectangle, draw=ipbblue, fill=lightbg, rounded corners=2mm, text centered, font=\footnotesize, minimum height=0.9cm, text width=2.6cm, line width=0.8pt},
+    cloud/.style={rectangle, draw=accentteal, fill=accentteal!10, rounded corners=2mm, text centered, font=\footnotesize\bfseries, minimum height=0.9cm, text width=2.8cm, line width=0.8pt},
+    arrow/.style={-{Stealth[scale=0.9]}, draw=ipbblue, line width=0.8pt}
+]
+    % Node Diagram
+    \node[block] (input) {Input Pasien\\(Gejala \& Obat)};
+    \node[block, right=of input] (facts) {Fakta Medis\\($F_1 \dots F_n$)};
+    \node[block, below=of facts] (rag) {Mesin BM25 RAG\\(PPK FKTP)};
+    \node[cloud, right=of facts] (llm) {Medical LLM\\Reasoning};
+    \node[block, right=of llm] (output) {Output Skor\\JSON Schema};
+    \node[block, below=of output] (faskes) {SATUSEHAT MSI\\(Maps \& WA)};
+
+    % Alur Panah
+    \draw[arrow] (input) -- (facts);
+    \draw[arrow] (facts) -- (llm);
+    \draw[arrow] (rag) -- (facts);
+    \draw[arrow] (llm) -- (output);
+    \draw[arrow] (output) -- (faskes);
+\end{tikzpicture}%
+}
+\caption{Diagram Arsitektur Sistem dan Alur Inferensi Cerdas}
+\label{fig:arsitektur}
+\end{figure}
+
+\subsection{Matriks Keunggulan Inovasi (\textit{Unique Value Proposition})}
+
+[Tampilkan keunggulan komparatif solusi dibandingkan platform konvensional yang ada di pasaran saat ini].
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{p{3.2cm} X X}
+\toprule
+\textbf{Parameter Komparasi} & \textbf{Solusi Konvensional} & \textbf{Inovasi yang Diajukan} \\
+\midrule
+\textbf{Akurasi Inferensi AI} & Model prediktif bebas / rawan halusinasi klinis & \textit{Evidence-Grounded RAG} berbasis literatur resmi Kemenkes dengan sitasi bab \\
+\textbf{Tanggap Darurat} & Memerlukan seluruh kuesioner selesai sebelum ada peringatan & \textit{Client-side Red Flag bypass}: langsung ke rute darurat 119 dalam 1 ketukan \\
+\textbf{Keamanan Data \& Privasi} & Mewajibkan pendaftaran NIK dan data sensitif & \textit{Privacy-Preserving}, tanpa NIK/BPJS, koordinat tidak disimpan di server \\
+\textbf{Farmakovigilans} & Mengabaikan riwayat obat bebas yang diminum & Peringatan aktif interaksi obat berisiko tinggi (NSAID, anti-diare, obat antihipertensi) \\
+\textbf{Navigasi Faskes} & Tautan pencarian kata kunci acak di peta & Mirror 13.930 faskes terverifikasi SATUSEHAT MSI + *One-Tap WhatsApp* ringkasan triase \\
+\bottomrule
+\end{tabularx}
+\caption{Matriks Keunggulan Inovasi Solusi}
+\label{tab:keunggulan}
+\end{table}

@@ -1,0 +1,233 @@
+%==============================================================
+% BAB II  TINJAUAN PUSTAKA (OPSIONAL)
+%==============================================================
+
+\chapter{TINJAUAN PUSTAKA}
+
+\section{Remote Sensing dan Citra Satelit Multispektral}
+%--------------------------------------------------------------
+
+% Definisi remote sensing (1–2 kalimat)
+% Jelaskan Sentinel-2 (singkat)
+% Jelaskan apa itu multispectral (kenapa penting)
+% Kaitkan ke deforestasi
+
+% (Optional) mention vegetation index / spectral bands relevance
+
+%--------------------------------------------------------------
+Remote sensing adalah proses mengambil informasi dari sebuah objek tanpa kontak langsung, menggunakan sensor yang dipasang pada satelit, pesawat udara, \textit{drone}, atau wahana udara \citep{postWithanage, richards2022remote}.
+
+Sentinel-2 yang dikembangkan oleh \textit{European Space Agency} (ESA) dalam program Copernicus, merupakan salah satu satelit observasi bumi paling relevan untuk analisis tutupan lahan. Sentinel-2 membawa sensor \textit{Multispectral Imager} (MSI) dengan 13 band spektral pada resolusi spasial 10 hingga 60 meter per piksel (\citeauthor{CopernicusSentinel2}, n.d.). 
+
+\textit{Band Near-Infrared} (NIR, B8) dan \textit{Short-Wave Infrared} (SWIR, B11–B12) sangat sensitif terhadap kondisi kesehatan dan kerapatan vegetasi, menjadikannya sangat relevan untuk deteksi deforestasi. Indeks vegetasi seperti \textit{Normalized Difference Vegetation Index} (NDVI) yang diturunkan dari band merah dan \textit{Near Infra-red} (NIR) telah lama mendominasi pemetaan vegetasi, namun diketahui mengalami saturasi pada kanopi hutan yang padat dan bernilai tinggi \citep{chrysostomou2026srvi}. 
+
+Pada kasus wilayah tropis seperti Kalimantan, tantangan utama penggunaan citra optis adalah tutupan awan yang tinggi. Menggabungkan beberapa citra dalam rentang waktu tertentu untuk menghasilkan piksel bebas awan dapat dilakukan secara efisien melalui platform Google Earth Engine.
+
+\section{Deteksi Perubahan pada Citra Satelit}
+%--------------------------------------------------------------
+
+% Definisi change detection
+% Tujuan (monitoring lingkungan, urban, dll)
+
+% Metode tradisional:
+% - image differencing
+% - thresholding
+% - regression
+
+% Kelemahan:
+% - noise
+% - illumination
+% - misalignment
+
+% Transition:
+% → butuh metode lebih robust → DL
+
+%--------------------------------------------------------------
+Deteksi perubahan (change detection) adalah proses mengidentifikasi perbedaan kondisi suatu area pada dua atau lebih waktu berbeda dari data \textit{remote sensing}. Aplikasinya mencakup pemantauan lingkungan, penilaian bencana, perencanaan perkotaan, dan pemantauan deforestasi \citep{cheng2023changedetectionmethodsremote}.
+
+Metode deteksi perubahan awal berbasis \textit{image differencing} diperkenalkan oleh Weismiller et al. pada tahun 1977 menggunakan data multispektral Landsat untuk memantau lingkungan pesisir \citep{Jiang31122024}. Pendekatan tradisional seperti \textit{image differencing}, \textit{thresholding}, dan regresi hanya bersandar pada perbandingan spektral atau intensitas piksel secara langsung. Meskipun komputasi lebih efisien, metode ini rentan terhadap \textit{noise}, variasi pencahayaan antar-akuisisi, dan ketidakselarasan geometrik, sehingga membatasi keandalannya pada kondisi nyata. Keterbatasan inilah yang mendorong pengembangan pendekatan berbasis \textit{deep learning} yang lebih robust.
+
+\section{Deep Learning untuk Deteksi Perubahan}
+%--------------------------------------------------------------
+
+% Perkenalan DL (1–2 kalimat)
+% CNN untuk image analysis
+% U-Net:
+% - encoder-decoder
+% - skip connection
+% - kelebihan
+
+% Limitasi:
+% - tidak eksplisit bandingkan 2 waktu
+
+% Mention metrik (singkat saja):
+% IoU, F1, precision, recall
+
+%--------------------------------------------------------------
+
+Deep learning memungkinkan model untuk mempelajari representasi fitur secara hierarkis langsung dari data mentah, tanpa rekayasa fitur manual. \textit{Convolutional Neural Network} (CNN) menjadi fondasi utama dalam analisis citra, karena kemampuannya mengekstrak fitur spasial lokal melalui operasi konvolusi berlapis \cite{purworno2023cnn}.
+
+U-Net \citep{DBLP:journals/corr/RonnebergerFB15} adalah arsitektur \textit{encoder-decoder} yang dirancang awalnya untuk segmentasi citra medis, namun terbukti efektif di berbagai domain termasuk \textit{remote sensing}. Pada eksperimen yang dilakukan oleh \cite{yang2024researchimprovedunetbased}, U-Net yang dimodifikasi dengan \textit{attention-mechanism} SimAM dan CBAM berhasil mendapatkan akurasi sebesar 95.23\% dan MIoU (\textit{Mean Intersection of Union}) sebesar 84.56\%. 
+
+Performa model dalam tugas deteksi perubahan umumnya dievaluasi menggunakan metrik seperti \textit{Intersection over Union} (IoU), \textit{precision}, \textit{recall}, dan \textit{F1-score}, yang mengukur kesesuaian antara hasil prediksi dan label \textit{ground truth}.
+
+\section{Siamese Network untuk Deteksi Perubahan}
+%--------------------------------------------------------------
+
+% Definisi Siamese network
+% Konsep shared weights
+
+% Cara kerja untuk change detection:
+% - input: before & after
+% - output: change map
+
+% Kelebihan:
+% - langsung modeling difference
+% - lebih robust
+
+% Keterbatasan:
+% - kurang global context
+% - belum optimal untuk multispectral
+
+%--------------------------------------------------------------
+
+\textit{Siamese network} adalah arsitektur yang terdiri dari dua subjaringan identik dengan bobot yang digunakan bersama (\textit{shared weights}), didesain untuk memproses dua input secara paralel dan menghasilkan representasi yang dapat dibandingkan \citep{DBLP:journals/corr/abs-2011-10566}. Konsep ini pertama diperkenalkan oleh \cite{NIPS1993_288cc0ff} untuk verifikasi tanda tangan, kemudian diadaptasi secara luas untuk tugas \textit{change detection} pada citra satelit. 
+
+Dalam konteks \textit{change detection}, arsitektur \textit{Siamese} CNN dibangun untuk mendapatkan representasi fitur yang distinktif antara piksel-piksel dari dua citra temporal yang berbeda \citep{PENG2025104282}. Dengan memproses citra sebelum ($t_1$) dan citra setelah ($t_2$) melalui encoder yang identik, model belajar mengekstrak fitur yang \textit{invariant} terhadap variasi musim dan pencahayaan, sehingga perbedaan fitur yang terdeteksi benar-benar mencerminkan perubahan fisik di lapangan. Pendekatan Siamese lebih robust dibandingkan metode tradisional karena secara langsung memodelkan perbedaan temporal dalam ruang fitur, tak hanya membandingkan nilai piksel mentah \citep{Lei2026}. Keterbatasan utamanya adalah kemampuan pemodelan konteks global yang terbatas pada arsitektur berbasis CNN murni, serta belum optimalnya penanganan citra multispektral yang \textit{multiband} seperti Sentinel-2.
+
+
+\section{Arsitektur Lanjutan untuk Deteksi Perubahan}
+%--------------------------------------------------------------
+
+% Hybrid models:
+% - CNN + attention
+% - CNN + transformer
+
+% Contoh:
+% - TransSiamUNet
+
+% Kelebihan:
+% - perform tinggi
+
+% Kekurangan:
+% - kompleks
+% - butuh resource besar
+
+%--------------------------------------------------------------
+
+Untuk mengatasi keterbatasan pemodelan konteks global pada CNN, arsitektur hybrid yang menggabungkan CNN dengan \textit{Vision Transformer} (ViT) mulai mendominasi penelitian terkini. BIT merupakan metode berbasis transformer yang menggunakan kemampuan pemodelan global transformer untuk melakukan diferensiasi fitur melalui \textit{semantic tokens}, meningkatkan informasi kontekstual dalam jaringan konvolusi sehingga menghasilkan \textit{change map} yang lebih baik \citep{DBLP:journals/corr/abs-2103-00208}.
+
+TransSiamUNet, yang mengombinasikan \textit{Siamese networks}, \textit{U-Net segmentation}, dan \textit{Vision Transformers}, mencapai akurasi tertinggi sebesar 0,941 dan F1-score 0,874 pada dataset OSCD, menunjukkan superioritas konsisten dibandingkan \textit{baseline} yang kuat \cite{Ali2026}. Namun demikian, kompleksitas tinggi dan kebutuhan sumber daya komputasi yang besar menjadi hambatan utama untuk penerapan pada kondisi dengan keterbatasan infrastruktur.
+
+\section{Explainable Artificial Intelligence}
+%--------------------------------------------------------------
+
+% Definisi XAI
+% Kenapa penting (black-box problem)
+
+% Grad-CAM:
+% - apa itu
+% - bagaimana bekerja (high-level)
+
+% Relevansi ke remote sensing:
+% - interpretasi hasil
+% - trust
+
+%--------------------------------------------------------------
+Model DL cenderung bersifat \textit{black box}, menghasilkan prediksi yang akurat namun sulit dipahami proses inferensinya. \textit{Explainable Artificial Intelligence} (XAI) adalah bidang yang bertujuan membuat keputusan model AI dapat diinterpretasikan oleh manusia, meningkatkan kepercayaan dan akuntabilitas sistem.
+
+Grad-CAM (\textit{Gradient-weighted Class Activation Mapping}) diperkenalkan oleh \cite{DBLP:journals/corr/SelvarajuDVCPB16} sebagai teknik XAI yang menggunakan gradien dari konsep target yang mengalir ke lapisan konvolusi terakhir untuk menghasilkan peta lokalisasi kasar yang menyoroti region penting dalam citra untuk memprediksi konsep tersebut. Secara teknis, Grad-CAM menghitung bobot kepentingan setiap feature map melalui \textit{global average pooling} atas gradien, kemudian menghasilkan \textit{heatmap} sebagai kombinasi linear terbobot dari \textit{feature maps} tersebut yang dilewatkan fungsi ReLU. Grad-CAM unggul dalam efisiensi komputasi dan memberikan kepercayaan yang dapat diterima, menjadikannya cocok untuk konteks yang sensitif terhadap kecepatan inferensi. Dalam konteks remote sensing, Grad-CAM memungkinkan verifikasi apakah model benar-benar memperhatikan area yang mengalami perubahan vegetasi, bukan artefak atau noise citra. Ini adalah hal yang penting untuk membangun kepercayaan pada aplikasi pemantauan lingkungan \citep{Cheng2025}.
+
+\section{Research Gap}
+%--------------------------------------------------------------
+
+% Ringkasan masalah:
+% - traditional: lemah
+% - DL: kompleks
+% - XAI: belum banyak digunakan
+
+% Highlight gap:
+% - efisiensi vs performa
+% - interpretability
+% - multispectral + Siamese belum optimal
+% - konteks Kalimantan
+
+% Closing:
+% → Oleh karena itu penelitian ini ...
+Dari tinjauan literatur di atas, beberapa celah penelitian dapat diidentifikasi. Pertama, metode tradisional \textit{change detection} terbukti tidak cukup robust untuk kondisi citra satelit tropis yang kompleks. Kedua, arsitektur seperti \textit{TransSiamUNet} mencapai performa tinggi namun memiliki kompleksitas yang membuatnya kurang praktis untuk digunakan secara luas. Ketiga, meskipun XAI telah banyak diterapkan pada domain medis dan klasifikasi umum, penerapannya pada \textit{change detection} untuk pemantauan deforestasi masih sangat terbatas dalam literatur. Keempat, sebagian besar penelitian menggunakan dataset bangunan perkotaan (LEVIR-CD, WHU-CD) sehingga performanya pada citra multispektral vegetasi tropis seperti Sentinel-2 belum teruji secara komprehensif.
+Oleh karena itu, penelitian ini mengusulkan \textit{Siamese U-Net} yang dimodifikasi untuk mencapai keseimbangan antara performa dan efisiensi, dengan integrasi \textit{Grad-CAM} untuk meningkatkan interpretabilitas model pada konteks deteksi deforestasi di Kalimantan menggunakan citra Sentinel-2.
+
+\begin{comment}
+Pustaka yang digunakan dalam bab ini ialah acuan primer, diutamakan artikel
+jurnal dan paten yang relevan dengan bidang yang diteliti, terkini, dan asli
+(\textit{state of the art}).
+Diktat dan buku ajar tidak termasuk acuan primer.
+Tinjauan pustaka memuat telaah singkat, jelas, dan sistematis tentang kerangka
+teoretis, kerangka pikir, temuan, postulat-postulat, prinsip, asumsi, dan
+hasil-hasil penelitian yang relevan yang melandasi masalah penelitian atau
+gagasan guna menggali pemahaman mengenai masalah penelitian dan pemecahan
+masalahnya.
+Oleh karena itu, dari tinjauan pustaka harus dapat diturunkan kerangka pikir,
+hipotesis penelitian, dan metode penelitian.
+
+%--------------------------------------------------------------
+% CONTOH TABEL KEDUA (lanjutan sequential dari Tabel 1)
+% Tabel ini menunjukkan cara tabel dengan baris subgrup dan
+% catatan kaki superskrip.
+%--------------------------------------------------------------
+
+\begin{table}[htbp]
+  \caption{Tingkat kekerasan buah pisang raja pada suhu simpan yang berbeda
+           dan pemberian putresina}
+  \label{tab:pisang_raja}
+  \centering
+  \begin{tabular}{lcccc}
+    \toprule
+    \multirow{3}{*}{Perlakuan}
+      & \multicolumn{4}{c}{Kekerasan buah dan kandungan gula pada hari ke-} \\
+    \cmidrule(lr){2-5}
+      & 0 & & 7 & 14 \\
+    \cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}
+      & \multicolumn{4}{c}{Kekerasan buah (mm 50 g$^{-1}$ detik$^{-1}$)$^{\mathrm{a}}$} \\
+    \midrule
+    \multicolumn{5}{l}{\textit{Suhu Simpan}} \\
+    \quad 15 ºC              & 9.20a  &  & 13.40a & 11.83a \\
+    \quad 28 ºC              & 10.64a &  & 11.22a & 80.43b \\
+    \multicolumn{5}{l}{\textit{Putresina}} \\
+    \quad Dengan putresina   & 12.07a &  & 13.23a & 11.19a \\
+    \quad Tanpa putresina    & 10.76a &  & 14.41a & 41.12b \\
+    \bottomrule
+  \end{tabular}
+  \begin{minipage}{\linewidth}
+    \vspace{2pt}
+    \footnotesize
+    $^{\mathrm{a}}$Angka-angka pada kolom yang sama yang diikuti oleh huruf yang
+    sama tidak berbeda nyata pada taraf uji 5\% (uji selang berganda Duncan).
+  \end{minipage}
+\end{table}
+
+
+%--------------------------------------------------------------
+\section{Contoh Subbab}
+%--------------------------------------------------------------
+
+Ini adalah contoh isi subbab. Paragraf pada subbab dimulai dengan indentasi
+dan menggunakan spasi tunggal sesuai ketentuan template.
+
+%--------------------------------------------------------------
+\subsection{Contoh Sub-subbab}
+%--------------------------------------------------------------
+
+Berikut adalah contoh sub-subbab.
+Pada sub-subbab ini posisi paragraf lebih menjorok dari paragraf di subbab.
+Indentasi subbab mengikuti penomoran hierarki (2.1.1, 2.1.2, dst.).
+
+
+%--------------------------------------------------------------
+\section{Contoh Subbab2}
+%--------------------------------------------------------------
+
+Contoh tulisan pada subbab kedua.
+Tinjauan pustaka harus mengalir secara sistematis dari dasar teori umum
+menuju topik penelitian yang spesifik \citep{Bente2006}.
+\end{comment}

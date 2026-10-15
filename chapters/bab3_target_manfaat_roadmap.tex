@@ -1,0 +1,50 @@
+%==============================================================
+% BAB III TARGET PENGGUNA, MANFAAT, DAN RENCANA PENGEMBANGAN
+%==============================================================
+
+\section{Target Pengguna, Manfaat, dan Rencana Pengembangan}
+
+\subsection{Target Pengguna dan Karakteristik Solusi}
+
+TropiCare dirancang inklusif untuk menjangkau tiga segmen pemangku kepentingan utama dalam ekosistem layanan kesehatan:
+
+\begin{enumerate}
+    \item \textbf{Masyarakat Umum dan Kelompok Usia Produktif:} 
+    Individu yang mengalami keluhan akut (demam, batuk, ruam, nyeri) maupun mereka yang ingin mengevaluasi faktor risiko penyakit kronis (diabetes, hipertensi, kardiovaskular). Antarmuka ramah pengguna dengan panduan maskot ``Kak Tropi'' memberikan pengalaman interaktif yang menenangkan tanpa terminologi medis yang membingungkan.
+    
+    \item \textbf{Keluarga Perawat Lansia dan Kelompok Rentan:} 
+    Keluarga yang mendampingi anggota keluarga rentan (anak-anak, ibu hamil, dan lansia). Sistem membantu memantau kepatuhan terapi harian, memfilter bahaya swamedikasi obat bebas, serta menyediakan tombol akses darurat 119 dalam satu sentuhan.
+    
+    \item \textbf{Tenaga Medis dan Fasilitas Kesehatan Tingkat Pertama (FKTP):} 
+    Dokter umum, perawat, dan petugas loket Puskesmas/klinik pratama. Melalui pemindaian *QR Code* Rangkuman Pasien, nakes mendapatkan rangkuman anamnesis terstruktur, riwayat obat, proksi antropometri, dan usulan uji laboratorium tanpa perlu melakukan wawancara ulang dari awal.
+\end{enumerate}
+
+\subsection{Manfaat yang Diharapkan}
+
+Implementasi platform TropiCare memberikan dampak nyata pada efisiensi sistem kesehatan:
+
+\begin{itemize}
+    \item \textbf{Dekongesti Antrean Fasilitas Kesehatan:} Menyaring kasus-kasus ringan (SKDI 4A) untuk melakukan swaperawatan aman di rumah (Rute Hijau), sehingga kapasitas fisik dan waktu tenaga medis Puskesmas terfokus pada penanganan kasus berisiko sedang hingga berat.
+    \item \textbf{Pencegahan Keterlambatan dan Komplikasi Fatal:} Bypass darurat langsung (*Red Flags*) mempercepat waktu tanggap (*response time*) kasus syok dan gawat napas. Fitur farmakovigilans secara aktif mencegah komplikasi perdarahan lambung akibat konsumsi NSAID pada penderita demam dengue.
+    \item \textbf{Optimalisasi Kesiapan Pemeriksaan Laboratorium:} Pasien rute rujukan kronis/metabolik menerima instruksi puasa 8--12 jam sebelum berangkat ke Puskesmas, mengeliminasi insiden pembatalan tes gula darah puasa atau profil lipid.
+    \item \textbf{Perlindungan Data Pribadi Pasien:} Tidak adanya pengumpulan NIK dan identitas kependudukan menjamin kepatuhan penuh terhadap UU Perlindungan Data Pribadi (UU PDP No. 27/2022) serta meningkatkan kepercayaan publik untuk melakukan skrining dini.
+\end{itemize}
+
+\subsection{Rencana Implementasi dan Peta Jalan (\textit{Roadmap})}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{p{2.2cm} p{4cm} X}
+\toprule
+\textbf{Fase} & \textbf{Target Waktu} & \textbf{Fokus Luaran dan Indikator Keberhasilan} \\
+\midrule
+\textbf{Fase 1: Validasi \& Alpha Test} & Bulan 1 -- Bulan 3 & Validasi klinis 100 kartu kasus skenario dokter spesialis; kalibrasi model LLM RAG; pengujian kegunaan antarmuka (\textit{System Usability Scale} / SUS target $>80$); audit keamanan kode. \\
+\textbf{Fase 2: Pilot Project FKTP} & Bulan 4 -- Bulan 6 & Penerapan pilot terbatas pada 10 Puskesmas di wilayah endemis; pengujian alur pemindaian QR Code pendaftaran; verifikasi kontak WhatsApp faskes terdekat. \\
+\textbf{Fase 3: Pengajuan Sandbox} & Bulan 7 -- Bulan 9 & Pendaftaran platform ke \textit{Regulatory Sandbox} Kementerian Kesehatan RI; evaluasi kesesuaian klinis; integrasi rujukan lanjutan via tautan resmi Mobile JKN BPJS. \\
+\textbf{Fase 4: Skalabilitas Nasional} & Bulan 10 -- Bulan 12 & Sinkronisasi berkala 100\% direktori faskes SATUSEHAT MSI nasional; sosialisasi masyarakat terintegrasi kader Posyandu/Puskesmas digital. \\
+\bottomrule
+\end{tabularx}
+\caption{Peta Jalan Pengembangan dan Implementasi TropiCare}
+\label{tab:roadmap}
+\end{table}

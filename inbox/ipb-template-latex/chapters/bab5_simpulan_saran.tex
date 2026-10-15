@@ -1,0 +1,9 @@
+%==============================================================
+% BAB IV  SIMPULAN
+%==============================================================
+
+\chapter{SIMPULAN}
+
+Penelitian ini mengusulkan penggunaan arsitektur \textit{Siamese U-Net} untuk deteksi deforestasi di Kalimantan Barat menggunakan citra multitemporal Sentinel-2. Pendekatan ini dipilih karena mampu mengekstrak fitur spasial secara hierarkis melalui struktur \textit{encoder-decoder} U-Net, sekaligus memodelkan perbedaan temporal melalui mekanisme \textit{Siamese} dengan \textit{shared weights}. Teknik \textit{Explainable AI} (XAI) berupa \textit{Grad-CAM} diintegrasikan untuk memberikan interpretabilitas terhadap keputusan model, sehingga area yang berkontribusi terhadap prediksi perubahan dapat divisualisasikan secara spasial.
+
+\textit{Preprocessing} citra dilakukan melalui \textit{Google Earth Engine} dengan metode \textit{cloud masking} dan \textit{median compositing} untuk meminimalkan pengaruh tutupan awan. Pembagian dataset menggunakan \textit{Pythagorean tiling} untuk menghindari kebocoran data spasial. Evaluasi model direncanakan menggunakan metrik kuantitatif (\textit{F1-score}, \textit{IoU}, \textit{OA}, \textit{Kappa}) serta evaluasi kualitatif melalui analisis \textit{heatmap Grad-CAM}.

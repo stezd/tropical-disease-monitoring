@@ -1,0 +1,363 @@
+%==============================================================
+% BAB III  METODE
+%==============================================================
+
+\chapter{METODE}
+
+Penelitian ini terdiri atas enam tahap utama, yaitu akuisisi data, \textit{preprocessing} data, pembangunan model, pelatihan, evaluasi, dan diakhiri analisis menggunakan XAI. Bagan alur tahapan penelitian secara keseluruhan disajikan pada Gambar~\ref{fig:data_pipeline}.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[
+		node distance=0.45cm,
+		box/.style={
+			rectangle, rounded corners=3pt,
+			minimum width=3.2cm, minimum height=0.65cm,
+			align=center, font=\scriptsize,
+			draw, thick
+		},
+		mainbox/.style={box,
+			fill=blue!15, draw=blue!60!black
+		},
+		subbox/.style={box,
+			fill=gray!10, draw=gray!50,
+			minimum width=2.8cm, minimum height=0.55cm,
+			font=\tiny
+		},
+		arrow/.style={-Stealth, thick, blue!60!black},
+		subarrow/.style={-, thin, gray!70},
+		label/.style={font=\tiny\itshape, text=gray!70}
+		]
+
+		% --- Main pipeline (vertical center) ---
+		\node[mainbox] (acq)   {Akuisisi Data};
+		\node[mainbox, below=of acq]   (pre)   {Pra-pemrosesan};
+		\node[mainbox, below=of pre]   (arch)  {Arsitektur Model};
+		\node[mainbox, below=of arch]  (train) {Pelatihan};
+		\node[mainbox, below=of train] (eval)  {Evaluasi};
+		\node[mainbox, below=of eval]  (xai)   {Analisis XAI};
+
+		% Arrows between main boxes
+		\foreach \a/\b in {acq/pre, pre/arch, arch/train, train/eval, eval/xai}
+		\draw[arrow] (\a) -- (\b);
+
+		% --- Left side-notes (Akuisisi) ---
+		\node[subbox, left=0.7cm of acq, yshift=0.25cm]  (s2)    {Sentinel-2 L2A\\2020--2024};
+		\node[subbox, left=0.7cm of acq, yshift=-0.5cm] (mask)  {\textit{Cloud Masking}\\Bitmasking + Median};
+		\draw[subarrow] (s2.east)   -- (acq.west);
+		\draw[subarrow] (mask.east) -- (acq.west);
+
+		% --- Right side-notes (Pra-pemrosesan) ---
+		\node[subbox, right=0.7cm of pre, yshift=1.2cm]  (norm)  {Normalisasi $[0,1]$};
+		\node[subbox, right=0.7cm of pre, yshift=0.45cm](tile)  {Tiling $256\times256$\\overlap 16 px};
+		\node[subbox, right=0.7cm of pre, yshift=-0.3cm] (split) {Split 70:15:15\\(Spatial)};
+		\draw[subarrow] (pre.east) -- (norm.west);
+		\draw[subarrow] (pre.east) -- (tile.west);
+		\draw[subarrow] (pre.east) -- (split.west);
+
+		% --- Left side-notes (Arsitektur) ---
+		\node[subbox, left=0.7cm of arch, yshift=0.25cm]  (siamese) {Siamese U-Net\\Shared Encoder};
+		\node[subbox, left=0.7cm of arch, yshift=-0.5cm] (attn)    {Attention (CBAM)\\Feature Fusion};
+		\draw[subarrow] (siamese.east) -- (arch.west);
+		\draw[subarrow] (attn.east)    -- (arch.west);
+
+		% --- Right side-notes (Pelatihan) ---
+		\node[subbox, right=0.7cm of train, yshift=0.6cm]  (loss)  {BCE + Dice Loss};
+		\node[subbox, right=0.7cm of train, yshift=-0.05cm](opt)   {AdamW, LR=$10^{-4}$};
+		\node[subbox, right=0.7cm of train, yshift=-0.8cm] (aug)   {Augmentasi\\(Albumentations)};
+		\draw[subarrow] (train.east) -- (loss.west);
+		\draw[subarrow] (train.east) -- (opt.west);
+		\draw[subarrow] (train.east) -- (aug.west);
+
+		% --- Left side-notes (Evaluasi) ---
+		\node[subbox, left=0.7cm of eval, yshift=0.2cm]  (iou) {IoU (primer)};
+		\node[subbox, left=0.7cm of eval, yshift=-0.5cm] (f1)  {F1, Precision, Recall};
+		\draw[subarrow] (iou.east) -- (eval.west);
+		\draw[subarrow] (f1.east)  -- (eval.west);
+
+		% --- Right side-notes (XAI) ---
+		\node[subbox, right=0.7cm of xai, yshift=0.6cm]  (gc)   {Grad-CAM\\Encoder T1 \& T2};
+		\node[subbox, right=0.7cm of xai, yshift=-0.2cm] (qual) {Validasi Kualitatif\\TP / FP / FN};
+		\draw[subarrow] (xai.east) -- (gc.west);
+		\draw[subarrow] (xai.east) -- (qual.west);
+
+	\end{tikzpicture}
+	\caption{Diagram alur tahapan penelitian (\textit{data pipeline})}
+	\label{fig:data_pipeline}
+\end{figure}
+
+
+
+%--------------------------------------------------------------
+\section{Data Penelitian}
+%--------------------------------------------------------------
+
+Penelitian ini menggunakan data sekunder berupa citra satelit Pulau Kalimantan yang diakuisisi dari \textit{Sentinel-2 Level-2A Collection} Tahun 2020 hingga 2024. Label ground truth diambil dari \textit{Hansen Global Forest Change} lapisan \textit{lossyear} sebagai binary mask deforestasi. 
+
+%--------------------------------------------------------------
+\section{Alat}
+%--------------------------------------------------------------
+
+Alat yang digunakan sebagai berikut:
+\begin{itemize}[]
+	\item \textit{Google Earth Engine} (GEE) sebagai alat akuisisi data dan pra-pemrosesan citra satelit.
+	\item Python 3.11 dengan library: PyTorch, NumPy, Rasterio, GDAL, scikit-learn
+	\item Platform training: Kaggle Notebook dengan GPU T4
+\end{itemize}
+
+
+%--------------------------------------------------------------
+\section{Akuisisi Data dan \textit{Cloud Masking}}
+
+Citra \textit{Sentinel-2 Level-2A} diakuisisi melalui GEE untuk dua periode waktu yang merepresentasikan kondisi sebelum $(\text{pre}, T1)$ dan sesudah $(\text{post}, T2)$ deforestasi. Untuk meminimalkan pengaruh tutupan awan dilakukan metode \textit{bitmasking} dan \textit{median compositing}. Teknik \textit{cloud masking} secara efektif menghilangkan piksel yang terkontaminasi awan dengan menggunakan \textit{bitmask} spektral yang telah ditentukan sebelumnya, sedangkan teknik \textit{median compositing} merekonstruksi gambar bebas awan dengan memilih nilai median dari serangkaian pengamatan waktu. Pendekatan ini meminimalkan pengaruh nilai-nilai yang menyimpang, menjaga keakuratan spektral, serta memberikan solusi yang efisien secara komputasi untuk menghilangkan awan dan bayangan awan. \citep{mangroveR2025}.
+
+Band yang digunakan dipilih berdasarkan relevansinya terhadap deteksi vegetasi: B2 (Blue), B3 (Green), B4 (Red), B8 (NIR), B11 dan B12 (SWIR), serta indeks turunan NDVI. 
+
+Label deforestasi diturunkan dari dataset Hansen Global Forest Change, menggunakan layer \textit{lossyear} untuk membentuk binary change mask (1 = deforestasi, 0 = tidak berubah), yang kemudian diselaraskan secara spasial dengan citra Sentinel-2.
+
+%--------------------------------------------------------------
+
+\section{Pra-pemrosesan Data}
+Citra hasil akuisisi diproses melalui tahapan berikut:
+\begin{enumerate}
+	\item Normalisasi nilai piksel ke rentang $[0,1]$.
+	\item \textit{Tiling} citra menjadi patch berdimensi $256 \times 256$ piksel dengan overlap $16$ piksel untuk memastikan kontinuitas fitur di batas patch.
+	\item Penanganan \textit{class imbalance} dengan \textit{weighted loss} karena area deforestasi umumnya minoritas.
+	\item Pembagian dataset secara spasial dilakukan menggunakan metode \textit{Pythagorean tiling} \citep{youssef2023landslide} dengan membagi wilayah studi menjadi pola menyerupai papan catur dengan rasio luas blok 70:30. Blok yang lebih besar (70\%) digunakan sebagai data pelatihan (\textit{training}), sedangkan blok yang lebih kecil (30\%) dibagi rata masing-masing sebesar 15\% untuk data validasi (\textit{validation}) dan data pengujian (\textit{test}) guna menghindari kebocoran data spasial antar patch yang berdekatan.
+\end{enumerate}
+
+\section{Arsitektur Model}
+Penelitian ini mengembangkan arsitektur \textit{Siamese U-Net} sebagai model baseline, kemudian mengusulkan modifikasi arsitektur untuk meningkatkan performa.
+
+\textbf{Model Baseline \textit{Siamese U-Net}}:
+Dua encoder identik dengan shared weights memproses citra T1 dan T2 secara paralel. Fitur dari kedua encoder digabungkan (feature differencing atau concatenation) pada setiap level, kemudian didekode oleh decoder U-Net tunggal untuk menghasilkan binary change map berukuran sama dengan input. Diagram blok arsitektur model Siamese U-Net disajikan pada Gambar~\ref{fig:siamese_unet}.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[scale=0.75, transform shape,
+		node distance=1.5cm and 1.8cm,
+		% Node styles
+		input/.style={rectangle, rounded corners=2pt, draw=gray!80, fill=gray!5, thick, minimum width=1.2cm, minimum height=0.6cm, font=\scriptsize},
+		encoder1/.style={rectangle, rounded corners=3pt, draw=blue!70, fill=blue!5, thick, minimum width=1.5cm, minimum height=0.7cm, font=\scriptsize, align=center},
+		encoder2/.style={rectangle, rounded corners=3pt, draw=cyan!70, fill=cyan!5, thick, minimum width=1.5cm, minimum height=0.7cm, font=\scriptsize, align=center},
+		fusion/.style={rectangle, rounded corners=3pt, draw=teal!70, fill=teal!5, thick, minimum width=1.3cm, minimum height=0.6cm, font=\scriptsize, align=center},
+		decoder/.style={rectangle, rounded corners=3pt, draw=orange!70, fill=orange!5, thick, minimum width=1.5cm, minimum height=0.7cm, font=\scriptsize, align=center},
+		output/.style={rectangle, rounded corners=2pt, draw=red!70, fill=red!5, thick, minimum width=1.2cm, minimum height=0.6cm, font=\scriptsize, align=center},
+		% Arrow styles
+		arrow/.style={-Stealth, thick, draw=black!80},
+		skip/.style={-Stealth, dashed, thick, draw=teal!80},
+		share/.style={Stealth-Stealth, dashed, thick, draw=purple!80}
+		]
+
+		% --- Nodes ---
+		% Inputs
+		\node[input] (t1) at (0.6, 4.5) {Citra T1};
+		\node[input] (t2) at (0.6, -1.5) {Citra T2};
+
+		% Encoder T1 (Top Row)
+		\node[encoder1] (e1_1) at (2.75, 4.5) {Encoder T1\\Level 1};
+		\node[encoder1] (e1_2) at (5.05, 4.5) {Encoder T1\\Level 2};
+		\node[encoder1] (e1_3) at (7.35, 4.5) {Encoder T1\\Level 3};
+
+		% Encoder T2 (Bottom Row)
+		\node[encoder2] (e2_1) at (2.75, -1.5) {Encoder T2\\Level 1};
+		\node[encoder2] (e2_2) at (5.05, -1.5) {Encoder T2\\Level 2};
+		\node[encoder2] (e2_3) at (7.35, -1.5) {Encoder T2\\Level 3};
+
+		% Feature Fusion (Middle Row)
+		\node[fusion] (f_1) at (2.75, 1.5) {Fusion L1};
+		\node[fusion] (f_2) at (5.05, 1.5) {Fusion L2};
+		\node[fusion] (f_3) at (7.35, 1.5) {Fusion L3};
+
+		% Decoders (Middle Row, Right Side)
+		\node[decoder] (d_3) at (9.75, 1.5) {Decoder\\Level 3};
+		\node[decoder] (d_2) at (12.05, 1.5) {Decoder\\Level 2};
+		\node[decoder] (d_1) at (14.35, 1.5) {Decoder\\Level 1};
+
+		% Output
+		\node[output] (out) at (16.4, 1.5) {Change\\Map};
+
+		% --- Arrows ---
+		% Inputs to Encoders
+		\draw[arrow] (t1) -- (e1_1);
+		\draw[arrow] (t2) -- (e2_1);
+
+		% Contracting Paths (Horizontal)
+		\draw[arrow] (e1_1) -- (e1_2);
+		\draw[arrow] (e1_2) -- (e1_3);
+		\draw[arrow] (e2_1) -- (e2_2);
+		\draw[arrow] (e2_2) -- (e2_3);
+
+		% Vertical Connections to Fusion
+		\draw[arrow] (e1_1) -- (f_1);
+		\draw[arrow] (e2_1) -- (f_1);
+		\draw[arrow] (e1_2) -- (f_2);
+		\draw[arrow] (e2_2) -- (f_2);
+		\draw[arrow] (e1_3) -- (f_3);
+		\draw[arrow] (e2_3) -- (f_3);
+
+		% Bottleneck to Decoder
+		\draw[arrow] (f_3) -- (d_3);
+
+		% Expanding Path (Horizontal)
+		\draw[arrow] (d_3) -- (d_2);
+		\draw[arrow] (d_2) -- (d_1);
+		\draw[arrow] (d_1) -- (out);
+
+		% Background Layer Scope for Curved Paths
+		\begin{pgfonlayer}{background}
+			% Shared Weights Indicators (Curved purple dashed arrows on the left)
+			\draw[share] (e1_1.south west) to[out=220, in=140] node[left, midway, font=\tiny\color{purple!90}, align=center] {Shared\\Weights} (e2_1.north west);
+			\draw[share] (e1_2.south west) to[out=220, in=140] (e2_2.north west);
+			\draw[share] (e1_3.south west) to[out=220, in=140] (e2_3.north west);
+
+			% Skip Connections (Curved teal dashed arrows nested above the middle row)
+			\draw[skip] (f_1.north) to[out=35, in=145] node[above, midway, font=\tiny\color{teal!90}] {Skip Connection} (d_1.north);
+			\draw[skip] (f_2.north) to[out=35, in=145] node[above, midway, font=\tiny\color{teal!90}] {Skip Connection} (d_2.north);
+		\end{pgfonlayer}
+
+	\end{tikzpicture}
+	\caption{Diagram blok arsitektur Siamese U-Net}
+	\label{fig:siamese_unet}
+\end{figure}
+
+Modifikasi yang Dieksplorasi (bersifat eksploratif, dipilih berdasarkan hasil ablation study):
+\begin{enumerate}
+	\item Penambahan attention mechanism (CBAM atau SimAM) pada \textit{encoder} untuk memfokuskan model pada fitur spektral yang relevan.
+	\item Modifikasi modul \textit{feature fusion} dengan membandingkan antara \textit{absolute differencing}, \textit{concatenation}, dan \textit{element-wise multiplication}
+	\item Penyesuaian kedalaman encoder untuk keseimbangan performa–efisiensi.
+\end{enumerate}
+
+Pemilihan modifikasi final didasarkan pada hasil \textit{ablation study} menggunakan metrik IoU pada validation set.
+
+\section{Pelatihan Model}
+
+Pelatihan dilakukan menggunakan pendekatan \textit{supervised learning} dengan konfigurasi berikut.
+
+\subsection{Loss Function}
+
+Kombinasi \textit{Binary Cross-Entropy} (BCE) dan \textit{Dice Loss} digunakan sebagai fungsi objektif:
+
+\begin{equation}
+	\mathcal{L} = \lambda_{BCE} \cdot \mathcal{L}_{BCE} + \lambda_{Dice} \cdot \mathcal{L}_{Dice}
+\end{equation}
+
+BCE menghukum kesalahan prediksi per piksel secara individual, sedangkan \textit{Dice Loss} secara langsung mengoptimasi \textit{overlap} antara prediksi dan \textit{ground truth} — yang merupakan proksi langsung dari IoU. Kombinasi keduanya efektif menangani \textit{class imbalance} karena \textit{Dice Loss} tidak terpengaruh dominasi kelas mayoritas. Bobot $\lambda$ ditentukan melalui \textit{hyperparameter tuning} awal dengan nilai awal $\lambda_{BCE} = 0.5$ dan $\lambda_{Dice} = 0.5$.
+
+\subsection{Optimizer dan Learning Rate}
+
+Optimizer AdamW digunakan dengan \textit{weight decay} $10^{-4}$ untuk regularisasi implisit. \textit{Learning rate} awal ditetapkan sebesar $10^{-4}$ dengan strategi penjadwalan \textit{ReduceLROnPlateau} yaitu \textit{learning rate} diturunkan sebesar faktor 0.5 apabila \textit{validation} IoU tidak meningkat selama 5 epoch berturut-turut. Batas minimum \textit{learning rate} ditetapkan $10^{-6}$.
+
+\subsection{Prosedur Pelatihan}
+
+Model dilatih hingga maksimal 100 \textit{epoch} dengan mekanisme \textit{early stopping} berdasarkan \textit{validation} IoU (\textit{patience} = 10 \textit{epoch}). Bobot model terbaik disimpan berdasarkan nilai \textit{validation} IoU tertinggi selama pelatihan, bukan berdasarkan \textit{epoch} terakhir. Konfigurasi \textit{batch size} disesuaikan dengan kapasitas GPU yang tersedia.
+
+\subsection{Augmentasi Data}
+
+Augmentasi diterapkan secara \textit{online} selama pelatihan menggunakan library Albumentations, meliputi: \textit{random horizontal} dan \textit{vertical flip} ($p = 0.5$), \textit{random rotation} 90° ($p = 0.5$), serta \textit{random brightness/contrast shift} ringan ($p = 0.2$) untuk mensimulasikan variasi akuisisi antar-tanggal. Augmentasi tidak diterapkan pada \textit{validation} dan \textit{test set}.
+
+\subsection{Reproducibility}
+
+\textit{Random seed} ditetapkan secara konsisten pada seluruh library (Python, NumPy, PyTorch, CUDA) untuk memastikan hasil pelatihan dapat direproduksi. Seluruh konfigurasi \textit{hyperparameter} dicatat menggunakan file konfigurasi YAML.
+
+\section{Analisis \textit{Explainable Artificial Intelligence} (Grad-CAM)}
+
+\subsection{Dasar Teknis}
+
+Grad-CAM (\textit{Gradient-weighted Class Activation Mapping}) diusulkan oleh \cite{DBLP:journals/corr/SelvarajuDVCPB16} sebagai teknik XAI yang menggunakan informasi gradien yang mengalir ke lapisan konvolusi terakhir untuk menghasilkan peta lokalisasi kasar (\textit{coarse localization map}) yang menyoroti region penting dalam citra terhadap keputusan prediksi tertentu. Berbeda dengan metode berbasis piksel seperti \textit{Guided Backpropagation} \citep{springenberg2014striving} yang menghasilkan visualisasi beresolusi tinggi namun tidak diskriminatif terhadap kelas, Grad-CAM bersifat \textit{class-discriminative} yaitu mampu membedakan region yang relevan untuk kelas yang berbeda \cite{DBLP:journals/corr/SelvarajuDVCPB16}.
+
+Secara teknis, untuk memperoleh peta lokalisasi $L^c_{\text{Grad-CAM}} \in \mathbb{R}^{u \times v}$ bagi kelas $c$, pertama dihitung gradien dari skor prediksi $y^c$ (sebelum \textit{softmax}) terhadap aktivasi \textit{feature map} $A^k$ pada lapisan konvolusi tertentu. Gradien tersebut kemudian dilanjutkan ke layer \textit{global average pool} atas dimensi spasial untuk memperoleh bobot kepentingan neuron $\alpha^c_k$:
+
+\begin{equation}
+	\alpha^c_k = \frac{1}{Z} \sum_i \sum_j \frac{\partial y^c}{\partial A^k_{ij}}
+	\label{eq:gradcam_weight}
+\end{equation}
+
+\noindent di mana $Z$ adalah jumlah piksel pada \textit{feature map}, dan indeks $i$, $j$ merujuk pada posisi spasial. Bobot $\alpha^c_k$ merepresentasikan linearisasi parsial jaringan di hilir $A^k$ dan menangkap \textit{importance} \textit{feature map} $k$ terhadap kelas $c$ \citep{DBLP:journals/corr/SelvarajuDVCPB16}. \textit{Heatmap} akhir diperoleh sebagai kombinasi linear terbobot dari \textit{forward activation maps} yang dilewatkan fungsi ReLU:
+
+\begin{equation}
+	L^c_{\text{Grad-CAM}} = \text{ReLU}\!\left(\sum_k \alpha^c_k A^k\right)
+	\label{eq:gradcam_map}
+\end{equation}
+
+Penggunaan ReLU pada Persamaan~\ref{eq:gradcam_map} memastikan bahwa hanya fitur yang berkontribusi \textit{positif} terhadap prediksi kelas $c$ yang divisualisasikan. Piksel dengan nilai negatif cenderung merupakan bukti untuk kelas lain dalam citra \citep{DBLP:journals/corr/SelvarajuDVCPB16}. \cite{DBLP:journals/corr/SelvarajuDVCPB16} juga menunjukkan secara empiris bahwa \textit{global average pooling} memberikan hasil yang lebih baik dibandingkan \textit{global max pooling} karena lebih robust terhadap noise pada gradien.
+
+\subsection{Implementasi}
+
+Grad-CAM diimplementasikan menggunakan library \texttt{pytorch-grad-cam}, diterapkan pada lapisan konvolusi terakhir encoder Siamese U-Net sebagaimana disarankan oleh \cite{DBLP:journals/corr/SelvarajuDVCPB16} bahwa lapisan konvolusi terdalam memiliki kompromi terbaik antara semantik tingkat tinggi dan informasi spasial. \textit{Heatmap} yang dihasilkan memiliki resolusi lebih rendah dari input, sehingga di-\textit{upsample} ke resolusi patch asli (256$\times$256) menggunakan interpolasi bilinear sebelum di-\textit{overlay} dengan citra RGB komposit T2.
+
+Karena arsitektur Siamese memiliki dua encoder dengan \textit{shared weights}, Grad-CAM diterapkan secara terpisah pada encoder cabang T1 dan T2 untuk menganalisis perbedaan \textit{attention} model terhadap kedua citra temporal. Pendekatan ini memungkinkan verifikasi apakah model secara konsisten memperhatikan area yang berubah secara spektral, bukan artefak seperti awan atau bayangan.
+
+\subsection{Sampel Analisis}
+
+Analisis dilakukan pada sejumlah sampel representatif yang dipilih secara purposif dari \textit{test set}, mencakup tiga kategori sebagaimana disajikan pada Tabel~\ref{tab:gradcam_kategori}. Sampel \textit{true negative} tidak diikutsertakan karena Grad-CAM menghasilkan aktivasi yang tidak informatif pada kasus di mana model tidak memprediksi kelas \textit{change}, sehingga tidak memberikan wawasan interpretif yang bermakna \citep{DBLP:journals/corr/SelvarajuDVCPB16}.
+
+\begin{table}[h]
+	\centering
+	\caption{Kategori sampel analisis Grad-CAM}
+	\label{tab:gradcam_kategori}
+	\begin{tabular}{llp{7.5cm}}
+		\hline
+		\textbf{Kategori} & \textbf{Singkatan} & \textbf{Tujuan Analisis} \\
+		\hline
+		\textit{True Positive}  & TP & Verifikasi model memperhatikan area perubahan nyata \\
+		\textit{False Positive} & FP & Identifikasi artefak yang memicu kesalahan (awan, lahan basah) \\
+		\textit{False Negative} & FN & Identifikasi karakteristik deforestasi yang sulit terdeteksi \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsection{Kriteria Validasi Kualitatif}
+
+Merujuk pada kerangka evaluasi \cite{DBLP:journals/corr/SelvarajuDVCPB16} bahwa visualisasi yang baik harus bersifat \textit{class-discriminative} dan \textit{faithful} terhadap model, \textit{heatmap} pada penelitian ini dinilai valid apabila aktivasi tinggi (\textit{warm region}) secara spasial bertepatan dengan area yang menunjukkan perubahan spektral signifikan antara T1 dan T2 khususnya penurunan nilai NDVI dan peningkatan reflektansi SWIR yang mengindikasikan penghilangan tutupan kanopi. \textit{Heatmap} yang menunjukkan aktivasi dominan pada area awan, bayangan, atau tepi \textit{patch} dianggap sebagai indikasi model yang tidak reliabel, konsisten dengan analisis \textit{failure mode} yang didemonstrasikan oleh \cite{DBLP:journals/corr/SelvarajuDVCPB16}.
+
+\section{Analisis Data}
+
+Analisis data dilakukan dalam dua tahap: evaluasi kuantitatif performa model dan interpretasi kualitatif melalui XAI.
+
+\subsection{Metrik Evaluasi Kuantitatif}
+
+Evaluasi performa model menggunakan metrik kuantitatif yang dihitung pada level piksel terhadap \textit{test set}, meliputi \textit{Intersection over Union} (IoU), \textit{Precision}, \textit{Recall}, \textit{F1-Score}, \textit{Overall Accuracy} (OA), dan koefisien \textit{Kappa}.
+
+\begin{equation}
+	\text{IoU} = \frac{TP}{TP + FP + FN}
+\end{equation}
+
+\begin{equation}
+	\text{Precision} = \frac{TP}{TP + FP}, \qquad \text{Recall} = \frac{TP}{TP + FN}
+\end{equation}
+
+\begin{equation}
+	\text{F1-Score} = \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+\end{equation}
+
+\begin{equation}
+	\text{OA} = \frac{TP + TN}{TP + TN + FP + FN}
+\end{equation}
+
+Koefisien \textit{Kappa} mengukur kesesuaian antara prediksi dan ground truth dengan mempertimbangkan kesepakatan acak (\textit{chance agreement}):
+
+\begin{equation}
+	\text{Kappa} = \frac{p_o - p_e}{1 - p_e}
+\end{equation}
+
+\noindent di mana $p_o$ adalah nilai OA, dan $p_e$ merupakan probabilitas kesepakatan teoritis secara acak yang dihitung dengan:
+
+\begin{equation}
+	p_e = \frac{(TP+FP)(TP+FN) + (TN+FP)(TN+FN)}{(TP+TN+FP+FN)^2}
+\end{equation}
+
+IoU dipilih sebagai metrik primer karena merupakan standar evaluasi pada tugas segmentasi biner dan secara langsung mengukur kualitas \textit{change map} yang dihasilkan. F1-Score, OA, dan koefisien Kappa digunakan untuk memberikan gambaran performa klasifikasi secara komprehensif, khususnya dalam mengukur akurasi keseluruhan dan reliabilitas model terhadap ketidakseimbangan kelas.
+
+\subsection{Interpretasi Kualitatif XAI}
+
+Interpretasi hasil XAI dilakukan dengan menganalisis secara visual \textit{heatmap} Grad-CAM yang dihasilkan dari \textit{test set} pada tiga kategori sampel (TP, FP, dan FN) sesuai kriteria berikut:
+\begin{enumerate}
+  \item \textbf{\textit{True Positive} (TP)}: Verifikasi dilakukan untuk memastikan area dengan tingkat aktivasi tinggi (\textit{warm region}) pada \textit{heatmap} berhimpit secara spasial dengan wilayah perubahan tutupan hutan riil pada citra. Hal ini menunjukkan model membuat keputusan berdasarkan fitur spektral perubahan yang benar, bukan karena \textit{bias} atau \textit{background noise}.
+  \item \textbf{\textit{False Positive} (FP)}: Analisis dilakukan pada area non-deforestasi yang dideteksi sebagai deforestasi oleh model. \textit{Heatmap} digunakan untuk mengidentifikasi penyebab kesalahan, seperti apakah model terdistraksi oleh tutupan awan tipis, bayangan awan, atau perubahan musiman pada vegetasi non-hutan (misalnya lahan basah atau pertanian).
+  \item \textbf{\textit{False Negative} (FN)}: Analisis dilakukan pada area deforestasi yang gagal dideteksi oleh model. \textit{Heatmap} digunakan untuk mengevaluasi apakah model tidak sensitif terhadap spektral deforestasi skala kecil atau karena adanya variasi pantulan spektral yang menyerupai kanopi rapat.
+\end{enumerate}
+Melalui analisis kualitatif ini, kelemahan spesifik model dapat diidentifikasi untuk perbaikan arsitektur lebih lanjut, serta memberikan tingkat transparansi (\textit{explainability}) yang mendukung kepercayaan pengguna terhadap hasil pemetaan deforestasi.
+
+
+

@@ -1,0 +1,35 @@
+%==============================================================
+% BAB IV RENCANA IMPLEMENTASI DAN PENGEMBANGAN
+%==============================================================
+
+\section{Rencana Implementasi dan Pengembangan}
+
+\subsection{Tahapan Rencana Pengembangan}
+
+[Jelaskan langkah-langkah implementasi solusi dari tahap validasi purwarupa, uji klinis, hingga integrasi skala nasional].
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{p{2.2cm} p{4cm} X}
+\toprule
+\textbf{Fase} & \textbf{Target Waktu} & \textbf{Luaran Kunci \& Indikator Keberhasilan} \\
+\midrule
+\textbf{Fase 1: Validasi Klinis} & Bulan 1 -- Bulan 3 & Validasi akurasi triase menggunakan kartu kasus klinis spesialis; pengujian kemudahan pakai antarmuka (*SUS Score*); audit keamanan data. \\
+\textbf{Fase 2: Pilot FKTP} & Bulan 4 -- Bulan 6 & Penerapan uji coba terbatas di Puskesmas wilayah endemis; pengujian fitur integrasi WhatsApp dan pemindai QR ringkasan pasien. \\
+\textbf{Fase 3: Sandbox Kemenkes} & Bulan 7 -- Bulan 9 & Pendaftaran ke *Regulatory Sandbox* Kementerian Kesehatan RI; penyesuaian regulasi mediko-legal dan rujukan Mobile JKN BPJS. \\
+\textbf{Fase 4: Ekspansi Skala} & Bulan 10 -- Bulan 12 & Sinkronisasi penuh direktori SATUSEHAT MSI nasional dan sosialisasi masyarakat luas terintegrasi kader kesehatan primer. \\
+\bottomrule
+\end{tabularx}
+\caption{Peta Jalan Rencana Implementasi dan Pengembangan Inovasi}
+\label{tab:roadmap}
+\end{table}
+
+\subsection{Analisis Risiko dan Strategi Mitigasi}
+
+[Jelaskan potensi risiko teknis/medis dan langkah mitigasinya]:
+\begin{itemize}
+    \item \textbf{Risiko Medis (Halusinasi / Rekomendasi Keliru):} [Mitigasi: penegakan batas aturan deterministik, sitasi berbasis PPK Kemenkes, dan penafian legal bahwa aplikasi adalah skrining non-diagnosis].
+    \item \textbf{Risiko Teknis (Konektivitas Rendah di Pedalaman):} [Mitigasi: arsitektur web progresif berkapabilitas komputasi lokal peramban].
+    \item \textbf{Risiko Keamanan Data:} [Mitigasi: prinsip anonimitas tanpa-NIK dan tidak menyimpan koordinat lintang/bujur di server].
+\end{itemize}

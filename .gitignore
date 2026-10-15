@@ -57,6 +57,21 @@ openapi.json
 /playwright/.cache/
 /playwright/.auth/
 
+# LaTeX Build Artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lot
+*.lof
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.nav
+*.snm
+
 # IDE & OS
 .serena/
 .vscode/*

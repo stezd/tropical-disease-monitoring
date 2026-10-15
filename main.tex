@@ -1,0 +1,200 @@
+%================================================================
+% TEMPLATE PROPOSAL INOVASI HACKATHON
+% IPB University
+%
+% Diadaptasi dari Template PPKI IPB University Edisi ke-4
+% Disesuaikan khusus untuk format Proposal Kompetisi / Hackathon
+% Batasan Halaman: 4--7 Halaman (termasuk Cover & Daftar Pustaka)
+%
+% Compiler yang direkomendasikan: pdfLaTeX
+%================================================================
+
+\documentclass[12pt,a4paper,oneside]{article}
+
+%--------------------------------------------------------------
+% # 1. Encoding & Bahasa
+%--------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage[utf8]{inputenc}
+\usepackage[indonesian, provide=*]{babel}
+
+%--------------------------------------------------------------
+% # 2. Tipografi & Font (Times New Roman Standar IPB)
+%--------------------------------------------------------------
+\usepackage{mathptmx}
+\usepackage{microtype}
+
+%--------------------------------------------------------------
+% # 3. Ukuran Halaman & Margin Standar IPB (Format Proposal)
+% - Top 3 cm, Left 4 cm, Right 3 cm, Bottom 3 cm
+%--------------------------------------------------------------
+\usepackage[
+  a4paper,
+  top=3cm,
+  left=4cm,
+  right=3cm,
+  bottom=3cm,
+  headheight=15pt
+]{geometry}
+
+%--------------------------------------------------------------
+% # 4. Spasi & Paragraf
+%--------------------------------------------------------------
+\usepackage{setspace}
+\onehalfspacing                  % Spasi 1.5 untuk kenyamanan membaca juri
+\usepackage{indentfirst}         % Indentasi paragraf pertama
+\setlength{\parindent}{1cm}     % Indentasi standar IPB 1 cm
+\setlength{\parskip}{2pt plus 1pt minus 1pt} % Jarak antar paragraf kompak
+
+%--------------------------------------------------------------
+% # 5. Header & Footer (fancyhdr)
+%--------------------------------------------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\fontsize{10pt}{12pt}\selectfont\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Halaman pertama (cover) tanpa header
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+%--------------------------------------------------------------
+% # 6. Format Judul Bab & Subbab (titlesec)
+%--------------------------------------------------------------
+\usepackage{titlesec}
+
+\titleformat{\section}
+  {\fontsize{13pt}{16pt}\selectfont\bfseries}
+  {\thesection}
+  {1em}
+  {\MakeUppercase}
+
+\titleformat{\subsection}
+  {\fontsize{12pt}{15pt}\selectfont\bfseries}
+  {\thesubsection}
+  {1em}
+  {}
+
+\titleformat{\subsubsection}
+  {\fontsize{12pt}{14pt}\selectfont\bfseries\itshape}
+  {\thesubsubsection}
+  {1em}
+  {}
+
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+\titlespacing*{\subsubsection}{0pt}{6pt}{2pt}
+
+% Format penomoran: BAB I -> 1.1 -> 1.1.1
+\renewcommand{\thesection}{BAB \Roman{section}}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
+
+%--------------------------------------------------------------
+% # 7. Tabel & Gambar
+%--------------------------------------------------------------
+\usepackage{booktabs}        % \toprule, \midrule, \bottomrule
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, backgrounds, fit}
+
+\usepackage{caption}
+\DeclareCaptionLabelFormat{ipblabel}{#1~#2}
+\captionsetup{
+  format          = hang,
+  labelformat     = ipblabel,
+  labelsep        = space,
+  font            = small,
+  labelfont       = bf,
+  textfont        = {},
+  justification   = justified,
+  singlelinecheck = true
+}
+\captionsetup[table]{name=Tabel, position=above, skip=4pt}
+\captionsetup[figure]{name=Gambar, position=below, skip=6pt}
+
+%--------------------------------------------------------------
+% # 8. Kotak Sorotan / Callout Box Modern (tcolorbox)
+%--------------------------------------------------------------
+\usepackage[most]{tcolorbox}
+\definecolor{ipbblue}{RGB}{20, 52, 114}
+\definecolor{accentteal}{RGB}{0, 128, 128}
+\definecolor{lightbg}{RGB}{248, 250, 252}
+
+\newtcolorbox{highlightbox}[1][]{
+  colback=lightbg,
+  colframe=ipbblue,
+  fonttitle=\bfseries\small,
+  coltitle=white,
+  boxrule=0.8pt,
+  arc=2mm,
+  left=8pt,
+  right=8pt,
+  top=6pt,
+  bottom=6pt,
+  #1
+}
+
+%--------------------------------------------------------------
+% # 9. Referensi & Sitasi (Author-Year Standar IPB)
+%--------------------------------------------------------------
+\usepackage[authoryear,round]{natbib}
+\setlength{\bibsep}{2pt}
+
+%--------------------------------------------------------------
+% # 10. Hyperlink
+%--------------------------------------------------------------
+\usepackage[
+  colorlinks=true,
+  linkcolor=ipbblue,
+  citecolor=ipbblue,
+  urlcolor=ipbblue,
+  pdfauthor={Tim Pengusul IPB},
+  pdftitle={Proposal Inovasi Hackathon}
+]{hyperref}
+
+% Kontrol List / Poin
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=1.5em}
+
+%==============================================================
+% # DOKUMEN UTAMA
+%==============================================================
+\begin{document}
+
+% 1. Halaman Sampul (Cover)
+\input{chapters/cover}
+
+% Mulai penomoran halaman isi
+\setcounter{page}{2}
+
+% 2. Bab I: Pendahuluan
+\input{chapters/bab1_pendahuluan}
+
+% 3. Bab II: Solusi dan Inovasi yang Ditawarkan
+\input{chapters/bab2_solusi_inovasi}
+
+% 4. Bab III: Target Pengguna dan Manfaat yang Diharapkan
+\input{chapters/bab3_target_manfaat}
+
+% 5. Bab IV: Rencana Implementasi dan Pengembangan
+\input{chapters/bab4_implementasi_roadmap}
+
+% 6. Bab V: Transparansi Penggunaan AI (Syarat Wajib Hackathon)
+\input{chapters/bab5_transparansi_ai}
+
+% 7. Daftar Pustaka
+\renewcommand{\refname}{DAFTAR PUSTAKA}
+\bibliographystyle{apalike}
+\bibliography{refs/daftar_pustaka}
+
+\end{document}
