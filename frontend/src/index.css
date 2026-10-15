@@ -42,6 +42,11 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --font-sans: "Nunito", "Segoe UI", system-ui, sans-serif;
   --font-heading: "Fredoka", ui-rounded, "Segoe UI", system-ui, sans-serif;
+
+  /* Type scale and breakpoints from DESIGN.md (Units, Type). */
+  --text-2xs: 0.6875rem;
+  --text-note: 0.8125rem;
+  --breakpoint-lg: 60rem;
 }
 
 :root {

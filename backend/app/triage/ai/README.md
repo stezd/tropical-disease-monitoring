@@ -83,6 +83,6 @@ Bawaan: `gemini-3.5-flash-lite`. Model ini sudah dicoba dengan key sungguhan pad
 
 Cara lain cukup lewat config: `TRIAGE_AI_MODEL`, atau `TRIAGE_AI_PROVIDER=openai_compat` + `TRIAGE_AI_BASE_URL=http://<server-gpu>:8000/v1` untuk MedGemma di vLLM. Naikkan `PROMPT_VERSION` di `prompts.py` setiap kali prompt atau skema berubah.
 
-## Privasi (perlu keputusan tim)
+## Privasi
 
-`AGENTS.md` menulis bahwa model berjalan di server sendiri dan tidak ada data keluar. Dengan Gemini API, fakta pasien (teks pilihan, usia, jenis kelamin, provinsi; tanpa identitas) dikirim ke Google. Menurut Google, data di kuota gratis dipakai untuk memperbaiki produknya dan bisa dibaca peninjau manusia. Ini perlu disebut di teks persetujuan dan di klaim deck, atau diganti ke `openai_compat` di server sendiri.
+Data boleh keluar server (keputusan tim). Dengan Gemini API, fakta pasien (teks pilihan, usia, jenis kelamin, provinsi; tanpa identitas) dikirim ke Google. Menurut Google, data di kuota gratis dipakai untuk memperbaiki produknya dan bisa dibaca peninjau manusia. Sebutkan ini di teks persetujuan dan di klaim deck.

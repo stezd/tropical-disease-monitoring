@@ -80,7 +80,7 @@ bun run lint && bun test                 # from repo root
 - **Quiz content lives in JSON**, not React. DR and ST edit it without FE. Option IDs are shared by FE, BE, and scoring; rename all three together.
 - **API** (`/api/v1`): `GET /triage/flows/{flow_id}` · `POST /triage/flows/{flow_id}/score`
 - **Emergency check runs in the browser.** Any danger sign → MERAH screen right away, even if the server is down.
-- **Standalone.** No integrations that need a legal agreement or admin approval (BPJS API, telemedicine providers, faskes systems). Plain links are fine (Google Maps search, opening Mobile JKN). Nothing is sent outside our own server. SATUSEHAT integration is under consideration by the team and is not covered by this rule.
+- **Standalone.** No integrations that need a legal agreement or admin approval (BPJS API, telemedicine providers, faskes systems). Plain links are fine (Google Maps search, opening Mobile JKN). Data may leave our server (e.g. to the Gemini API for AI scoring); say so in the consent text. SATUSEHAT integration is under consideration by the team and is not covered by this rule.
 - **Login is optional.** Guests can do the whole quiz. Offer login on the home page.
 - **Ask age and sex first.** They change which questions and options appear.
 - **Low score** → "belum dapat ditentukan" + route KUNING.
@@ -207,7 +207,7 @@ Blueprint dan jawaban dokter sudah digabung di [docs/Acuan-Medis.md](docs/Acuan-
 
 ## Remember (in Indonesian)
 
-- **Jujur soal "AI".** Model yang dipakai: **MedGemma** (large multimodal model) + **RAG** atas sumber literatur yang disetujui DR. Tidak memakai XGBoost. MedGemma dijalankan di **server sendiri**, bukan lewat API pihak luar, supaya aplikasi tetap berdiri sendiri dan tidak ada data keluar. Hasil diuji dengan kartu kasus dokter. Fitur foto (MedGemma multimodal) sebut sebagai rencana sampai selesai.
+- **Jujur soal "AI".** Model yang dipakai: **MedGemma** (large multimodal model) + **RAG** atas sumber literatur yang disetujui DR. Tidak memakai XGBoost. Model boleh dipanggil lewat API pihak luar (sekarang Gemini) atau dijalankan di server sendiri; data boleh keluar server, sebutkan di teks persetujuan. Hasil diuji dengan kartu kasus dokter. Fitur foto (MedGemma multimodal) sebut sebagai rencana sampai selesai.
 - **Rute MERAH tetap tanpa animasi dan suara** (keputusan tim; Blueprint sudah disesuaikan).
 - **Tetap aturan tetap, bukan model:** pemeriksaan tanda bahaya di browser, naik ke KUNING bila suhu ≥ 39,5 °C, dan skor rendah → KUNING. Pembagian tugas MedGemma dan skor aturan: ST.
 - **Uji coba pakai kartu kasus,** bukan data kesehatan asli peserta. Peserta mengisi survei kemudahan pakai (SUS).
