@@ -1,0 +1,92 @@
+"""HTTP wrapper around app.triage.ai, for callers that do not import it directly
+and for checking the model during the user test.
+
+The patient-facing result still comes from POST /triage/flows/{flow_id}/score; with
+TRIAGE_SCORING_ENGINE=ai that endpoint uses the same engine.
+"""
+
+from typing import Any, Literal
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
+
+from app.api.deps import get_current_active_superuser
+from app.composition.triage_container import get_content_repository
+from app.triage.ai import get_ai_engine
+from app.triage.schemas import Answers
+
+router = APIRouter(prefix="/ai", tags=["ai"])
+
+
+class AIScoreRequest(BaseModel):
+    flow_id: Literal["infection", "chronic"]
+    answers: Answers
+
+
+class AIScoredDisease(BaseModel):
+    id: str
+    score: float
+    # Softmax share over diseases with a positive score (0–1), as in ScoreBreakdown.
+    share: float
+    reasons: list[str]
+    sources: list[str]
+
+
+class AIScoreResponse(BaseModel):
+    request_id: str
+    # "ai" = scores from the model. "rules" = RuleEngine (fallback or not needed).
+    engine: Literal["ai", "rules"]
+    fallback: bool
+    # Why the model was not used: model_off, quota_local, rate_limited, timeout,
+    # bad_response, network, server_error, error, skipped:*. None when engine = "ai".
+    reason: str | None
+    mode: str
+    model: str
+    prompt_version: str
+    latency_ms: int
+    calls: int
+    ranked: list[AIScoredDisease]
+    scores: dict[str, float] = Field(
+        description="Every scored disease, 0 if not picked"
+    )
+
+
+@router.post("/score")
+def ai_score(body: AIScoreRequest) -> AIScoreResponse:
+    """Score answers with the language model. Falls back to rules, never errors on
+    model trouble. Stateless: nothing is saved (the call log holds no identity)."""
+    try:
+        content = get_content_repository().get(body.flow_id)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Flow not found")
+    b = get_ai_engine().score(body.answers.to_domain(), content)
+    meta = b.meta
+    assert meta is not None
+    return AIScoreResponse(
+        request_id=meta.request_id,
+        engine=meta.engine,
+        fallback=meta.fallback,
+        reason=meta.reason,
+        mode=meta.mode,
+        model=meta.model,
+        prompt_version=meta.prompt_version,
+        latency_ms=meta.latency_ms,
+        calls=meta.calls,
+        ranked=[
+            AIScoredDisease(
+                id=r.id,
+                score=r.score,
+                share=r.share,
+                reasons=b.reasons.get(r.id, []),
+                sources=meta.sources.get(r.id, []),
+            )
+            for r in b.ranked
+        ],
+        scores=b.scores,
+    )
+
+
+@router.get("/status", dependencies=[Depends(get_current_active_superuser)])
+def ai_status() -> dict[str, Any]:
+    """Model, mode, and local quota use. Superusers only. No secrets."""
+    return get_ai_engine().status()

@@ -5,6 +5,97 @@ export type ClientOptions = {
 };
 
 /**
+ * AIScoreRequest
+ */
+export type AIScoreRequest = {
+    /**
+     * Flow Id
+     */
+    flow_id: 'infection' | 'chronic';
+    answers: Answers;
+};
+
+/**
+ * AIScoreResponse
+ */
+export type AIScoreResponse = {
+    /**
+     * Request Id
+     */
+    request_id: string;
+    /**
+     * Engine
+     */
+    engine: 'ai' | 'rules';
+    /**
+     * Fallback
+     */
+    fallback: boolean;
+    /**
+     * Reason
+     */
+    reason: string | null;
+    /**
+     * Mode
+     */
+    mode: string;
+    /**
+     * Model
+     */
+    model: string;
+    /**
+     * Prompt Version
+     */
+    prompt_version: string;
+    /**
+     * Latency Ms
+     */
+    latency_ms: number;
+    /**
+     * Calls
+     */
+    calls: number;
+    /**
+     * Ranked
+     */
+    ranked: Array<AIScoredDisease>;
+    /**
+     * Scores
+     *
+     * Every scored disease, 0 if not picked
+     */
+    scores: {
+        [key: string]: number;
+    };
+};
+
+/**
+ * AIScoredDisease
+ */
+export type AIScoredDisease = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Score
+     */
+    score: number;
+    /**
+     * Share
+     */
+    share: number;
+    /**
+     * Reasons
+     */
+    reasons: Array<string>;
+    /**
+     * Sources
+     */
+    sources: Array<string>;
+};
+
+/**
  * Answers
  *
  * Everything the patient answered. Never holds a name, NIK, BPJS number, or photo.
@@ -1687,6 +1778,51 @@ export type triageAnalyzePhotoResponses = {
 };
 
 export type triageAnalyzePhotoResponse = triageAnalyzePhotoResponses[keyof triageAnalyzePhotoResponses];
+
+export type aiAiScoreData = {
+    body: AIScoreRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ai/score';
+};
+
+export type aiAiScoreErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type aiAiScoreError = aiAiScoreErrors[keyof aiAiScoreErrors];
+
+export type aiAiScoreResponses = {
+    /**
+     * Successful Response
+     */
+    200: AIScoreResponse;
+};
+
+export type aiAiScoreResponse = aiAiScoreResponses[keyof aiAiScoreResponses];
+
+export type aiAiStatusData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ai/status';
+};
+
+export type aiAiStatusResponses = {
+    /**
+     * Response Ai-Ai Status
+     *
+     * Successful Response
+     */
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type aiAiStatusResponse = aiAiStatusResponses[keyof aiAiStatusResponses];
 
 export type facilitiesListFacilitiesData = {
     body?: never;
