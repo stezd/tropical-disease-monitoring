@@ -126,7 +126,7 @@ export function drawQR(canvas: HTMLCanvasElement, text: string): boolean {
   if (!ctx) return false
   ctx.fillStyle = "#fff"
   ctx.fillRect(0, 0, canvas.width, canvas.height)
-  ctx.fillStyle = "#1C1250"
+  ctx.fillStyle = "#15323a"
   for (let y = 0; y < n; y++) {
     for (let x = 0; x < n; x++) {
       if (qr.isDark(y, x)) ctx.fillRect((x + quiet) * m, (y + quiet) * m, m, m)

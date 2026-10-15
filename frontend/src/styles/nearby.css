@@ -21,7 +21,7 @@
    action spans the row. Tap targets stay ≥ 2.75rem (.btn min height). */
 .nf-lead {
   margin: 0;
-  font-weight: 800;
+  font-weight: 600;
   font-size: var(--fs-sm);
   line-height: var(--lh-base);
   color: var(--tc-ink2);
@@ -38,10 +38,10 @@
   gap: var(--sp-3);
 }
 .nf-item {
-  background: var(--tc-soft);
-  border: 2.5px solid var(--tc-line);
+  background: var(--tc-field);
+  border: 1px solid var(--tc-line);
   border-radius: var(--r-md);
-  padding: var(--sp-3);
+  padding: calc(var(--sp-3) + 1.5px);
 }
 .nf-head {
   display: flex;
@@ -60,13 +60,13 @@
 }
 .nf-dist {
   flex: none;
-  /* Deep purple, not the mid purple: white on it stays ≥4.5:1 (DESIGN.md
+  /* Deep teal, not the mid teal: white on it stays ≥4.5:1 (DESIGN.md
      accessibility: important text on white never drops below that). */
   background: var(--tc-purpleSh);
   color: #fff;
   border-radius: var(--r-pill);
   padding: var(--sp-0) var(--sp-2h);
-  font-weight: 800;
+  font-weight: 600;
   font-size: var(--fs-xs);
   line-height: 1.4;
   white-space: nowrap;
@@ -75,7 +75,7 @@
   display: block;
   margin-top: var(--sp-1);
   font-size: var(--fs-xs);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.4;
   color: var(--tc-ink2);
 }
@@ -93,7 +93,7 @@
 .nf-note {
   margin: var(--sp-3) 0 0;
   font-size: var(--fs-xs);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.4;
   color: var(--tc-ink2);
 }
@@ -101,5 +101,5 @@
   grid-column: 1 / -1;
 }
 
-/* .btn-wa (WhatsApp) is purple like every other button; its colors live with
+/* .btn-wa (WhatsApp) is teal-soft like the other secondary buttons; its colors live with
    .btn-secondary in tropicek.css. */
