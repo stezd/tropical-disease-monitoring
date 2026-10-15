@@ -286,7 +286,7 @@ Watch paths live on the **service instance**, so they are set per environment - 
 
 A **second service** in the project mirrors the SATUSEHAT Master Sarana Index into the `facility` table (see [docs/SATUSEHAT.md](docs/SATUSEHAT.md)). It is a normal Railway service with a cron schedule, not a separate scheduler primitive: Railway starts the container on schedule, runs the start command, and stops it when the process exits.
 
-Created 2026-10-14 in the **`development`** environment only. **Production still needs its own** (§12's branch gate means it is a separate service instance, so create it per environment).
+Exists in **both** environments, as a separate service instance per environment (§12's branch gate): `facility-sync` in `development`, `facility-sync-prod` in `production`, both created 2026-10-14.
 
 | Setting | Value |
 | --- | --- |
@@ -322,6 +322,8 @@ railway logs      -s facility-sync -e development --since 2026-10-14T16:52:20Z
 ```
 
 `--include-apotek` adds Apotek (105) so the HIJAU route can offer a pharmacy. It grows the mirror from ~13.900 to ~67.000 rows and the run from ~10 s to a couple of minutes (~78 pages). Only 2,1% of Apotek rows carry coordinates; the app passes `?with_coords=true` when ranking so the coordinate-less majority is never fetched. A healthy run ends with `Sync complete. Total facilities synced: <count>`, where `<count>` is now on the order of 67.000.
+
+`development`'s `facility-sync` already uses this start command. **`production`'s `facility-sync-prod` still runs the plain `python scripts/sync_facilities.py`** and needs the same one-line change when Apotek should be mirrored in production too.
 
 ### Enabling server-side nearest ranking
 
