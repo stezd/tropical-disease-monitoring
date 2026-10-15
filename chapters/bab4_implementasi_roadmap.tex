@@ -2,112 +2,80 @@
 % BAB IV RENCANA IMPLEMENTASI DAN PENGEMBANGAN
 %==============================================================
 
-\section{Rencana Implementasi dan\\Pengembangan}
+\section{Rencana Implementasi dan Pengembangan}
 
 \subsection{Peta Jalan Pengembangan 12 Bulan (\textit{Roadmap})}
 
-Implementasi TropiCare dirancang bertahap selama 12 bulan (empat kuartal strategis) untuk menjembatani inovasi purwarupa menuju adopsi terintegrasi pada ekosistem SatuSehat Kementerian Kesehatan RI. Desain peta jalan ini berlandaskan dua pilar metodologis:
-\begin{enumerate}
-    \item \textbf{Siklus Kepatuhan Regulasi Kemenkes RI:} Berdasarkan UU Kesehatan No. 17 Tahun 2023 Pasal 25 Ayat 5 \citep{UUKesehatan2023} dan KMK No. HK.01.07/MENKES/1559/2022, inovasi digital kesehatan wajib melalui mekanisme pengawasan berlapis. Program \textit{Regulatory Sandbox} oleh \textit{Digital Transformation Office} (DTO) Kemenkes RI menetapkan alur seleksi, pengujian terbatas, hingga penerbitan status rekomendasi bersyarat yang memerlukan akumulasi bukti klinis empiris lapangan.
-    \item \textbf{Prinsip Keselamatan Pasien (\textit{Patient Safety Gating}):} Mewajibkan isolasi ketat antara validasi analitis berbasis simulasi kasus (\textit{in-silico}) pada kuartal pertama sebelum sistem berinteraksi dengan pasien nyata (\textit{in-vivo}) di FKTP pada kuartal kedua.
-\end{enumerate}
+Pengembangan TropiCare dirancang bertahap selama 12 bulan (empat kuartal) untuk membawa purwarupa fungsional (\textit{working MVP}) menuju integrasi penuh dengan ekosistem SatuSehat Kementerian Kesehatan RI. Peta jalan ini mematuhi kerangka kerja \textit{Regulatory Sandbox} DTO Kemenkes RI \citep{KemenkesDTO2024} dan amanat UU Kesehatan No. 17 Tahun 2023 \citep{UUKesehatan2023}, memastikan uji validasi klinis berbasis simulasi kasus (\textit{in-silico}) tuntas sebelum sistem diterapkan langsung pada pasien di Puskesmas.
 
 Rincian sasaran strategis kuartalan dirangkum pada Tabel~\ref{tab:roadmap}.
 
-\begin{table*}[t]
+\begin{table}[H]
 \centering
-\footnotesize
+\small
 \caption{Peta Jalan Pengembangan dan Implementasi TropiCare 12 Bulan}\label{tab:roadmap}
 \vspace{3pt}
-\begin{tabularx}{\textwidth}{p{2.2cm} p{2.6cm} X p{3.6cm}}
+\begin{tabularx}{\textwidth}{p{2.3cm} p{3.2cm} X p{4cm}}
 \toprule
-\textbf{Periode} & \textbf{Fokus Strategis} & \textbf{Aktivitas Teknis, Klinis, \& Operasional} & \textbf{Luaran Kunci (\textit{Milestone})} \\
+\textbf{Periode} & \textbf{Fokus Strategis} & \textbf{Aktivitas Utama} & \textbf{Luaran Kunci (\textit{Milestone})} \\
 \midrule
-\textbf{Kuartal I\newline(Bulan 1--3)} & Validasi Klinis, Ergonomi, \& Audit Keamanan & Uji sensitivitas/spesifisitas via 100 kartu kasus klinis spesialis; pengujian ketergunaan antarmuka (SUS) pada masyarakat awam; audit keamanan kode sumber FastAPI dan React. & Akurasi triase $>92\%$ (0\% \textit{false negative} darurat); skor SUS $>80$ (\textit{Grade A}); audit kode bebas kerentanan kritis. \\
+\textbf{Kuartal I\newline(Bulan 1--3)} & Validasi Klinis \& Audit Sistem & Uji akurasi menggunakan 100 kartu kasus dokter spesialis; uji kemudahan pakai antarmuka pada warga; audit keamanan kode backend dan frontend. & Akurasi triase $>92\%$ (0\% salah deteksi darurat); skor SUS $>80$ (\textit{Grade A}); kode bebas celah keamanan kritis. \\
 \midrule
-\textbf{Kuartal II\newline(Bulan 4--6)} & Pilot Project Lapangan Terfokus & Penerapan pilot di 10 Puskesmas wilayah endemis (Jawa Barat \& NTT); pelatihan kader Posyandu dan nakes loket pemindaian QR luring; validasi nomor WhatsApp resmi faskes. & Operasional penuh di 10 FKTP; scan QR $<1$ detik; 100\% kontak WhatsApp faskes terverifikasi aktif. \\
+\textbf{Kuartal II\newline(Bulan 4--6)} & Uji Lapangan Terbatas (\textit{Pilot Project}) & Penerapan di 10 Puskesmas wilayah endemis (Jawa Barat dan NTT); pelatihan kader Posyandu untuk pemindaian QR luring; verifikasi kontak WhatsApp resmi faskes. & Operasional di 10 FKTP; scan QR loket $<1$ detik; 100\% nomor WhatsApp faskes terverifikasi aktif. \\
 \midrule
-\textbf{Kuartal III\newline(Bulan 7--9)} & Kepatuhan Regulasi \& Interoperabilitas & Pendaftaran ke \textit{Regulatory Sandbox} Kemenkes RI klaster telekesehatan; audit mediko-legal \& UU PDP; rekayasa \textit{deep-link} rujukan ke antrean Mobile JKN BPJS. & Status peserta resmi \textit{Regulatory Sandbox}; jembatan rujukan poli terintegrasi Mobile JKN. \\
+\textbf{Kuartal III\newline(Bulan 7--9)} & Regulasi \& Interoperabilitas & Pendaftaran ke \textit{Regulatory Sandbox} Kemenkes RI klaster telekesehatan; integrasi tautan rujukan langsung ke antrean Mobile JKN BPJS Kesehatan. & Status peserta resmi \textit{Regulatory Sandbox}; integrasi pendaftaran poli via Mobile JKN. \\
 \midrule
-\textbf{Kuartal IV\newline(Bulan 10--12)} & Skalabilitas Nasional \& Komunitas & Perluasan ke 100+ FKTP; automasi sinkronisasi \textit{local mirror} 13.930 faskes SATUSEHAT MSI; integrasi alur triase dengan Posbindu PTM dan Cek Kesehatan Gratis (CKG). & Adopsi aktif 100+ Puskesmas; sinkronisasi MSI otomatis; umpan data agregat anonim surveilans komunitas. \\
+\textbf{Kuartal IV\newline(Bulan 10--12)} & Perluasan Nasional \& Komunitas & Perluasan ke 100+ Puskesmas di berbagai provinsi; integrasi data skrining mandiri dengan Posbindu PTM dan program Cek Kesehatan Gratis (CKG). & Adopsi aktif di 100+ Puskesmas; deteksi dini tren penyakit komunitas tanpa pengumpulan NIK. \\
 \bottomrule
 \end{tabularx}
-\end{table*}
+\end{table}
 
 \subsection{Matriks Analisis Risiko dan Strategi Mitigasi Konkret}
 
-Implementasi kecerdasan buatan medis menghadapi risiko sosio-teknis yang kompleks. Kegagalan algoritma dapat berakibat fatal pada keselamatan pasien atau pelanggaran hukum pelindungan data. Oleh karena itu, TropiCare mengintegrasikan matriks mitigasi risiko empat dimensi yang tertanam langsung ke dalam arsitektur perangkat lunak (\textit{safety and privacy by design}), sebagaimana dirangkum pada Tabel~\ref{tab:risiko}.
+Penerapan kecerdasan buatan pada sektor kesehatan memerlukan mitigasi risiko berlapis. TropiCare menanamkan prinsip keselamatan dan pelindungan privasi langsung ke dalam arsitektur sistem (\textit{safety and privacy by design}), sebagaimana dirangkum pada Tabel~\ref{tab:risiko}.
 
-\begin{table*}[t]
+\begin{table}[H]
 \centering
-\footnotesize
-\caption{Matriks Analisis Risiko Sosio-Teknis dan Mitigasi TropiCare}\label{tab:risiko}
+\small
+\caption{Matriks Analisis Risiko dan Mitigasi TropiCare}\label{tab:risiko}
 \vspace{3pt}
-\begin{tabularx}{\textwidth}{p{2.6cm} X X p{3.2cm}}
+\begin{tabularx}{\textwidth}{p{2.8cm} X X p{3.2cm}}
 \toprule
-\textbf{Dimensi} & \textbf{Identifikasi Risiko} & \textbf{Strategi Mitigasi Konkret} & \textbf{Standar Acuan} \\
+\textbf{Dimensi} & \textbf{Potensi Risiko} & \textbf{Strategi Mitigasi Konkret} & \textbf{Standar Acuan} \\
 \midrule
-\textbf{Risiko Klinis} & Halusinasi LLM, bias probabilistik gejala atipikal, atau salah rujukan kondisi gawat darurat. & \textit{Client-side Red Flag bypass} memutus LLM mutlak; pembatasan RAG BM25 eksklusif pada PPK FKTP 2022; penafian legal non-diagnosis. & KMK No. 1186/2022 \citep{Kemenkes2022a}; SKDI \citep{KKI2012}; KODEKI \citep{IDI2012}. \\
+\textbf{Risiko Klinis} & Halusinasi model AI atau salah rujukan kondisi gawat darurat. & Deteksi 11 tanda bahaya darurat langsung di peramban tanpa AI; pembatasan rujukan murni pada pedoman resmi Kemenkes; penafian tegas non-diagnosis. & KMK No. 1186/2022 \citep{Kemenkes2022a}; Standar Kompetensi Dokter \citep{KKI2012}. \\
 \midrule
-\textbf{Risiko Hukum \& Privasi} & Kebocoran data kesehatan sensitif dan identitas pasien (NIK) di peladen. & Arsitektur \textit{Zero-NIK}; kalkulasi GPS efemeral di peramban via Haversine; enkripsi QR Code luring tanpa simpan di server. & UU PDP No. 27/2022 \citep{UUPDP2022}; UU ITE \citep{UUITE2024}. \\
+\textbf{Risiko Privasi \& Hukum} & Kebocoran data kesehatan sensitif atau nomor identitas kependudukan (NIK). & Arsitektur \textit{Zero-NIK}; hitung jarak faskes lokal di HP tanpa kirim GPS ke peladen; pertukaran data via QR Code luring tanpa simpan data di cloud. & UU Pelindungan Data Pribadi No. 27/2022 \citep{UUPDP2022}. \\
 \midrule
-\textbf{Risiko Teknis} & Terputusnya internet (\textit{blank spot} / latensi tinggi) di wilayah 3T saat darurat. & PWA \textit{offline caching} via \textit{Service Worker}; logika triase darurat 100\% di peramban; kompresi respons JSON payload BM25. & Cetak Biru DTO Kemenkes \citep{KemenkesDTO2024}. \\
+\textbf{Risiko Teknis} & Internet terputus (\textit{blank spot}) di daerah terpencil saat pasien membutuhkan bantuan. & Aplikasi web progresif (\textit{PWA}) menyimpan data faskes dan logika darurat di memori HP, berfungsi penuh saat luring tanpa internet. & Cetak Biru DTO Kemenkes 2024--2030 \citep{KemenkesDTO2024}. \\
 \midrule
-\textbf{Risiko Adopsi} & Kelelahan administratif nakes Puskesmas mengetik ulang keluhan pasien di RME. & Alur \textit{zero-retyping} (scan QR $<1$ detik tampil teks terstruktur); operasional non-intrusif tanpa mengubah SIMPUS resmi. & Permenkes No. 24/2022 \citep{Permenkes2022}. \\
+\textbf{Risiko Adopsi Puskesmas} & Petugas loket menolak memakai sistem karena menambah beban pengetikan manual. & Alur \textit{Zero-Retyping}: petugas cukup memindai QR Code di layar HP pasien dalam 1 detik untuk memunculkan keluhan terstruktur di komputer. & Permenkes No. 24/2022 tentang Rekam Medis \citep{Permenkes2022}. \\
 \bottomrule
 \end{tabularx}
-\end{table*}
+\end{table}
 
-Secara klinis, TropiCare menerapkan fungsi gerbang sekuensial deterministik $T(x)$ terhadap vektor gejala $x$ dan 11 indikator bahaya $\mathcal{R} = \{r_1, \dots, r_{11}\}$:
-\begin{equation}
-T(x) = \begin{cases} 
-\text{Rute Merah (119)}, & \exists r_k \in (\mathcal{R} \cap x) \\ 
-\text{Navigasi BM25-RAG}, & \mathcal{R} \cap x = \emptyset 
-\end{cases}
-\end{equation}
-Jika satu tanda bahaya aktif, sistem langsung membimbing pasien ke IGD tanpa latensi jaringan. 
+\subsection{Indikator Kinerja Utama Terukur (\textit{Key Performance Indicators})}
 
-Pada aspek privasi, koordinat lintang-bujur $(\phi_1, \lambda_1)$ dan faskes $(\phi_2, \lambda_2)$ dihitung efemeral di peramban via rumus \textit{Haversine}:
-\begin{equation}
-d = 2r \arcsin\sqrt{\sin^2\left(\frac{\Delta\phi}{2}\right) + \cos\phi_1\cos\phi_2\sin^2\left(\frac{\Delta\lambda}{2}\right)}
-\end{equation}
-di mana $\Delta\phi = \phi_2 - \phi_1$, $\Delta\lambda = \lambda_2 - \lambda_1$, $r = 6.371\text{ km}$, dan $d$ adalah jarak geodesik. Koordinat tidak pernah dikirimkan ke server.
+Keberhasilan implementasi TropiCare diukur menggunakan lima indikator kinerja utama kuantitatif yang transparan dan dapat diaudit (Tabel~\ref{tab:kpi}).
 
-\subsection{Matriks Indikator Keberhasilan Terukur (\textit{Key Performance Indicators})}
-
-Akuntabilitas keberhasilan TropiCare dievaluasi melalui lima Indikator Kinerja Utama (\textit{Key Performance Indicators} / KPI) kuantitatif pada Tabel~\ref{tab:kpi}.
-
-\begin{table*}[t]
+\begin{table}[H]
 \centering
-\footnotesize
-\caption{Matriks Indikator Kinerja Utama (KPI) Implementasi TropiCare}\label{tab:kpi}
+\small
+\caption{Indikator Kinerja Utama (KPI) Implementasi TropiCare}\label{tab:kpi}
 \vspace{3pt}
-\begin{tabularx}{\textwidth}{p{1.4cm} p{3.8cm} p{2.2cm} X}
+\begin{tabularx}{\textwidth}{p{1.4cm} p{4.2cm} p{2.2cm} X}
 \toprule
-\textbf{Kode} & \textbf{Indikator Kinerja Utama} & \textbf{Target} & \textbf{Metode \& Tolok Ukur Pengukuran} \\
+\textbf{Kode} & \textbf{Indikator Kinerja} & \textbf{Target} & \textbf{Metode Pengukuran} \\
 \midrule
-\textbf{KPI-1} & Akurasi Kesesuaian Triase terhadap Dokter Spesialis & $\mathbf{>92\%}$ (Sensitivitas darurat $\ge 98\%$) & Uji konkordansi buta ganda (\textit{Cohen's Kappa} $\kappa > 0,85$) pada 100 kartu kasus klinis dan audit sampel rekam medis. \\
+\textbf{KPI-1} & Akurasi Triase terhadap Dokter Spesialis & $\mathbf{>92\%}$ & Uji buta ganda kesesuaian rekomendasi triase pada 100 kartu kasus klinis dan rekam medis (sensitivitas darurat wajib 100\%). \\
 \midrule
-\textbf{KPI-2} & Reduksi Durasi Wawancara \& Loket Puskesmas & $\mathbf{\ge 40\%}$ & Studi gerak dan waktu (\textit{time-motion study}) perbandingan pasien pengguna QR TropiCare vs registrasi konvensional. \\
+\textbf{KPI-2} & Pengurangan Waktu Tunggu Loket Puskesmas & $\mathbf{\ge 40\%}$ & Pengukuran waktu registrasi pasien pengguna QR TropiCare dibandingkan pendaftaran konvensional. \\
 \midrule
-\textbf{KPI-3} & Kepatuhan Persiapan Puasa Pra-Laboratorium & $\mathbf{>85\%}$ & Proporsi pasien skrining PTM yang hadir memenuhi syarat puasa 8--12 jam via instruksi WhatsApp rujukan otomatis. \\
+\textbf{KPI-3} & Kepatuhan Pasien Puasa Sebelum Cek Darah & $\mathbf{>85\%}$ & Persentase pasien skrining PTM yang datang memenuhi syarat puasa 10--12 jam berkat panduan otomatis sistem. \\
 \midrule
-\textbf{KPI-4} & Latensi Respons Deteksi Darurat (\textit{Red Flag}) & $\mathbf{<3\text{ detik}}$ (Aktual $<500\text{ ms}$) & Telemetri waktu komputasi \textit{client-side} dari ketukan gejala darurat hingga layar rute IGD aktif di perangkat low-end. \\
+\textbf{KPI-4} & Kecepatan Respons Deteksi Tanda Bahaya & $\mathbf{<500\text{ ms}}$ & Waktu respon peramban dari ketukan gejala bahaya hingga layar darurat IGD aktif di ponsel pengguna awam. \\
 \midrule
-\textbf{KPI-5} & Skor Ketergunaan Antarmuka (\textit{System Usability Scale}) & $\mathbf{>80}$ (\textit{Grade A / Excellent}) & Evaluasi psikometrik 10-item standar SUS pada pengguna awam lintas usia dan kader Posyandu. \\
+\textbf{KPI-5} & Skor Kemudahan Pakai (\textit{Usability Scale}) & $\mathbf{>80}$ (\textit{Grade A}) & Pengujian antarmuka standar \textit{System Usability Scale} pada pengguna lintas generasi dan kader Posyandu. \\
 \bottomrule
 \end{tabularx}
-\end{table*}
-
-Pengukuran kesepakatan klinis pada KPI-1 dievaluasi menggunakan statistik \textit{Cohen's Kappa} ($\kappa$) serta rasio sensitivitas dan spesifisitas:
-\begin{align}
-\kappa &= \frac{p_o - p_e}{1 - p_e}, \\
-\text{Sens} &= \frac{\text{TP}}{\text{TP} + \text{FN}}, \quad \text{Spes} = \frac{\text{TN}}{\text{TN} + \text{FP}}
-\end{align}
-di mana $p_o$ adalah kesepakatan observasi, $p_e$ kesepakatan peluang kebetulan, $\text{TP}$ positif benar, $\text{FN}$ negatif palsu, $\text{TN}$ negatif benar, dan $\text{FP}$ positif palsu.
-
-Ketergunaan antarmuka pada KPI-5 dihitung menggunakan formula standar psikometrik SUS ($S_{\text{SUS}}$) dari 10 pernyataan skala Likert $x_k \in \{1, \dots, 5\}$:
-\begin{equation}
-S_{\text{SUS}} = 2,5 \times \left(\sum_{i \in \text{ganjil}} (x_i - 1) + \sum_{j \in \text{genap}} (5 - x_j)\right)
-\end{equation}
-Target $S_{\text{SUS}} \ge 80,3$ menempatkan sistem pada persentil \textit{Grade A} (\textit{Excellent}), menjamin antarmuka inklusif bagi masyarakat awam.
+\end{table}
