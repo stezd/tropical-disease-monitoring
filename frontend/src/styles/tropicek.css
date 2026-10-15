@@ -1,40 +1,52 @@
 /* TropiCare styles, ported from docs/TropiCek-Simulasi.html. See DESIGN.md. */
 :root {
-  /* ---- Type scale. Phones first; ≥640px (tablet = desktop) is one step up.
-     Text never goes below --fs-xs (12px). Emoji/glyph icons keep px sizes. */
-  --fs-xs: 12px; /* hints under fields, small labels, badges */
-  --fs-sm: 13px; /* secondary text, chips, notes, card tabs */
-  --fs-base: 14px; /* body, option text, bubble */
-  --fs-md: 16px; /* buttons, sub-headings, emphasized values */
-  --fs-lg: 18px; /* question title, big buttons, card headings */
-  --fs-xl: 22px; /* result titles, number inputs */
-  --fs-2xl: 28px; /* display numbers, red-route heading */
-  --fs-3xl: 34px; /* brand ribbon */
+  /* ---- Type scale (DESIGN.md "Type"). rem only, so the patient's browser
+     font size carries through. Never set font-size on html. Sizes do not
+     step up globally on desktop; the few elements that grow have their own
+     rule in the ≥40rem / ≥60rem blocks at the end of this file. */
+  --fs-2xs: 0.6875rem; /* 11px: pain scale labels, ring caption */
+  --fs-xs: 0.75rem; /* 12px: option description, disclaimer, tags, counter */
+  --fs-note: 0.8125rem; /* 13px: hint, field label, note, chip, bubble */
+  --fs-sm: 0.875rem; /* 14px: option text, body, modal, result lists, warnings */
+  --fs-base: 1rem; /* 16px: sub-question, card section title, category title */
+  --fs-lg: 1.125rem; /* 18px: question, button, HUD title */
+  --fs-xl: 1.25rem; /* 20px: big button, route title, banner, modal title */
+  --fs-2xl: 1.5rem; /* 24px: result heading, number in input */
+  --fs-3xl: 1.875rem; /* 30px: app title (phone), red heading, temperature */
+  --fs-4xl: 2.25rem; /* 36px: red heading at ≥60rem */
+  --fs-5xl: 3rem; /* 48px: app title at ≥40rem */
   --lh-tight: 1.2;
   --lh-base: 1.45;
 
-  /* ---- Spacing (4px grid) */
-  --sp-1: 4px;
-  --sp-2: 8px;
-  --sp-3: 12px;
-  --sp-4: 16px;
-  --sp-5: 20px;
-  --sp-6: 24px;
-  --sp-8: 32px;
+  /* ---- Spacing (DESIGN.md "Spacing"; 0.25rem grid) */
+  --sp-0: 0.125rem;
+  --sp-1: 0.25rem;
+  --sp-1h: 0.375rem;
+  --sp-2: 0.5rem;
+  --sp-2h: 0.625rem;
+  --sp-3: 0.75rem;
+  --sp-3h: 0.875rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-7: 1.75rem;
+  --sp-8: 2rem;
   /* Vertical gap between stacked cards (room for the tab on the top edge). */
-  --card-gap: 34px;
+  --card-gap: 2rem;
+  /* Screen side gutter (quiz, result, HUD). Wider from 40rem / 60rem. */
+  --gutter: 1rem;
 
-  /* ---- Radii */
-  --r-sm: 10px; /* small icon squares, pills inside boxes */
-  --r-md: 16px; /* options, inputs, notes, warning boxes */
-  --r-lg: 20px; /* buttons, category boxes */
-  --r-xl: 26px; /* cards */
+  /* ---- Radii (DESIGN.md "Shape and depth") */
+  --r-sm: 0.75rem; /* small icon squares, pills inside boxes */
+  --r-md: 1rem; /* options, inputs, notes, warning boxes */
+  --r-lg: 1.25rem; /* buttons, category boxes */
+  --r-xl: 1.625rem; /* cards */
   --r-pill: 999px;
 
   /* ---- Control sizes */
-  --tap: 44px; /* minimum tap target */
-  --h-ctl: 52px; /* buttons, inputs, option rows */
-  --h-ctl-lg: 58px; /* big buttons, segmented control */
+  --tap: 2.75rem; /* minimum tap target (DESIGN.md asks ≥2.5rem) */
+  --h-ctl: 3rem; /* buttons, inputs, option rows */
+  --h-ctl-lg: 3.5rem; /* big buttons, segmented control */
 
   /* ---- Colors */
   --tc-bg: #5e63d9;
@@ -61,15 +73,21 @@
   --tc-fh: "Fredoka", ui-rounded, "Segoe UI", system-ui, sans-serif;
   --tc-fb: "Nunito", "Segoe UI", system-ui, sans-serif;
 
-  /* ---- Buttons (one primary, one secondary, one danger; see .btn below) */
+  /* ---- Buttons. Every button is purple (team decision); the only exceptions
+     are Telepon 119 (.btn-danger, red route) and Mobile JKN (.btn-jkn).
+     Secondary is a deeper purple so the main action still stands out. */
   --btn-primary: linear-gradient(
     180deg,
     #8b4dff,
     #7436ee
   ); /* white: 4.6–6.0:1 */
   --btn-primary-sh: #5a22c4;
-  --btn-secondary-fg: #6427d6; /* on white 7.5:1, on soft 6.8:1 */
-  --btn-secondary-sh: #d9d0fa;
+  --btn-secondary: linear-gradient(
+    180deg,
+    #7a3df2,
+    #6427d6
+  ); /* white: 5.6–7.5:1 */
+  --btn-secondary-sh: #45138f;
   --btn-danger: linear-gradient(
     180deg,
     #e0283f,
@@ -87,17 +105,14 @@
   --rt-red: linear-gradient(160deg, #d42a3a, #b3122e);
   --rt-red-fg: #fff; /* 5.0:1 on #D42A3A */
 }
-@media (min-width: 640px) {
+@media (min-width: 40rem) {
   :root {
-    --fs-xs: 13px;
-    --fs-sm: 14px;
-    --fs-base: 15px;
-    --fs-md: 17px;
-    --fs-lg: 20px;
-    --fs-xl: 26px;
-    --fs-2xl: 34px;
-    --fs-3xl: 46px;
-    --card-gap: 38px;
+    --gutter: 1.5rem;
+  }
+}
+@media (min-width: 60rem) {
+  :root {
+    --gutter: 1.75rem;
   }
 }
 /* App frame. Replaces the prototype's body + #phone. */
@@ -176,8 +191,8 @@
 }
 .spk i {
   position: absolute;
-  width: 4px;
-  height: 4px;
+  width: 0.25rem;
+  height: 0.25rem;
   border-radius: 50%;
   background: #fff;
   box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.7);
@@ -201,11 +216,11 @@
   z-index: 3;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px 4px;
-  padding-top: max(10px, env(safe-area-inset-top));
+  gap: 0.5rem;
+  padding: 0.625rem var(--gutter) 0.25rem;
+  padding-top: max(0.625rem, env(safe-area-inset-top));
   width: 100%;
-  max-width: 1120px;
+  max-width: 70rem;
   margin: 0 auto;
 }
 .icon-btn {
@@ -213,10 +228,10 @@
   height: var(--tap);
   flex: none;
   border: 0;
-  border-radius: 14px;
+  border-radius: 0.875rem;
   background: rgba(255, 255, 255, 0.22);
   color: #fff;
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 800;
   display: grid;
   place-items: center;
@@ -234,13 +249,13 @@
   min-width: 0;
 }
 .st {
-  width: 21px;
-  height: 21px;
+  width: 1.375rem;
+  height: 1.375rem;
   flex: none;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 11px;
+  font-size: 0.75rem;
   background: rgba(255, 255, 255, 0.2);
   color: #fff;
   border: 2px solid rgba(255, 255, 255, 0.25);
@@ -249,7 +264,7 @@
   background: linear-gradient(#ffe27a, #ffb800);
   border-color: #fff;
   color: #8a4b00;
-  font-size: 13px;
+  font-size: 0.875rem;
   font-weight: 900;
 }
 .st.cur {
@@ -262,24 +277,24 @@
 }
 .sl {
   flex: 1;
-  height: 3px;
-  min-width: 3px;
+  height: 0.25rem;
+  min-width: 0.25rem;
   background: rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
+  border-radius: 0.125rem;
 }
 .sl.done {
   background: #ffd24a;
 }
-@media (max-width: 370px) {
+@media (max-width: 23.125rem) {
   .st {
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
+    width: 1.125rem;
+    height: 1.125rem;
+    font-size: var(--fs-2xs);
   }
   .hud {
-    gap: 6px;
-    padding-left: 10px;
-    padding-right: 10px;
+    gap: 0.375rem;
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
   }
 }
 .htitle {
@@ -288,19 +303,21 @@
   color: #fff;
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-md);
-  letter-spacing: 0.5px;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-tight);
+  letter-spacing: 0.03125rem;
 }
 
 /* ---- Buttons ----
-   Hierarchy (use exactly one of these per button):
-   .btn-primary   the one main action of a screen (purple, 3D)
-   .btn-secondary any other action (white / soft surface, purple text)
-   .btn-danger    emergency only (call 119, "Lihat Tindakan Darurat")
-   .btn-ghost     tertiary on colored screens (back / change answer / restart)
-   .btn-jkn       Mobile JKN: secondary weight, kept recognizable in JKN blue
-   Add .big for the screen's main call to action. On .bg-red, danger and
-   secondary switch to versions that read on red. */
+   Every button is purple (team decision). Use exactly one variant:
+   .btn-primary   the one main action of a screen (purple gradient + glow)
+   .btn-secondary any other action (deeper purple, no glow)
+   .btn-ghost     tertiary (back / change answer / restart): same as secondary
+   .btn-back      quiz "‹ Kembali" next to Lanjut in .foot: same as secondary
+   .btn-wa        WhatsApp on a facility card: same as secondary
+   .btn-danger    emergency only (Telepon 119, "Lihat Tindakan Darurat")
+   .btn-jkn       Mobile JKN: kept recognizable in JKN blue
+   Add .big for the screen's main call to action. */
 .btn {
   --_sh: rgba(0, 0, 0, 0.2);
   display: flex;
@@ -311,11 +328,11 @@
   min-height: var(--h-ctl);
   border: 0;
   border-radius: var(--r-lg);
-  padding: 12px 20px;
+  padding: 0.75rem 1rem;
   color: #fff;
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-md);
+  font-size: var(--fs-lg);
   line-height: var(--lh-tight);
   text-align: center;
   cursor: pointer;
@@ -328,7 +345,8 @@
 }
 .btn.big {
   min-height: var(--h-ctl-lg);
-  font-size: var(--fs-lg);
+  padding: 0.875rem 1rem;
+  font-size: var(--fs-xl);
 }
 .btn:focus-visible {
   outline: 3px solid #fff;
@@ -344,17 +362,13 @@
     0 5px 0 var(--_sh),
     0 10px 20px rgba(80, 30, 180, 0.3);
 }
-.btn-secondary {
+.btn-secondary,
+.btn-ghost,
+.btn-back,
+.btn-wa {
   --_sh: var(--btn-secondary-sh);
-  background: #fff;
-  color: var(--btn-secondary-fg);
-  border: 2px solid #e2d9ff;
-}
-/* Inside a white card the secondary button sits on the soft surface. */
-.card .btn-secondary {
-  background: var(--tc-soft);
-  border-color: var(--tc-line);
-  --_sh: #ddd5fb;
+  background: var(--btn-secondary);
+  color: #fff;
 }
 .btn-danger {
   --_sh: var(--btn-danger-sh);
@@ -363,19 +377,14 @@
     0 5px 0 var(--_sh),
     0 10px 20px rgba(160, 10, 30, 0.3);
 }
-.btn-ghost {
-  --_sh: rgba(20, 5, 50, 0.18);
-  background: rgba(30, 10, 60, 0.22);
-  border: 2px solid rgba(255, 255, 255, 0.5);
-}
 .btn-jkn {
   --_sh: #bcd3f7;
   background: #fff;
   color: #1b4daa; /* 7.8:1 */
   border: 2px solid #cfe0fb;
 }
-/* Red route: the screen is red, so danger = white with red text, and the
-   secondary action is dark. */
+/* Red route: the screen is red, so Telepon 119 is white with red text to
+   stand out. Other buttons stay purple. */
 .bg-red .btn-danger {
   --_sh: #7a0a1c;
   background: #fff;
@@ -383,12 +392,6 @@
   box-shadow:
     0 5px 0 var(--_sh),
     0 10px 20px rgba(90, 0, 20, 0.3);
-}
-.bg-red .btn-secondary {
-  --_sh: #33040e;
-  background: #5a0e1d;
-  border: 0;
-  color: #fff;
 }
 .btn:active {
   transform: translateY(4px);
@@ -405,7 +408,7 @@
   font-weight: 800;
   font-size: var(--fs-xs);
   background: rgba(255, 255, 255, 0.25);
-  padding: 2px 8px;
+  padding: 0.125rem 0.5rem;
   border-radius: var(--r-pill);
 }
 
@@ -420,22 +423,30 @@
   height: 100%;
   display: block;
 }
+/* Home is one centered column at every size: ribbon, mascot + bubble, then
+   the buttons under the mascot, disclaimer at the bottom. On phones the
+   column is pinned to the top (not vertically centered) so the buttons sit
+   right under Kak Tropi; it scrolls if big text makes it taller. */
 .home {
   position: relative;
   z-index: 2;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 22px 22px;
-  padding-bottom: max(22px, env(safe-area-inset-bottom));
+  width: 100%;
+  padding: 0 1.5rem 1.5rem;
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
 }
 .ribbon {
-  margin-top: 6px;
+  flex: none;
+  margin-top: 0.375rem;
   position: relative;
   background: linear-gradient(#ffffff, #eeeaff);
-  border-radius: 22px;
-  padding: 12px 30px;
+  border-radius: 1.375rem;
+  padding: 0.75rem 1.75rem;
   text-align: center;
   box-shadow:
     0 6px 0 #c6bcf5,
@@ -445,18 +456,18 @@
 .ribbon::after {
   content: "";
   position: absolute;
-  top: 18px;
-  width: 26px;
-  height: 30px;
+  top: 1.125rem;
+  width: 1.625rem;
+  height: 1.875rem;
   background: #c6bcf5;
   z-index: -1;
 }
 .ribbon::before {
-  left: -16px;
+  left: -1rem;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 40% 50%);
 }
 .ribbon::after {
-  right: -16px;
+  right: -1rem;
   clip-path: polygon(0 0, 100% 0, 60% 50%, 100% 100%, 0 100%);
 }
 .ribbon b {
@@ -465,7 +476,7 @@
   font-size: var(--fs-3xl);
   font-weight: 700;
   color: #5b3fd6;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.03125rem;
   line-height: 1.1;
 }
 .ribbon b span {
@@ -475,29 +486,35 @@
   font-weight: 800;
   font-size: var(--fs-sm);
   color: var(--tc-ink2);
-  letter-spacing: 0.3px;
+  letter-spacing: 0.01875rem;
 }
 .hero {
-  flex: 1;
+  flex: none;
   width: 100%;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
-  gap: 4px;
-  padding-bottom: 14px;
+  gap: 0.25rem;
+  margin-top: 1.5rem;
+  padding-bottom: 0.875rem;
 }
 .hero .bubble {
-  max-width: 200px;
-  margin-bottom: 96px;
+  max-width: 12.5rem;
+  margin-top: 1.25rem;
+  font-size: var(--fs-sm);
 }
 .home-btns {
+  flex: none;
   width: 100%;
+  max-width: 25rem;
   display: flex;
   flex-direction: column;
-  gap: var(--sp-4);
+  gap: var(--sp-3h);
 }
 .disc {
-  margin: var(--sp-4) 0 0;
+  flex: none;
+  margin: auto 0 0;
+  padding-top: var(--sp-4);
   color: #fff;
   font-size: var(--fs-xs);
   font-weight: 800;
@@ -513,15 +530,15 @@
   overflow: visible;
 }
 .m-hero {
-  width: 150px;
+  width: 9.375rem;
   height: auto;
 }
 .m-sm {
-  width: 66px;
+  width: 4.125rem;
   height: auto;
 }
 .m-think {
-  width: 96px;
+  width: 6rem;
   height: auto;
 }
 .eyes {
@@ -543,7 +560,7 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-5px);
+    transform: translateY(-0.375rem);
   }
 }
 @keyframes blink {
@@ -567,7 +584,7 @@
 }
 @keyframes hop {
   30% {
-    transform: translateY(-12px) rotate(-4deg);
+    transform: translateY(-0.75rem) rotate(-4deg);
   }
   60% {
     transform: translateY(0) rotate(3deg);
@@ -577,14 +594,15 @@
 .bubble {
   position: relative;
   background: #fff;
-  border-radius: 18px;
-  padding: 10px 14px;
-  font-size: var(--fs-base);
+  border-radius: 1.125rem;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--fs-note);
   font-weight: 700;
   line-height: var(--lh-base);
   color: var(--tc-ink);
   box-shadow: 0 4px 0 rgba(60, 30, 140, 0.22);
 }
+/* The tail is a border triangle, so it stays in px like other borders. */
 .bubble::before {
   content: "";
   position: absolute;
@@ -621,16 +639,15 @@
   z-index: 2;
   display: flex;
   align-items: flex-end;
-  gap: 8px;
-  padding: 0 16px;
+  gap: 0.5rem;
+  padding: 0 var(--gutter);
 }
 .mrow .m-sm {
-  width: 52px;
+  width: 3.25rem;
 }
 .mrow .bubble {
   flex: 1;
   margin-bottom: var(--sp-2);
-  padding: var(--sp-2) var(--sp-3);
 }
 .qwrap {
   position: relative;
@@ -638,19 +655,21 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 24px var(--sp-4) var(--sp-3);
+  padding: 1.5rem var(--gutter) var(--sp-3);
   scrollbar-width: thin;
 }
 .card {
   position: relative;
   background: var(--tc-card);
   border-radius: var(--r-xl);
-  padding: 30px var(--sp-4) var(--sp-5);
+  padding: 1.75rem 0.875rem 0.875rem;
   box-shadow:
     0 8px 0 rgba(60, 40, 150, 0.22),
     0 22px 44px rgba(30, 15, 90, 0.28);
 }
-.card + .card {
+.card + .card,
+.btn + .card,
+.btnrow + .card {
   margin-top: var(--card-gap);
 }
 /* In the quiz the card sits in a scroll box, which clips a wide glow into a
@@ -660,24 +679,26 @@
     0 8px 0 rgba(60, 40, 150, 0.22),
     0 16px 22px -8px rgba(30, 15, 90, 0.3);
 }
+/* The tab is centered on the card's top edge at any text size. */
 .tab {
   position: absolute;
-  top: -17px;
+  top: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   white-space: nowrap;
   background: var(--tc-tabbg);
   color: #4a3f8c; /* 7.6:1 */
   font-family: var(--tc-fh);
   font-weight: 600;
   font-size: var(--fs-sm);
-  letter-spacing: 1px;
-  padding: 8px 20px;
-  border-radius: 15px;
+  line-height: 1;
+  letter-spacing: 0.0625rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 1rem;
   box-shadow:
     0 4px 0 #d9d3fa,
     inset 0 -2px 0 rgba(0, 0, 0, 0.04);
-  max-width: calc(100% - 40px);
+  max-width: calc(100% - 2.5rem);
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -687,7 +708,7 @@
 @keyframes pop {
   from {
     opacity: 0;
-    transform: translateY(24px) scale(0.94);
+    transform: translateY(1.5rem) scale(0.94);
   }
   to {
     opacity: 1;
@@ -699,34 +720,82 @@
   font-weight: 600;
   font-size: var(--fs-lg);
   line-height: 1.25;
-  margin: 0 0 var(--sp-1);
+  margin: 0 0 var(--sp-0);
   color: var(--tc-ink);
 }
 .qh {
-  margin: 0 0 var(--sp-4);
+  margin: 0 0 var(--sp-2h);
   color: var(--tc-ink2);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   font-weight: 800;
+  line-height: 1.35;
 }
 .alertline {
   color: #c8102e;
 }
+
+/* ---- Footer button bar: [‹ Kembali] [Lanjut ▸]
+   <div class="foot">
+     <button class="btn btn-back" aria-label="Kembali">
+       <span class="bb-ico" aria-hidden="true">‹</span>
+       <span class="bb-txt">Kembali</span>
+     </button>
+     <button class="btn big btn-primary">Lanjut</button>
+   </div>
+   Back is optional (first step has none). Phones: back hugs its content on
+   the left, Lanjut fills the rest. Under 23.125rem the back label is hidden
+   visually (aria-label keeps the name). ≥40rem: the pair sits on the right,
+   Lanjut at least 18.75rem wide. */
 .foot {
   position: relative;
   z-index: 3;
-  padding: var(--sp-2) var(--sp-4) var(--sp-3);
+  display: flex;
+  align-items: stretch;
+  gap: var(--sp-3);
+  padding: var(--sp-1h) var(--gutter) var(--sp-3);
   padding-bottom: max(var(--sp-3), env(safe-area-inset-bottom));
+}
+.foot .btn {
+  flex: 1;
+  min-width: 0;
+}
+.foot .btn-back {
+  flex: none;
+  width: auto;
+  min-width: 3rem;
+  padding-left: var(--sp-3h);
+  padding-right: var(--sp-4);
+  gap: var(--sp-1h);
+  font-size: var(--fs-lg);
+}
+.btn-back .bb-ico {
+  font-size: var(--fs-2xl);
+  line-height: 1;
+}
+@media (max-width: 23.125rem) {
+  .foot .btn-back {
+    padding-left: var(--sp-3);
+    padding-right: var(--sp-3);
+  }
+  .btn-back .bb-txt {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 
 .opts {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 10px;
+  gap: var(--sp-2);
 }
 .opt {
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
+  gap: var(--sp-2h);
   width: 100%;
   min-height: var(--h-ctl);
   text-align: left;
@@ -749,20 +818,20 @@
 }
 .opt .oe {
   flex: none;
-  width: 36px;
-  height: 36px;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: var(--r-sm);
   background: #fff;
   display: grid;
   place-items: center;
-  font-size: 19px;
+  font-size: 1.25rem;
   box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.05);
 }
 .opt .ot {
   flex: 1;
   min-width: 0;
   font-weight: 700;
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
   line-height: 1.3;
 }
 .opt .od {
@@ -785,7 +854,7 @@
   background: #fff;
   color: #6427d6;
   font: inherit;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   font-weight: 800;
   cursor: pointer;
 }
@@ -795,15 +864,15 @@
 }
 .opt .ck {
   flex: none;
-  width: 22px;
-  height: 22px;
+  width: 1.375rem;
+  height: 1.375rem;
   border-radius: 50%;
   border: 2.5px solid #d6cffa;
   background: #fff;
   display: grid;
   place-items: center;
   color: #fff;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 900;
 }
 /* tiles: ikon di atas, teks di bawah — 2 kolom di HP */
@@ -814,26 +883,26 @@
   flex-direction: column;
   justify-content: flex-start;
   text-align: center;
-  gap: 6px;
-  padding: var(--sp-3) var(--sp-2) 10px;
+  gap: 0.375rem;
+  padding: var(--sp-2) var(--sp-1h);
 }
 .tiles .opt .oe {
-  width: 32px;
-  height: 32px;
-  font-size: 18px;
-  border-radius: 11px;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.125rem;
+  border-radius: 0.75rem;
 }
 .tiles .opt .ot {
-  font-size: var(--fs-sm);
-  line-height: 1.3;
+  font-size: var(--fs-note);
+  line-height: 1.25;
 }
 .tiles .opt .ck {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 19px;
-  height: 19px;
-  font-size: 10px;
+  top: 0.375rem;
+  right: 0.375rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  font-size: var(--fs-2xs);
   border-width: 2px;
 }
 .tiles .opt.wide {
@@ -850,16 +919,16 @@
 }
 .opts.tiles3 {
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--sp-2);
+  gap: var(--sp-1h);
 }
 .tiles3 .opt .ot {
-  font-size: var(--fs-xs);
+  font-size: var(--fs-note);
 }
 .tiles3 .opt .ck {
   display: none;
 }
 .opt.multi .ck {
-  border-radius: 9px;
+  border-radius: 0.625rem;
 }
 .opt.on {
   border-color: var(--tc-purple);
@@ -905,14 +974,14 @@
 .cgrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--sp-3);
+  gap: var(--sp-2h);
 }
 .cbox {
   --cb: #ecebf5;
   border: 2.5px solid var(--tc-line);
   border-radius: var(--r-lg);
   padding: var(--sp-3) var(--sp-2);
-  min-height: 120px;
+  min-height: 7.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -932,19 +1001,19 @@
   grid-column: span 2;
 }
 .cbox .ce {
-  width: 52px;
-  height: 52px;
+  width: 3.25rem;
+  height: 3.25rem;
   border-radius: 50%;
   background: var(--cb);
   display: grid;
   place-items: center;
-  font-size: 28px;
+  font-size: 1.875rem;
   line-height: 1;
 }
 .cbox b {
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-md);
+  font-size: var(--fs-base);
   display: block;
   margin-top: var(--sp-2);
   line-height: var(--lh-tight);
@@ -969,14 +1038,14 @@
 .cbox.on::after {
   content: "✓";
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 24px;
-  height: 24px;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
   background: var(--tc-purple);
   color: #fff;
-  font-size: 13px;
+  font-size: 0.875rem;
   font-weight: 900;
   display: grid;
   place-items: center;
@@ -1021,16 +1090,16 @@
   box-shadow: 0 4px 0 #b5ebd2;
 }
 .cbox.cnone .ce {
-  width: 44px;
-  height: 44px;
-  font-size: 24px;
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: 1.5rem;
   flex: none;
 }
 .cbox.cnone b {
   margin-top: 0;
 }
 .cbox.cnone.on {
-  padding-right: 44px;
+  padding-right: 2.75rem;
 }
 .cbox.cnone:active {
   box-shadow: 0 1px 0 #b5ebd2;
@@ -1059,8 +1128,9 @@
 }
 .fld > span {
   display: block;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   font-weight: 900;
+  line-height: 1.35;
   color: var(--tc-ink2);
   margin: 0 0 var(--sp-2) var(--sp-1);
 }
@@ -1087,10 +1157,11 @@
   background: transparent;
   outline: 0;
   font-family: var(--tc-fh);
-  font-size: var(--fs-xl);
+  font-size: var(--fs-2xl);
   font-weight: 600;
+  line-height: var(--lh-tight);
   color: var(--tc-ink);
-  padding: var(--sp-2) 0;
+  padding: var(--sp-2h) 0;
   resize: none;
 }
 .inp input::placeholder,
@@ -1099,16 +1170,16 @@
 }
 .inp textarea {
   font-family: var(--tc-fb);
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
   font-weight: 700;
   line-height: var(--lh-base);
-  min-height: 72px;
+  min-height: 4.5rem;
   padding: var(--sp-3) 0;
 }
 .inp em {
   font-style: normal;
   font-weight: 900;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   color: var(--tc-ink2);
 }
 .two {
@@ -1118,7 +1189,7 @@
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sp-2);
+  gap: var(--sp-1h);
   margin-top: var(--sp-3);
 }
 .chip {
@@ -1126,9 +1197,10 @@
   border: 2px solid var(--tc-line);
   background: #fff;
   border-radius: var(--r-pill);
-  padding: 0 var(--sp-4);
+  padding: 0.3125rem var(--sp-3);
+  line-height: 1.35;
   font-weight: 800;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   color: var(--tc-ink);
   cursor: pointer;
 }
@@ -1146,37 +1218,28 @@
   border: 2.5px solid var(--tc-line);
   border-radius: var(--r-md);
   font-weight: 800;
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
   cursor: pointer;
 }
 .chk input {
-  width: 22px;
-  height: 22px;
+  width: 1.375rem;
+  height: 1.375rem;
   accent-color: var(--tc-purple);
   flex: none;
 }
 .note {
-  margin-top: var(--sp-3);
-  font-size: var(--fs-sm);
+  margin-top: var(--sp-2h);
+  font-size: var(--fs-note);
   font-weight: 700;
   color: var(--tc-ink);
   background: #fff7e6;
   border: 2px dashed #ffd58a;
   border-radius: var(--r-md);
-  padding: 10px var(--sp-3);
+  padding: 0.625rem var(--sp-3);
   line-height: var(--lh-base);
 }
-.note.purple {
-  background: #f3eeff;
-  border-color: #d8c8ff;
-}
 
-/* Province: "use my location" button + picker. Stacked on phones. */
-.loc {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-3);
-}
+/* Select inside an .inp box (province picker). */
 .inp select {
   flex: 1;
   min-width: 0;
@@ -1185,44 +1248,132 @@
   background: transparent;
   outline: 0;
   font-family: var(--tc-fb);
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
   font-weight: 700;
   color: var(--tc-ink);
   padding: var(--sp-3) 0;
 }
-@media (min-width: 640px) {
-  .loc {
-    flex-direction: row;
-    align-items: center;
+
+/* ---- Field spacing helpers (replace inline px margins in TSX).
+   Max 3 fields per page: a 4th+ field only appears, with .reveal-in, after
+   the first three are filled ("extended card"). */
+.mt-field {
+  margin-top: var(--sp-3h); /* stacked .fld / .opt after a field row */
+}
+.mt-tight {
+  margin-top: var(--sp-2h); /* .fld right under another .fld */
+}
+.stat-row {
+  margin-top: var(--sp-2);
+  text-align: center; /* centered .tstat badge under a field */
+}
+.is-off {
+  opacity: 0.45;
+  pointer-events: none; /* fields disabled by a "tidak punya …" checkbox */
+}
+.card-solo {
+  width: 100%;
+  margin-top: var(--card-gap); /* a lone card under the HUD: room for the tab */
+}
+
+/* Small entrance for a field that appears after earlier answers (pregnancy,
+   province picker, the 4th+ field). No motion on the red route or when the
+   user asks for reduced motion. */
+.reveal-in {
+  animation: reveal-in 0.28s ease-out both;
+}
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
   }
-  .loc .btn {
-    width: auto;
-    flex: none;
+  to {
+    opacity: 1;
+    transform: none;
   }
-  .loc .inp {
-    flex: 1;
-  }
+}
+.bg-red .reveal-in,
+.bg-red .pop {
+  animation: none;
+}
+
+/* ---- Privacy gate: first card after choosing a path. Lanjut stays disabled
+   until the box is ticked; ticking it also asks for location.
+   <Card tab="PRIVASI" className="consent-gate">
+     <h2 class="qt">…</h2> <p class="qh">…</p>
+     <div class="consent-text" tabindex="0"> <PrivacyText /> </div>
+     <label class="chk"><input type="checkbox"> <span>Saya setuju …</span></label>
+     <p class="loc-status [ok|off]">📍 Lokasi: Jawa Barat</p>
+     <label class="fld reveal-in mt-field"> (province select, only if denied)
+   </Card> */
+.consent-gate .consent-text {
+  max-height: min(18rem, 42dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--sp-3);
+  background: var(--tc-soft);
+  border: 2.5px solid var(--tc-line);
+  border-radius: var(--r-md);
+  scrollbar-width: thin;
+}
+.consent-gate .consent-text:focus-visible {
+  outline: 3px solid var(--tc-purple);
+  outline-offset: 2px;
+}
+.consent-gate .consent-text .privacy h3:first-child,
+.consent-gate .consent-text .privacy > :first-child {
+  margin-top: 0;
+}
+.consent-gate .chk {
+  align-items: flex-start;
+  line-height: 1.4;
+}
+.consent-gate .chk input {
+  margin-top: 0.0625rem;
+}
+.loc-status {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1h);
+  width: fit-content;
+  max-width: 100%;
+  margin: var(--sp-2h) 0 0;
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--r-pill);
+  background: var(--tc-tabbg);
+  color: var(--tc-ink2);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  line-height: 1.4;
+}
+.loc-status.ok {
+  background: #e2f9ee;
+  color: #146b4a; /* 6.3:1 */
+}
+.loc-status.off {
+  background: #fff6db;
+  color: #6b4500; /* 7.6:1 */
 }
 
 .thermo {
   display: flex;
-  gap: 14px;
+  gap: 0.875rem;
   align-items: center;
 }
 .tbar {
   position: relative;
-  width: 34px;
-  height: 120px;
+  width: 2.125rem;
+  height: 7.5rem;
   flex: none;
-  margin: 2px 4px 16px;
+  margin: 0.125rem 0.25rem 1rem;
 }
 .tbar .tube {
   position: absolute;
-  left: 8px;
+  left: 0.5rem;
   top: 0;
-  width: 18px;
-  height: 102px;
-  border-radius: 12px;
+  width: 1.125rem;
+  height: 6.375rem;
+  border-radius: 0.75rem;
   background: #f0ecff;
   border: 3px solid #e0d8ff;
   overflow: hidden;
@@ -1238,9 +1389,9 @@
 .tbar .bulb {
   position: absolute;
   left: 0;
-  bottom: -16px;
-  width: 34px;
-  height: 34px;
+  bottom: -1rem;
+  width: 2.125rem;
+  height: 2.125rem;
   border-radius: 50%;
   background: #ff4b5c;
   border: 3px solid #ffd0d5;
@@ -1252,7 +1403,7 @@
 .tval {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
 }
 /* min-width/width: an <input> is ~20 characters wide by default, which pushed
    the + button past the card edge on phones. */
@@ -1263,18 +1414,18 @@
 .tval .inp input {
   width: 100%;
   text-align: center;
-  font-size: var(--fs-2xl);
+  font-size: var(--fs-3xl);
 }
 /* -/+ steppers: secondary weight. */
 .rbtn {
-  width: var(--h-ctl);
-  height: var(--h-ctl);
+  min-width: var(--h-ctl);
+  min-height: var(--h-ctl);
   flex: none;
   border: 2.5px solid var(--tc-line);
   border-radius: var(--r-md);
   background: var(--tc-soft);
   color: #6427d6;
-  font-size: 26px;
+  font-size: 1.625rem;
   font-weight: 900;
   line-height: 1;
   cursor: pointer;
@@ -1288,60 +1439,12 @@
   margin-top: var(--sp-3);
   display: inline-block;
   font-weight: 900;
-  font-size: var(--fs-sm);
-  padding: 6px var(--sp-3);
+  font-size: var(--fs-note);
+  line-height: 1.35;
+  padding: 0.375rem var(--sp-3);
   border-radius: var(--r-pill);
   background: #eee;
   color: #555;
-}
-
-.bmi {
-  margin-top: var(--sp-4);
-  background: var(--tc-soft);
-  border-radius: var(--r-md);
-  padding: var(--sp-3) var(--sp-4);
-}
-.bmi .row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-weight: 900;
-}
-.bmi .row b {
-  font-family: var(--tc-fh);
-  font-size: var(--fs-xl);
-  color: var(--tc-purple);
-}
-.gauge {
-  position: relative;
-  height: 12px;
-  border-radius: 99px;
-  margin: 12px 0 6px;
-  background: linear-gradient(
-    90deg,
-    #6ec6ff 0 22%,
-    #3ddc84 22% 51%,
-    #ffc531 51% 62%,
-    #ff6b6b 62%
-  );
-}
-.gauge i {
-  position: absolute;
-  top: -6px;
-  width: 6px;
-  height: 24px;
-  border-radius: 4px;
-  background: var(--tc-ink);
-  box-shadow: 0 0 0 2px #fff;
-  transition: left 0.35s;
-  transform: translateX(-50%);
-}
-.glab {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--fs-xs);
-  font-weight: 900;
-  color: var(--tc-ink2);
 }
 
 .bodywrap {
@@ -1351,7 +1454,7 @@
 }
 .bodysvg {
   width: 46%;
-  max-width: 190px;
+  max-width: 11.875rem;
   flex: none;
 }
 .bodysvg svg {
@@ -1388,7 +1491,7 @@
 .sel-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 0.375rem;
 }
 .sel-list span {
   background: #ffe7ea;
@@ -1396,12 +1499,12 @@
   font-weight: 900;
   font-size: var(--fs-xs);
   border-radius: var(--r-pill);
-  padding: 4px 10px;
+  padding: 0.25rem 0.625rem;
 }
 .empty {
   color: var(--tc-ink2);
   font-weight: 800;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   line-height: var(--lh-base);
 }
 .pain {
@@ -1412,17 +1515,18 @@
 }
 .pain .pq {
   font-weight: 900;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   color: var(--tc-ink2);
   margin: 0 0 var(--sp-2);
 }
 /* Skala wajah 0–10, vertikal (0 di atas): label | angka | wajah. Wajah & label di angka genap. Tanpa nilai awal. */
+/* Rows grow with text (minmax) and every number keeps a ≥2.5rem tap target. */
 .fscale {
   display: grid;
-  grid-template-columns: auto 38px 40px;
-  grid-template-rows: repeat(11, 34px);
-  column-gap: 8px;
-  row-gap: 4px;
+  grid-template-columns: auto 2.5rem 2.5rem;
+  grid-template-rows: repeat(11, minmax(2.5rem, auto));
+  column-gap: 0.5rem;
+  row-gap: 0.25rem;
   justify-content: center;
   align-items: center;
 }
@@ -1430,13 +1534,14 @@
   grid-column: 2;
   width: 100%;
   height: 100%;
+  min-height: 2.5rem;
   padding: 0;
   border: 2px solid var(--tc-line);
-  border-radius: 9px;
+  border-radius: 0.625rem;
   background: #fff;
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
   color: var(--tc-ink);
   cursor: pointer;
   box-shadow: 0 2px 0 var(--tc-line);
@@ -1461,13 +1566,15 @@
 .fscale .fface {
   grid-column: 3;
   justify-self: center;
-  width: 38px;
-  height: 38px;
+  display: grid;
+  place-items: center;
+  width: 2.375rem;
+  height: 2.375rem;
   border: 0;
   border-radius: 50%;
   background: var(--fc);
-  font-size: 22px;
-  line-height: 38px;
+  font-size: 1.375rem;
+  line-height: 1;
   padding: 0;
   cursor: pointer;
   opacity: 0.72;
@@ -1485,28 +1592,27 @@
 .fscale .flab {
   grid-column: 1;
   justify-self: end;
-  max-width: 68px;
-  font-size: var(--fs-xs);
+  max-width: 4.25rem;
+  font-size: var(--fs-2xs);
   font-weight: 900;
   line-height: 1.15;
   color: var(--tc-ink2);
   text-align: right;
 }
-@media (min-width: 640px) {
+@media (min-width: 40rem) {
   .fscale {
-    grid-template-columns: auto 44px 48px;
-    grid-template-rows: repeat(11, 38px);
-    column-gap: 12px;
+    grid-template-columns: auto 2.75rem 3rem;
+    column-gap: 0.75rem;
   }
   .fscale .fface {
-    width: 46px;
-    height: 46px;
-    font-size: 27px;
-    line-height: 46px;
+    width: 2.875rem;
+    height: 2.875rem;
+    font-size: 1.75rem;
   }
   .fscale .flab {
     max-width: none;
     white-space: nowrap;
+    font-size: var(--fs-xs);
   }
 }
 .nums {
@@ -1527,14 +1633,14 @@
 .numcard b {
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-xl);
+  font-size: var(--fs-2xl);
   color: var(--tc-ink);
-  min-width: 48px;
+  min-width: 3rem;
 }
 .numcard span {
   flex: 1;
   font-weight: 800;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   line-height: 1.35;
   color: var(--tc-ink2);
 }
@@ -1546,20 +1652,19 @@
   color: #6427d6;
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   padding: 0 var(--sp-4);
   cursor: pointer;
 }
 .vrow {
   display: flex;
-  gap: 10px;
+  gap: 0.625rem;
 }
 .fld .inp.age input {
-  font-size: var(--fs-xl);
+  font-size: var(--fs-2xl);
 }
 .frow .inp.age {
-  height: 58px;
-  box-sizing: border-box;
+  min-height: var(--h-ctl-lg); /* lines up with the .seg next to it */
 }
 .numcard b {
   user-select: all;
@@ -1568,7 +1673,7 @@
 .jkn-hint {
   margin: var(--sp-2) 0 0;
   text-align: center;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   font-weight: 700;
   color: var(--tc-ink2);
 }
@@ -1578,16 +1683,6 @@
 }
 .row-links .btn {
   flex: 1;
-}
-/* Photo consent: long text, so the box starts at the top. */
-.chk.consent {
-  align-items: flex-start;
-  font-size: var(--fs-sm);
-  line-height: 1.4;
-  margin-top: 12px;
-}
-.chk.consent input {
-  margin-top: 1px;
 }
 .linkbtn {
   border: 0;
@@ -1603,9 +1698,9 @@
   text-decoration: underline;
 }
 
-/* Privacy notice (/privasi and the photo step's modal). */
+/* Privacy notice (/privasi page and the privacy gate's .consent-text). */
 .privacy {
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
   font-weight: 700;
   line-height: 1.55;
   color: var(--tc-ink2);
@@ -1614,23 +1709,23 @@
 .mbody .privacy h3 {
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-md);
+  font-size: var(--fs-base);
   color: var(--tc-ink);
-  margin: 16px 0 6px;
+  margin: 1rem 0 0.375rem;
 }
 .privacy ul {
   margin: 0;
-  padding-left: 18px;
+  padding-left: 1.125rem;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 0.375rem;
 }
 .privacy .privacy-key {
   list-style: none;
-  padding: 10px 12px;
+  padding: 0.625rem 0.75rem;
   background: #f3eeff;
   border: 2px solid #d8c8ff;
-  border-radius: 14px;
+  border-radius: 0.875rem;
   color: var(--tc-ink);
 }
 .privacy .privacy-key li::before {
@@ -1645,56 +1740,11 @@
 .saveinfo {
   margin: 0 0 var(--sp-3);
   font-weight: 800;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   color: var(--tc-ink2);
   line-height: var(--lh-base);
 }
 
-.photorow {
-  display: flex;
-  gap: var(--sp-3);
-  align-items: stretch;
-}
-.photo {
-  position: relative;
-  flex: 1;
-  border-radius: 18px;
-  overflow: hidden;
-  background: linear-gradient(135deg, #f3eeff, #ffe9e0);
-  border: 3px dashed #d8c8ff;
-  min-height: 96px;
-  display: grid;
-  place-items: center;
-  text-align: center;
-}
-.photo img {
-  width: 100%;
-  height: 100%;
-  max-height: 150px;
-  object-fit: cover;
-  display: block;
-}
-.photo .ph {
-  padding: var(--sp-3);
-  color: var(--tc-ink2);
-  font-weight: 800;
-  font-size: var(--fs-xs);
-}
-.photo .ph div {
-  font-size: 30px;
-}
-.photorow .btn {
-  width: auto;
-  flex: none;
-  flex-direction: column;
-  gap: 2px;
-  font-size: var(--fs-base);
-  padding: 10px var(--sp-4);
-  cursor: pointer;
-}
-.photorow .btn span {
-  font-size: 26px;
-}
 .frow {
   display: flex;
   gap: var(--sp-3);
@@ -1702,12 +1752,13 @@
   margin-top: var(--sp-5);
 }
 .frow .fld.age {
-  flex: 0 0 112px;
+  flex: 0 0 7rem;
 }
 .seg {
   display: flex;
+  align-items: stretch;
   gap: var(--sp-1);
-  height: var(--h-ctl-lg);
+  min-height: var(--h-ctl-lg);
   padding: var(--sp-1);
   margin: 0;
   min-width: 0;
@@ -1718,12 +1769,20 @@
 .seg button {
   flex: 1;
   min-width: 0;
+  /* Fill the control's height (box minus padding and 2 × 2.5px border) and
+     center the label, so no empty strip is left under the selected pill. */
+  min-height: calc(var(--h-ctl-lg) - var(--sp-1) * 2 - 5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 0;
-  border-radius: 11px;
+  border-radius: 0.75rem;
   background: transparent;
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-md);
+  font-size: var(--fs-base);
+  line-height: var(--lh-tight);
+  padding: var(--sp-1);
   color: var(--tc-ink2);
   cursor: pointer;
 }
@@ -1738,37 +1797,9 @@
 .subq {
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-md);
-  line-height: 1.3;
-  margin: var(--sp-6) 0 var(--sp-3);
-}
-.scanline {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: #5bf5e2;
-  box-shadow: 0 0 18px 6px rgba(91, 245, 226, 0.7);
-  animation: scan 1.1s ease-in-out infinite alternate;
-}
-@keyframes scan {
-  from {
-    top: 4%;
-  }
-  to {
-    top: 94%;
-  }
-}
-.scanbadge {
-  position: absolute;
-  left: 10px;
-  top: 10px;
-  background: rgba(30, 20, 80, 0.75);
-  color: #fff;
-  font-weight: 900;
-  font-size: var(--fs-xs);
-  padding: 5px 10px;
-  border-radius: 999px;
+  font-size: var(--fs-base);
+  line-height: var(--lh-tight);
+  margin: var(--sp-3) 0 var(--sp-2);
 }
 
 /* modal */
@@ -1781,7 +1812,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 26px 18px;
+  padding: 1.5rem;
   animation: fade 0.2s;
 }
 @keyframes fade {
@@ -1791,12 +1822,12 @@
 }
 .ov .card {
   width: 100%;
-  max-width: 460px;
+  max-width: 28.75rem;
   max-height: 100%;
   overflow: visible;
   display: flex;
   flex-direction: column;
-  padding-top: 34px;
+  padding-top: 2rem;
   animation: pop 0.4s cubic-bezier(0.2, 1.4, 0.4, 1);
 }
 .ov .mbody {
@@ -1818,35 +1849,35 @@
 }
 .xbtn {
   position: absolute;
-  top: -14px;
-  right: -6px;
+  top: -0.875rem;
+  right: -0.375rem;
   width: var(--tap);
   height: var(--tap);
   border: 2px solid var(--tc-line);
-  border-radius: 14px;
+  border-radius: 0.875rem;
   background: #fff;
   color: var(--tc-ink);
   font-weight: 900;
-  font-size: 18px;
+  font-size: 1.125rem;
   cursor: pointer;
   box-shadow: 0 4px 0 #ddd5fb;
 }
 .mbody {
   font-weight: 700;
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
   line-height: var(--lh-base);
 }
 .mbody h3 {
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-lg);
-  line-height: 1.3;
+  font-size: var(--fs-xl);
+  line-height: var(--lh-tight);
   margin: 0 0 var(--sp-3);
 }
 .mbtns {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-4);
+  gap: var(--sp-3h);
   margin-top: var(--sp-5);
 }
 .setrow {
@@ -1863,26 +1894,32 @@
 .setrow span {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
 }
 .tgl {
-  width: 52px;
-  height: 30px;
+  width: 3.25rem;
+  height: 1.875rem;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: #d5d0ee;
   position: relative;
   cursor: pointer;
   flex: none;
   transition: background 0.2s;
 }
+/* Invisible hit area: the switch looks 1.875rem tall but taps 2.75rem. */
+.tgl::before {
+  content: "";
+  position: absolute;
+  inset: -0.4375rem -0.25rem;
+}
 .tgl::after {
   content: "";
   position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 22px;
-  height: 22px;
+  top: 0.25rem;
+  left: 0.25rem;
+  width: 1.375rem;
+  height: 1.375rem;
   border-radius: 50%;
   background: #fff;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
@@ -1892,7 +1929,7 @@
   background: var(--tc-purple);
 }
 .tgl.on::after {
-  left: 26px;
+  left: 1.625rem;
 }
 .setsec {
   background: var(--tc-soft);
@@ -1901,12 +1938,12 @@
   text-align: center;
   font-weight: 900;
   color: var(--tc-ink2);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
 }
 .pill-val {
   display: block;
-  margin: 6px auto 12px;
-  max-width: 180px;
+  margin: 0.375rem auto 0.75rem;
+  max-width: 11.25rem;
   background: #fff;
   border: 2px solid var(--tc-line);
   color: var(--tc-ink);
@@ -1914,7 +1951,7 @@
   padding: var(--sp-2);
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
 }
 
 /* thinking */
@@ -1925,14 +1962,34 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 22px 24px;
+  padding: 1.25rem 1.375rem 1.5rem;
   overflow-y: auto;
+}
+/* Loading screen: mascot + one line, centered, nothing positioned absolutely. */
+.loading {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  padding: var(--sp-6) var(--gutter);
+}
+.loading .footdisc {
+  margin: 0;
+}
+.m-load {
+  width: clamp(6rem, 22vh, 10rem);
+  height: auto;
 }
 .orbbox {
   position: relative;
-  width: 190px;
-  height: 200px;
-  margin-top: 6px;
+  width: 11.875rem;
+  height: 12.5rem;
+  margin-top: 0.375rem;
   flex: none;
 }
 .orb {
@@ -1954,18 +2011,18 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 58px;
+  top: 3.625rem;
   text-align: center;
-  font-size: 52px;
+  font-size: 3.25rem;
   transition: transform 0.15s;
 }
 .think .m-think {
   position: absolute;
-  left: -58px;
-  bottom: -6px;
+  left: -3.625rem;
+  bottom: -0.375rem;
 }
 .think .bubble {
-  margin-top: 16px;
+  margin-top: 1rem;
   text-align: center;
 }
 .think .bubble::before {
@@ -1978,30 +2035,30 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
 }
 .tsteps li {
   display: flex;
   align-items: center;
   gap: var(--sp-3);
-  min-height: 44px;
+  min-height: 2.75rem;
   color: rgba(255, 255, 255, 0.75);
   font-weight: 800;
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
   background: rgba(255, 255, 255, 0.08);
   border-radius: var(--r-md);
   padding: var(--sp-2) var(--sp-3);
   transition: all 0.3s;
 }
 .tsteps li .dot {
-  width: 22px;
-  height: 22px;
+  width: 1.375rem;
+  height: 1.375rem;
   flex: none;
   border-radius: 50%;
   border: 2.5px solid rgba(255, 255, 255, 0.4);
   display: grid;
   place-items: center;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #fff;
 }
 .tsteps li.run {
@@ -2028,14 +2085,14 @@
   margin-top: var(--sp-4);
   color: #fff;
   font-weight: 900;
-  font-size: var(--fs-md);
+  font-size: var(--fs-base);
   background: rgba(0, 0, 0, 0.2);
   padding: var(--sp-2) var(--sp-4);
   border-radius: var(--r-pill);
 }
 .candBig b {
   font-family: var(--tc-fh);
-  font-size: var(--fs-xl);
+  font-size: var(--fs-2xl);
   color: #ffd24a;
 }
 
@@ -2046,7 +2103,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--sp-3) var(--sp-4) var(--sp-6);
+  padding: var(--sp-3) var(--gutter) var(--sp-6);
   padding-bottom: max(var(--sp-6), env(safe-area-inset-bottom));
 }
 .why {
@@ -2055,7 +2112,7 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 0.5rem;
 }
 .why li {
   font-size: var(--fs-sm);
@@ -2074,8 +2131,8 @@
 .xval {
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  margin-top: 10px;
+  gap: 0.5rem;
+  margin-top: 0.625rem;
 }
 .xval div {
   font-size: var(--fs-sm);
@@ -2091,34 +2148,37 @@
   overflow: hidden;
 }
 .rhead {
-  padding: 30px var(--sp-4) var(--sp-4);
+  padding: 1.75rem var(--sp-3h) var(--sp-4);
   color: #fff;
   text-align: center;
 }
 .rhead .re {
-  font-size: 40px;
+  font-size: 2.5rem;
   line-height: 1;
 }
 .rhead h3 {
-  margin: 6px 0 2px;
+  margin: 0.375rem 0 0.125rem;
   font-family: var(--tc-fh);
   font-weight: 700;
-  font-size: var(--fs-lg);
-  letter-spacing: 1px;
+  font-size: var(--fs-xl);
+  line-height: var(--lh-tight);
+  letter-spacing: 0.0625rem;
 }
 .rhead p {
   margin: 0;
   font-weight: 800;
   font-size: var(--fs-sm);
+  line-height: var(--lh-base);
 }
 .rbody {
-  padding: var(--sp-4) var(--sp-4) var(--sp-5);
+  padding: var(--sp-4) var(--sp-3h) var(--sp-3h);
 }
 .rbody h4 {
-  margin: var(--sp-4) 0 var(--sp-2);
+  margin: var(--sp-3) 0 var(--sp-2);
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-md);
+  font-size: var(--fs-base);
+  line-height: var(--lh-tight);
   color: var(--tc-ink);
 }
 .rbody h4:first-child {
@@ -2134,8 +2194,8 @@
 }
 .todo li {
   position: relative;
-  padding-left: 30px;
-  font-size: var(--fs-base);
+  padding-left: 1.875rem;
+  font-size: var(--fs-sm);
   font-weight: 700;
   line-height: var(--lh-base);
 }
@@ -2143,13 +2203,13 @@
   content: "✔";
   position: absolute;
   left: 0;
-  top: 1px;
-  width: 20px;
-  height: 20px;
-  border-radius: 7px;
+  top: 0.0625rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.5rem;
   background: var(--tc-tabbg);
   color: #6427d6;
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 900;
   display: grid;
   place-items: center;
@@ -2162,10 +2222,10 @@
   font-size: var(--fs-sm);
   font-weight: 800;
   line-height: var(--lh-base);
-  margin-top: var(--sp-3);
+  margin-top: var(--sp-2h);
 }
 .warn .wi {
-  font-size: 20px;
+  font-size: 1.25rem;
   flex: none;
 }
 .warn.y {
@@ -2186,12 +2246,12 @@
 .btnrow {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-4);
+  gap: var(--sp-3h);
   margin-top: var(--sp-6);
 }
 /* QR summary page for staff (/ringkasan). */
 .sumpage .rcard {
-  margin-top: 8px;
+  margin-top: 0.5rem;
 }
 .sumpage .rcol > * + .card {
   margin-top: var(--card-gap);
@@ -2199,7 +2259,7 @@
 .sum-place {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0.125rem;
   text-align: center;
 }
 .sum-place span {
@@ -2210,7 +2270,7 @@
 .sum-place b {
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-md);
+  font-size: var(--fs-base);
   color: var(--tc-ink);
   line-height: 1.3;
 }
@@ -2222,16 +2282,16 @@
   color: var(--tc-ink2);
 }
 .warn.sum-flag {
-  margin-top: 14px;
+  margin-top: 0.875rem;
   font-size: var(--fs-base);
 }
 .sum-top {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.625rem;
 }
 .sum-emo {
-  font-size: 30px;
+  font-size: 1.875rem;
   line-height: 1;
   flex: none;
 }
@@ -2248,25 +2308,25 @@
   flex: none;
   font-family: var(--tc-fh);
   font-weight: 700;
-  font-size: var(--fs-md);
+  font-size: var(--fs-base);
   color: #fff;
-  background: var(--tc-purple);
-  border-radius: 999px;
-  padding: 4px 11px;
+  background: var(--tc-purpleSh); /* white 7.5:1 */
+  border-radius: var(--r-pill);
+  padding: 0.25rem 0.75rem;
 }
 .sum-others {
   list-style: none;
-  margin: 12px 0 0;
-  padding: 10px 0 0;
+  margin: 0.75rem 0 0;
+  padding: 0.625rem 0 0;
   border-top: 2px dashed var(--tc-line);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.375rem;
 }
 .sum-others li {
   display: flex;
-  gap: 6px;
-  font-size: var(--fs-base);
+  gap: 0.375rem;
+  font-size: var(--fs-sm);
   font-weight: 800;
   color: var(--tc-ink2);
 }
@@ -2280,7 +2340,7 @@
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
 }
 .sum-labs li {
   background: var(--tc-soft);
@@ -2288,7 +2348,7 @@
   color: var(--tc-ink);
   border-radius: var(--r-sm);
   padding: var(--sp-2) var(--sp-3);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   font-weight: 800;
   line-height: 1.3;
 }
@@ -2299,11 +2359,11 @@
 }
 .sum-fact {
   display: grid;
-  grid-template-columns: 96px 1fr;
+  grid-template-columns: 6rem 1fr;
   gap: var(--sp-3);
-  padding: var(--sp-2) 2px;
+  padding: var(--sp-2) 0.125rem;
   border-bottom: 1.5px solid var(--tc-line);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   line-height: 1.4;
 }
 .sum-fact:last-child {
@@ -2324,11 +2384,11 @@
   font-weight: 900;
 }
 details.sum-more {
-  margin-top: 14px;
+  margin-top: 0.875rem;
 }
 details.sum-more .todo,
 details.sum-more .btn {
-  margin-top: 10px;
+  margin-top: 0.625rem;
 }
 
 details.sum {
@@ -2344,7 +2404,7 @@ details.sum summary {
   min-height: var(--tap);
   cursor: pointer;
   font-weight: 900;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   color: var(--tc-ink);
   list-style: none;
 }
@@ -2371,18 +2431,9 @@ details.sum pre {
 details.sum[open] {
   padding-bottom: var(--sp-3);
 }
-.scanpre {
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-family: ui-monospace, Consolas, monospace;
-  font-size: var(--fs-xs);
-  line-height: 1.5;
-  margin: 0;
-  color: var(--tc-ink);
-}
 .footdisc {
   margin: var(--sp-6) auto 0;
-  max-width: 640px;
+  max-width: 40rem;
   text-align: center;
   color: #fff;
   font-size: var(--fs-xs);
@@ -2394,26 +2445,29 @@ details.sum[open] {
 }
 
 /* red */
+/* red route: calm, no animation anywhere on .bg-red */
 .siren {
-  font-size: 70px;
+  font-size: 4.5rem;
+  line-height: 1.1;
   text-align: center;
-  margin-top: 4px;
+  margin-top: 0.25rem;
 }
 .redh {
-  margin: 4px 0 6px;
+  margin: 0.25rem 0 0.375rem;
   text-align: center;
   color: #fff;
   font-family: var(--tc-fh);
   font-weight: 700;
-  font-size: var(--fs-2xl);
-  letter-spacing: 2px;
+  font-size: var(--fs-3xl);
+  line-height: 1.1;
+  letter-spacing: 0.125rem;
 }
 .redp {
   margin: 0 0 var(--sp-5);
   text-align: center;
   color: #fff;
   font-weight: 800;
-  font-size: var(--fs-md);
+  font-size: var(--fs-base);
   line-height: var(--lh-base);
 }
 .rflag {
@@ -2425,22 +2479,22 @@ details.sum[open] {
   margin-bottom: var(--sp-3);
 }
 .rflag .oe {
-  font-size: 26px;
+  font-size: 1.625rem;
   flex: none;
 }
 .rflag b {
   display: block;
   font-family: var(--tc-fh);
   font-weight: 600;
-  font-size: var(--fs-md);
+  font-size: var(--fs-base);
   color: #c8102e;
 }
 .rflag span {
   display: block;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-note);
   font-weight: 800;
   color: var(--tc-ink2);
-  margin-top: 2px;
+  margin-top: 0.125rem;
 }
 .rflag em {
   display: block;
@@ -2461,14 +2515,14 @@ details.sum[open] {
 .fac {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
 }
 .fac span {
   background: #ffe3e6;
   color: #b3122e; /* 6.0:1 */
   font-weight: 900;
-  font-size: var(--fs-sm);
-  padding: 6px var(--sp-3);
+  font-size: var(--fs-note);
+  padding: 0.375rem var(--sp-3);
   border-radius: var(--r-pill);
 }
 
@@ -2476,15 +2530,15 @@ details.sum[open] {
 .tc-toast {
   position: absolute;
   left: 50%;
-  bottom: 96px;
-  transform: translate(-50%, 20px);
+  bottom: 6rem;
+  transform: translate(-50%, 1.25rem);
   z-index: 60;
   background: rgba(30, 20, 80, 0.92);
   color: #fff;
   font-weight: 800;
-  font-size: var(--fs-base);
-  padding: 10px 16px;
-  border-radius: 14px;
+  font-size: var(--fs-sm);
+  padding: 0.625rem 1rem;
+  border-radius: 0.875rem;
   opacity: 0;
   pointer-events: none;
   transition: all 0.3s;
@@ -2497,10 +2551,10 @@ details.sum[open] {
 }
 .conf {
   position: absolute;
-  top: -14px;
-  width: 9px;
-  height: 14px;
-  border-radius: 3px;
+  top: -0.875rem;
+  width: 0.625rem;
+  height: 0.875rem;
+  border-radius: 0.25rem;
   z-index: 40;
   pointer-events: none;
   animation: fall linear forwards;
@@ -2514,7 +2568,7 @@ details.sum[open] {
 .rcols,
 .redcols {
   width: 100%;
-  max-width: 600px;
+  max-width: 37.5rem;
   margin: 0 auto;
 }
 .rcol + .rcol {
@@ -2549,47 +2603,199 @@ details.sum[open] {
   color: var(--rt-red-fg) !important;
 }
 
-/* ===== ≥ sm (640px): tablet & laptop ===== */
-@media (min-width: 640px) {
+/* ===== Riwayat skrining (/riwayat), logged-in users only =====
+   Same look as the rest of the app (white card with tab on a colored screen),
+   not an admin table.
+   <div class="screen bg-result"> <div class="hud">…</div>
+     <div class="rscroll"> <div class="hist-page">
+       <Card tab="RIWAYAT SKRINING">
+         <ul class="hist-list">
+           <li class="hist-item">
+             <div class="hist-meta">
+               <span>🗓 15 Okt 2026, 10.30</span>
+               <span>🤒 Sedang sakit</span>
+               <span class="hist-badge rt-yellow">🏥 KUNING</span>
+             </div>
+             <div class="hist-est"><b>Demam berdarah</b><span class="hist-score">72%</span></div>
+             <div class="hist-actions">
+               <a class="btn btn-primary">Buka</a>
+               <button class="btn btn-secondary">Hapus</button>
+             </div>
+           </li>
+         </ul>
+         <p class="hist-empty">…</p>   (no items)
+         <button class="btn btn-secondary hist-more">Muat lagi</button>
+       </Card>
+     </div> <p class="footdisc">…</p> </div>
+   </div> */
+.hist-page {
+  width: 100%;
+  max-width: 37.5rem;
+  margin: var(--card-gap) auto 0;
+}
+.hist-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.hist-item {
+  background: var(--tc-soft);
+  border: 2.5px solid var(--tc-line);
+  border-radius: var(--r-md);
+  padding: var(--sp-3);
+}
+.hist-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1h) var(--sp-3);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--tc-ink2);
+}
+/* Route badge: add the matching .rt-<route> (green | yellow | special | red)
+   for the AA-checked color. Name + icon too, so color is not the only cue. */
+.hist-badge {
+  margin-left: auto;
+  padding: var(--sp-0) var(--sp-2h);
+  border-radius: var(--r-pill);
+  font-family: var(--tc-fh);
+  font-weight: 700;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.0625rem;
+  white-space: nowrap;
+}
+.hist-est {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2h);
+  margin-top: var(--sp-2);
+}
+.hist-est b {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--tc-fh);
+  font-weight: 600;
+  font-size: var(--fs-base);
+  line-height: var(--lh-tight);
+  color: var(--tc-ink);
+  overflow-wrap: anywhere;
+}
+.hist-score {
+  flex: none;
+  padding: var(--sp-0) var(--sp-2h);
+  border-radius: var(--r-pill);
+  background: var(--tc-purpleSh); /* white 7.5:1 */
+  color: #fff;
+  font-family: var(--tc-fh);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+.hist-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+.hist-actions .btn {
+  font-size: var(--fs-base);
+  padding: var(--sp-2) var(--sp-3);
+}
+.hist-empty {
+  margin: 0;
+  text-align: center;
+  font-weight: 800;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
+  color: var(--tc-ink2);
+}
+.hist-empty + .btn,
+.hist-more {
+  margin-top: var(--sp-4);
+}
+
+/* ===== Login / daftar (shadcn pages, outside .tc-app) =====
+   <div class="gbtn-wrap"> Google renders its button here </div>
+   <div class="or-sep">atau</div>
+   then the email + password form. */
+.gbtn-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 2.75rem;
+}
+.gbtn-wrap > * {
+  max-width: 100%;
+}
+.or-sep {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: var(--sp-1) 0;
+  color: var(--muted-foreground);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  line-height: 1;
+}
+.or-sep::before,
+.or-sep::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ===== ≥ 40rem (640px): tablet looks like desktop ===== */
+@media (min-width: 40rem) {
   .hud {
-    padding: 16px 28px 8px;
+    padding: 1rem var(--gutter) 0.5rem;
   }
   .st {
-    width: 30px;
-    height: 30px;
-    font-size: 15px;
+    width: 1.875rem;
+    height: 1.875rem;
+    font-size: var(--fs-sm);
   }
   .st.done {
-    font-size: 16px;
+    font-size: var(--fs-base);
   }
   .sl {
-    min-width: 8px;
+    min-width: 0.5rem;
   }
   .qlayout {
     width: 100%;
-    max-width: 700px;
+    max-width: 43.75rem;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 var(--sp-5);
   }
   .mrow {
-    padding: 4px 0 0;
+    padding: 0.25rem 0.25rem 0;
   }
   .mrow .m-sm {
-    width: 68px;
+    width: 4.25rem;
+  }
+  .bubble {
+    font-size: var(--fs-sm);
   }
   .mrow .bubble {
-    padding: 10px 14px;
+    padding: 0.625rem 0.875rem;
   }
   .qwrap {
-    padding: 28px 12px var(--sp-6);
+    padding: 1.75rem 0.25rem var(--sp-6);
     flex: 0 1 auto;
   }
   .card {
-    padding: 34px var(--sp-6) var(--sp-6);
+    padding: 2rem 1.25rem 1.25rem;
+  }
+  .qt {
+    font-size: var(--fs-xl);
   }
   .opts {
     grid-template-columns: 1fr 1fr;
-    gap: var(--sp-3);
+    gap: var(--sp-2h);
   }
   .opts.tiles {
     grid-template-columns: repeat(4, 1fr);
@@ -2598,12 +2804,12 @@ details.sum[open] {
     grid-template-columns: repeat(5, 1fr);
   }
   .tiles .opt {
-    padding: var(--sp-4) var(--sp-2) var(--sp-3);
+    padding: var(--sp-3) var(--sp-2);
   }
   .tiles .opt .oe {
-    width: 40px;
-    height: 40px;
-    font-size: 22px;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.375rem;
   }
   .cgrid {
     grid-template-columns: repeat(6, 1fr);
@@ -2617,107 +2823,109 @@ details.sum[open] {
     grid-column: span 3;
   }
   .cbox .ce {
-    width: 60px;
-    height: 60px;
-    font-size: 32px;
+    width: 3.75rem;
+    height: 3.75rem;
+    font-size: 2.375rem;
   }
+  /* Footer: [‹ Kembali][Lanjut] pushed right, Lanjut ≥ 18.75rem. */
   .foot {
-    padding: 0 12px var(--sp-6);
-    display: flex;
     justify-content: flex-end;
+    padding: var(--sp-2) 0.25rem var(--sp-6);
+    padding-bottom: max(var(--sp-6), env(safe-area-inset-bottom));
   }
-  .foot .btn {
+  .foot .btn:not(.btn-back) {
+    flex: none;
     width: auto;
-    min-width: 300px;
+    min-width: 18.75rem;
   }
   .bodysvg {
-    max-width: 230px;
+    max-width: 14.375rem;
   }
-  .ribbon small {
-    font-size: var(--fs-md);
+  /* Home: one centered column; the hero + buttons group sits in the middle
+     of the free space, buttons under the mascot. */
+  /* Kak Tropi fills the space left between the ribbon and the buttons, so the
+     buttons always fit without scrolling (never smaller than 6rem, never
+     bigger than 20rem). The .home column scrolls only on very short windows. */
+  .hero {
+    flex: 1 1 0;
+    min-height: 6rem;
+    margin-top: var(--sp-2);
+    padding-top: 0;
+    padding-bottom: var(--sp-3);
+    align-items: stretch;
   }
   .m-hero {
-    width: 210px;
+    width: auto;
+    height: 100%;
+    min-height: 7rem;
+    max-height: 32rem;
+    align-self: center;
+  }
+  .hero {
+    min-height: 8rem;
   }
   .hero .bubble {
-    max-width: 280px;
-    font-size: var(--fs-md);
-    margin-bottom: 150px;
+    max-width: clamp(17.5rem, 12rem + 14vmin, 24rem);
+    font-size: clamp(var(--fs-sm), 0.6rem + 1vmin, 1.25rem);
+    align-self: center;
+    margin-top: 0;
+  }
+  /* Home type and button width follow the window (vmin = the shorter side),
+     so resizing a desktop window scales them smoothly instead of jumping
+     at the 40rem / 60rem breakpoints. */
+  .ribbon b {
+    font-size: clamp(1.875rem, 0.8rem + 3.4vmin, 3.75rem);
+  }
+  .ribbon small {
+    font-size: clamp(var(--fs-sm), 0.5rem + 1vmin, 1.25rem);
   }
   .home-btns {
-    max-width: 400px;
+    max-width: clamp(26rem, 14rem + 22vmin + 6vw, 36rem);
+  }
+  .home-btns .btn {
+    font-size: clamp(1.125rem, 0.9rem + 0.9vmin, 1.5rem);
   }
   .think {
     width: 100%;
-    max-width: 560px;
+    max-width: 35rem;
     margin: 0 auto;
   }
   .rscroll {
-    padding: var(--sp-4) 28px var(--sp-8);
+    padding: var(--sp-4) var(--gutter) var(--sp-8);
   }
 }
 
-/* ===== ≥ 960px: desktop dua kolom ===== */
-@media (min-width: 960px) {
-  /* landing: tombol di sisi kanan Kak Tropi */
-  .home {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
-    grid-template-rows: auto 1fr auto;
-    column-gap: 56px;
-    align-items: end;
-    justify-content: center;
-    width: 100%;
-    max-width: 1080px;
-    margin: 0 auto;
+/* ===== ≥ 60rem (960px): quiz, result, red route in two columns ===== */
+@media (min-width: 60rem) {
+  .bubble {
+    font-size: var(--fs-base);
   }
-  .home .ribbon {
-    grid-column: 1 / -1;
-    justify-self: center;
-  }
-  .home .hero {
-    grid-column: 1;
-    grid-row: 2;
-    justify-content: flex-end;
-    align-self: stretch;
-  }
-  .home .home-btns {
-    grid-column: 2;
-    grid-row: 2;
-    align-self: center;
-    max-width: none;
-  }
-  .home .disc {
-    grid-column: 1 / -1;
-    grid-row: 3;
+  .hero .bubble {
+    font-size: clamp(var(--fs-sm), 0.6rem + 1vmin, 1.25rem);
   }
   .qlayout {
-    max-width: 1120px;
+    max-width: 70rem;
     display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 40px;
-    padding: 0 28px;
+    grid-template-columns: 17.5rem 1fr;
+    gap: 2.5rem;
+    padding: 0 var(--gutter);
   }
   .mrow {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 44px 0 0;
-  }
-  .qwrap {
-    flex: 0 1 auto;
+    padding: 2.75rem 0 0;
   }
   .mrow .m-sm {
-    width: 170px;
+    width: 10.625rem;
     order: 2;
   }
   .mrow .bubble {
     order: 1;
     flex: none;
     width: 100%;
-    margin: 0 0 18px;
-    font-size: var(--fs-md);
-    padding: var(--sp-4);
+    margin: 0 0 1.125rem;
+    padding: 0.875rem 1rem;
   }
   .mrow .bubble::before {
     left: 50%;
@@ -2727,13 +2935,14 @@ details.sum[open] {
     border-color: #fff transparent transparent transparent;
   }
   .qwrap {
-    padding: 34px 12px var(--sp-6);
+    flex: 0 1 auto;
+    padding: 2rem 0.25rem var(--sp-6);
   }
   .rcols {
-    max-width: 1080px;
+    max-width: 67.5rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0 28px;
+    gap: 0 1.75rem;
     align-items: start;
   }
   .rcol + .rcol {
@@ -2743,15 +2952,18 @@ details.sum[open] {
     margin-top: var(--card-gap);
   }
   .redcols {
-    max-width: 1000px;
+    max-width: 67.5rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0 36px;
+    gap: 0 1.75rem;
     align-items: start;
   }
   .redcols .siren {
-    font-size: 96px;
-    margin-top: 40px;
+    font-size: 6rem;
+    margin-top: 2.5rem;
+  }
+  .redh {
+    font-size: var(--fs-4xl);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -2761,6 +2973,9 @@ details.sum[open] {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  .reveal-in {
+    animation: none;
   }
 }
 
