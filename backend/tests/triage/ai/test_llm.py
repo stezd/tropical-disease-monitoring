@@ -234,3 +234,16 @@ def test_make_client_passes_fallback_model() -> None:
     assert isinstance(c, GeminiClient)
     assert (c.model, c.fallback_model) == ("gemini-3.6-flash", "gemini-3.5-flash-lite")
     assert AISettings.model_fields["MODEL"].default == "gemini-3.5-flash-lite"
+
+
+def test_temperature_left_to_the_model_by_default() -> None:
+    seen: dict[str, Any] = {}
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        seen["body"] = json.loads(req.content)
+        return httpx.Response(200, json=REAL_REPLY)
+
+    gemini(handler).generate_json("S", "U", SCHEMA, 3)
+    assert "temperature" not in seen["body"]["generationConfig"]
+    gemini(handler, temperature=0.2).generate_json("S", "U", SCHEMA, 3)
+    assert seen["body"]["generationConfig"]["temperature"] == 0.2

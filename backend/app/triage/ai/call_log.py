@@ -7,11 +7,32 @@ What never goes in: name, NIK, BPJS, coordinates, photos, the free-text drug fie
 
 import json
 import logging
+import sys
 import threading
 from pathlib import Path
 from typing import Any
 
 logger = logging.getLogger("app.triage.ai")
+
+
+class _Stdout(logging.StreamHandler):  # type: ignore[type-arg]
+    """Marker type so the handler is added once."""
+
+
+def _ensure_visible() -> None:
+    """The app never configures logging, so INFO lines from this logger were dropped
+    (Python's default level is WARNING). Print them to stdout, where Railway keeps
+    and searches them. Idempotent."""
+    if any(isinstance(h, _Stdout) for h in logger.handlers):
+        return
+    handler = _Stdout(sys.stdout)
+    handler.setFormatter(logging.Formatter("%(levelname)s %(name)s %(message)s"))
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+
+_ensure_visible()
 
 
 class CallLog:

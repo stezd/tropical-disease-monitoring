@@ -150,6 +150,23 @@ def _json_object(text: str) -> dict[str, Any]:
     return data
 
 
+# Facts sent to the model but never shown to the patient as a reason ("Kenapa aku
+# menebak ini?"): age and sex are context, not evidence for a disease.
+HIDDEN_REASON_LABELS = frozenset({"Pasien"})
+
+
+def _without_patient_line(out: TextOutput, req: TextRequest) -> TextOutput:
+    hidden = {f.id for f in req.facts if f.label in HIDDEN_REASON_LABELS}
+    return TextOutput(
+        candidates=[
+            c.model_copy(
+                update={"evidence": [e for e in c.evidence if e not in hidden]}
+            )
+            for c in out.candidates
+        ]
+    )
+
+
 def _note(raw: Any) -> str:
     return " ".join(str(raw or "").split())[:200]
 
@@ -176,7 +193,9 @@ class AIEngine:
         self._cache_lock = threading.Lock()
 
     def _cache_key(self, answers: Answers, content: FlowContent) -> str:
-        return f"{content.flow.id}|{answers.model_dump_json(exclude={'taken_at'})}"
+        # Drugs and time are not used for scoring, so they must not force a new call.
+        ignored = {"taken_at", "drugs"}
+        return f"{content.flow.id}|{answers.model_dump_json(exclude=ignored)}"
 
     def _cached(self, key: str) -> AIBreakdown | None:
         with self._cache_lock:
@@ -195,7 +214,7 @@ class AIEngine:
             return
         with self._cache_lock:
             self._cache[key] = (time.monotonic(), b)
-            while len(self._cache) > 256:
+            while len(self._cache) > 2048:
                 self._cache.popitem(last=False)
 
     @property
@@ -234,6 +253,8 @@ class AIEngine:
         result: ScoreBreakdown = rule_b
         if req is None:
             meta.reason = "skipped:red_flag_or_empty"
+        elif content.flow.id not in self.s.flows():
+            meta.reason = "skipped:flow_off"
         elif self.client is None:
             meta.fallback, meta.reason = True, "model_off"
         else:
@@ -358,7 +379,7 @@ class AIEngine:
         top = sorted(kept.values(), key=lambda c: c.score, reverse=True)[
             :MAX_CANDIDATES
         ]
-        out = TextOutput(candidates=top).restrict_to(req)
+        out = _without_patient_line(TextOutput(candidates=top).restrict_to(req), req)
         for c in out.candidates:
             if c.sources:
                 meta.sources[c.id] = [by_sid[s].citation for s in c.sources]
@@ -445,7 +466,8 @@ class AIEngine:
             if r.chunks:
                 meta.sources[d] = [c.citation for c in r.chunks]
         req = req.model_copy(update={"sources": []})
-        return to_breakdown(TextOutput(candidates=top), req, content)
+        out = _without_patient_line(TextOutput(candidates=top), req)
+        return to_breakdown(out, req, content)
 
     # ── Log ────────────────────────────────────────────────────────────────
 

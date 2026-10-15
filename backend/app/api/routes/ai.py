@@ -1,5 +1,5 @@
-"""HTTP wrapper around app.triage.ai, for callers that do not import it directly
-and for checking the model during the user test.
+"""HTTP wrapper around app.triage.ai, for checking the model (superusers only: every
+call spends the shared model quota).
 
 The patient-facing result still comes from POST /triage/flows/{flow_id}/score; with
 TRIAGE_SCORING_ENGINE=ai that endpoint uses the same engine.
@@ -52,10 +52,11 @@ class AIScoreResponse(BaseModel):
     )
 
 
-@router.post("/score")
+@router.post("/score", dependencies=[Depends(get_current_active_superuser)])
 def ai_score(body: AIScoreRequest) -> AIScoreResponse:
-    """Score answers with the language model. Falls back to rules, never errors on
-    model trouble. Stateless: nothing is saved (the call log holds no identity)."""
+    """Score answers with the language model. Superusers only: each call spends the
+    shared model quota (the app itself uses /triage/flows/{flow_id}/score). Falls back
+    to rules, never errors on model trouble. Nothing is saved."""
     try:
         content = get_content_repository().get(body.flow_id)
     except KeyError:
@@ -114,9 +115,10 @@ class AIDrugsResponse(BaseModel):
     latency_ms: int
 
 
-@router.post("/drugs")
+@router.post("/drugs", dependencies=[Depends(get_current_active_superuser)])
 def ai_drugs(body: AIDrugsRequest) -> AIDrugsResponse:
-    """Recognize drug classes in free text. Never errors on model trouble."""
+    """Recognize drug classes in free text. Superusers only (spends model quota).
+    Never errors on model trouble."""
     recognizer = get_drug_recognizer()
     if recognizer is None:
         r = DrugResult(
