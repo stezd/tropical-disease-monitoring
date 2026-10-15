@@ -311,8 +311,14 @@
   padding-left: var(--sp-3);
   padding-right: var(--sp-3);
 }
+/* Copy and PDF buttons stack with a gap (they used to touch). */
+.card.rsum {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
 .rsum details.sum {
-  margin: 0 0 var(--sp-4);
+  margin: 0;
 }
 .res .rcol > .rrestart {
   margin-top: var(--sp-6);

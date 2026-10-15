@@ -482,6 +482,7 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
       mascotRef={mascot}
       onHome={home}
       overlay={modal}
+      autoScroll={id !== "q1"}
       foot={
         <>
           <BackButton onClick={back} />
@@ -529,6 +530,7 @@ export function QuizFrame({
   onHome,
   foot,
   overlay,
+  autoScroll = true,
   children,
 }: {
   flow: FlowPublic
@@ -538,9 +540,11 @@ export function QuizFrame({
   onHome: () => void
   foot: ReactNode
   overlay?: ReactNode
+  /** false: never scroll down by itself when the card grows (danger signs). */
+  autoScroll?: boolean
   children: ReactNode
 }) {
-  const growRef = useGrowScroll()
+  const growRef = useGrowScroll(autoScroll)
   return (
     <div className="screen bg-quiz">
       <Sparkles n={18} />

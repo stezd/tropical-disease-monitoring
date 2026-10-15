@@ -53,7 +53,8 @@
   --tc-backdrop: #cde8e3;
   --tc-backdrop-glow: #e4f4f1;
   --tc-backdrop-deep: #a9d7d0;
-  --tc-sheet: #f5faf9;
+  --tc-sheet: #b8dfd9;
+  --tc-sheet-home: #f5faf9; /* landing page keeps the original pale sheet */
   --tc-bg: #cde8e3;
   --tc-ink: #15323a;
   --tc-ink-strong: #15323a; /* text on pastel and route surfaces */
@@ -547,7 +548,7 @@
   right: 0;
   bottom: 0;
   height: clamp(15rem, 10rem + 22vmin, 22rem);
-  background: var(--tc-sheet);
+  background: var(--tc-sheet-home);
   border-radius: 1.625rem 1.625rem 0 0;
   box-shadow: 0 -0.5rem 1.5rem rgba(15, 107, 102, 0.1);
   z-index: 1;
@@ -969,6 +970,14 @@
 .tiles .opt.wide .ck {
   position: static;
 }
+/* Phone: a lone last tile (odd count) spans the row instead of sitting half-empty. */
+@media (max-width: 39.99rem) {
+  .opts.tiles .opt:not(.wide):nth-child(odd):last-child,
+  .opts.tiles
+    .opt:not(.wide):nth-child(odd):nth-last-child(2):has(+ .opt.wide) {
+    grid-column: 1 / -1;
+  }
+}
 .opts.tiles3 {
   grid-template-columns: repeat(3, 1fr);
   gap: var(--sp-1h);
@@ -1371,10 +1380,16 @@
      <p class="loc-status [ok|off]">📍 Lokasi: Jawa Barat</p>
      <label class="fld reveal-in mt-field"> (province select, only if denied)
    </Card> */
+/* The privacy card fits its content (no inner scroll box); the buttons sit
+   inside it, after the checkbox. */
+.foot:empty {
+  display: none;
+}
+.consent-gate .foot {
+  padding: 0;
+  margin-top: var(--sp-4);
+}
 .consent-gate .consent-text {
-  max-height: min(18rem, 42dvh);
-  overflow-y: auto;
-  overscroll-behavior: contain;
   padding: calc(var(--sp-3) - 1px);
   background: var(--tc-field);
   border: 1px solid var(--tc-line);
@@ -1438,7 +1453,7 @@
 }
 @media (min-width: 40rem) {
   .tc-app:has(.bg-quiz) {
-    background: var(--tc-backdrop);
+    background: var(--tc-backdrop-glow);
   }
   .bg-quiz {
     inset: 1rem;
@@ -2899,6 +2914,13 @@ details.sum[open] {
   .opts.tiles {
     grid-template-columns: repeat(4, 1fr);
   }
+  /* few tiles (e.g. 3 risk factors) fill the card width; set in Options */
+  .opts.tiles-n2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .opts.tiles-n3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
   .opts.tiles3 {
     grid-template-columns: repeat(5, 1fr);
   }
@@ -3018,9 +3040,17 @@ details.sum[open] {
   .qlayout {
     max-width: 70rem;
     display: grid;
-    grid-template-columns: 17.5rem 1fr;
+    /* minmax(0, 1fr): the card column must not grow with an <input>'s default
+       width (it pushed the tensi step past the frame). */
+    grid-template-columns: 17.5rem minmax(0, 1fr);
     gap: 2.5rem;
     padding: 0 var(--gutter);
+  }
+  .qmain {
+    min-width: 0;
+  }
+  .inp input {
+    width: 100%;
   }
   .mrow {
     flex-direction: column;

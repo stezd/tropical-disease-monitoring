@@ -117,6 +117,7 @@ bun run lint && bun test                 # from repo root
 - Branch from `master`, keep PRs small, keep `master` working.
 - Model changed → add an Alembic migration. API changed → regenerate the client.
 - Design for phones first, then tablet (≥640px) and desktop (≥960px).
+- When checking UI, only check at 390px and 1440px.
 - Near the deadline: fix bugs instead of adding features.
 
 ## Checklist aplikasi (in Indonesian)
