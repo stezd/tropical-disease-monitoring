@@ -6,7 +6,7 @@
   display: block;
   margin: calc(-1 * var(--sp-1h)) 0 var(--sp-2) var(--sp-1);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.35;
   color: var(--tc-ink2);
 }

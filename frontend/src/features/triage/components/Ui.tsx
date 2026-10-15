@@ -42,7 +42,6 @@ export function Card({
 export const RED_TAB: CSSProperties = {
   background: "#FFD6DA",
   color: "#C8102E",
-  boxShadow: "0 4px 0 #FFAAB3",
 }
 
 type Choice = {

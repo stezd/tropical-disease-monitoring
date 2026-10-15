@@ -1,7 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 import { type ReactNode, type Ref, useMemo, useRef, useState } from "react"
-
 import type { FlowPublic, ScoreResult } from "@/client"
 import { scoreAnswers, scoreKey } from "../api"
 import { hop, Mascot, Sparkles } from "../components/Art"
@@ -35,6 +34,7 @@ import {
   visible,
 } from "../model"
 import { quiz, useQuiz } from "../store"
+import { useGrowScroll } from "../useGrowScroll"
 import "@/styles/fe-extra.css"
 
 type StepDef = {
@@ -540,6 +540,7 @@ export function QuizFrame({
   overlay?: ReactNode
   children: ReactNode
 }) {
+  const growRef = useGrowScroll()
   return (
     <div className="screen bg-quiz">
       <Sparkles n={18} />
@@ -564,7 +565,9 @@ export function QuizFrame({
           </div>
         </div>
         <div className="qmain">
-          <div className="qwrap">{children}</div>
+          <div className="qwrap" ref={growRef}>
+            {children}
+          </div>
           <div className="foot">{foot}</div>
         </div>
       </div>
@@ -703,12 +706,14 @@ function StepDrugs({
 }
 
 function tempStatus(t: number): [string, string, string] {
-  if (Number.isNaN(t)) return ["Masukkan suhu", "#EEE", "#555"]
-  if (t < 34 || t > 43) return ["Angka tidak wajar", "#FFE3E6", "#C8102E"]
-  if (t < 37.5) return ["😊 Normal", "#E2F9EE", "#15784F"]
-  if (t < 38) return ["🙂 Subfebris", "#FFF6DB", "#8A5A00"]
-  if (t < 39.5) return ["🤒 Demam", "#FFE8D6", "#A3410A"]
-  return ["🥵 Demam tinggi", "#FFE3E6", "#C8102E"]
+  if (Number.isNaN(t))
+    return ["Masukkan suhu", "var(--tc-field)", "var(--tc-ink2)"]
+  if (t < 34 || t > 43) return ["Angka tidak wajar", "#FFE1E5", "#B4142C"]
+  if (t < 37.5) return ["😊 Normal", "var(--tc-mint)", "var(--tc-mint-ink)"]
+  if (t < 38)
+    return ["🙂 Subfebris", "var(--tc-butter)", "var(--tc-butter-ink)"]
+  if (t < 39.5) return ["🤒 Demam", "#FFE2CC", "#7A3300"]
+  return ["🥵 Demam tinggi", "#FFE1E5", "#B4142C"]
 }
 
 /** Stand-in questions when there is no device (DR no. 1, Blueprint Q6). */
@@ -831,13 +836,14 @@ function StepTemp({
  * and dia < 90) · Tinggi (sys ≥ 140 or dia ≥ 90) · Sangat tinggi (sys > 160). */
 function bpStatus(sys: number, dia: number): [string, string, string] {
   if (Number.isNaN(sys) || Number.isNaN(dia))
-    return ["Masukkan tensi", "#EEE", "#555"]
+    return ["Masukkan tensi", "var(--tc-field)", "var(--tc-ink2)"]
   if (!sysValid(sys) || !diaValid(dia))
-    return ["Angka tidak wajar", "#FFE3E6", "#C8102E"]
-  if (sys > 160) return ["Sangat tinggi", "#FFE3E6", "#C8102E"]
-  if (sys >= 140 || dia >= 90) return ["Tinggi", "#FFE8D6", "#A3410A"]
-  if (sys > 120) return ["Meningkat", "#FFF6DB", "#8A5A00"]
-  return ["Normal", "#E2F9EE", "#15784F"]
+    return ["Angka tidak wajar", "#FFE1E5", "#B4142C"]
+  if (sys > 160) return ["Sangat tinggi", "#FFE1E5", "#B4142C"]
+  if (sys >= 140 || dia >= 90) return ["Tinggi", "#FFE2CC", "#7A3300"]
+  if (sys > 120)
+    return ["Meningkat", "var(--tc-butter)", "var(--tc-butter-ink)"]
+  return ["Normal", "var(--tc-mint)", "var(--tc-mint-ink)"]
 }
 
 function StepBp({
@@ -934,7 +940,7 @@ function StepBp({
             <div className="stat-row">
               <span
                 className="tstat"
-                style={{ background: "#FFE8D6", color: "#A3410A" }}
+                style={{ background: "#FFE2CC", color: "#7A3300" }}
               >
                 Tinggi
               </span>
