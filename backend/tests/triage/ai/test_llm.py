@@ -118,6 +118,8 @@ def test_openai_compat() -> None:
     def handler(req: httpx.Request) -> httpx.Response:
         seen["body"] = json.loads(req.content)
         seen["auth"] = req.headers.get("authorization")
+        seen["session"] = req.headers.get("x-opencode-session")
+        seen["ua"] = req.headers.get("user-agent")
         return httpx.Response(
             200,
             json={
@@ -130,11 +132,20 @@ def test_openai_compat() -> None:
         )
 
     http = httpx.Client(transport=httpx.MockTransport(handler))
-    c = OpenAICompatClient("medgemma", "http://gpu:8000/v1", "tok", http=http)
+    c = OpenAICompatClient(
+        "medgemma",
+        "http://gpu:8000/v1",
+        "tok",
+        http=http,
+        extra_headers={"x-opencode-session": "s1", "User-Agent": "tropicare/1.0"},
+    )
     r = c.generate_json("S", "U", SCHEMA, 3)
     assert r.text == '{"score": 1}' and r.output_tokens == 3
     assert seen["auth"] == "Bearer tok"
     assert seen["body"]["response_format"]["json_schema"]["schema"] == SCHEMA
+    # Not streaming: SSE is not JSON and would break the parse above.
+    assert seen["body"]["stream"] is False
+    assert seen["session"] == "s1" and seen["ua"] == "tropicare/1.0"
 
 
 def test_make_client_from_settings() -> None:
@@ -143,6 +154,17 @@ def test_make_client_from_settings() -> None:
     assert isinstance(make_client(AISettings(API_KEY="k")), GeminiClient)
     c = make_client(AISettings(PROVIDER="openai_compat", BASE_URL="http://x/v1"))
     assert isinstance(c, OpenAICompatClient)
+    # Identity headers reach the client: OpenCode Go rejects callers without a
+    # session id (HTTP 400 MissingSessionID).
+    c = make_client(
+        AISettings(
+            PROVIDER="openai_compat",
+            BASE_URL="http://x/v1",
+            SESSION_ID="s1",
+            USER_AGENT="tropicare/1.0",
+        )
+    )
+    assert c._headers == {"x-opencode-session": "s1", "User-Agent": "tropicare/1.0"}
 
 
 # Real reply from gemini-3.5-flash-lite (15 Oct 2026), shortened. The text part carries

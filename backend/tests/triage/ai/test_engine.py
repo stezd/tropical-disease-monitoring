@@ -12,7 +12,7 @@ from app.triage.advice import build_result
 from app.triage.ai import prompts
 from app.triage.ai.call_log import CallLog
 from app.triage.ai.config import AISettings
-from app.triage.ai.engine import AIEngine, shortlist
+from app.triage.ai.engine import AIEngine, _json_object, shortlist
 from app.triage.ai.llm import (
     LLMBadResponse,
     LLMReply,
@@ -189,6 +189,24 @@ def test_single_mode_too_many_candidates_keeps_top_five(
 
 
 # ── Per-candidate mode ─────────────────────────────────────────────────────
+
+
+def test_json_object_tolerates_gateway_wrapping() -> None:
+    # The 9router "medical" combo (panel + judge) answers a fenced bare array of
+    # {"candidate": ...} and then appends agent-style prose.
+    assert _json_object('{"candidates": [{"id": "ispa"}]}') == {
+        "candidates": [{"id": "ispa"}]
+    }
+    fenced = '```json\n[{"candidate": "ispa", "score": 85}]\n```\nskipped: nothing.'
+    assert _json_object(fenced) == {"candidates": [{"candidate": "ispa", "score": 85}]}
+    # Bare array, no fence.
+    assert _json_object('[{"candidate": "dbd"}]') == {
+        "candidates": [{"candidate": "dbd"}]
+    }
+    # Prose around the object.
+    assert _json_object('Sure: {"a": 1}. Hope that helps!') == {"a": 1}
+    with pytest.raises(LLMBadResponse):
+        _json_object("no json at all")
 
 
 def test_shortlist_is_cluster_plus_rule_top(
