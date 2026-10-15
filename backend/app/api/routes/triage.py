@@ -1,6 +1,6 @@
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 
 from app.adapters.outbound.sqlmodel.screening_repository import (
     SqlModelScreeningRepository,
@@ -9,6 +9,7 @@ from app.api.deps import SessionDep, get_current_active_superuser
 from app.application.ports.outbound.screening_repository import ScreeningRepository
 from app.application.use_cases.score_flow import (
     EngineUnavailableError,
+    Scored,
     UnknownFlowError,
 )
 from app.composition.triage_container import (
@@ -16,7 +17,6 @@ from app.composition.triage_container import (
     get_photo_analyzer,
     get_score_use_case,
 )
-from app.core.config import settings
 from app.domain.answers import Answers as DomainAnswers
 from app.models import Screening, ScreeningPublic, ScreeningsPublic
 from app.triage.content import FlowContent
@@ -40,10 +40,18 @@ def _content(flow_id: str) -> FlowContent:
         raise HTTPException(status_code=404, detail="Flow not found")
 
 
-def score_answers(flow_id: str, answers: DomainAnswers) -> ScoreResult:
+def score_answers(
+    flow_id: str, answers: DomainAnswers, preview: bool = False
+) -> ScoreResult:
     """Score answers via the use case. Kept for backwards compatibility."""
+    return score_detailed(flow_id, answers, preview).result
+
+
+def score_detailed(
+    flow_id: str, answers: DomainAnswers, preview: bool = False
+) -> Scored:
     try:
-        return get_score_use_case().execute(flow_id, answers)
+        return get_score_use_case().execute_detailed(flow_id, answers, preview)
     except UnknownFlowError:
         raise HTTPException(status_code=404, detail="Flow not found")
     except EngineUnavailableError as e:
@@ -57,9 +65,19 @@ def read_flow(flow_id: str) -> FlowPublic:
 
 
 @router.post("/flows/{flow_id}/score")
-def score_flow(flow_id: str, answers: Answers) -> ScoreResult:
+def score_flow(
+    flow_id: str,
+    answers: Answers,
+    preview: Annotated[
+        bool,
+        Query(
+            description="True for calls during the quiz (e.g. drug pop-ups at the drug "
+            "step): scores with the rules, never with the language model."
+        ),
+    ] = False,
+) -> ScoreResult:
     """Score answers. Stateless: nothing is saved."""
-    return score_answers(flow_id, answers.to_domain())
+    return score_answers(flow_id, answers.to_domain(), preview)
 
 
 @router.post("/screenings")
@@ -67,7 +85,8 @@ def create_screening(session: SessionDep, body: ScreeningCreate) -> ScoreResult:
     """Save an anonymous screening. Only when the patient agreed (`consent=true`)."""
     if not body.consent:
         raise HTTPException(status_code=400, detail="Consent is required to save")
-    result = score_answers(body.flow_id, body.answers.to_domain())
+    scored = score_detailed(body.flow_id, body.answers.to_domain())
+    result = scored.result
     screening = Screening(
         flow_id=body.flow_id,
         answers=body.answers.model_dump(mode="json", exclude_defaults=True),
@@ -75,7 +94,8 @@ def create_screening(session: SessionDep, body: ScreeningCreate) -> ScoreResult:
         unknown=result.unknown,
         top_disease=result.top.id if result.top else None,
         top_score=result.top.score if result.top else None,
-        engine=settings.TRIAGE_SCORING_ENGINE,
+        # What actually produced the scores ("ai", "rules", "ai-fb:timeout", ...).
+        engine=scored.engine[:20],
     )
     repository: ScreeningRepository = SqlModelScreeningRepository(session)
     repository.save(screening)

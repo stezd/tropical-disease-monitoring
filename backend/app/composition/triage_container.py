@@ -5,13 +5,17 @@ Config decisions (which engine, which analyzer) live here instead of leaking int
 domain modules.
 """
 
+from typing import Literal
+
 from app.adapters.outbound.json_files.content_repository import (
     JsonFilesContentRepository,
 )
 from app.application.ports.outbound.content_repository import ContentRepository
+from app.application.ports.outbound.drug_recognizer import DrugRecognizer
 from app.application.use_cases.score_flow import ScoreFlowUseCase
 from app.core.config import settings
 from app.triage.ai import get_ai_engine
+from app.triage.ai.drugs import get_drug_recognizer
 from app.triage.scoring import ModelEngine, RuleEngine, ScoringEngine
 from app.triage.vision import PhotoAnalyzer, UnavailableAnalyzer
 
@@ -31,6 +35,15 @@ def get_scoring_engine() -> ScoringEngine:
     return RuleEngine()
 
 
+def get_drug_recognizer_port() -> DrugRecognizer | None:
+    """Drug recognition for the drug pop-ups, or None (keywords only).
+
+    Independent of the scoring engine: on whenever TRIAGE_AI_DRUGS_ENABLED and a model
+    key are set, also with TRIAGE_SCORING_ENGINE=rules. Cached: shares the quota guard.
+    """
+    return get_drug_recognizer()
+
+
 def get_photo_analyzer() -> PhotoAnalyzer:
     """The configured photo analyzer."""
     match settings.TRIAGE_PHOTO_ANALYZER:
@@ -43,9 +56,15 @@ def get_photo_analyzer() -> PhotoAnalyzer:
 def get_score_use_case(
     content: ContentRepository | None = None,
     engine: ScoringEngine | None = None,
+    drugs: DrugRecognizer | None | Literal["default"] = "default",
 ) -> ScoreFlowUseCase:
-    """Construct the score use case with default or injected dependencies."""
+    """Construct the score use case with default or injected dependencies.
+
+    Preview calls (during the quiz) always score with RuleEngine.
+    """
     return ScoreFlowUseCase(
         content or get_content_repository(),
         engine or get_scoring_engine(),
+        preview_engine=RuleEngine(),
+        drugs=get_drug_recognizer_port() if drugs == "default" else drugs,
     )

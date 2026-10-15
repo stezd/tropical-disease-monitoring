@@ -16,9 +16,10 @@ import logging
 import threading
 import time
 import uuid
+from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from concurrent.futures import TimeoutError as FuturesTimeout
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from datetime import UTC, datetime
 from functools import cache
 from typing import Any, Literal
@@ -45,7 +46,7 @@ from app.triage.ai.llm import (
     LLMTimeout,
     make_client,
 )
-from app.triage.ai.quota import QuotaGuard
+from app.triage.ai.quota import QuotaGuard, shared_quota
 from app.triage.content import FlowContent
 from app.triage.medgemma import (
     MAX_CANDIDATES,
@@ -84,6 +85,15 @@ class AIMeta:
     notes: dict[str, str] = field(default_factory=dict)
     # IDs the model returned that were not offered (dropped). Should stay 0.
     invalid_ids: int = 0
+    # True = same answers scored a moment ago (e.g. result page, then saving the
+    # screening): the earlier model result was reused, no new call.
+    cached: bool = False
+
+    def label(self) -> str:
+        """Short engine label for the screening table (max 20 characters)."""
+        if self.engine == "ai":
+            return "ai"
+        return f"ai-fb:{self.reason}"[:20] if self.fallback else "rules"
 
 
 @dataclass
@@ -160,6 +170,33 @@ class AIEngine:
         )
         self.log = log or CallLog(settings.LOG_PATH)
         self.rules = rules or RuleEngine()
+        # (flow, answers) → model result, for CACHE_TTL_S. Only model results, never
+        # fallbacks, so a retry after a failure gets a real attempt.
+        self._cache: OrderedDict[str, tuple[float, AIBreakdown]] = OrderedDict()
+        self._cache_lock = threading.Lock()
+
+    def _cache_key(self, answers: Answers, content: FlowContent) -> str:
+        return f"{content.flow.id}|{answers.model_dump_json(exclude={'taken_at'})}"
+
+    def _cached(self, key: str) -> AIBreakdown | None:
+        with self._cache_lock:
+            hit = self._cache.get(key)
+            if hit is None:
+                return None
+            at, b = hit
+            if time.monotonic() - at > self.s.CACHE_TTL_S:
+                del self._cache[key]
+                return None
+            self._cache.move_to_end(key)
+            return b
+
+    def _remember(self, key: str, b: AIBreakdown) -> None:
+        if self.s.CACHE_TTL_S <= 0:
+            return
+        with self._cache_lock:
+            self._cache[key] = (time.monotonic(), b)
+            while len(self._cache) > 256:
+                self._cache.popitem(last=False)
 
     @property
     def model(self) -> str:
@@ -175,6 +212,10 @@ class AIEngine:
     # ── ScoringEngine ──────────────────────────────────────────────────────
 
     def score(self, answers: Answers, content: FlowContent) -> AIBreakdown:
+        key = self._cache_key(answers, content)
+        if (hit := self._cached(key)) is not None and hit.meta is not None:
+            meta = replace(hit.meta, cached=True, calls=0, latency_ms=0)
+            return replace(hit, meta=meta)
         start = time.monotonic()
         run = _Run(deadline=start + self.s.DEADLINE_S)
         rid = uuid.uuid4().hex[:12]
@@ -226,7 +267,16 @@ class AIEngine:
         meta.calls = run.calls
         meta.latency_ms = int((time.monotonic() - start) * 1000)
         self._write_log(content, req, rule_b, result, meta, run)
-        return AIBreakdown(result.scores, result.reasons, result.ranked, meta)
+        out = AIBreakdown(
+            scores=result.scores,
+            reasons=result.reasons,
+            ranked=result.ranked,
+            engine=meta.label(),
+            meta=meta,
+        )
+        if meta.engine == "ai":
+            self._remember(key, out)
+        return out
 
     # ── Calls ──────────────────────────────────────────────────────────────
 
@@ -440,4 +490,5 @@ class AIEngine:
 def get_ai_engine() -> AIEngine:
     """One engine per process, so the quota guard sees every request."""
     s = AISettings()
-    return AIEngine(s, make_client(s))
+    quota = shared_quota(s.RPM_LIMIT, s.RPD_LIMIT, s.COOLDOWN_S)
+    return AIEngine(s, make_client(s), quota=quota)

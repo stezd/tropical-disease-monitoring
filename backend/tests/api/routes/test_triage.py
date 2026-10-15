@@ -77,6 +77,8 @@ def test_save_screening(client: TestClient, db: Session) -> None:
     rows = db.exec(select(Screening).where(Screening.top_disease == "malaria")).all()
     assert rows
     assert rows[-1].answers["pattern"] == "malaria"
+    # The engine that actually produced the scores (default config: rules).
+    assert rows[-1].engine == "rules"
 
 
 def test_list_screenings_superuser_only(

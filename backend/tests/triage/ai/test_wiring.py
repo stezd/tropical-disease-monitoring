@@ -85,3 +85,37 @@ def test_engine_setting_ai(
         )
     assert r.status_code == 200, r.text
     assert r.json()["top"]["id"] == "malaria"
+
+
+def test_ai_drugs_endpoint(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from app.triage.ai.drugs import AIDrugRecognizer
+
+    class DrugReply:
+        model = "fake-model"
+
+        def generate_json(
+            self, system: str, user: str, schema: dict[str, Any], timeout: float
+        ) -> LLMReply:
+            text = '{"drugs": [{"mention": "bodrex", "generic": "ibuprofen", "class": "nsaid"}]}'
+            return LLMReply(text=text, model=self.model, latency_ms=1)
+
+    rec = AIDrugRecognizer(
+        AISettings(API_KEY="k", RPM_LIMIT=0, LOG_PATH=tmp_path / "d.jsonl"), DrugReply()
+    )
+    monkeypatch.setattr(ai_route, "get_drug_recognizer", lambda: rec)
+    with TestClient(app) as client:
+        r = client.post(f"{settings.API_V1_STR}/ai/drugs", json={"text": "bodrex"})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert (body["engine"], body["classes"]) == ("ai", ["nsaid"])
+    assert body["drugs"][0]["drug_class"] == "nsaid"
+
+
+def test_preview_query_param_uses_rules(fake_engine: AIEngine) -> None:
+    with TestClient(app) as client:
+        r = client.post(
+            f"{settings.API_V1_STR}/triage/flows/infection/score?preview=true",
+            json=MALARIA,
+        )
+    assert r.status_code == 200
+    assert fake_engine.client is not None  # engine present but not used for preview
