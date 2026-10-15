@@ -975,9 +975,13 @@
 }
 .tiles .opt.wide .ot {
   flex: none;
+  margin: 0 1.75rem; /* clear of the check on the right, still centered */
 }
+/* Check at the right edge, like the circles on the other tiles. */
 .tiles .opt.wide .ck {
-  position: static;
+  top: 50%;
+  right: var(--sp-3);
+  transform: translateY(-50%);
 }
 /* Phone: a lone last tile (odd count) spans the row instead of sitting half-empty. */
 @media (max-width: 39.99rem) {
@@ -1031,18 +1035,18 @@
   background: var(--tc-red);
   border-color: var(--tc-red);
 }
-.opt.safe {
+/* "Tidak ada": a normal tappable option at rest (field fill, empty check), so
+   the green does not read as a status; green only once picked. */
+.opt.safe .oe {
   background: var(--tc-mint);
-  border-color: var(--tc-mint);
-  color: var(--tc-mint-ink);
-}
-.opt.safe .ot,
-.opt.safe .od {
-  color: var(--tc-mint-ink);
 }
 .opt.safe.on {
   border-color: var(--tc-green);
   background: var(--tc-mint);
+}
+.opt.safe.on .ot,
+.opt.safe.on .od {
+  color: var(--tc-mint-ink);
 }
 .opt.safe.on .ck {
   background: var(--tc-green);
@@ -1872,6 +1876,20 @@
 }
 .frow .fld.age {
   flex: 0 0 7rem;
+}
+/* Sex control drops under the age field when the row is too narrow for both
+   labels (large text on phones), instead of the labels overflowing. */
+.frow {
+  flex-wrap: wrap;
+}
+.frow > .fld:not(.age) {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+@media (max-width: 39.9375rem) {
+  .frow .seg button {
+    font-size: var(--fs-sm);
+  }
 }
 .seg {
   display: flex;
