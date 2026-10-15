@@ -143,3 +143,94 @@ def test_make_client_from_settings() -> None:
     assert isinstance(make_client(AISettings(API_KEY="k")), GeminiClient)
     c = make_client(AISettings(PROVIDER="openai_compat", BASE_URL="http://x/v1"))
     assert isinstance(c, OpenAICompatClient)
+
+
+# Real reply from gemini-3.5-flash-lite (15 Oct 2026), shortened. The text part carries
+# a thoughtSignature but no `thought` flag, and there is no thoughtsTokenCount.
+REAL_REPLY = {
+    "candidates": [
+        {
+            "content": {
+                "parts": [
+                    {
+                        "text": '{"candidates":[{"id":"malaria","note":"Menggigil berkala, Papua.","score":90,"evidence":["F1"],"sources":[]}]}',
+                        "thoughtSignature": "EmAKXgFpFH0T",
+                    }
+                ],
+                "role": "model",
+            },
+            "finishReason": "STOP",
+            "index": 0,
+        }
+    ],
+    "usageMetadata": {
+        "promptTokenCount": 47,
+        "candidatesTokenCount": 106,
+        "totalTokenCount": 153,
+    },
+    "modelVersion": "gemini-3.5-flash-lite",
+}
+
+
+def test_gemini_real_reply_shape() -> None:
+    r = gemini(lambda _r: httpx.Response(200, json=REAL_REPLY)).generate_json(
+        "S", "U", SCHEMA, 3
+    )
+    assert json.loads(r.text)["candidates"][0]["score"] == 90
+    assert (r.model, r.input_tokens, r.output_tokens) == (
+        "gemini-3.5-flash-lite",
+        47,
+        106,
+    )
+
+
+@pytest.mark.parametrize("status", [503, 429])
+def test_gemini_fallback_model_on_busy_or_quota(status: int) -> None:
+    urls: list[str] = []
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        urls.append(str(req.url))
+        if "gemini-main" in str(req.url):
+            return httpx.Response(status, text="busy")
+        return httpx.Response(200, json=REAL_REPLY)
+
+    c = gemini(handler, fallback_model="gemini-lite")
+    c.model = "gemini-main"
+    r = c.generate_json("S", "U", SCHEMA, 3)
+    assert r.model == "gemini-3.5-flash-lite"
+    assert [u.split("/models/")[1] for u in urls] == [
+        "gemini-main:generateContent",
+        "gemini-lite:generateContent",
+    ]
+
+
+def test_gemini_no_fallback_on_bad_request() -> None:
+    calls: list[str] = []
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        calls.append(str(req.url))
+        return httpx.Response(400, text="bad schema")
+
+    with pytest.raises(LLMError):
+        gemini(handler, fallback_model="gemini-lite").generate_json("S", "U", SCHEMA, 3)
+    assert len(calls) == 1
+
+
+def test_gemini_fallback_also_busy_raises() -> None:
+    with pytest.raises(LLMServerError):
+        gemini(
+            lambda _r: httpx.Response(503, text="busy"), fallback_model="gemini-lite"
+        ).generate_json("S", "U", SCHEMA, 3)
+
+
+def test_make_client_passes_fallback_model() -> None:
+    c = make_client(
+        AISettings(
+            API_KEY="k",
+            MODEL="gemini-3.6-flash",
+            FALLBACK_MODEL="gemini-3.5-flash-lite",
+        )
+    )
+    assert isinstance(c, GeminiClient)
+    assert (c.model, c.fallback_model) == ("gemini-3.6-flash", "gemini-3.5-flash-lite")
+    assert AISettings.model_fields["MODEL"].default == "gemini-3.5-flash-lite"

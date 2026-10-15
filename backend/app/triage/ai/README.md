@@ -79,7 +79,9 @@ Pembangun sementara memakai BM25 per penyakit. Notebook Colab (EmbeddingGemma) b
 
 ## Ganti model
 
-Hanya config: `TRIAGE_AI_MODEL`, atau `TRIAGE_AI_PROVIDER=openai_compat` + `TRIAGE_AI_BASE_URL=http://<server-gpu>:8000/v1` untuk MedGemma di vLLM. Naikkan `PROMPT_VERSION` di `prompts.py` setiap kali prompt atau skema berubah.
+Bawaan: `gemini-3.5-flash-lite`. Model ini sudah dicoba dengan key sungguhan pada 15 Okt 2026 dan menjawab sesuai skema. `gemini-3.6-flash` menjawab 503 (server sibuk) tiga kali berturut-turut. Untuk memakai Flash sebagai model utama, set `TRIAGE_AI_MODEL=gemini-3.6-flash` dan `TRIAGE_AI_FALLBACK_MODEL=gemini-3.5-flash-lite`. Saat Flash menjawab 503 atau 429, Flash-Lite dicoba sekali sebelum service jatuh ke aturan, dan log mencatat model mana yang menjawab.
+
+Cara lain cukup lewat config: `TRIAGE_AI_MODEL`, atau `TRIAGE_AI_PROVIDER=openai_compat` + `TRIAGE_AI_BASE_URL=http://<server-gpu>:8000/v1` untuk MedGemma di vLLM. Naikkan `PROMPT_VERSION` di `prompts.py` setiap kali prompt atau skema berubah.
 
 ## Privasi (perlu keputusan tim)
 

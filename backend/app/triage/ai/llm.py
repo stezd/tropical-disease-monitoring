@@ -112,8 +112,12 @@ class GeminiClient:
         thinking_level: str = "",
         temperature: float = 0.0,
         http: httpx.Client | None = None,
+        fallback_model: str = "",
     ) -> None:
         self.model = model
+        # Tried once when the main model answers 503 (busy) or 429 (its quota is used
+        # up). Each Gemini model has its own free-tier quota.
+        self.fallback_model = fallback_model if fallback_model != model else ""
         self._key = api_key
         self._base = (base_url or GEMINI_BASE_URL).rstrip("/")
         self._thinking = thinking_level
@@ -122,6 +126,23 @@ class GeminiClient:
 
     def generate_json(
         self, system: str, user: str, schema: dict[str, Any], timeout: float
+    ) -> LLMReply:
+        start = time.monotonic()
+        try:
+            return self._generate(self.model, system, user, schema, timeout)
+        except LLMServerError, LLMRateLimited:
+            left = timeout - (time.monotonic() - start)
+            if not self.fallback_model or left < 1.0:
+                raise
+            return self._generate(self.fallback_model, system, user, schema, left)
+
+    def _generate(
+        self,
+        model: str,
+        system: str,
+        user: str,
+        schema: dict[str, Any],
+        timeout: float,
     ) -> LLMReply:
         config: dict[str, Any] = {
             "responseMimeType": "application/json",
@@ -137,7 +158,7 @@ class GeminiClient:
         }
         data, latency = _post(
             self._http,
-            f"{self._base}/models/{self.model}:generateContent",
+            f"{self._base}/models/{model}:generateContent",
             body,
             {"x-goog-api-key": self._key},
             timeout,
@@ -166,7 +187,7 @@ class GeminiClient:
         )
         return LLMReply(
             text=text,
-            model=str(data.get("modelVersion") or self.model),
+            model=str(data.get("modelVersion") or model),
             latency_ms=latency,
             input_tokens=usage.get("promptTokenCount"),
             output_tokens=out_tokens or None,
@@ -241,7 +262,12 @@ def make_client(s: AISettings) -> LLMClient | None:
     match s.PROVIDER:
         case "gemini" if key:
             return GeminiClient(
-                s.MODEL, key, s.BASE_URL, s.THINKING_LEVEL, s.TEMPERATURE
+                s.MODEL,
+                key,
+                s.BASE_URL,
+                s.THINKING_LEVEL,
+                s.TEMPERATURE,
+                fallback_model=s.FALLBACK_MODEL,
             )
         case "openai_compat" if s.BASE_URL:
             return OpenAICompatClient(s.MODEL, s.BASE_URL, key, s.TEMPERATURE)

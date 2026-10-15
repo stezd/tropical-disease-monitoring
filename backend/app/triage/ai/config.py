@@ -28,7 +28,12 @@ class AISettings(BaseSettings):
     # "gemini" = Google AI Studio API. "openai_compat" = any OpenAI-style server
     # (e.g. vLLM serving MedGemma on a GPU). "off" = always use RuleEngine.
     PROVIDER: Provider = "gemini"
-    MODEL: str = "gemini-3.6-flash"
+    # Flash-Lite answered reliably on the free tier (15 Oct 2026); gemini-3.6-flash
+    # answered 503 three times in a row. Flash can be the main model with Flash-Lite
+    # as FALLBACK_MODEL once it is reachable.
+    MODEL: str = "gemini-3.5-flash-lite"
+    # Gemini only. Tried once when MODEL answers 503 or 429. Empty = no second model.
+    FALLBACK_MODEL: str = ""
     API_KEY: SecretStr = SecretStr("")
     # Empty = the provider's default. Required for openai_compat (".../v1").
     BASE_URL: str = ""
