@@ -144,7 +144,7 @@ Routes use the pastel-pair idea: a **pastel band** with a **solid icon chip** an
 | Question | Poppins 600 | `lg` 1.125rem | `xl` 1.25rem | 1.25 |
 | HUD title | Poppins 600 | `lg` 1.125rem | same | 1.2 |
 | Sub-question, card section title, category title | Poppins 600 | `base` 1rem | same | 1.2 |
-| Button | Poppins 600 | `lg` 1.125rem (big: `xl` 1.25rem) | same | 1.2 |
+| Button | Poppins 600 | `base` 1rem (big: `lg` 1.125rem) | `lg` 1.125rem (big: `xl` 1.25rem) | 1.2 |
 | Number in input | Poppins 600 | `2xl` 1.5rem (temperature `3xl`) | same | 1.2 |
 | Card tab | Poppins 600, letter-spacing 0.0625rem | `sm` 0.875rem | same | 1 |
 | Option text | Poppins 500 | `sm` 0.875rem | same | 1.3 |

@@ -362,6 +362,15 @@
   padding: 0.875rem 1rem;
   font-size: var(--fs-xl);
 }
+/* Phones: one step smaller so labels like "Lihat faskes terdekat" fit. */
+@media (max-width: 39.9375rem) {
+  .btn {
+    font-size: var(--fs-base);
+  }
+  .btn.big {
+    font-size: var(--fs-lg);
+  }
+}
 .btn:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 3px;
