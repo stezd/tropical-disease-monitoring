@@ -15,7 +15,7 @@ Transisi sistem perangkat lunak medis dari purwarupa fungsional (\textit{working
     \end{equation}
     di mana $f(q_i, D)$ adalah frekuensi gejala $q_i$ dalam dokumen $D$, $|D|$ panjang dokumen, $\text{avgdl}$ rata-rata panjang dokumen korpus Panduan Praktik Klinis (PPK) FKTP, serta $k_1$ dan $b$ adalah parameter bebas kalibrasi.
     
-    \item \textbf{Siklus Kepatuhan Regulasi Kemenkes RI:} Berdasarkan UU Kesehatan No. 17 Tahun 2023 Pasal 25 Ayat 5 dan KMK No. HK.01.07/MENKES/1559/2022, inovasi digital kesehatan wajib melalui mekanisme pengawasan berlapis. Program \textit{Regulatory Sandbox} oleh \textit{Digital Transformation Office} (DTO) Kemenkes RI menetapkan alur seleksi, pengujian terbatas, hingga penerbitan status rekomendasi bersyarat yang memerlukan akumulasi bukti klinis empiris lapangan.
+    \item \textbf{Siklus Kepatuhan Regulasi Kemenkes RI:} Berdasarkan UU Kesehatan No. 17 Tahun 2023 Pasal 25 Ayat 5 \citep{UUKesehatan2023} dan KMK No. HK.01.07/MENKES/1559/2022, inovasi digital kesehatan wajib melalui mekanisme pengawasan berlapis. Program \textit{Regulatory Sandbox} oleh \textit{Digital Transformation Office} (DTO) Kemenkes RI menetapkan alur seleksi, pengujian terbatas, hingga penerbitan status rekomendasi bersyarat yang memerlukan akumulasi bukti klinis empiris lapangan.
     
     \item \textbf{Prinsip Keselamatan Pasien (\textit{Patient Safety Gating}):} Mewajibkan isolasi ketat antara validasi analitis berbasis simulasi kasus (\textit{in-silico}) pada kuartal pertama sebelum sistem berinteraksi dengan pasien nyata (\textit{in-vivo}) di FKTP pada kuartal kedua.
 \end{enumerate}
@@ -53,13 +53,13 @@ Implementasi kecerdasan buatan medis menghadapi spektrum risiko sosio-teknis yan
 \toprule
 \textbf{Dimensi} & \textbf{Identifikasi Risiko} & \textbf{Strategi Mitigasi Konkret} & \textbf{Standar Acuan} \\
 \midrule
-\textbf{Risiko Klinis} & Halusinasi LLM, bias probabilistik gejala atipikal, atau salah rujukan kondisi gawat darurat. & \textit{Client-side Red Flag bypass} memutus LLM mutlak; pembatasan RAG BM25 eksklusif pada PPK FKTP 2022; penafian legal non-diagnosis. & KMK No. 1186/2022; SKDI KKI No. 11/2012; KODEKI. \\
+\textbf{Risiko Klinis} & Halusinasi LLM, bias probabilistik gejala atipikal, atau salah rujukan kondisi gawat darurat. & \textit{Client-side Red Flag bypass} memutus LLM mutlak; pembatasan RAG BM25 eksklusif pada PPK FKTP 2022; penafian legal non-diagnosis. & KMK No. 1186/2022 \citep{Kemenkes2022a}; SKDI \citep{KKI2012}; KODEKI \citep{IDI2012}. \\
 \midrule
-\textbf{Risiko Hukum \& Privasi} & Kebocoran data kesehatan sensitif dan identitas pasien (NIK) di peladen. & Arsitektur \textit{Zero-NIK}; kalkulasi GPS efemeral di peramban via Haversine; enkripsi QR Code luring tanpa simpan di server. & UU No. 27/2022 (UU PDP Pasal 4); UU No. 1/2024 (ITE). \\
+\textbf{Risiko Hukum \& Privasi} & Kebocoran data kesehatan sensitif dan identitas pasien (NIK) di peladen. & Arsitektur \textit{Zero-NIK}; kalkulasi GPS efemeral di peramban via Haversine; enkripsi QR Code luring tanpa simpan di server. & UU PDP No. 27/2022 \citep{UUPDP2022}; UU ITE \citep{UUITE2024}. \\
 \midrule
-\textbf{Risiko Teknis} & Terputusnya internet (\textit{blank spot} / latensi tinggi) di wilayah 3T saat darurat. & PWA \textit{offline caching} via \textit{Service Worker}; logika triase darurat 100\% di peramban; kompresi respons JSON payload BM25. & Cetak Biru DTO Kemenkes 2024--2030. \\
+\textbf{Risiko Teknis} & Terputusnya internet (\textit{blank spot} / latensi tinggi) di wilayah 3T saat darurat. & PWA \textit{offline caching} via \textit{Service Worker}; logika triase darurat 100\% di peramban; kompresi respons JSON payload BM25. & Cetak Biru DTO Kemenkes \citep{KemenkesDTO2024}. \\
 \midrule
-\textbf{Risiko Adopsi} & Kelelahan administratif nakes Puskesmas mengetik ulang keluhan pasien di RME. & Alur \textit{zero-retyping} (scan QR $<1$ detik tampil teks terstruktur); operasional non-intrusif tanpa mengubah SIMPUS resmi. & Permenkes No. 24/2022 tentang Rekam Medis. \\
+\textbf{Risiko Adopsi} & Kelelahan administratif nakes Puskesmas mengetik ulang keluhan pasien di RME. & Alur \textit{zero-retyping} (scan QR $<1$ detik tampil teks terstruktur); operasional non-intrusif tanpa mengubah SIMPUS resmi. & Permenkes No. 24/2022 \citep{Permenkes2022}. \\
 \bottomrule
 \end{tabularx}
 \caption{Matriks Analisis Risiko Sosio-Teknis dan Mitigasi TropiCare}

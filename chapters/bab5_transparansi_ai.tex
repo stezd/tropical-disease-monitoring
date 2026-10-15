@@ -31,18 +31,18 @@ Sejalan dengan standar integritas akademik dan arahan Kementerian Kesehatan RI m
 Tim TropiCare menegaskan bahwa kecerdasan buatan hanyalah alat bantu (\textit{assistive tool}), bukan pengambil keputusan klinis otonom. Mengingat model AI saat ini tergolong \textit{Artificial Narrow Intelligence} (ANI) yang bekerja berbasis probabilitas statistik dan rentan halusinasi jika tidak dibatasi, TropiCare menerapkan pagar pembatas manusia (\textit{Human-in-the-Loop}) pada tiga pilar krusial:
 
 \begin{enumerate}
-    \item \textbf{Validasi Medis oleh Kolaborator Klinis:} Seluruh logika pohon keputusan klinis, pembagian 20 penyakit tropis, penetapan 11 kriteria \textit{Red Flags}, dan alur rujukan dikurasi langsung oleh kolaborator mahasiswa kedokteran berdasarkan KMK No. HK.01.07/MENKES/1186/2022 dan KMK No. HK.01.07/MENKES/1936/2022. Hal ini memastikan kepatuhan mutlak pada Standar Kompetensi Dokter Indonesia (SKDI) tingkat kemampuan 3B dan 4A.
+    \item \textbf{Validasi Medis oleh Kolaborator Klinis:} Seluruh logika pohon keputusan klinis, pembagian 20 penyakit tropis, penetapan 11 kriteria \textit{Red Flags}, dan alur rujukan dikurasi langsung oleh kolaborator mahasiswa kedokteran berdasarkan KMK No. HK.01.07/MENKES/1186/2022 \citep{Kemenkes2022a} dan KMK No. HK.01.07/MENKES/1936/2022 \citep{Kemenkes2022b}. Hal ini memastikan kepatuhan mutlak pada Standar Kompetensi Dokter Indonesia \citep{KKI2012} tingkat kemampuan 3B dan 4A.
     \item \textbf{Rekayasa Perangkat Lunak Deterministik:} Arsitektur backend FastAPI, frontend React, basis data SQLModel, indeks \textit{local mirror} 13.930 faskes SATUSEHAT MSI, dan kalkulasi jarak dirancang mandiri oleh mahasiswa ilmu komputer. Keputusan memadukan aturan simbolik dengan BM25 RAG diambil sadar agar terminologi pedoman Kemenkes terpanggil secara eksak.
     \item \textbf{Keputusan Etis Pembatasan Fitur:} 
     \begin{itemize}
-        \item \textit{Penghapusan Fitur Kamera Foto Kulit:} Tim secara bulat menghapus fitur kamera ruam kulit. Secara yuridis, Pasal 4 Ayat (2) UU PDP No. 27/2022 mengklasifikasikan data kesehatan dan biometrik sebagai data spesifik berisiko tinggi. Secara klinis, model visi komputer kamera ponsel rentan bias pencahayaan dan warna kulit, sementara diagnosis ruam patognomonik wajib dikonfirmasi langsung oleh dokter melalui tanda vital dan pemeriksaan fisik.
-        \item \textit{Penolakan Integrasi Push NIK (Arsitektur Zero-NIK):} Tim menolak pengiriman NIK ke server pra-hospital demi mematuhi prinsip minimasi data UU PDP. Pengiriman NIK bersama dugaan penyakit melalui jaringan publik melanggar kerahasiaan sebelum pasien resmi berada di dalam rekam medis faskes. Digantikan dengan \textit{QR Code} luring tanpa NIK.
+        \item \textit{Penghapusan Fitur Kamera Foto Kulit:} Tim secara bulat menghapus fitur kamera ruam kulit. Secara yuridis, Pasal 4 Ayat (2) UU PDP No. 27/2022 \citep{UUPDP2022} mengklasifikasikan data kesehatan dan biometrik sebagai data spesifik berisiko tinggi. Secara klinis, model visi komputer kamera ponsel rentan bias pencahayaan dan warna kulit, sementara diagnosis ruam patognomonik wajib dikonfirmasi langsung oleh dokter melalui tanda vital dan pemeriksaan fisik.
+        \item \textit{Penolakan Integrasi Push NIK (Arsitektur Zero-NIK):} Tim menolak pengiriman NIK ke server pra-hospital demi mematuhi prinsip minimasi data UU PDP \citep{UUPDP2022}. Pengiriman NIK bersama dugaan penyakit melalui jaringan publik melanggar kerahasiaan sebelum pasien resmi berada di dalam rekam medis faskes. Digantikan dengan \textit{QR Code} luring tanpa NIK.
     \end{itemize}
 \end{enumerate}
 
 \subsection{Keselarasan dengan Panduan Etika AI Kemenkes RI dan UNESCO}
 
-Operasionalisasi TropiCare berpedoman teguh pada empat pilar etika kecerdasan buatan Kemenkes RI dan rekomendasi UNESCO (Tabel~\ref{tab:etika_ai}).
+Operasionalisasi TropiCare berpedoman teguh pada empat pilar etika kecerdasan buatan Kemenkes RI \citep{KemenkesDTO2024} dan rekomendasi UNESCO \citep{UNESCO2021} (Tabel~\ref{tab:etika_ai}).
 
 \begin{table}[H]
 \centering
@@ -63,7 +63,3 @@ Operasionalisasi TropiCare berpedoman teguh pada empat pilar etika kecerdasan bu
 \caption{Keselarasan Implementasi TropiCare dengan Prinsip Etika AI Nasional dan Global}
 \label{tab:etika_ai}
 \end{table}
-
-\begin{highlightbox}[title=\textbf{Komitmen Integritas Akademik dan Etika Medis}]
-Seluruh fakta medis, rujukan literatur klinis, batasan mediko-legal, dan arsitektur teknis dalam proposal ini telah ditinjau dan divalidasi secara langsung oleh tim pengusul bersama kolaborator medis. Tidak ada data rekayasa atau klaim fiktif yang dihasilkan oleh alat bantu kecerdasan buatan.
-\end{highlightbox}

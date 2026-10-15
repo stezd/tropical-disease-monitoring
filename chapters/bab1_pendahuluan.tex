@@ -4,31 +4,44 @@
 
 \section{Pendahuluan}
 
-\subsection{Latar Belakang dan Urgensi Masalah}
+\subsection{Latar Belakang dan Urgensi Permasalahan}
 
-[Tuliskan latar belakang permasalahan di sini. Jelaskan konteks kesehatan di Indonesia, beban ganda penyakit tropis dan penyakit tidak menular, serta hambatan akses di fasilitas kesehatan tingkat pertama (FKTP) dan wilayah kepulauan/pedalaman. Cantumkan data pendukung dan referensi seperti \citep{Kemenkes2024}].
+Transformasi layanan kesehatan primer di Indonesia menghadapi tantangan geografis dan sistemik yang kompleks. Survei Kesehatan Indonesia \citep{Kemenkes2024} mencatat beban ganda kesehatan nasional yang nyata: persistensi 20 penyakit tropis endemis dan terabaikan (\textit{Neglected Tropical Diseases} / NTD), yang terjadi bersamaan dengan lonjakan prevalensi Penyakit Tidak Menular (PTM) seperti hipertensi, diabetes melitus, dan penyakit kardiovaskular. Di tingkat komunitas hingga Fasilitas Pelayanan Kesehatan Tingkat Pertama (FKTP / Puskesmas), terdapat empat simpul permasalahan struktural:
 
 \begin{enumerate}
-    \item \textbf{[Masalah 1 - Antrean dan Administrasi FKTP]:} [Uraikan kendala antrean panjang di Puskesmas, kasus ringan SKDI 4A yang seharusnya bisa mandiri, dan pembatalan tes lab karena pasien tidak puasa].
-    \item \textbf{[Masalah 2 - Akses Geografis dan Salah Rujukan]:} [Uraikan kendala transportasi wilayah kepulauan/pedalaman dan risiko salah rujukan ke faskes tanpa stok obat program].
-    \item \textbf{[Masalah 3 - Rendahnya Skrining Mandiri Usia Produktif]:} [Uraikan rendahnya pemeriksaan berkala tensi, gula darah, dan antropometri di masyarakat tanpa alat medis].
-    \item \textbf{[Masalah 4 - Bahaya Swamedikasi dan Tanggap Darurat]:} [Uraikan risiko konsumsi obat bebas keliru seperti NSAID pada demam dengue dan keterlambatan akses darurat].
+    \item \textbf{Penumpukan Antrean dan Inefisiensi Alur FKTP:} Puskesmas kerap kewalahan menghadapi antrean panjang akibat masuknya kasus ringan tanpa komplikasi (Tingkat Kemampuan 4A Standar Kompetensi Dokter Indonesia / SKDI) yang seharusnya dapat tuntas melalui perawatan mandiri teredukasi di rumah \citep{Kemenkes2022a}. Di sisi lain, ribuan pasien PTM/lansia membatalkan pemeriksaan laboratorium karena datang dalam kondisi tidak berpuasa (\textit{post-prandial}), padahal uji glukosa darah puasa dan profil lipid mewajibkan puasa 8--12 jam sebelumnya \citep{PERKENI2024}.
+    
+    \item \textbf{Kendala Akses Transportasi dan Risiko Salah Rujukan di Wilayah Kepulauan/Pedalaman:} Masyarakat di wilayah pedalaman dan kepulauan menghadapi kendala jarak dan biaya logistik tinggi. Warga di daerah endemis (seperti Papua, Maluku, dan NTT) sering kali menempuh perjalanan jauh menuju fasilitas kesehatan, namun mendapati bahwa faskes tujuan tidak memiliki stok obat program pemerintah (seperti OAT untuk TBC, MDT Kusta, atau Praziquantel untuk Skistosomiasis).
+    
+    \item \textbf{Rendahnya Skrining Mandiri Usia Produktif Tanpa Alat Medis Rumah Tangga:} Kelompok usia produktif jarang memeriksakan diri secara berkala. Laporan SKI 2023 membuktikan bahwa 80,8\% penduduk dewasa tidak pernah mengukur lingkar perut dan 62,6\% tidak pernah memeriksa kadar gula darah \citep{Kemenkes2024}, diperparah dengan tidak tersedianya alat ukur medis (tensimeter, timbangan presisi) di mayoritas rumah tangga.
+    
+    \item \textbf{Bahaya Swamedikasi Obat Mandiri dan Keterlambatan Tanggap Darurat:} Swamedikasi obat bebas yang keliru kerap memicu perburukan fatal, seperti konsumsi NSAID (Ibuprofen/Aspirin) saat demam berdarah yang memicu perdarahan lambung masif \citep{Alam2022,Mohiuddin2023}, serta konsumsi antimotilitas (Loperamide) pada disentri yang memicu \textit{toxic megacolon} \citep{Koo2007,Schiller2020}. Selain itu, efek samping obat rutin hipertensi kerap merancukan gejala (edema perifer akibat Amlodipine disalahartikan sebagai filariasis \citep{Liang2022,Savage2020,Sica2003}, sedangkan batuk kering akibat Captopril merancukan gejala TBC \citep{Dicpinigaitis2014}). Ketiadaan penapisan tanda bahaya (\textit{Red Flags}) awal menunda aktivasi tanggap darurat pra-hospital.
 \end{enumerate}
 
 \subsection{Rumusan Masalah}
 
-[Rumuskan pertanyaan kunci yang dijawab oleh inovasi ini]:
+Berdasarkan latar belakang tersebut, rumusan masalah dalam inovasi ini adalah:
 \begin{enumerate}
-    \item Bagaimana mengembangkan sistem triase mandiri berbasis *Medical Large Language Model* yang terikat bukti klinis (*evidence-grounded*) untuk memilah keparahan kondisi tanpa risiko halusinasi?
-    \item Bagaimana merancang integrasi direktori fasilitas kesehatan nasional SATUSEHAT MSI dan rujukan terdekat berbasis privasi tanpa meminta data kependudukan sensitif?
-    \item Bagaimana menyediakan deteksi interaksi obat aktif dan proksi antropometri fisik bagi masyarakat yang tidak memiliki instrumen medis rumah tangga?
+    \item Bagaimana merancang sistem triase mandiri berbasis \textit{Evidence-Grounded Medical Large Language Model} yang terikat pada pedoman klinis resmi guna memilah tingkat keparahan kondisi pasien secara akurat tanpa halusinasi medis?
+    \item Bagaimana mengintegrasikan direktori faskes nasional SATUSEHAT \textit{Master Sarana Index} (MSI) dan sistem rujukan instan ke faskes terdekat berbasis privasi tanpa mengumpulkan data kependudukan sensitif?
+    \item Bagaimana menyediakan modul \textit{farmakovigilans} aktif dan proksi antropometri fisik tanpa instrumen medis untuk mencegah komplikasi swamedikasi obat pada masyarakat?
 \end{enumerate}
 
 \subsection{Tujuan Inovasi}
 
-[Tuliskan tujuan spesifik dan terukur dari inovasi yang diusulkan]:
+Tujuan pengembangan TropiCare adalah:
 \begin{enumerate}
-    \item Mewujudkan sistem triase mandiri pra-hospital 4 rute (Merah, Kuning Khusus, Kuning, Hijau) berstandar PPK Dokter di FKTP Kemenkes RI.
-    \item Mengotomasi navigasi rujukan faskes terdekat ber-WhatsApp dan transmisi ringkasan klinis terenkripsi (*QR Code*).
-    \item Memberikan edukasi keamanan swamedikasi obat dan kepatuhan persiapan pra-laboratorium bagi pasien.
+    \item Mewujudkan platform triase mandiri pra-hospital 4 rute klinis berjenjang (Merah, Kuning Khusus, Kuning, Hijau) berstandar KMK No. HK.01.07/MENKES/1186/2022 tentang PPK Dokter di FKTP.
+    \item Mengoptimalkan navigasi rujukan ke faskes terdekat ber-WhatsApp dan transmisi ringkasan klinis terenkripsi (\textit{QR Code} Rangkuman Pasien \textit{offline}) guna mereduksi antrean loket Puskesmas.
+    \item Memberikan edukasi keamanan konsumsi obat bebas serta panduan persiapan kepatuhan puasa pra-laboratorium bagi pasien secara presisi.
 \end{enumerate}
+
+\subsection{Landasan Regulasi dan Kepatuhan Mediko-Legal}
+
+Operasionalisasi TropiCare berpijak pada regulasi kesehatan dan hukum nasional:
+\begin{itemize}
+    \item \textbf{UU RI No. 17 Tahun 2023 tentang Kesehatan:} Pemanfaatan teknologi kecerdasan buatan dan telemedisin untuk kesinambungan perawatan masyarakat \citep{UUKesehatan2023}.
+    \item \textbf{Permenkes No. 3 Tahun 2026 tentang Penanggulangan Penyakit:} Konsolidasi tata kelola penyakit menular tular vektor/zoonosis dan pendekatan \textit{One Health} \citep{Permenkes2026}.
+    \item \textbf{KMK No. HK.01.07/MENKES/1186/2022 tentang PPK Dokter di FKTP:} Standar acuan kompetensi klinis SKDI bagi 20 penyakit tropis dan sindrom metabolik \citep{Kemenkes2022a}.
+    \item \textbf{UU RI No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP):} Penerapan prinsip minimasi data dan arsitektur \textit{Zero-NIK} tanpa penyimpanan data pribadi sensitif di peladen \citep{UUPDP2022}.
+\end{itemize}

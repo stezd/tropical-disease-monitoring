@@ -44,9 +44,9 @@
 % # 4. Spasi & Paragraf
 %--------------------------------------------------------------
 \usepackage{setspace}
-\onehalfspacing                  % Spasi 1.5 untuk kenyamanan membaca juri
+\setstretch{1.15}                % Spasi 1.15 kompak standar proposal modern
 \usepackage{indentfirst}         % Indentasi paragraf pertama
-\setlength{\parindent}{1cm}     % Indentasi standar IPB 1 cm
+\setlength{\parindent}{0.8cm}   % Indentasi awal paragraf
 \setlength{\parskip}{2pt plus 1pt minus 1pt} % Jarak antar paragraf kompak
 
 %--------------------------------------------------------------
@@ -147,9 +147,9 @@
 }
 
 %--------------------------------------------------------------
-% # 9. Referensi & Sitasi (Author-Year Standar IPB)
+% # 9. Referensi & Sitasi (Gaya IEEE Numerik [1], [2])
 %--------------------------------------------------------------
-\usepackage[authoryear,round]{natbib}
+\usepackage[numbers,sort&compress]{natbib}
 \setlength{\bibsep}{2pt}
 
 %--------------------------------------------------------------
@@ -167,6 +167,7 @@
 % Kontrol List / Poin
 \usepackage{enumitem}
 \setlist{nosep, leftmargin=1.5em}
+\usepackage{multicol}
 
 %==============================================================
 % # DOKUMEN UTAMA
@@ -195,8 +196,13 @@
 \input{chapters/bab5_transparansi_ai}
 
 % 7. Daftar Pustaka
-\renewcommand{\refname}{DAFTAR PUSTAKA}
-\bibliographystyle{apalike}
+\section*{DAFTAR PUSTAKA}
+\renewcommand{\bibsection}{}
+\renewcommand{\bibfont}{\scriptsize}
+\setlength{\bibsep}{1.5pt}
+\begin{multicols}{2}
+\bibliographystyle{ieeetr}
 \bibliography{refs/daftar_pustaka}
+\end{multicols}
 
 \end{document}
