@@ -1,24 +1,69 @@
 %==============================================================
-% BAB V TRANSPARANSI PENGGUNAAN KECERDASAN BUATAN (AI)
-% (Bagian Wajib Sesuai Ketentuan Kompetisi Hackathon)
+% BAB V TRANSPARANSI PENGGUNAAN KECERDASAN BUATAN
 %==============================================================
 
-\section{Transparansi Penggunaan Kecerdasan Buatan (AI)}
+\section{Transparansi Penggunaan Kecerdasan Buatan}
 
-\subsection{Pernyataan Transparansi AI dalam Penyusunan Proposal}
+\subsection{Pernyataan Transparansi AI dalam Siklus Pengembangan}
 
-Sesuai dengan ketentuan transparansi etika kecerdasan buatan, tim penyusun menyatakan penggunaan alat bantu AI dalam proses pengembangan ide dan penyusunan proposal sebagai berikut:
+Sejalan dengan standar integritas akademik dan arahan Kementerian Kesehatan RI mengenai etika kecerdasan buatan, tim pengembang menyampaikan pernyataan terbuka terkait pemanfaatan alat bantu \textit{Generative AI} dalam proses perancangan, penulisan proposal, dan rekayasa TropiCare. AI diposisikan secara ketat sebagai akselerator kognitif, penyunting sintaksis bahasa, dan asisten kode (\textit{coding copilot}), tanpa menggantikan orisinalitas pemikiran, pertimbangan klinis, maupun tanggung jawab rekayasa tim manusia (Tabel~\ref{tab:transparansi_ai}).
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{p{3cm} X X}
+\toprule
+\textbf{Fase Aktivitas} & \textbf{Kontribusi Alat Bantu AI} & \textbf{Verifikasi \& Pengawasan Manusia} \\
+\midrule
+\textbf{Perancangan Ide \& Konseptualisasi} & Eksplorasi divergen skenario risiko (\textit{edge-cases}), simulasi variasi kosakata awam untuk uji ketahanan leksikal, dan komparasi literatur sistem triase global. & Seleksi kritis oleh tim berdasarkan realitas faskes primer Indonesia dan keselarasan dengan regulasi Kemenkes RI. \\
+\midrule
+\textbf{Penyusunan Naskah Proposal} & Perumusan draf awal kalimat, perbaikan tata bahasa/sintaksis formal, dan penataan struktur matriks komparasi. & Penyuntingan substansial, verifikasi silang dokumen regulasi (UU PDP, UU Kesehatan, KMK PPK FKTP), dan penulisan ulang analisis kausal oleh tim. \\
+\midrule
+\textbf{Rekayasa Kode \& Tata Letak} & Optimasi sintaksis dokumen LaTeX/TikZ serta generasi kerangka kode dasar (\textit{boilerplate}) FastAPI dan React. & Penulisan mandiri logika inti (algoritma BM25 RAG, \textit{rule-engine} 11 \textit{Red Flags}, serialisasi QR), tinjauan kode baris-demi-baris, dan audit pengujian unit. \\
+\bottomrule
+\end{tabularx}
+\caption{Matriks Transparansi Pemanfaatan AI dalam Siklus Proyek}
+\label{tab:transparansi_ai}
+\end{table}
+
+\subsection{Batasan Sistem dan Pengawasan Manusia (\textit{Human-in-the-Loop})}
+
+Tim TropiCare menegaskan bahwa kecerdasan buatan hanyalah alat bantu (\textit{assistive tool}), bukan pengambil keputusan klinis otonom. Mengingat model AI saat ini tergolong \textit{Artificial Narrow Intelligence} (ANI) yang bekerja berbasis probabilitas statistik dan rentan halusinasi jika tidak dibatasi, TropiCare menerapkan pagar pembatas manusia (\textit{Human-in-the-Loop}) pada tiga pilar krusial:
 
 \begin{enumerate}
-    \item \textbf{Eksplorasi Ide dan Penajaman Struktur Konseptual:} [Jelaskan peran model AI (misal LLM) dalam membantu *brainstorming*, perumusan alternatif judul, dan penataan kerangka proposal].
-    \item \textbf{Penyusunan Draf dan Perbaikan Tata Bahasa:} [Jelaskan pemanfaatan AI untuk merapikan gaya bahasa, sintaksis, dan pengecekan istilah teknis].
-    \item \textbf{Penyusunan Kode Template dan Visualisasi:} [Jelaskan peran AI dalam pembuatan struktur template LaTeX dan tata letak grafis TikZ].
+    \item \textbf{Validasi Medis oleh Kolaborator Klinis:} Seluruh logika pohon keputusan klinis, pembagian 20 penyakit tropis, penetapan 11 kriteria \textit{Red Flags}, dan alur rujukan dikurasi langsung oleh kolaborator mahasiswa kedokteran berdasarkan KMK No. HK.01.07/MENKES/1186/2022 dan KMK No. HK.01.07/MENKES/1936/2022. Hal ini memastikan kepatuhan mutlak pada Standar Kompetensi Dokter Indonesia (SKDI) tingkat kemampuan 3B dan 4A.
+    \item \textbf{Rekayasa Perangkat Lunak Deterministik:} Arsitektur backend FastAPI, frontend React, basis data SQLModel, indeks \textit{local mirror} 13.930 faskes SATUSEHAT MSI, dan kalkulasi jarak dirancang mandiri oleh mahasiswa ilmu komputer. Keputusan memadukan aturan simbolik dengan BM25 RAG diambil sadar agar terminologi pedoman Kemenkes terpanggil secara eksak.
+    \item \textbf{Keputusan Etis Pembatasan Fitur:} 
+    \begin{itemize}
+        \item \textit{Penghapusan Fitur Kamera Foto Kulit:} Tim secara bulat menghapus fitur kamera ruam kulit. Secara yuridis, Pasal 4 Ayat (2) UU PDP No. 27/2022 mengklasifikasikan data kesehatan dan biometrik sebagai data spesifik berisiko tinggi. Secara klinis, model visi komputer kamera ponsel rentan bias pencahayaan dan warna kulit, sementara diagnosis ruam patognomonik wajib dikonfirmasi langsung oleh dokter melalui tanda vital dan pemeriksaan fisik.
+        \item \textit{Penolakan Integrasi Push NIK (Arsitektur Zero-NIK):} Tim menolak pengiriman NIK ke server pra-hospital demi mematuhi prinsip minimasi data UU PDP. Pengiriman NIK bersama dugaan penyakit melalui jaringan publik melanggar kerahasiaan sebelum pasien resmi berada di dalam rekam medis faskes. Digantikan dengan \textit{QR Code} luring tanpa NIK.
+    \end{itemize}
 \end{enumerate}
 
-\subsection{Prinsip Pengawasan dan Validasi Manusia (\textit{Human-in-the-Loop})}
+\subsection{Keselarasan dengan Panduan Etika AI Kemenkes RI dan UNESCO}
 
-[Jelaskan bahwa seluruh gagasan inti, desain arsitektur, verifikasi kebenaran medis klinis, dan keputusan etika hukum tetap sepenuhnya divalidasi dan dipertanggungjawabkan oleh anggota tim manusia].
+Operasionalisasi TropiCare berpedoman teguh pada empat pilar etika kecerdasan buatan Kemenkes RI dan rekomendasi UNESCO (Tabel~\ref{tab:etika_ai}).
 
-\begin{highlightbox}[title=\textbf{Komitmen Integritas Akademik dan Etika Klinis}]
-Seluruh fakta medis, rujukan literatur klinis, batasan hukum kedokteran, dan arsitektur teknis yang tercantum dalam proposal ini telah ditinjau dan divalidasi secara manual oleh tim pengusul bersama kolaborator medis. Tidak ada data rekayasa atau klaim fiktif yang dihasilkan oleh alat bantu kecerdasan buatan.
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{p{3.2cm} X X}
+\toprule
+\textbf{Prinsip Etika} & \textbf{Mandat Regulasi} & \textbf{Implementasi Konkret pada TropiCare} \\
+\midrule
+\textbf{Transparansi \& Keterjelasan (\textit{Explainable AI})} & AI medis tidak boleh bersifat \textit{black-box}; penalaran sistem harus dapat diaudit. & Fitur \textbf{``Kenapa aku menebak ini?''} yang menampilkan kutipan langsung kriteria klinis KMK PPK FKTP 2022 sebagai dasar skor. \\
+\midrule
+\textbf{Akuntabilitas Mediko-Legal} & Batasan tegas fungsi perangkat lunak dengan wewenang diagnosis dokter berlisensi. & Sistem dibatasi murni pada \textbf{triase pra-hospital non-diagnosis}; tidak pernah meresepkan obat atau antibiotik mandiri (mencegah resistensi antimikroba). \\
+\midrule
+\textbf{Keamanan Pasien (\textit{Safety-First / Do No Harm})} & Pencegahan cedera atau keterlambatan akibat kegagalan algoritmik. & \textit{Client-Side 11 Red Flags Bypass} yang melompat langsung ke rute darurat IGD/119 dalam $<500\text{ ms}$ di peramban tanpa menunggu inferensi server. \\
+\midrule
+\textbf{Pelindungan Privasi (\textit{Privacy-by-Design})} & Penghormatan kedaulatan individu atas data kesehatan pribadi spesifik. & Arsitektur \textbf{Zero-NIK}, kalkulasi GPS efemeral via Haversine tanpa simpan di server, eliminasi foto biometrik, dan pertukaran data via QR luring. \\
+\bottomrule
+\end{tabularx}
+\caption{Keselarasan Implementasi TropiCare dengan Prinsip Etika AI Nasional dan Global}
+\label{tab:etika_ai}
+\end{table}
+
+\begin{highlightbox}[title=\textbf{Komitmen Integritas Akademik dan Etika Medis}]
+Seluruh fakta medis, rujukan literatur klinis, batasan mediko-legal, dan arsitektur teknis dalam proposal ini telah ditinjau dan divalidasi secara langsung oleh tim pengusul bersama kolaborator medis. Tidak ada data rekayasa atau klaim fiktif yang dihasilkan oleh alat bantu kecerdasan buatan.
 \end{highlightbox}
