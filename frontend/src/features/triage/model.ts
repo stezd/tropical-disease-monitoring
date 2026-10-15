@@ -22,6 +22,8 @@ export type QuizAnswers = {
   bp_dia: string
   no_bp: boolean
   glucose: string
+  uric_acid: string
+  cholesterol_total: string
   vital_proxy: string[]
   height: string
   weight: string
@@ -29,16 +31,10 @@ export type QuizAnswers = {
   nutrition_proxy: "longgar" | "gemuk" | "normal" | null
   body: string[]
   pain: number | null
-  findings: string[]
   taken_at: string | null
 }
 
-export type MultiKey =
-  | "red_flags"
-  | "companion"
-  | "eco"
-  | "findings"
-  | "vital_proxy"
+export type MultiKey = "red_flags" | "companion" | "eco" | "vital_proxy"
 
 export const blankAnswers = (): QuizAnswers => ({
   who: null,
@@ -58,6 +54,8 @@ export const blankAnswers = (): QuizAnswers => ({
   bp_dia: "",
   no_bp: false,
   glucose: "",
+  uric_acid: "",
+  cholesterol_total: "",
   vital_proxy: [],
   height: "",
   weight: "",
@@ -65,7 +63,6 @@ export const blankAnswers = (): QuizAnswers => ({
   nutrition_proxy: null,
   body: [],
   pain: null,
-  findings: [],
   taken_at: null,
 })
 
@@ -107,6 +104,10 @@ export const tempValid = (t: number) => t >= 34 && t <= 43
 export const sysValid = (n: number) => n >= 50 && n <= 300
 export const diaValid = (n: number) => n >= 30 && n <= 200
 export const glucoseValid = (n: number) => n >= 10 && n <= 1000
+/** Gula darah sewaktu (GDS) from this value is "Tinggi" (DR 2026-10-15, backend domain/vitals.py). */
+export const GLUCOSE_HIGH_FROM = 200
+export const uricValid = (n: number) => n >= 1 && n <= 30
+export const cholesterolValid = (n: number) => n >= 50 && n <= 600
 
 export function bmiOf(a: QuizAnswers): number | null {
   const h = num(a.height)
@@ -163,12 +164,14 @@ export type StepId =
   | "q5"
   | "q6"
   | "q7"
+  | "labs"
   | "q8"
   | "q9"
-  | "q10"
 
 export function steps(a: QuizAnswers, flow: FlowPublic): StepId[] {
   return flow.steps.filter((s) => {
+    // Unknown ids (e.g. "q10" from a newer backend) are skipped, not crashed on.
+    if (!(s in STAGE_OF)) return false
     if (s === "q3") return !!flow.patterns[a.complaint ?? ""]
     if (s === "q4") return !!companionQuestion(a, flow)
     return true
@@ -185,9 +188,9 @@ export const STAGE_OF: Record<StepId, number> = {
   q5: 3,
   q6: 3,
   q7: 4,
+  labs: 4,
   q8: 4,
   q9: 4,
-  q10: 4,
 }
 
 /** Number within the API's accepted range, else null (the API would reject it). */
@@ -224,6 +227,8 @@ export function toApi(a: QuizAnswers): Answers {
     bp_dia: dia === null ? null : Math.round(dia),
     no_bp: a.no_bp,
     glucose: inRange(a.glucose, glucoseValid),
+    uric_acid: inRange(a.uric_acid, uricValid),
+    cholesterol_total: inRange(a.cholesterol_total, cholesterolValid),
     vital_proxy: a.no_thermo || a.no_bp ? a.vital_proxy : [],
     height_cm: optNum(a.height, 300),
     weight_kg: optNum(a.weight, 500),
@@ -231,7 +236,6 @@ export function toApi(a: QuizAnswers): Answers {
     nutrition_proxy: a.nutrition_proxy,
     body: a.body,
     pain: a.body.length ? a.pain : null,
-    findings: a.findings,
     taken_at: a.taken_at,
   }
 }

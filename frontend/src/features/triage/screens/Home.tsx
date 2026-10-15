@@ -68,8 +68,8 @@ export function HomeScreen() {
           >
             🩺 Cek risiko penyakit jangka panjang
           </Link>
-          {loggedIn && (
-            <div className="row-links">
+          <div className="row-links">
+            {loggedIn ? (
               <button
                 type="button"
                 className="btn btn-ghost"
@@ -78,8 +78,12 @@ export function HomeScreen() {
               >
                 👤 {user?.full_name || user?.email || "Akun saya"}
               </button>
-            </div>
-          )}
+            ) : (
+              <Link className="btn btn-ghost" to="/login">
+                👤 Masuk / Buat akun
+              </Link>
+            )}
+          </div>
         </div>
         <p className="disc">
           🩺 Skrining awal · masuk akun bersifat opsional ·{" "}
@@ -94,7 +98,10 @@ export function HomeScreen() {
           onClose={() => setModal(null)}
           actions={
             <>
-              <Link className="btn btn-primary" to="/settings">
+              <Link className="btn btn-primary" to="/riwayat">
+                📜 Riwayat skrining
+              </Link>
+              <Link className="btn btn-secondary" to="/settings">
                 ⚙ Pengaturan akun
               </Link>
               <button
@@ -113,7 +120,8 @@ export function HomeScreen() {
         >
           <h3>Halo, {user?.full_name || user?.email}! 👋</h3>
           <p className="saveinfo">
-            Akun hanya untuk masuk. Riwayat skrining belum disimpan di akun.
+            Hasil skrining yang kamu simpan ada di Riwayat skrining. Kamu bisa
+            menghapusnya kapan saja.
           </p>
         </Modal>
       )}

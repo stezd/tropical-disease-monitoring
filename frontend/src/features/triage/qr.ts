@@ -18,7 +18,6 @@ const ARRAY_KEYS = [
   "eco",
   "vital_proxy",
   "body",
-  "findings",
 ] as const
 const STRING_KEYS = [
   "who",
@@ -34,6 +33,8 @@ const NUMBER_KEYS = [
   "bp_sys",
   "bp_dia",
   "glucose",
+  "uric_acid",
+  "cholesterol_total",
   "height_cm",
   "weight_kg",
   "waist_cm",
@@ -68,11 +69,13 @@ export function unpackAnswers(code: string): Packed {
   const a: Answers = {}
   for (const k of ARRAY_KEYS) {
     if (Array.isArray(o[k])) {
-      a[k] = o[k].filter((x: unknown) => typeof x === "string").slice(0, 20)
+      a[k] = o[k].filter((x: unknown) => typeof x === "string").slice(0, 30)
     }
   }
   for (const k of STRING_KEYS) {
-    if (typeof o[k] === "string") a[k] = o[k].slice(0, 200)
+    // "drugs" allows 500 characters in the API (Answers.drugs); the rest 200.
+    if (typeof o[k] === "string")
+      a[k] = o[k].slice(0, k === "drugs" ? 500 : 200)
   }
   for (const k of NUMBER_KEYS) {
     if (typeof o[k] === "number" && Number.isFinite(o[k])) a[k] = o[k]

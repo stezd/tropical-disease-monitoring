@@ -49,21 +49,15 @@ export function whatsappNumber(phone?: string | null): string | null {
   return intl.length >= 10 && intl.length <= 15 ? intl : null
 }
 
-export const waURL = (number: string) => `https://wa.me/${number}`
+/** WhatsApp chat with a prefilled message. The patient opens it and presses
+ * send themself; our server sends nothing. */
+export const waURL = (number: string, text?: string) =>
+  `https://wa.me/${number}${text ? `?text=${encodeURIComponent(text)}` : ""}`
 
 export const telURL = (phone: string) => `tel:${toIntl(phone)}`
 
-/** Directions straight to one facility: exact coordinates when the mirror has
- * them, otherwise a search by name. Shareable, no API key. */
-export function routeURL(f: {
-  latitude?: number | null
-  longitude?: number | null
+/** Google Maps search for one facility by name and city. Shareable, no API key. */
+export const facilityMapsURL = (f: {
   name: string
   city_name?: string | null
-}): string {
-  const dest =
-    f.latitude != null && f.longitude != null
-      ? `${f.latitude},${f.longitude}`
-      : [f.name, f.city_name].filter(Boolean).join(", ")
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&travelmode=driving`
-}
+}) => mapsURL([f.name, f.city_name].filter(Boolean).join(" "))

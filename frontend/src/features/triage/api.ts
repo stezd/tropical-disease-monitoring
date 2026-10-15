@@ -1,5 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 
 import {
   type Answers,
@@ -27,15 +26,24 @@ export function useFlow(flowId = FLOW_ID) {
   return { flow, offline: !query.data && query.isError, query }
 }
 
+/** Score answers. `preview` = rules only, never a model call: for mid-quiz
+ * checks such as the drug pop-ups after step q6. The final result (Thinking,
+ * Result) uses the server's configured engine. */
 export async function scoreAnswers(
   answers: Answers,
   flowId: string,
+  preview = false,
 ): Promise<ScoreResult> {
   return (
-    await TriageService.scoreFlow({ path: { flow_id: flowId }, body: answers })
+    await TriageService.scoreFlow({
+      path: { flow_id: flowId },
+      body: answers,
+      ...(preview ? { query: { preview: true } } : {}),
+    })
   ).data
 }
 
+/** Query key for the final result (shared by Thinking and Result). */
 export const scoreKey = (answers: Answers, flowId: string) => [
   "triage",
   "score",
@@ -43,28 +51,10 @@ export const scoreKey = (answers: Answers, flowId: string) => [
   answers,
 ]
 
-function useDebounced<T>(value: T, ms: number): T {
-  const [v, setV] = useState(value)
-  useEffect(() => {
-    const t = setTimeout(() => setV(value), ms)
-    return () => clearTimeout(t)
-  }, [value, ms])
-  return v
-}
-
-/** Live score for the mascot meter. Silent when the server is unreachable.
- * Only runs once a complaint is chosen and no red flag is picked. */
-export function useLiveScore(answers: Answers, flowId: string) {
-  const debounced = useDebounced(answers, 250)
-  const enabled =
-    !!debounced.complaint &&
-    !(debounced.red_flags ?? []).some((x) => x !== "none")
-  return useQuery({
-    queryKey: scoreKey(debounced, flowId),
-    queryFn: () => scoreAnswers(debounced, flowId),
-    enabled,
-    placeholderData: keepPreviousData,
-    staleTime: Number.POSITIVE_INFINITY,
-    retry: false,
-  })
-}
+/** Separate key for rule-only previews, so they never stand in for the result. */
+export const previewKey = (answers: Answers, flowId: string) => [
+  "triage",
+  "preview",
+  flowId,
+  answers,
+]

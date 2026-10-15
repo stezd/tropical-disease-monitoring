@@ -1,34 +1,21 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
-import { type ReactNode, useMemo, useRef, useState } from "react"
+import { type ReactNode, type Ref, useMemo, useRef, useState } from "react"
 
 import type { FlowPublic, ScoreResult } from "@/client"
-import { scoreAnswers, scoreKey } from "../api"
+import { previewKey, scoreAnswers } from "../api"
 import { hop, Mascot, Sparkles } from "../components/Art"
 import { BodyMap, PainScale } from "../components/Body"
-import {
-  mergeFindings,
-  type PhotoOutcome,
-  PhotoPicker,
-} from "../components/PhotoPicker"
-import {
-  Card,
-  type Choice,
-  Modal,
-  Options,
-  Rich,
-  StageMap,
-  toast,
-  WarnBox,
-} from "../components/Ui"
+import { Card, Modal, Options, Rich, StageMap, WarnBox } from "../components/Ui"
 import { sfx, vibrate } from "../fx"
-import { askProvince, PROVINCES } from "../location"
 import {
   ageOf,
   asksPregnancy,
   bmiOf,
+  cholesterolValid,
   companionQuestion,
   diaValid,
+  GLUCOSE_HIGH_FROM,
   glucoseValid,
   hasRedFlag,
   type MultiKey,
@@ -44,9 +31,11 @@ import {
   sysValid,
   tempValid,
   toApi,
+  uricValid,
   visible,
 } from "../model"
 import { quiz, useQuiz } from "../store"
+import "@/styles/fe-extra.css"
 
 type StepDef = {
   tab: string
@@ -89,6 +78,10 @@ function vitalsValid(a: QuizAnswers, flow: FlowPublic) {
   }
   return true
 }
+
+/** Optional lab value: empty, or a number in range. */
+const optionalValid = (v: string, ok: (n: number) => boolean) =>
+  !v.trim() || ok(num(v))
 
 const STEP_DEFS: Record<StepId, StepDef> = {
   who: {
@@ -147,6 +140,17 @@ const STEP_DEFS: Record<StepId, StepDef> = {
     say: "Cek **suhu tubuh** 🌡️",
     valid: vitalsValid,
   },
+  labs: {
+    tab: "TAHAP 5 · PEMERIKSAAN OPSIONAL",
+    say: "Punya hasil cek lab? **Boleh dilewati** 🧪",
+    valid: (a) =>
+      optionalValid(a.uric_acid, uricValid) &&
+      optionalValid(a.cholesterol_total, cholesterolValid),
+    nextLabel: (a) =>
+      a.uric_acid.trim() || a.cholesterol_total.trim()
+        ? "Lanjut ▶"
+        : "Lewati ▶",
+  },
   q8: {
     tab: "TAHAP 5 · KALKULATOR RISIKO",
     say: "Untuk hitung **risiko keparahan** ⚖️",
@@ -159,15 +163,11 @@ const STEP_DEFS: Record<StepId, StepDef> = {
     nextLabel: (a) =>
       a.body.length ? "Lanjut ▶" : "Tidak ada nyeri, lanjut ▶",
   },
-  q10: {
-    tab: "TAHAP 5 · FOTO",
-    say: "Terakhir! Foto bisa bantu aku 📸",
-    valid: () => true,
-    nextLabel: () => "🔮 Lihat Tebakan Kak Tropi",
-  },
 }
 
-export function noThermoNote(a: { complaint?: string | null }) {
+const LAST_LABEL = "🔮 Lihat Tebakan Kak Tropi"
+
+function noThermoNote(a: { complaint?: string | null }) {
   return a.complaint === "A"
     ? "Tak apa! Klasifikasi tetap memakai **pola demam** yang kamu pilih tadi."
     : "Tak apa! Klasifikasi tetap dihitung dari **jawaban lainnya**."
@@ -180,12 +180,17 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
   const ids = steps(a, flow)
   const id = ids[Math.min(step, ids.length - 1)]
   const text = flow.step_text?.[id]
+  const base = STEP_DEFS[id]
   const def: StepDef = {
-    ...STEP_DEFS[id],
-    tab: text?.tab ?? STEP_DEFS[id].tab,
-    say: text?.say ?? STEP_DEFS[id].say,
+    ...base,
+    tab: text?.tab ?? base.tab,
+    say: text?.say ?? base.say,
   }
   const valid = def.valid(a, flow)
+  const isLast = ids.indexOf(id) === ids.length - 1
+  const nextLabel = isLast
+    ? LAST_LABEL
+    : (def.nextLabel?.(a, flow) ?? "Lanjut ▶")
   const api = useMemo(() => toApi(a), [a])
   const mascot = useRef<SVGSVGElement>(null)
   const [modal, setModal] = useState<ReactNode>(null)
@@ -248,12 +253,14 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
     sfx.tap()
     if (id === "q6") {
       // Drug warnings come from the server (advice.json). If it is down, carry on.
+      // Rules only (preview): no model call mid-quiz, and its own query key so
+      // it never stands in for the final result.
       setBusy(true)
       let r: ScoreResult | undefined
       try {
         r = await queryClient.fetchQuery({
-          queryKey: scoreKey(api, flow.id),
-          queryFn: () => scoreAnswers(api, flow.id),
+          queryKey: previewKey(api, flow.id),
+          queryFn: () => scoreAnswers(api, flow.id, true),
           staleTime: Number.POSITIVE_INFINITY,
         })
       } catch {
@@ -294,10 +301,16 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
     proceed()
   }
 
+  // The first question goes back to the privacy gate (which goes home).
   const back = () => {
     sfx.tap()
     if (step > 0) quiz.set({ step: step - 1 })
-    else navigate({ to: "/" })
+    else quiz.set({ phase: "privacy" })
+  }
+
+  const home = () => {
+    sfx.tap()
+    navigate({ to: "/" })
   }
 
   const body = (() => {
@@ -450,24 +463,83 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
             )}
           </>
         )
+      case "labs":
+        return (
+          <StepLabs title={text?.title} hint={text?.hint} a={a} set={set} />
+        )
       case "q8":
         return <StepBmi flow={flow} a={a} set={set} setModal={setModal} />
       case "q9":
         return <StepBody flow={flow} a={a} set={set} />
-      case "q10":
-        return (
-          <StepPhoto
-            flow={flow}
-            title={text?.title}
-            a={a}
-            pick={(i) => pick("findings", i, true)}
-            set={set}
-            setModal={setModal}
-          />
-        )
     }
   })()
 
+  return (
+    <QuizFrame
+      flow={flow}
+      stage={STAGE_OF[id]}
+      say={def.say}
+      mascotRef={mascot}
+      onHome={home}
+      overlay={modal}
+      foot={
+        <>
+          <BackButton onClick={back} />
+          <button
+            type="button"
+            className={`btn big ${def.nextCls?.(a, flow) ?? "btn-primary"}`}
+            disabled={!valid || busy}
+            onClick={next}
+          >
+            {busy ? "Sebentar…" : nextLabel}
+          </button>
+        </>
+      }
+    >
+      <Card tab={def.tab} className="pop" key={id}>
+        {body}
+      </Card>
+    </QuizFrame>
+  )
+}
+
+/** "‹ Kembali" on the left of Lanjut in .foot. */
+export function BackButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      className="btn btn-back"
+      aria-label="Kembali"
+      onClick={onClick}
+    >
+      <span className="bb-ico" aria-hidden="true">
+        ‹
+      </span>
+      <span className="bb-txt">Kembali</span>
+    </button>
+  )
+}
+
+/** Quiz layout: HUD (home + stage map), mascot bubble, one card, footer. */
+export function QuizFrame({
+  flow,
+  stage,
+  say,
+  mascotRef,
+  onHome,
+  foot,
+  overlay,
+  children,
+}: {
+  flow: FlowPublic
+  stage: number
+  say: string
+  mascotRef?: Ref<SVGSVGElement>
+  onHome: () => void
+  foot: ReactNode
+  overlay?: ReactNode
+  children: ReactNode
+}) {
   return (
     <div className="screen bg-quiz">
       <Sparkles n={18} />
@@ -475,41 +547,28 @@ export function QuizScreen({ flow }: { flow: FlowPublic }) {
         <button
           type="button"
           className="icon-btn"
-          onClick={back}
-          aria-label="Kembali"
+          onClick={onHome}
+          aria-label="Beranda"
         >
-          ‹
+          ⌂
         </button>
-        <StageMap stages={flow.stages} current={STAGE_OF[id]} />
+        <StageMap stages={flow.stages} current={stage} />
       </div>
       <div className="qlayout">
         <div className="mrow">
-          <Mascot ref={mascot} className="m-sm" />
+          <Mascot ref={mascotRef} className="m-sm" />
           <div className="bubble">
             <p>
-              <Rich text={def.say} />
+              <Rich text={say} />
             </p>
           </div>
         </div>
         <div className="qmain">
-          <div className="qwrap">
-            <Card tab={def.tab} className="pop" key={id}>
-              {body}
-            </Card>
-          </div>
-          <div className="foot">
-            <button
-              type="button"
-              className={`btn big ${def.nextCls?.(a, flow) ?? "btn-primary"}`}
-              disabled={!valid || busy}
-              onClick={next}
-            >
-              {busy ? "Sebentar…" : (def.nextLabel?.(a, flow) ?? "Lanjut ▶")}
-            </button>
-          </div>
+          <div className="qwrap">{children}</div>
+          <div className="foot">{foot}</div>
         </div>
       </div>
-      {modal}
+      {overlay}
     </div>
   )
 }
@@ -571,8 +630,10 @@ function StepWho({
           </fieldset>
         </div>
       </div>
-      {asksPregnancy(a, flow) && (
-        <div className="fld" style={{ marginTop: 14 }}>
+      {/* Max 3 fields at once: the pregnancy question appears only after who,
+          age, and sex are filled. */}
+      {!!a.who && asksPregnancy(a, flow) && (
+        <div className="fld reveal-in mt-field">
           <span id="pregLbl">Sedang hamil?</span>
           <fieldset className="seg" aria-labelledby="pregLbl">
             {[
@@ -595,7 +656,6 @@ function StepWho({
           </fieldset>
         </div>
       )}
-      {flow.ask_province && <StepLocation a={a} set={set} />}
     </>
   )
 }
@@ -637,74 +697,6 @@ function StepDrugs({
             + {d}
           </button>
         ))}
-      </div>
-    </>
-  )
-}
-
-const LOCATE_FAILED: Record<string, string> = {
-  denied: "Izin lokasi ditolak.",
-  unsupported: "Perangkat ini tidak bisa membagikan lokasi.",
-  unavailable: "Lokasi belum bisa diambil.",
-  outside: "Lokasimu sepertinya di luar Indonesia.",
-}
-
-/** Province from the browser's location, or picked by hand. Optional. */
-function StepLocation({ a, set }: { a: QuizAnswers; set: Setter }) {
-  const [busy, setBusy] = useState(false)
-  const [status, setStatus] = useState<string | null>(null)
-  const locate = async () => {
-    sfx.tap()
-    setBusy(true)
-    setStatus(null)
-    const r = await askProvince()
-    setBusy(false)
-    if (r.ok) {
-      set({ province: r.province })
-      setStatus(`📍 Terdeteksi: **${r.province}**`)
-    } else {
-      setStatus(
-        `${LOCATE_FAILED[r.reason]} Pilih provinsi sendiri, atau lewati saja.`,
-      )
-    }
-  }
-  return (
-    <>
-      <h3 className="subq">Tinggal di provinsi mana sekarang?</h3>
-      <div className="loc">
-        <button
-          type="button"
-          className="btn btn-secondary"
-          disabled={busy}
-          onClick={locate}
-        >
-          {busy ? "Mencari lokasi…" : "📍 Pakai lokasiku"}
-        </button>
-        <div className="inp">
-          <select
-            aria-label="Provinsi"
-            value={a.province ?? ""}
-            onChange={(e) => set({ province: e.target.value || null })}
-          >
-            <option value="">Pilih provinsi (opsional)</option>
-            {PROVINCES.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div aria-live="polite">
-        {status && (
-          <div className="note">
-            <Rich text={status} />
-          </div>
-        )}
-      </div>
-      <div className="note purple">
-        Hanya <b>nama provinsi</b> yang dipakai. Titik lokasimu tidak disimpan
-        atau dikirim.
       </div>
     </>
   )
@@ -768,10 +760,7 @@ function StepTemp({
     <>
       <h2 className="qt">Berapa suhu tubuhmu?</h2>
       <p className="qh">Dalam °C</p>
-      <div
-        className="thermo"
-        style={a.no_thermo ? { opacity: 0.45, pointerEvents: "none" } : {}}
-      >
+      <div className={`thermo ${a.no_thermo ? "is-off" : ""}`}>
         <div className="tbar" aria-hidden="true">
           <div className="tube">
             <div className="tfill" style={{ height: `${pct}%` }} />
@@ -807,7 +796,7 @@ function StepTemp({
               +
             </button>
           </div>
-          <div style={{ textAlign: "center" }}>
+          <div className="stat-row">
             <span className="tstat" style={{ background: bg, color }}>
               {txt}
             </span>
@@ -837,6 +826,9 @@ function StepTemp({
   )
 }
 
+/** Blood pressure label. Same cut-offs as backend/app/domain/vitals.py
+ * bp_category (DR 2026-10-15): Normal (sys ≤ 120) · Meningkat (120 < sys < 140
+ * and dia < 90) · Tinggi (sys ≥ 140 or dia ≥ 90) · Sangat tinggi (sys > 160). */
 function bpStatus(sys: number, dia: number): [string, string, string] {
   if (Number.isNaN(sys) || Number.isNaN(dia))
     return ["Masukkan tensi", "#EEE", "#555"]
@@ -844,7 +836,8 @@ function bpStatus(sys: number, dia: number): [string, string, string] {
     return ["Angka tidak wajar", "#FFE3E6", "#C8102E"]
   if (sys > 160) return ["Sangat tinggi", "#FFE3E6", "#C8102E"]
   if (sys >= 140 || dia >= 90) return ["Tinggi", "#FFE8D6", "#A3410A"]
-  return ["Tercatat", "#E2F9EE", "#15784F"]
+  if (sys > 120) return ["Meningkat", "#FFF6DB", "#8A5A00"]
+  return ["Normal", "#E2F9EE", "#15784F"]
 }
 
 function StepBp({
@@ -860,48 +853,52 @@ function StepBp({
 }) {
   const [txt, bg, color] = bpStatus(num(a.bp_sys), num(a.bp_dia))
   const g = num(a.glucose)
+  // Max 3 fields per page: the blood-sugar field appears once BP is done.
+  const bpDone = a.no_bp || (sysValid(num(a.bp_sys)) && diaValid(num(a.bp_dia)))
   const digits = (v: string) => v.replace(/\D/g, "").slice(0, 3)
   return (
     <>
       <h2 className="qt">Berapa tensi darahmu?</h2>
       <p className="qh">Dalam mmHg, mis. 120/80</p>
-      <div style={a.no_bp ? { opacity: 0.45, pointerEvents: "none" } : {}}>
-        <div className="two">
-          <label className="fld">
-            <span>Sistolik (atas)</span>
-            <div className="inp">
-              <input
-                inputMode="numeric"
-                placeholder="120"
-                maxLength={3}
-                value={a.bp_sys}
-                disabled={a.no_bp}
-                onChange={(e) => set({ bp_sys: digits(e.target.value) })}
-              />
-              <em>mmHg</em>
-            </div>
-          </label>
-          <label className="fld">
-            <span>Diastolik (bawah)</span>
-            <div className="inp">
-              <input
-                inputMode="numeric"
-                placeholder="80"
-                maxLength={3}
-                value={a.bp_dia}
-                disabled={a.no_bp}
-                onChange={(e) => set({ bp_dia: digits(e.target.value) })}
-              />
-              <em>mmHg</em>
-            </div>
-          </label>
+      {!a.no_bp && (
+        <div>
+          <div className="two">
+            <label className="fld">
+              <span>Sistolik (atas)</span>
+              <div className="inp">
+                <input
+                  inputMode="numeric"
+                  placeholder="120"
+                  maxLength={3}
+                  value={a.bp_sys}
+                  disabled={a.no_bp}
+                  onChange={(e) => set({ bp_sys: digits(e.target.value) })}
+                />
+                <em>mmHg</em>
+              </div>
+            </label>
+            <label className="fld">
+              <span>Diastolik (bawah)</span>
+              <div className="inp">
+                <input
+                  inputMode="numeric"
+                  placeholder="80"
+                  maxLength={3}
+                  value={a.bp_dia}
+                  disabled={a.no_bp}
+                  onChange={(e) => set({ bp_dia: digits(e.target.value) })}
+                />
+                <em>mmHg</em>
+              </div>
+            </label>
+          </div>
+          <div className="stat-row">
+            <span className="tstat" style={{ background: bg, color }}>
+              {txt}
+            </span>
+          </div>
         </div>
-        <div style={{ textAlign: "center", marginTop: 8 }}>
-          <span className="tstat" style={{ background: bg, color }}>
-            {txt}
-          </span>
-        </div>
-      </div>
+      )}
       <label className="chk">
         <input
           type="checkbox"
@@ -914,9 +911,10 @@ function StepBp({
         Saya tidak punya alat tensi
       </label>
       {a.no_bp && <ProxyQuestions flow={flow} vital="bp" a={a} pick={pick} />}
-      {flow.vitals.includes("glucose") && (
-        <label className="fld" style={{ marginTop: 14 }}>
-          <span>Gula darah (opsional)</span>
+      {flow.vitals.includes("glucose") && bpDone && (
+        <label className="fld reveal-in mt-field">
+          <span>Gula darah sewaktu (opsional)</span>
+          <small className="fhint">diukur kapan saja, tidak perlu puasa</small>
           <div className="inp">
             <input
               inputMode="decimal"
@@ -932,20 +930,79 @@ function StepBp({
           {a.glucose.trim() && !glucoseValid(g) && (
             <div className="note">Angka gula darah tidak wajar.</div>
           )}
+          {glucoseValid(g) && g >= GLUCOSE_HIGH_FROM && (
+            <div className="stat-row">
+              <span
+                className="tstat"
+                style={{ background: "#FFE8D6", color: "#A3410A" }}
+              >
+                Tinggi
+              </span>
+            </div>
+          )}
         </label>
       )}
     </>
   )
 }
 
-const BMI_LABELS = (
-  <div className="glab">
-    <span>Kurus</span>
-    <span>Normal</span>
-    <span>Lebih</span>
-    <span>Obes</span>
-  </div>
-)
+/** Optional lab results (chronic path): uric acid and total cholesterol.
+ * Recorded only; thresholds need DR, weights need ST (both 0 for now). */
+function StepLabs({
+  title,
+  hint,
+  a,
+  set,
+}: {
+  title?: string | null
+  hint?: string | null
+  a: QuizAnswers
+  set: Setter
+}) {
+  const clean = (v: string) => v.replace(/[^\d.,]/g, "").slice(0, 5)
+  const uric = num(a.uric_acid)
+  const chol = num(a.cholesterol_total)
+  return (
+    <>
+      <h2 className="qt">{title ?? "Pemeriksaan opsional"}</h2>
+      <p className="qh">
+        {hint ?? "Isi dari hasil cek terakhir. Kosongkan kalau tidak ada."}
+      </p>
+      <label className="fld">
+        <span>Asam urat (opsional)</span>
+        <div className="inp">
+          <input
+            inputMode="decimal"
+            placeholder="mis. 6,5"
+            value={a.uric_acid}
+            onChange={(e) => set({ uric_acid: clean(e.target.value) })}
+          />
+          <em>mg/dL</em>
+        </div>
+        {a.uric_acid.trim() && !uricValid(uric) && (
+          <div className="note">Angka asam urat tidak wajar (1–30 mg/dL).</div>
+        )}
+      </label>
+      <label className="fld mt-field">
+        <span>Kolesterol total (opsional)</span>
+        <div className="inp">
+          <input
+            inputMode="decimal"
+            placeholder="mis. 190"
+            value={a.cholesterol_total}
+            onChange={(e) => set({ cholesterol_total: clean(e.target.value) })}
+          />
+          <em>mg/dL</em>
+        </div>
+        {a.cholesterol_total.trim() && !cholesterolValid(chol) && (
+          <div className="note">
+            Angka kolesterol tidak wajar (50–600 mg/dL).
+          </div>
+        )}
+      </label>
+    </>
+  )
+}
 
 function StepBmi({
   flow,
@@ -960,15 +1017,6 @@ function StepBmi({
 }) {
   const b = bmiOf(a)
   const proxy = flow.nutrition_proxies.find((p) => p.id === a.nutrition_proxy)
-  const cat: [string, string] | null = b
-    ? b < 18.5
-      ? ["Kurus", "#1F6FB2"]
-      : b < 25
-        ? ["Normal", "#15784F"]
-        : b < 27
-          ? ["Berat lebih", "#8A5A00"]
-          : ["Obesitas", "#B01E3A"]
-    : null
   const openProxy = () => {
     sfx.tap()
     const close = () => setModal(null)
@@ -994,7 +1042,7 @@ function StepBmi({
   return (
     <>
       <h2 className="qt">Tinggi & berat badanmu?</h2>
-      <p className="qh">Untuk menghitung IMT</p>
+      <p className="qh">Dipakai untuk memperkirakan status gizi</p>
       <div className="two">
         <label className="fld">
           <span>Tinggi Badan</span>
@@ -1024,7 +1072,7 @@ function StepBmi({
         </label>
       </div>
       {flow.measure_waist && (
-        <label className="fld" style={{ marginTop: 10 }}>
+        <label className="fld mt-tight">
           <span>Lingkar perut / pinggang (opsional)</span>
           <div className="inp">
             <input
@@ -1038,36 +1086,9 @@ function StepBmi({
           </div>
         </label>
       )}
-      <div className="bmi">
-        <div className="row">
-          <span>
-            IMT
-            {cat && (
-              <>
-                {" · "}
-                <span style={{ color: cat[1] }}>{cat[0]}</span>
-              </>
-            )}
-          </span>
-          <b>{b ? b.toFixed(1) : "–"}</b>
-        </div>
-        <div className="gauge">
-          <i
-            style={
-              b
-                ? {
-                    left: `${Math.max(2, Math.min(98, ((b - 13) / (37 - 13)) * 100))}%`,
-                  }
-                : { left: -10, opacity: 0 }
-            }
-          />
-        </div>
-        {BMI_LABELS}
-      </div>
       <button
         type="button"
-        className={`opt ${a.nutrition_proxy && !b ? "on" : ""}`}
-        style={{ marginTop: 10 }}
+        className={`opt mt-tight ${a.nutrition_proxy && !b ? "on" : ""}`}
         onClick={openProxy}
       >
         <span className="oe" aria-hidden="true">
@@ -1142,62 +1163,6 @@ function StepBody({
           )}
         </div>
       </div>
-    </>
-  )
-}
-
-// Photo step. Consent, camera/gallery, and analysis live in PhotoPicker; photos
-// are never stored. Findings from the analysis are added to the patient's picks.
-function StepPhoto({
-  flow,
-  title,
-  a,
-  pick,
-}: {
-  flow: FlowPublic
-  title?: string | null
-  a: QuizAnswers
-  pick: (id: string) => void
-  set: Setter
-  setModal: (m: ReactNode) => void
-}) {
-  const onAnalyzed = (o: PhotoOutcome) => {
-    if (o.kind === "found") {
-      // Merge into the latest answers, not the ones from before the upload.
-      quiz.answer((prev) => ({
-        ...prev,
-        findings: mergeFindings(prev.findings, o.ids),
-      }))
-      toast("Pindai selesai! Cek temuan di bawah 👇")
-    } else if (o.kind === "none")
-      toast("Tidak ada temuan otomatis. Pilih sendiri, ya 👇")
-    else if (o.kind === "too_big")
-      toast("Foto terlalu besar (maks. 8 MB). Pilih temuan sendiri, ya 👇")
-    else toast("Analisis foto gagal. Pilih temuan sendiri, ya 👇")
-  }
-
-  const options: Choice[] = flow.findings.map((o) => ({
-    ...o,
-    cls: tileCls(o),
-  }))
-
-  return (
-    <>
-      <h2 className="qt">{title ?? "Foto ruam, luka, atau mata"}</h2>
-      <p className="qh">
-        {flow.photo_analysis
-          ? "Opsional · foto dianalisis lalu dihapus"
-          : "Opsional · foto tidak dikirim ke mana pun"}
-      </p>
-      <PhotoPicker flow={flow} onAnalyzed={onAnalyzed} />
-      <h3 className="subq">Pilih temuan yang terlihat:</h3>
-      <Options
-        multi
-        layout="tiles tiles3"
-        selected={a.findings}
-        onPick={pick}
-        options={options}
-      />
     </>
   )
 }

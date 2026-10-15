@@ -1,13 +1,18 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import {
   createFileRoute,
   Link as RouterLink,
   redirect,
+  useNavigate,
 } from "@tanstack/react-router"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import type { Body_login_login_access_token as AccessToken } from "@/client"
+import {
+  type Body_login_login_access_token as AccessToken,
+  LoginService,
+} from "@/client"
 import { AuthLayout } from "@/components/Common/AuthLayout"
 import {
   Form,
@@ -20,7 +25,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { LoadingButton } from "@/components/ui/loading-button"
 import { PasswordInput } from "@/components/ui/password-input"
-import useAuth, { isLoggedIn } from "@/hooks/useAuth"
+import { GoogleButton } from "@/features/auth/GoogleButton"
+import { storeToken, validateRedirectSearch } from "@/features/auth/session"
+import { isLoggedIn } from "@/hooks/useAuth"
+import useCustomToast from "@/hooks/useCustomToast"
+import { handleError } from "@/utils"
 
 const formSchema = z.object({
   username: z.email({ message: "Invalid email address" }),
@@ -34,11 +43,11 @@ type FormData = z.infer<typeof formSchema>
 
 export const Route = createFileRoute("/login")({
   component: Login,
-  beforeLoad: async () => {
+  // ?redirect=/skrining brings the patient back to their result after login.
+  validateSearch: validateRedirectSearch,
+  beforeLoad: async ({ search }) => {
     if (isLoggedIn()) {
-      throw redirect({
-        to: "/",
-      })
+      throw redirect({ href: search.redirect ?? "/" })
     }
   },
   head: () => ({
@@ -51,7 +60,23 @@ export const Route = createFileRoute("/login")({
 })
 
 function Login() {
-  const { loginMutation } = useAuth()
+  const { redirect: back } = Route.useSearch()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const { showErrorToast } = useCustomToast()
+  const finish = () => navigate({ href: back ?? "/" })
+  // Same as useAuth's login, plus the redirect back.
+  const loginMutation = useMutation({
+    mutationFn: async (data: AccessToken) => {
+      const res = await LoginService.loginAccessToken({ body: data })
+      storeToken(res.data.access_token)
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["currentUser"] })
+      finish()
+    },
+    onError: handleError.bind(showErrorToast),
+  })
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
@@ -77,6 +102,8 @@ function Login() {
           <div className="flex flex-col items-center gap-2 text-center">
             <h1 className="text-2xl font-bold">Login to your account</h1>
           </div>
+
+          <GoogleButton onDone={finish} />
 
           <div className="grid gap-4">
             <FormField
@@ -131,7 +158,11 @@ function Login() {
 
           <div className="text-center text-sm">
             Don't have an account yet?{" "}
-            <RouterLink to="/signup" className="underline underline-offset-4">
+            <RouterLink
+              to="/signup"
+              search={back ? { redirect: back } : {}}
+              className="underline underline-offset-4"
+            >
               Sign up
             </RouterLink>
           </div>

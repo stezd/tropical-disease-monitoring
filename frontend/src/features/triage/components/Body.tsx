@@ -20,7 +20,24 @@ const SHAPES: Record<string, JSX.Element> = {
   calf_l: <rect x="105" y="270" width="27" height="50" rx="12" />,
   ankle_r: <rect x="69" y="323" width="25" height="15" rx="7" />,
   ankle_l: <rect x="106" y="323" width="25" height="15" rx="7" />,
+  // Joints sit on top of the limb shapes (drawn last, see JOINTS).
+  shoulder_r: <ellipse cx="50" cy="80" rx="13" ry="10" />,
+  shoulder_l: <ellipse cx="150" cy="80" rx="13" ry="10" />,
+  elbow_r: <rect x="38" y="108" width="22" height="17" rx="8" />,
+  elbow_l: <rect x="140" y="108" width="22" height="17" rx="8" />,
+  knee_r: <rect x="67" y="257" width="29" height="19" rx="9" />,
+  knee_l: <rect x="104" y="257" width="29" height="19" rx="9" />,
 }
+
+// Drawn after the other regions so they stay tappable over the arm/leg shapes.
+const JOINTS = new Set([
+  "shoulder_r",
+  "shoulder_l",
+  "elbow_r",
+  "elbow_l",
+  "knee_r",
+  "knee_l",
+])
 
 const SKIN = { fill: "#FFE0C7", stroke: "#F0A97A", strokeWidth: 2 }
 
@@ -40,7 +57,10 @@ export function BodyMap({
       <circle cx="151" cy="188" r="9" {...SKIN} />
       <ellipse cx="80" cy="348" rx="15" ry="7" {...SKIN} />
       <ellipse cx="120" cy="348" rx="15" ry="7" {...SKIN} />
-      {regions.map((r) =>
+      {[
+        ...regions.filter((r) => !JOINTS.has(r.id)),
+        ...regions.filter((r) => JOINTS.has(r.id)),
+      ].map((r) =>
         SHAPES[r.id] ? (
           // biome-ignore lint/a11y/useSemanticElements: SVG shapes cannot be <button>
           <g

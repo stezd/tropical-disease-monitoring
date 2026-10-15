@@ -8,6 +8,7 @@ import { Card, copyText, RED_TAB, toast } from "../components/Ui"
 import { vibrate } from "../fx"
 import { mapsURL } from "../links"
 import { type QuizAnswers, redFlagIds } from "../model"
+import { redShareText } from "../share"
 
 export function RedScreen({
   flow,
@@ -107,7 +108,12 @@ export function RedScreen({
                 💉 Cari Rabies Center (VAR)
               </a>
             )}
-            <NearestFacilities route="red" tone="red" />
+            <NearestFacilities
+              route="red"
+              tone="red"
+              mapsQuery={q}
+              shareText={redShareText(flow, answers)}
+            />
           </div>
           <div className="redcol">
             <Card

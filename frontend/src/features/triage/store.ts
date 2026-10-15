@@ -1,11 +1,12 @@
 // Quiz progress for the current tab. sessionStorage only, so a refresh keeps the
 // answers but closing the tab clears them. Nothing goes to the server until the
-// patient asks for a score or agrees to save.
+// patient asks for a score or (logged in) saves it to their history.
 import { useSyncExternalStore } from "react"
 
 import { blankAnswers, type QuizAnswers } from "./model"
 
-export type Phase = "quiz" | "red" | "thinking" | "result"
+// "privacy" is the consent gate shown before the first question.
+export type Phase = "privacy" | "quiz" | "red" | "thinking" | "result"
 
 export type QuizState = {
   // Which flow these answers belong to ("infection" or "chronic").
@@ -13,6 +14,8 @@ export type QuizState = {
   answers: QuizAnswers
   step: number
   phase: Phase
+  // Ticked "Saya setuju" at the privacy gate (kept when going back to it).
+  consented: boolean
 }
 
 const KEY = "tropicek_quiz"
@@ -22,7 +25,8 @@ const fresh = (flowId = "infection"): QuizState => ({
   flowId,
   answers: blankAnswers(),
   step: 0,
-  phase: "quiz",
+  phase: "privacy",
+  consented: false,
 })
 
 function read(): QuizState {
@@ -30,7 +34,13 @@ function read(): QuizState {
     const raw = sessionStorage.getItem(KEY)
     if (!raw) return fresh()
     const s = JSON.parse(raw) as QuizState
-    return { ...fresh(), ...s, answers: { ...blankAnswers(), ...s.answers } }
+    const next = {
+      ...fresh(),
+      ...s,
+      answers: { ...blankAnswers(), ...s.answers },
+    }
+    // No question before consent, even for a session saved by an older version.
+    return next.consented ? next : { ...next, phase: "privacy" }
   } catch {
     return fresh()
   }
