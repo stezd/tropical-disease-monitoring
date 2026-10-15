@@ -292,7 +292,7 @@ Created 2026-10-14 in the **`development`** environment only. **Production still
 | --- | --- |
 | Source | `stezd/tropical-disease-monitoring` |
 | `RAILWAY_DOCKERFILE_PATH` | `backend/Dockerfile` (same image as the web app) |
-| Start command | `python scripts/sync_facilities.py` |
+| Start command | `python scripts/sync_facilities.py --include-apotek` |
 | Cron schedule | `0 19 * * *` = **02:00 WIB**. Railway cron is always UTC - this offset is deliberate, not a typo |
 | Restart policy | `NEVER` - it must not restart after finishing |
 | Auto-deploy | **off** |
@@ -321,7 +321,11 @@ railway cron run  -s facility-sync -e development -y  # off-schedule run ("Run n
 railway logs      -s facility-sync -e development --since 2026-10-14T16:52:20Z
 ```
 
-A healthy run takes ~10 s and ends with `Sync complete. Total facilities synced: 13930`.
+`--include-apotek` adds Apotek (105) so the HIJAU route can offer a pharmacy. It grows the mirror from ~13.900 to ~67.000 rows and the run from ~10 s to a couple of minutes (~78 pages). Only 2,1% of Apotek rows carry coordinates; the app passes `?with_coords=true` when ranking so the coordinate-less majority is never fetched. A healthy run ends with `Sync complete. Total facilities synced: <count>`, where `<count>` is now on the order of 67.000.
+
+### Enabling server-side nearest ranking
+
+The front end accepts `VITE_FACILITIES_SERVER_NEAREST` as a build arg (`backend/Dockerfile`). Set it on the **`fullstack`** service and redeploy so the built bundle uses `POST /facilities/nearest` (coordinates leave the device; see [docs/SATUSEHAT.md §3](docs/SATUSEHAT.md)). Without it, ranking happens in the browser and coordinates never leave the device. Either way the cron only mirrors data — it never serves requests, so do **not** set this variable on `facility-sync`.
 
 ### Three traps
 

@@ -27,3 +27,43 @@ export function jknURL(userAgent = navigator.userAgent): string {
 
 export const mapsURL = (q: string) =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`
+
+/** Indonesian phone number in international form, e.g. "0812-3456-789" → "628123456789". */
+const toIntl = (phone: string): string => {
+  const digits = phone.replace(/\D/g, "")
+  if (!digits) return ""
+  if (digits.startsWith("62")) return digits
+  if (digits.startsWith("0")) return `62${digits.slice(1)}`
+  return digits
+}
+
+/** A wa.me number only when the phone looks like a mobile (08… / 628…).
+ *
+ * MSI's `telp` is often a landline (area codes like 021), which has no
+ * WhatsApp. Returning null for those lets the UI fall back to a plain call
+ * button instead of a dead WhatsApp link. */
+export function whatsappNumber(phone?: string | null): string | null {
+  if (!phone) return null
+  const intl = toIntl(phone)
+  if (!intl.startsWith("628")) return null
+  return intl.length >= 10 && intl.length <= 15 ? intl : null
+}
+
+export const waURL = (number: string) => `https://wa.me/${number}`
+
+export const telURL = (phone: string) => `tel:${toIntl(phone)}`
+
+/** Directions straight to one facility: exact coordinates when the mirror has
+ * them, otherwise a search by name. Shareable, no API key. */
+export function routeURL(f: {
+  latitude?: number | null
+  longitude?: number | null
+  name: string
+  city_name?: string | null
+}): string {
+  const dest =
+    f.latitude != null && f.longitude != null
+      ? `${f.latitude},${f.longitude}`
+      : [f.name, f.city_name].filter(Boolean).join(", ")
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&travelmode=driving`
+}

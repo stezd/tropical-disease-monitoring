@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape, urlSearchParamsBodySerializer } from './client';
 import { client } from './client.gen';
-import type { aiAiScoreData, aiAiScoreErrors, aiAiScoreResponses, aiAiStatusData, aiAiStatusResponses, facilitiesListFacilitiesData, facilitiesListFacilitiesErrors, facilitiesListFacilitiesResponses, loginLoginAccessTokenData, loginLoginAccessTokenErrors, loginLoginAccessTokenResponses, loginRecoverPasswordData, loginRecoverPasswordErrors, loginRecoverPasswordHtmlContentData, loginRecoverPasswordHtmlContentErrors, loginRecoverPasswordHtmlContentResponses, loginRecoverPasswordResponses, loginResetPasswordData, loginResetPasswordErrors, loginResetPasswordResponses, loginTestTokenData, loginTestTokenResponses, privateCreateUserData, privateCreateUserErrors, privateCreateUserResponses, triageAnalyzePhotoData, triageAnalyzePhotoErrors, triageAnalyzePhotoResponses, triageCreateScreeningData, triageCreateScreeningErrors, triageCreateScreeningResponses, triageReadFlowData, triageReadFlowErrors, triageReadFlowResponses, triageReadScreeningsData, triageReadScreeningsErrors, triageReadScreeningsResponses, triageScoreFlowData, triageScoreFlowErrors, triageScoreFlowResponses, usersCreateUserData, usersCreateUserErrors, usersCreateUserResponses, usersDeleteUserData, usersDeleteUserErrors, usersDeleteUserMeData, usersDeleteUserMeResponses, usersDeleteUserResponses, usersReadUserByIdData, usersReadUserByIdErrors, usersReadUserByIdResponses, usersReadUserMeData, usersReadUserMeResponses, usersReadUsersData, usersReadUsersErrors, usersReadUsersResponses, usersRegisterUserData, usersRegisterUserErrors, usersRegisterUserResponses, usersUpdatePasswordMeData, usersUpdatePasswordMeErrors, usersUpdatePasswordMeResponses, usersUpdateUserData, usersUpdateUserErrors, usersUpdateUserMeData, usersUpdateUserMeErrors, usersUpdateUserMeResponses, usersUpdateUserResponses, utilsHealthCheckData, utilsHealthCheckResponses, utilsTestEmailData, utilsTestEmailErrors, utilsTestEmailResponses } from './types.gen';
+import type { aiAiScoreData, aiAiScoreErrors, aiAiScoreResponses, aiAiStatusData, aiAiStatusResponses, facilitiesListFacilitiesData, facilitiesListFacilitiesErrors, facilitiesListFacilitiesResponses, facilitiesNearestFacilitiesData, facilitiesNearestFacilitiesErrors, facilitiesNearestFacilitiesResponses, facilitiesSetFacilityWhatsappData, facilitiesSetFacilityWhatsappErrors, facilitiesSetFacilityWhatsappResponses, loginLoginAccessTokenData, loginLoginAccessTokenErrors, loginLoginAccessTokenResponses, loginRecoverPasswordData, loginRecoverPasswordErrors, loginRecoverPasswordHtmlContentData, loginRecoverPasswordHtmlContentErrors, loginRecoverPasswordHtmlContentResponses, loginRecoverPasswordResponses, loginResetPasswordData, loginResetPasswordErrors, loginResetPasswordResponses, loginTestTokenData, loginTestTokenResponses, privateCreateUserData, privateCreateUserErrors, privateCreateUserResponses, triageAnalyzePhotoData, triageAnalyzePhotoErrors, triageAnalyzePhotoResponses, triageCreateScreeningData, triageCreateScreeningErrors, triageCreateScreeningResponses, triageReadFlowData, triageReadFlowErrors, triageReadFlowResponses, triageReadScreeningsData, triageReadScreeningsErrors, triageReadScreeningsResponses, triageScoreFlowData, triageScoreFlowErrors, triageScoreFlowResponses, usersCreateUserData, usersCreateUserErrors, usersCreateUserResponses, usersDeleteUserData, usersDeleteUserErrors, usersDeleteUserMeData, usersDeleteUserMeResponses, usersDeleteUserResponses, usersReadUserByIdData, usersReadUserByIdErrors, usersReadUserByIdResponses, usersReadUserMeData, usersReadUserMeResponses, usersReadUsersData, usersReadUsersErrors, usersReadUsersResponses, usersRegisterUserData, usersRegisterUserErrors, usersRegisterUserResponses, usersUpdatePasswordMeData, usersUpdatePasswordMeErrors, usersUpdatePasswordMeResponses, usersUpdateUserData, usersUpdateUserErrors, usersUpdateUserMeData, usersUpdateUserMeErrors, usersUpdateUserMeResponses, usersUpdateUserResponses, utilsHealthCheckData, utilsHealthCheckResponses, utilsTestEmailData, utilsTestEmailErrors, utilsTestEmailResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -416,6 +416,55 @@ export class FacilitiesService {
             responseType: 'json',
             url: '/api/v1/facilities/',
             ...options
+        });
+    }
+    
+    /**
+     * Nearest Facilities
+     *
+     * The closest operational facilities to a point, nearest first.
+     *
+     * Opt-in proximity path. The default for the app is to rank in the browser
+     * from the province list, so patient coordinates stay on the device; this
+     * endpoint exists for cross-province accuracy and is only called when
+     * `VITE_FACILITIES_SERVER_NEAREST=true`.
+     *
+     * Coordinates are used to compute the answer and are not stored. They travel
+     * in the request body (not the URL) so they do not land in access logs.
+     * Facilities roughly the same distance away are ordered by data quality, so a
+     * reachable, well-documented one can come first.
+     */
+    public static nearestFacilities<ThrowOnError extends boolean = true>(options: Options<facilitiesNearestFacilitiesData, ThrowOnError>) {
+        return (options.client ?? client).post<facilitiesNearestFacilitiesResponses, facilitiesNearestFacilitiesErrors, ThrowOnError>({
+            responseType: 'json',
+            url: '/api/v1/facilities/nearest',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+    
+    /**
+     * Set Facility Whatsapp
+     *
+     * Curate one facility's WhatsApp number (superuser only).
+     *
+     * The mirror has no WhatsApp data, so a human adds the numbers that matter for
+     * the pilot. The value is not touched by the MSI sync, so it survives re-syncs.
+     * Send null (or an empty string) to clear it.
+     */
+    public static setFacilityWhatsapp<ThrowOnError extends boolean = true>(options: Options<facilitiesSetFacilityWhatsappData, ThrowOnError>) {
+        return (options.client ?? client).put<facilitiesSetFacilityWhatsappResponses, facilitiesSetFacilityWhatsappErrors, ThrowOnError>({
+            responseType: 'json',
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/api/v1/facilities/{satusehat_id}/whatsapp',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
         });
     }
 }

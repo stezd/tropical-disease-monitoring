@@ -71,15 +71,31 @@ Pengujian langsung terhadap Sandbox SATUSEHAT (`https://api-satusehat-stg.dto.ke
         ▼
 [Browser Pasien (React)]
         │
-        ├─ Hitung jarak terdekat (haversine) di perangkat pasien
-        ├─ Koordinat GPS TIDAK PERNAH dikirim ke server TropiCare
+        ├─ Hitung jarak terdekat (haversine) di perangkat pasien   ← jalur default
+        ├─ POST /api/v1/facilities/nearest (koordinat kirim)         ← opt-in
         └─ Buka navigasi peta langsung ke nama faskes spesifik
 ```
+
+**Dua jalur pemilihan faskes terdekat:**
+
+1. **Default (privasi terjaga):** browser mengambil daftar faskes satu provinsi
+   (`GET /facilities`), lalu mengurutkan sendiri berdasarkan jarak. Hanya nama
+   provinsi yang sampai ke server; koordinat pengguna tetap di perangkat.
+2. **Opt-in (akurasi lintas provinsi):** `POST /api/v1/facilities/nearest`
+   menerima koordinat dan mengembalikan faskes terdekat terurut. Hanya aktif
+   bila `VITE_FACILITIES_SERVER_NEAREST=true`. Koordinat dikirim di **body**
+   (bukan URL) agar tidak tercatat di access log, dipakai sekali untuk menghitung
+   jawaban, dan **tidak disimpan**.
+
+Urutan terdekat memakai jarak sebagai sinyal utama; dua faskes yang berjarak
+hampir sama (selisih < 0,5 km) diurutkan berdasarkan kelengkapan data (ada
+telepon → ada alamat → status `verified`/`valid`), supaya faskes yang bisa
+dihubungi lebih sering muncul lebih dulu.
 
 **Keuntungan Pola Mirror:**
 1. **Tidak ada ketergantungan saat permintaan.** Layar hasil tidak pernah menunggu Kemenkes. (Catatan: rute MERAH tidak memakai mirror sama sekali — layar darurat memakai tautan pencarian Google Maps dan nomor 119, jadi ia tetap hidup apa pun yang terjadi pada mirror.)
 2. **Nol Latensi Eksternal:** Permintaan faskes dilayani langsung dari database internal.
-3. **Privasi Koordinat:** Koordinat pengguna hanya diproses di browser lokal untuk memilih faskes terdekat dari daftar faskes dalam satu provinsi. Server tidak pernah menerima titik lintang/bujur pengguna.
+3. **Privasi Koordinat:** Pada jalur default, koordinat pengguna hanya diproses di browser lokal untuk memilih faskes terdekat dari daftar faskes dalam satu provinsi; server tidak menerima titik lintang/bujur pengguna. Endpoint opt-in `POST /facilities/nearest` adalah satu-satunya pengecualian: koordinat sampai ke server kita sendiri, dihitung sekali, tidak disimpan, dan tidak pernah diteruskan ke pihak ketiga.
 4. **Fallback Halus:** Jika sinkronisasi belum dijalankan atau database kosong, tombol rujukan kembali ke pencarian Google Maps umum seperti sebelumnya.
 
 ---
@@ -93,6 +109,13 @@ SATUSEHAT_ENV=sandbox
 SATUSEHAT_CLIENT_ID=<client_id_dari_portal>
 SATUSEHAT_CLIENT_SECRET=<client_secret_dari_portal>
 SATUSEHAT_ORG_ID=<organization_id>
+```
+
+Front-end (dibaca saat build; di Railway jadi *build arg*, lihat `backend/Dockerfile`):
+```env
+# "true" = server yang mengurutkan faskes terdekat (koordinat dikirim).
+# Kosong = browser yang mengurutkan (koordinat tetap di perangkat).
+VITE_FACILITIES_SERVER_NEAREST=true
 ```
 
 Skrip probe diagnostik:
@@ -110,9 +133,13 @@ uv run --env-file ../.env python scripts/sync_facilities.py
 # Satu provinsi saja (mis. 31 = DKI Jakarta) — jauh lebih cepat
 uv run --env-file ../.env python scripts/sync_facilities.py --province 31
 
-# Ikut menyertakan Apotek (105). Tidak disarankan: hanya 2,1% berkoordinat
+# Ikut menyertakan Apotek (105). Dipakai cron Railway, demi rute HIJAU.
 uv run --env-file ../.env python scripts/sync_facilities.py --include-apotek
 ```
+
+Cron `facility-sync` di Railway menjalankan `--include-apotek` (lihat [deployment-railway.md §14](../deployment-railway.md)). Konsekuensinya: mirror membengkak dari ~13.900 menjadi ~67.000 baris, dan karena hanya **2,1% Apotek** yang berkoordinat, endpoint `/facilities` menerima `?with_coords=true` agar baris tanpa koordinat tidak perlu diambil saat mengurutkan jarak. Rute HIJAU tetap jatuh ke Puskesmas bila tak ada Apotek berkoordinat di sekitar pasien.
+
+**Nomor WhatsApp dikurasi manual.** MSI tidak punya kolom WhatsApp dan `telp` umumnya nomor rumah/kantor (`021…`). Superuser dapat mengisi nomor WhatsApp per faskes lewat `PUT /api/v1/facilities/{satusehat_id}/whatsapp` (body `{"wa_number": "08123456789"}`, atau `null` untuk menghapus). Nilai ini **tidak ditulis oleh sinkronisasi**, jadi aman terhadap re-sync. Tanpa nomor kurasi, tombol WhatsApp otomatis berganti menjadi tombol "Telepon" memakai `telp`.
 
 > **Peringatan:** menjalankan `pytest` **mengosongkan** tabel `facility` — fixture `clean_facilities` menghapus seluruh baris pada setup dan teardown. Jalankan sinkronisasi **setelah** test, sebelum demo, atau endpoint `/facilities` akan mengembalikan daftar kosong.
 
