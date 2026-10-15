@@ -75,12 +75,24 @@ test("Red flag opens the red route without the server", async ({ page }) => {
 // The nearest-facility card is progressive: it asks for location on demand and
 // ranks the province's facilities in the browser. Both are stubbed here so the
 // test does not depend on a synced mirror or the patient's real position.
-test("Nearest facilities show WhatsApp and Maps actions", async ({
-  page,
-  context,
-}) => {
-  await context.grantPermissions(["geolocation"])
-  await context.setGeolocation({ latitude: -6.2, longitude: 106.8 })
+test("Nearest facilities show WhatsApp and Maps actions", async ({ page }) => {
+  // Stub geolocation rather than granting it: CI serves the app over plain
+  // HTTP (http://backend:8000), and Chrome only exposes the real API on secure
+  // origins, so a granted permission would still fail there.
+  await page.addInitScript(() => {
+    const position = {
+      coords: { latitude: -6.2, longitude: 106.8 },
+      timestamp: 0,
+    }
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: {
+        getCurrentPosition: (ok: (p: unknown) => void) => ok(position),
+        watchPosition: () => 0,
+        clearWatch: () => {},
+      },
+    })
+  })
   await page.route("**/api/v1/facilities**", (route) =>
     route.fulfill({
       json: {
