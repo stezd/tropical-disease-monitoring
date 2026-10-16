@@ -67,7 +67,7 @@ class LLMClient(Protocol):
 
 # Gateways and combos wrap replies in their own way. 9router's "medical" combo
 # (a fusion panel plus a judge) answers a fenced bare array keyed "candidate",
-# where the schema in medgemma.py asks for {"candidates": [{"id": ...}]}, and it
+# where the schema in Gemma4.py asks for {"candidates": [{"id": ...}]}, and it
 # may trail prose after the fence. Endpoints that accept `response_format` but do
 # not enforce the schema (OpenRouter's free Gemma) can fence the JSON as well.
 # Try every plausible block, strictest first.
@@ -237,7 +237,7 @@ class GeminiClient:
 
 class OpenAICompatClient:
     """Any server with an OpenAI-style /chat/completions and JSON Schema output,
-    e.g. vLLM serving MedGemma (`--guided-decoding-backend` supports json_schema),
+    e.g. vLLM serving Gemma4 (`--guided-decoding-backend` supports json_schema),
     or OpenRouter (https://openrouter.ai/api/v1).
 
     `fallback_models` is OpenRouter's `models` list: when the main model errors or is

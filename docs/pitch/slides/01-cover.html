@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TropiCare · Cover</title>
+<link rel="stylesheet" href="../shared/deck.css">
+<style>
+  .cover { flex-direction: row; align-items: center; gap: 40px; }
+  .cover-left { flex: 1; }
+  .wordmark { font-size: 176px; line-height: 1; font-weight: 700; color: var(--teal-deep); letter-spacing: -2px; margin: 0; }
+  .wordmark span { color: var(--teal); }
+  .subtitle { margin: 18px 0 0; font-size: 50px; line-height: 1.25; font-weight: 600; color: var(--ink); }
+  .tagline { margin: 26px 0 0; font-size: 32px; line-height: 1.45; font-weight: 500; color: var(--ink); max-width: 880px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 48px; }
+  .cover-right { width: 760px; position: relative; height: 710px; }
+  .cover-right .mascot { position: absolute; left: 200px; bottom: 0; width: 430px; }
+  .cover-right .bubble { position: absolute; left: 40px; top: 0; width: 640px; font-size: 32px; }
+  .cover-right .bubble::before { left: 340px; bottom: -17px; }
+  .disc { margin-top: 40px; display: inline-flex; }
+</style>
+</head>
+<body data-slide="01-cover" class="no-brand">
+<div class="slide">
+  <div class="slide-inner cover" style="inset: 90px 120px 80px 120px;">
+    <div class="cover-left">
+      <span class="kicker">Skrining awal · gratis · tanpa akun</span>
+      <h1 class="wordmark">Tropi<span>Care</span></h1>
+      <p class="subtitle">Skrining Awal Penyakit Tropis &amp; Penyakit Jangka Panjang</p>
+      <p class="tagline">Jawab beberapa pertanyaan, lalu tahu harus ke mana: IGD, poli program, Puskesmas, atau cukup rawat mandiri.</p>
+      <div class="chips">
+        <span class="route-chip merah"><i>🚨</i>Merah · IGD</span>
+        <span class="route-chip khusus"><i>🎯</i>Kuning khusus · Poli program</span>
+        <span class="route-chip kuning"><i>🏥</i>Kuning · Puskesmas</span>
+        <span class="route-chip hijau"><i>🌿</i>Hijau · Rawat mandiri</span>
+      </div>
+      <div class="pill disc">🩺 Hasilnya skrining, bukan diagnosis dokter</div>
+    </div>
+    <div class="cover-right">
+      <div class="bubble tail-down">Halo! Aku <b>Kak Tropi</b> 🌺 Yuk main tebak-tebakan kesehatan bareng aku. Cuma ±3 menit!</div>
+      <img class="mascot" src="../shared/mascot.svg" alt="Kak Tropi, maskot TropiCare">
+    </div>
+  </div>
+</div>
+<script src="../shared/deck.js"></script>
+</body>
+</html>

@@ -16,7 +16,7 @@ Mesin skoring dipilih dengan setting `TRIAGE_SCORING_ENGINE` di `composition/tri
 | Setting | Mesin | Keterangan |
 | --- | --- | --- |
 | `rules` (bawaan) | RuleEngine | Skoring aturan dengan bobot dari JSON |
-| `ai` | MedGemma | Kalau gagal, RuleEngine yang menghitung (`engine="rules"`, `fallback=True`) |
+| `ai` | Gemma4 | Kalau gagal, RuleEngine yang menghitung (`engine="rules"`, `fallback=True`) |
 | `model` | ModelEngine | Kerangka untuk model latih ST, belum diisi |
 
 Pratinjau di tengah kuis (misalnya pop-up obat, `?preview=true`) selalu memakai RuleEngine supaya cepat dan tidak memanggil model.

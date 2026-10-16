@@ -6,7 +6,7 @@ Satu-satunya acuan isi medis aplikasi: pertanyaan, kriteria, rute, peringatan, l
 
 - Kalau JSON konten (`backend/app/triage/content/`) berbeda dengan dokumen ini, **dokumen ini yang berlaku**. Perbaiki JSON-nya, atau perbarui dokumen ini dengan persetujuan DR.
 - Teks medis berubah hanya dengan persetujuan **DR**. Bobot dan ambang skor hanya dengan persetujuan **ST**.
-- Format masukan dan keluaran MedGemma ada di [Format-MedGemma.md](Format-MedGemma.md).
+- Format masukan dan keluaran Gemma4 ada di [Format-Gemma4.md](Format-Gemma4.md).
 
 **Kode sumber** (di akhir setiap butir)
 
@@ -45,10 +45,10 @@ Sudah diterapkan. Patokan dari DR; **teks yang tampil ke pasien/petugas masih pe
 
 | No | Keputusan | Di aplikasi |
 | --- | --- | --- |
-| K22a | Gula darah = **gula darah sewaktu (GDS)**, diukur kapan saja tanpa puasa. Patokan **≥ 200 mg/dL = tinggi**. | Label "Gula darah sewaktu" di rangkuman dan fakta MedGemma (`(≥ 200, tinggi)`); catatan kuning di hasil (teks perlu OK DR, §8). Tidak mengubah skor atau rute. |
-| K22b | Tensi sistolik **> 120 dan < 140 = meningkat**. | Kategori tensi di rangkuman dan fakta MedGemma (§8). Label perlu OK DR. Kenaikan rute > 160 mmHg tidak berubah. |
+| K22a | Gula darah = **gula darah sewaktu (GDS)**, diukur kapan saja tanpa puasa. Patokan **≥ 200 mg/dL = tinggi**. | Label "Gula darah sewaktu" di rangkuman dan fakta Gemma4 (`(≥ 200, tinggi)`); catatan kuning di hasil (teks perlu OK DR, §8). Tidak mengubah skor atau rute. |
+| K22b | Tensi sistolik **> 120 dan < 140 = meningkat**. | Kategori tensi di rangkuman dan fakta Gemma4 (§8). Label perlu OK DR. Kenaikan rute > 160 mmHg tidak berubah. |
 | K30 | Peta nyeri ditambah **sendi lutut, siku, dan bahu** (kanan/kiri), di **kedua jalur**. | Area baru tanpa bobot. Aturan Chikungunya (pergelangan tangan/kaki) tidak berubah. |
-| K31 | Pemeriksaan opsional: **asam urat** dan **kolesterol total** (mg/dL). | Langkah sendiri di jalur kronis, boleh dilewati. Dicatat di rangkuman dan fakta MedGemma, **belum dinilai**: ambang perlu DR (K32), bobot perlu ST (K28). |
+| K31 | Pemeriksaan opsional: **asam urat** dan **kolesterol total** (mg/dL). | Langkah sendiri di jalur kronis, boleh dilewati. Dicatat di rangkuman dan fakta Gemma4, **belum dinilai**: ambang perlu DR (K32), bobot perlu ST (K28). |
 
 ### Menunggu DR
 
@@ -310,7 +310,7 @@ Halaman hasil memakai versi ringkas dari teks yang sama (`advice.json`, kolom `r
 - Tanpa tensimeter, tanyakan proksi berikut:
   - Nadi sangat cepat/berdebar keras saat istirahat.
   - Tengkuk terasa sangat tegang.
-- Kategori tensi (label di rangkuman dan fakta MedGemma; tidak mengubah skor) `[D1]`. Label perlu OK DR (K33).
+- Kategori tensi (label di rangkuman dan fakta Gemma4; tidak mengubah skor) `[D1]`. Label perlu OK DR (K33).
 
   | Kategori | Patokan |
   | --- | --- |
@@ -320,14 +320,14 @@ Halaman hasil memakai versi ringkas dari teks yang sama (`advice.json`, kolom `r
   | sangat tinggi | sistolik > 160 (juga menaikkan HIJAU ke KUNING, §9) |
 
 - **Gula darah sewaktu (GDS)**, mg/dL: diukur kapan saja, tidak perlu puasa. **≥ 200 mg/dL = tinggi** `[D1]`.
-  - Rangkuman dan fakta MedGemma: `250 mg/dL (≥ 200, tinggi)`.
+  - Rangkuman dan fakta Gemma4: `250 mg/dL (≥ 200, tinggi)`.
   - Catatan kuning di hasil (teks perlu OK DR, K33): "Gula darah sewaktu {nilai} mg/dL tergolong **tinggi** (≥ 200 mg/dL). Periksakan gula darah ulang di Puskesmas."
   - Tidak mengubah skor atau rute. Bobot: ST (K28).
 
 ### Pemeriksaan opsional (jalur kronis) `[D1]`
 
 - Asam urat (mg/dL, 1–30) dan kolesterol total (mg/dL, 50–600), dari hasil cek terakhir. Boleh dilewati.
-- Dicatat di rangkuman/QR dan fakta MedGemma, **belum dinilai**: ambang perlu DR (K32), bobot perlu ST (K28).
+- Dicatat di rangkuman/QR dan fakta Gemma4, **belum dinilai**: ambang perlu DR (K32), bobot perlu ST (K28).
 
 ### Antropometri `[B-T6]` `[J2]` `[J4]`
 

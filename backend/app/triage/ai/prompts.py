@@ -8,12 +8,12 @@ from typing import Any
 
 from app.domain.answers import Answers
 from app.triage.content import NONE_ID, FlowContent, Option
-from app.triage.medgemma import FLOW_LABEL, Fact, Source, TextRequest
+from app.triage.Gemma4 import FLOW_LABEL, Fact, Source, TextRequest
 from app.triage.scoring import companion_shown, visible
 
 # Bump when a prompt, the facts, the message layout, or a schema changes. Goes to the
 # call log. ai-3: both branches had bumped to ai-2 separately (3-5 candidates with
-# minItems; medgemma facts p2 without photo findings, GDS, blood pressure category,
+# minItems; Gemma4 facts p2 without photo findings, GDS, blood pressure category,
 # uric acid, cholesterol), merged here.
 PROMPT_VERSION = "ai-3"
 

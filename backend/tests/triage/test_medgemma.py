@@ -3,7 +3,7 @@ from pydantic import ValidationError
 
 from app.triage.advice import build_result
 from app.triage.content import FlowContent, get_content
-from app.triage.medgemma import (
+from app.triage.Gemma4 import (
     Candidate,
     Fact,
     Source,
@@ -139,7 +139,7 @@ def test_restrict_to_drops_unknown_ids(content: FlowContent) -> None:
     assert out.candidates[1].sources == []
 
 
-# Same case as the example in docs/Format-MedGemma.md.
+# Same case as the example in docs/Format-Gemma4.md.
 DOC_ANSWERS = {
     "who": "self",
     "age": 22,

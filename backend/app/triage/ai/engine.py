@@ -52,7 +52,7 @@ from app.triage.ai.llm import (
 )
 from app.triage.ai.quota import QuotaGuard, shared_quota
 from app.triage.content import FlowContent
-from app.triage.medgemma import (
+from app.triage.Gemma4 import (
     MAX_CANDIDATES,
     ScoredCandidate,
     TextOutput,

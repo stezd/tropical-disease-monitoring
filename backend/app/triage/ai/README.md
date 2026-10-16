@@ -31,7 +31,7 @@ TRIAGE_AI_API_KEY=... python scripts/ai_smoke.py
 
 ## Alur
 
-1. `build_request()` (kontrak ST di `medgemma.py`) mengubah jawaban jadi fakta F1..Fn. Ada tanda bahaya: model tidak dipanggil.
+1. `build_request()` (kontrak ST di `Gemma4.py`) mengubah jawaban jadi fakta F1..Fn. Ada tanda bahaya: model tidak dipanggil.
 2. Teks obat pasien **tidak dikirim**. Obat punya langkah sendiri (`/drugs`, menyusul), supaya Paracetamol tidak menurunkan skor DBD.
 3. Literatur diambil dari `data/<flow>_literature.json` (dihitung offline, tanpa embedding saat runtime). Setiap potongan diberi label ID penyakit, dan model hanya menerima potongan tentang kandidatnya.
 4. Model juga menerima daftar **"Ditanyakan, tidak dipilih"**. Form tidak punya pilihan negasi, jadi inilah cara model tahu sebuah gejala ditanyakan dan tidak ada.
@@ -45,7 +45,7 @@ TRIAGE_AI_API_KEY=... python scripts/ai_smoke.py
 | `single` (bawaan) | 1 | Semua kandidat, 1 potongan literatur per kandidat |
 | `per_candidate` | 3 sampai 6 | Hanya kandidat pendek: anggota klaster yang dipilih + 2 skor teratas `RuleEngine`, 3 potongan per kandidat, dijalankan paralel |
 
-`per_candidate` adalah cara yang terbukti berhasil di MedGemma 4B, tapi memakan kuota 3 sampai 6 kali lipat. Dengan batas sekitar 10 RPM, itu hanya 2 pasien per menit. Bandingkan keduanya di uji pengguna lewat log.
+`per_candidate` adalah cara yang terbukti berhasil di Gemma4 4B, tapi memakan kuota 3 sampai 6 kali lipat. Dengan batas sekitar 10 RPM, itu hanya 2 pasien per menit. Bandingkan keduanya di uji pengguna lewat log.
 
 ## Fallback
 
@@ -114,7 +114,7 @@ Pembangun sementara memakai BM25 per penyakit. Notebook Colab (EmbeddingGemma) b
 
 Bawaan: `gemini-3.5-flash-lite`. Model ini sudah dicoba dengan key sungguhan pada 15 Okt 2026 dan menjawab sesuai skema. `gemini-3.6-flash` menjawab 503 (server sibuk) tiga kali berturut-turut. Untuk memakai Flash sebagai model utama, set `TRIAGE_AI_MODEL=gemini-3.6-flash` dan `TRIAGE_AI_FALLBACK_MODEL=gemini-3.5-flash-lite`. Saat Flash menjawab 503 atau 429, Flash-Lite dicoba sekali sebelum service jatuh ke aturan, dan log mencatat model mana yang menjawab.
 
-Cara lain cukup lewat config: `TRIAGE_AI_MODEL`, atau `TRIAGE_AI_PROVIDER=openai_compat` + `TRIAGE_AI_BASE_URL=http://<server-gpu>:8000/v1` untuk MedGemma di vLLM. Naikkan `PROMPT_VERSION` di `prompts.py` setiap kali prompt atau skema berubah.
+Cara lain cukup lewat config: `TRIAGE_AI_MODEL`, atau `TRIAGE_AI_PROVIDER=openai_compat` + `TRIAGE_AI_BASE_URL=http://<server-gpu>:8000/v1` untuk Gemma4 di vLLM. Naikkan `PROMPT_VERSION` di `prompts.py` setiap kali prompt atau skema berubah.
 
 ## OpenRouter (Gemma 4 gratis)
 

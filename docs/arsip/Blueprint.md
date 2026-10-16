@@ -133,7 +133,7 @@ Lingkar Perut / Pinggang: [ _____ ] cm (Parameter wajib Sindrom Metabolik).
   - (Proksi Berat Badan / Penurunan BB Drastis): Pakaian/celana sangat longgar dalam 1-2 bulan terakhir (Indikator penurunan berat badan drastis, IMT <18.5 / Prediktor kuat TBC, Cacingan STH, dan DM Tipe Katabolik).
   - Celana terasa makin sempit di perut / Postur Kelebihan Berat Badan (Obesitas) (Prediktor infeksi berat P. falciparum, Hipertensi, dan DM).
 
-**Q8. KAMERA DETEKSI (MEDGEMMA MULTIMODAL, ANALISIS FOTO)**
+**Q8. KAMERA DETEKSI (Gemma4 MULTIMODAL, ANALISIS FOTO)**
 
 Pilih kelainan yang terlihat dan fotokan:
 
@@ -147,9 +147,9 @@ Pilih kelainan yang terlihat dan fotokan:
 
 ## TAHAP 7: INFERENSI KECERDASAN BUATAN (BACKEND)
 
-Berjalan di server sendiri: **MedGemma** (large multimodal model, bobot terbuka) + **RAG** atas sumber literatur yang disetujui DR. Model tidak dipanggil lewat API pihak luar, dan tidak ada data yang dikirim keluar server kita. Pemeriksaan tanda bahaya (Tahap 3) tetap berjalan di browser.
+Berjalan di server sendiri: **Gemma4** (large multimodal model, bobot terbuka) + **RAG** atas sumber literatur yang disetujui DR. Model tidak dipanggil lewat API pihak luar, dan tidak ada data yang dikirim keluar server kita. Pemeriksaan tanda bahaya (Tahap 3) tetap berjalan di browser.
 
-- **Proksi IMT (MedGemma + RAG):** Proksi baju longgar/celana sempit diberikan ke model sebagai konteks pengganti IMT. Cara menggabungkan keluaran model dengan skor aturan ditetapkan ST.
+- **Proksi IMT (Gemma4 + RAG):** Proksi baju longgar/celana sempit diberikan ke model sebagai konteks pengganti IMT. Cara menggabungkan keluaran model dengan skor aturan ditetapkan ST.
 - **CVD Risk Score (Framingham Adaptasi):** Khusus pasien Opsi B (PTM), AI menghitung persentase risiko serangan jantung/stroke dalam 10 tahun ke depan berdasarkan Usia, Lingkar Perut, BMI, dan Merokok.
 - **Cross-Validation & Eskalasi (Override Aturan):** Jika Suhu ≥ 39,5 °C (Hiperpireksia) atau Tensi Sistolik > 160 mmHg, AI otomatis membatalkan Rute Hijau dan menaikkan prioritas pasien ke RUTE KUNING untuk keharusan dieksklusi oleh dokter.
 

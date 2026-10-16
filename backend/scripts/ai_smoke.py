@@ -19,7 +19,7 @@ from app.triage.ai.llm import make_client
 from app.triage.content import get_content
 
 CASES: dict[str, tuple[str, dict[str, Any]]] = {
-    "malaria (Format-MedGemma)": (
+    "malaria (Format-Gemma4)": (
         "infection",
         {
             "who": "self",

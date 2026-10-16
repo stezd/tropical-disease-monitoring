@@ -1,0 +1,618 @@
+/* TropiCare pitch deck — shared slide styles.
+   Tokens come from DESIGN.md / frontend/src/styles/tropicek.css.
+   Slides are 1920×1080 px (not responsive), so px is used on purpose here. */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+:root {
+  --backdrop: #cde8e3;
+  --backdrop-glow: #e4f4f1;
+  --backdrop-deep: #a9d7d0;
+  --sheet: #b8dfd9;
+  --white: #fff;
+  --field: #f3f8f7;
+  --line: #e1edea;
+  --ink: #15323a;
+  --ink2: #566d74;
+  --muted: #9cb2b5;
+  --teal: #0f6b66;
+  --teal-deep: #0b524e;
+  --teal-mid: #5fb3aa;
+  --teal-soft: #dcefeb;
+  --mint-card: #e5f3f0;
+  --rose: #fde6e9;
+  --rose-ink: #c2334b;
+  --mint: #dff3e6;
+  --mint-ink: #257048;
+  --sky: #ddeefa;
+  --sky-ink: #22679e;
+  --butter: #fdf0cc;
+  --butter-ink: #7d5600;
+  --lav: #ebe7f9;
+  --lav-ink: #5a46b0;
+  --coral: #f06a6a;
+  --green: #2e9e6b;
+  --gold: #f2b200;
+  --red: #e0384f;
+  --shadow-card: 0 6px 20px rgba(15, 107, 102, 0.08);
+  --shadow-btn: 0 6px 16px rgba(15, 107, 102, 0.28);
+  --font: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@page {
+  size: 1920px 1080px;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--backdrop);
+  font-family: var(--font);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+@media print {
+  html,
+  body {
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+  }
+
+  .slide {
+    transform: none !important;
+  }
+}
+
+/* ---------- canvas ---------- */
+.slide {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  transform-origin: 0 0;
+  background: linear-gradient(180deg, var(--backdrop-glow) 0%, var(--backdrop) 55%, var(--sheet) 100%);
+}
+
+.deck-bg {
+  position: absolute;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  pointer-events: none;
+}
+
+.slide-inner {
+  position: absolute;
+  inset: 150px 120px 84px 120px;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+}
+
+/* ---------- chrome: brand + progress + page number ---------- */
+.brand {
+  position: absolute;
+  top: 44px;
+  left: 120px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 5;
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--teal-deep);
+  letter-spacing: 0.2px;
+}
+
+.brand-mascot {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  position: relative;
+}
+
+.brand-mascot img {
+  position: absolute;
+  width: 90px;
+  left: -17px;
+  top: -14px;
+}
+
+.brand span {
+  color: var(--teal);
+}
+
+.progress {
+  position: absolute;
+  top: 54px;
+  right: 120px;
+  display: flex;
+  align-items: center;
+  z-index: 5;
+}
+
+.progress .st {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--white);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.progress .st.done {
+  background: var(--teal-mid);
+  border-color: var(--teal-mid);
+}
+
+.progress .st.cur {
+  background: var(--teal);
+  border-color: var(--teal);
+  box-shadow: 0 0 0 6px rgba(15, 107, 102, 0.18);
+  transform: scale(1.15);
+}
+
+.progress .sl {
+  width: 12px;
+  height: 3px;
+  background: var(--line);
+}
+
+.progress .sl.done {
+  background: var(--teal-mid);
+}
+
+.pageno {
+  position: absolute;
+  right: 120px;
+  bottom: 36px;
+  z-index: 5;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--teal-deep);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+}
+
+body.no-brand .brand,
+body.no-brand .pageno {
+  display: none;
+}
+
+/* ---------- headings ---------- */
+.title-wrap {
+  margin: 0 0 36px;
+}
+
+.title-wrap::after {
+  content: "";
+  display: block;
+  width: 460px;
+  height: 22px;
+  margin-top: 4px;
+  background: radial-gradient(ellipse at center, rgba(95, 179, 170, 0.7), rgba(95, 179, 170, 0) 70%);
+}
+
+.title {
+  margin: 0;
+  font-size: 72px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.lead {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.body {
+  font-size: 28px;
+  line-height: 1.45;
+  font-weight: 400;
+}
+
+.note {
+  font-size: 22px;
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--ink2);
+}
+
+b,
+strong {
+  font-weight: 700;
+}
+
+.accent {
+  color: var(--teal);
+}
+
+/* ---------- card + tab (app: "Card with tab") ---------- */
+.card {
+  position: relative;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  box-shadow: var(--shadow-card);
+  padding: 36px 36px 32px;
+}
+
+.card.has-tab {
+  padding-top: 52px;
+}
+
+.card .tab {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.kicker,
+.tab {
+  display: inline-block;
+  background: var(--teal-soft);
+  color: var(--teal-deep);
+  border-radius: 999px;
+  padding: 10px 26px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.kicker {
+  margin-bottom: 22px;
+  align-self: flex-start;
+}
+
+.mint-card {
+  background: var(--mint-card);
+  border-radius: 26px;
+  padding: 28px 32px;
+}
+
+/* ---------- pastel circles (icons) ---------- */
+.icon-dot {
+  flex: none;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 46px;
+  line-height: 1;
+  background: var(--mint);
+}
+
+.icon-dot.sm {
+  width: 64px;
+  height: 64px;
+  font-size: 34px;
+}
+
+.rose {
+  background: var(--rose);
+  color: var(--rose-ink);
+}
+
+.mint {
+  background: var(--mint);
+  color: var(--mint-ink);
+}
+
+.sky {
+  background: var(--sky);
+  color: var(--sky-ink);
+}
+
+.butter {
+  background: var(--butter);
+  color: var(--butter-ink);
+}
+
+.lav {
+  background: var(--lav);
+  color: var(--lav-ink);
+}
+
+/* ---------- stats ---------- */
+.stat .num {
+  font-size: 112px;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--teal-deep);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat .lab {
+  margin-top: 14px;
+  font-size: 30px;
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.stat .src {
+  margin-top: 10px;
+  font-size: 22px;
+  line-height: 1.35;
+  font-weight: 500;
+  color: var(--ink2);
+}
+
+/* ---------- numbered feature tile (reference: FEATURES 01–05) ---------- */
+.feat {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.tile-num {
+  flex: none;
+  width: 104px;
+  height: 104px;
+  border-radius: 24px;
+  background: var(--teal);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 46px;
+  font-weight: 700;
+  box-shadow: var(--shadow-btn);
+  font-variant-numeric: tabular-nums;
+}
+
+.feat h3 {
+  margin: 4px 0 8px;
+  font-size: 36px;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.feat p {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.4;
+  font-weight: 400;
+  color: var(--ink2);
+}
+
+/* ---------- speech bubble (Kak Tropi) ---------- */
+.bubble {
+  position: relative;
+  background: var(--white);
+  border-radius: 30px;
+  padding: 24px 32px;
+  font-size: 30px;
+  line-height: 1.45;
+  font-weight: 500;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--line);
+}
+
+.bubble b {
+  color: var(--teal-deep);
+}
+
+.bubble.tail-left::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  bottom: 38px;
+  width: 0;
+  height: 0;
+  border: 18px solid transparent;
+  border-right-color: var(--white);
+  border-left: 0;
+}
+
+.bubble.tail-down::before {
+  content: "";
+  position: absolute;
+  left: 60px;
+  bottom: -18px;
+  width: 0;
+  height: 0;
+  border: 18px solid transparent;
+  border-top-color: var(--white);
+  border-bottom: 0;
+}
+
+.mascot {
+  display: block;
+  height: auto;
+}
+
+/* ---------- route chips (DESIGN.md route colors) ---------- */
+.route-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 26px 12px 14px;
+  border-radius: 999px;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.route-chip i {
+  font-style: normal;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+}
+
+.route-chip.hijau {
+  background: #dff3e6;
+  color: #0f5a3a;
+}
+
+.route-chip.hijau i {
+  background: #2e9e6b;
+}
+
+.route-chip.kuning {
+  background: #fff1b8;
+  color: #5e4500;
+}
+
+.route-chip.kuning i {
+  background: #f2b200;
+}
+
+.route-chip.khusus {
+  background: #ffe2cc;
+  color: #7a3300;
+}
+
+.route-chip.khusus i {
+  background: #f07a2a;
+}
+
+.route-chip.merah {
+  background: #c8203a;
+  color: #fff;
+}
+
+.route-chip.merah i {
+  background: #fff;
+}
+
+/* ---------- pills, status dots ---------- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--teal-soft);
+  color: var(--teal-deep);
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.pill.warn {
+  background: var(--butter);
+  color: var(--butter-ink);
+}
+
+.st-dot {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.st-ok {
+  background: var(--mint);
+  color: var(--mint-ink);
+}
+
+.st-part {
+  background: var(--butter);
+  color: var(--butter-ink);
+}
+
+.st-no {
+  background: var(--rose);
+  color: var(--rose-ink);
+}
+
+.arrow {
+  flex: none;
+  align-self: center;
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--teal-mid);
+  line-height: 1;
+}
+
+/* ---------- layout helpers ---------- */
+.row {
+  display: flex;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+}
+
+.center {
+  align-items: center;
+  justify-content: center;
+}
+
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.g16 {
+  gap: 16px;
+}
+
+.g24 {
+  gap: 24px;
+}
+
+.g32 {
+  gap: 32px;
+}
+
+.g48 {
+  gap: 48px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.mt-auto {
+  margin-top: auto;
+}

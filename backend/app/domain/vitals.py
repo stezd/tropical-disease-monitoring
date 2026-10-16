@@ -1,6 +1,6 @@
 """Labels for measured blood pressure and blood glucose (DR decisions, 2026-10-15).
 
-Used by the summary (QR page) and the MedGemma facts. Labels only: they do not change
+Used by the summary (QR page) and the Gemma4 facts. Labels only: they do not change
 scores or routes. The route rule for systolic > 160 mmHg lives in route_policy and the
 weights (`bp_upgrade_above`).
 

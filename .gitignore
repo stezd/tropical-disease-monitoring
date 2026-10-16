@@ -77,3 +77,6 @@ graphify-out/*
 # TanStack Router generated
 frontend/.tanstack/
 frontend/src/routeTree.gen.ts
+
+# pitch deck: temporary screenshots and per-slide PDFs
+docs/pitch/out/
