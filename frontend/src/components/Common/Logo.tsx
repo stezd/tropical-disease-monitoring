@@ -12,11 +12,11 @@ function Wordmark({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "font-heading text-2xl font-bold tracking-wide text-[#5B3FD6]",
+        "font-heading text-2xl font-bold tracking-wide text-[#0B524E]",
         className,
       )}
     >
-      Tropi<span className="text-[#FF8A5C]">Care</span>
+      Tropi<span className="text-[#0F6B66]">Care</span>
     </span>
   )
 }

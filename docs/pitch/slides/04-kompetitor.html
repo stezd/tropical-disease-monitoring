@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TropiCare · Perbandingan</title>
+<link rel="stylesheet" href="../shared/deck.css">
+<style>
+  .title-wrap { margin-bottom: 14px; }
+  .title { font-size: 64px; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--white); border-radius: 22px; overflow: hidden; box-shadow: var(--shadow-card); table-layout: fixed; }
+  th { padding: 12px 16px; font-size: 26px; font-weight: 700; background: var(--white); color: var(--ink); text-align: left; }
+  th.tc { background: var(--teal); color: #fff; }
+  td { padding: 10px 16px; font-size: 22px; line-height: 1.25; font-weight: 500; color: var(--ink2); border-top: 2px solid #a9cdc7; vertical-align: middle; }
+  td.rowh { font-weight: 600; color: var(--ink); font-size: 23px; }
+  td.tc { background: var(--mint-card); color: var(--ink); }
+  tr:nth-child(even) td { background: var(--field); }
+  tr:nth-child(even) td.tc { background: #d3ebe6; }
+  .c { display: flex; align-items: center; gap: 12px; }
+  .st-dot { width: 36px; height: 36px; font-size: 20px; flex: none; }
+  .foot { margin-top: 14px; font-size: 24px; font-weight: 600; color: var(--ink); }
+  .strip { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .strip .pill { font-size: 22px; padding: 8px 18px; }
+</style>
+</head>
+<body data-slide="04-kompetitor">
+<div class="slide">
+  <div class="slide-inner">
+    <span class="kicker">Perbandingan</span>
+    <div class="title-wrap"><h1 class="title">Perbandingan dengan alternatif</h1></div>
+    <table>
+      <colgroup><col style="width:25%"><col style="width:27%"><col style="width:24%"><col style="width:24%"></colgroup>
+      <tr><th></th><th class="tc">TropiCare</th><th>Mobile JKN</th><th>Ada Health</th></tr>
+      <tr><td class="rowh">Skrining gejala penyakit infeksi tropis</td>
+        <td class="tc"><div class="c"><span class="st-dot st-ok">✓</span>20 penyakit</div></td>
+        <td><div class="c"><span class="st-dot st-no">✕</span></div></td>
+        <td><div class="c"><span class="st-dot st-part">!</span>Umum, tidak khusus tropis Indonesia</div></td></tr>
+      <tr><td class="rowh">Skrining risiko penyakit kronis (PTM)</td>
+        <td class="tc"><div class="c"><span class="st-dot st-ok">✓</span></div></td>
+        <td><div class="c"><span class="st-dot st-ok">✓</span>47 pertanyaan, 1×/tahun</div></td>
+        <td><div class="c"><span class="st-dot st-part">!</span>Umum</div></td></tr>
+      <tr><td class="rowh">Kuesioner adaptif</td>
+        <td class="tc"><div class="c"><span class="st-dot st-ok">✓</span></div></td>
+        <td><div class="c"><span class="st-dot st-no">✕</span>Daftar tetap</div></td>
+        <td><div class="c"><span class="st-dot st-ok">✓</span></div></td></tr>
+      <tr><td class="rowh">Tanda bahaya → arahan darurat langsung</td>
+        <td class="tc"><div class="c"><span class="st-dot st-ok">✓</span>Jalan walau server mati</div></td>
+        <td><div class="c"><span class="st-dot st-no">✕</span></div></td>
+        <td><div class="c"><span class="st-dot st-part">!</span>Saran umum hubungi layanan darurat</div></td></tr>
+      <tr><td class="rowh">Arahan jenis layanan</td>
+        <td class="tc"><div class="c"><span class="st-dot st-ok">✓</span>4 rute: IGD, poli program, Puskesmas, rawat mandiri</div></td>
+        <td><div class="c"><span class="st-dot st-part">!</span>Tingkat risiko + saran gaya hidup</div></td>
+        <td><div class="c"><span class="st-dot st-part">!</span>Saran langkah berikutnya</div></td></tr>
+      <tr><td class="rowh">Rangkuman untuk petugas (QR)</td>
+        <td class="tc"><div class="c"><span class="st-dot st-ok">✓</span></div></td>
+        <td><div class="c"><span class="st-dot st-no">✕</span></div></td>
+        <td><div class="c"><span class="st-dot st-part">!</span>Laporan asesmen</div></td></tr>
+      <tr><td class="rowh">Bahasa Indonesia</td>
+        <td class="tc"><div class="c"><span class="st-dot st-ok">✓</span></div></td>
+        <td><div class="c"><span class="st-dot st-ok">✓</span></div></td>
+        <td><div class="c"><span class="st-dot st-no">✕</span>Aplikasi konsumen</div></td></tr>
+    </table>
+    <p class="foot">TropiCare melengkapi, bukan menggantikan: konsultasi dokter lewat Mobile JKN.</p>
+    <div class="strip">
+      <span class="pill">🌴 Fokus penyakit tropis Indonesia</span>
+      <span class="pill">🧭 Arahan ke jenis layanan</span>
+      <span class="pill">🛡️ Keamanan sejak skrining</span>
+      <span class="pill">🌐 Web, tanpa akun</span>
+    </div>
+  </div>
+</div>
+<script src="../shared/deck.js"></script>
+</body>
+</html>

@@ -72,11 +72,11 @@ export function confetti(host: HTMLElement | null) {
   if (!host || reducedMotion()) return
   const cols = [
     "#FFC531",
-    "#FF7E9A",
-    "#8B4DFF",
-    "#26C4B1",
+    "#F06A6A",
+    "#0F6B66",
+    "#5FB3AA",
     "#FF8F3D",
-    "#7AA2FF",
+    "#7AB8E8",
     "#3DDC84",
   ]
   for (let i = 0; i < 70; i++) {

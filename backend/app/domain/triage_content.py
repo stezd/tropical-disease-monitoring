@@ -18,7 +18,8 @@ from pydantic import BaseModel, model_validator
 
 RouteId = Literal["green", "yellow", "special", "red"]
 WarningLevel = Literal["y", "r", "b"]
-StepId = Literal["who", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"]
+# "labs" = optional exams (uric acid, total cholesterol), chronic path only.
+StepId = Literal["who", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "labs", "q8", "q9"]
 Vital = Literal["temp", "bp", "glucose"]
 NONE_ID = "none"
 
@@ -33,7 +34,8 @@ class Option(BaseModel):
     detail: str | None = None
     reason: str | None = None
     disease: str | None = None
-    # Several diseases for one option (e.g. a photo finding). Overrides `disease`.
+    # Several diseases for one option (e.g. neck stiffness → hypertension and
+    # dyslipidemia). Overrides `disease`.
     diseases: list[str] = []
     child_only: bool = False
     # Inclusive age range in years. None = no limit.
@@ -41,6 +43,10 @@ class Option(BaseModel):
     age_max: int | None = None
     # Picking this option raises the route to at least this level.
     min_route: RouteId | None = None
+    # Picking this option is a danger sign: the red screen for this red flag ID.
+    red_flag: str | None = None
+    # Shown to the patient and in the summary for the health worker.
+    staff_note: str | None = None
     wide: bool = False
 
     def targets(self, default: str | None = None) -> list[str]:
@@ -63,6 +69,8 @@ class RedFlag(BaseModel):
     first_aid: str | None = None
     # What not to do on the way to hospital (DR no. 19, "DON'T").
     dont: str | None = None
+    # False = not in the step-1 list; only reached through an option's `red_flag`.
+    listed: bool = True
 
 
 class Cluster(BaseModel):
@@ -128,7 +136,7 @@ class Flow(BaseModel):
     sex: list[Option]
     # Ask women from this age whether they are pregnant (Blueprint Q1). None = never.
     pregnancy_from_age: int | None = None
-    # Ask for the province (location or picked) in step "who". Goes to MedGemma.
+    # Ask for the province (location or picked) in step "who". Goes to Gemma4.
     ask_province: bool = False
     red_flags: list[RedFlag]
     # Red flag IDs shown first in this flow; the rest keep the order of red_flags.json.
@@ -149,9 +157,9 @@ class Flow(BaseModel):
     vital_proxies: dict[Vital, list[Option]] = {}
     measure_waist: bool = False
     nutrition_proxies: list[Option]
+    # Pain map (step "q9"). Empty = the flow has no pain map.
     body_regions: list[BodyRegion]
     pain_faces: list[PainFace]
-    findings: list[Option]
     routes: dict[RouteId, RouteInfo]
 
     @model_validator(mode="after")
@@ -164,8 +172,14 @@ class Flow(BaseModel):
         self.red_flags.sort(key=lambda f: rank.get(f.id, len(rank)))
         return self
 
+    @model_validator(mode="after")
+    def _pain_map_has_regions(self) -> Self:
+        if "q9" in self.steps and not (self.body_regions and self.pain_faces):
+            raise ValueError("flow.steps has q9 but no body_regions or pain_faces")
+        return self
+
     def all_options(self) -> list[Option]:
-        out = [*self.eco, *self.findings, *self.nutrition_proxies]
+        out = [*self.eco, *self.nutrition_proxies]
         for q in [*self.patterns.values(), *self.companions.values()]:
             out += q.options
         for opts in self.vital_proxies.values():
@@ -186,12 +200,18 @@ class Disease(BaseModel):
 
 
 class DrugRule(BaseModel):
-    """Fires when the drug text has a keyword and the answers match.
+    """Fires when the drug text has a keyword, or the drug recognizer (AI) found one of
+    `classes`, and the answers match.
 
     `patterns` / `complaints`: the answer must be one of them (empty = any).
+    `pending_dr`: wording not yet approved by DR. The rule never fires until DR approves
+    the text and the flag is removed.
     """
 
     keywords: list[str]
+    # Drug classes from app.triage.ai.drugs.DRUG_CLASSES, e.g. "nsaid".
+    classes: list[str] = []
+    pending_dr: bool = False
     patterns: list[str] = []
     complaints: list[str] = []
     level: WarningLevel = "y"
@@ -212,7 +232,13 @@ class Warnings(BaseModel):
     no_thermo_fever_pattern: str | None = None
     no_thermo_other: str | None = None
     no_bp: str | None = None
+    # Gula darah sewaktu ≥ 200 mg/dL (domain/vitals.py). `{glucose}` = the value.
+    # Notice only: no score or route change. Text needs DR's OK.
+    glucose_high: str | None = None
     no_bmi: str
+    # Top guess below `weights.refer_below_pct`: see a doctor. `{pct}` = the top percent.
+    # Text needs DR's OK.
+    low_confidence: str | None = None
 
 
 class Todo(BaseModel):
@@ -243,7 +269,6 @@ class AnalysisSteps(BaseModel):
     vitals_complete: str
     cross_check: str
     eco: str
-    findings: str
     score: str
     route: str
 
@@ -321,7 +346,6 @@ class Weights(BaseModel):
     complaint_reason: str
     pattern: float
     companion: float
-    finding: float
     eco: dict[str, dict[str, float]]
     province: dict[str, dict[str, float]] = {}
     fever: Fever | None = None
@@ -331,6 +355,9 @@ class Weights(BaseModel):
     candidate_min_share: float
     max_display_pct: int
     low_score_threshold: float
+    # Top guess below this percent (as the patient sees it): green becomes yellow and a
+    # "see a doctor" note is added. None = off. ST sets the value.
+    refer_below_pct: float | None = None
     # Route rules: measured temp from / systolic above this raises green to yellow.
     high_fever_upgrade: float | None = None
     bp_upgrade_above: float | None = None
@@ -355,6 +382,7 @@ class FlowContent(BaseModel):
         clusters = {c.id for c in self.flow.clusters}
         regions = {r.id for r in self.flow.body_regions}
         eco = {o.id for o in self.flow.eco}
+        red = {f.id for f in self.flow.red_flags}
 
         def need(ids: Iterable[str | None], known: set[str], where: str) -> None:
             for i in ids:
@@ -373,8 +401,7 @@ class FlowContent(BaseModel):
             need(q.patterns or [], patterns, f"flow.companions[{cid}].patterns")
             for o in q.options:
                 need(o.targets(), scored, f"flow.companions[{cid}]")
-        for o in self.flow.findings:
-            need(o.targets(), scored, "flow.findings")
+                need([o.red_flag] if o.red_flag else [], red, f"flow.companions[{cid}]")
         need(list(self.flow.vital_proxies), set(self.flow.vitals), "flow.vital_proxies")
         need(list(self.weights.eco), eco, "weights.eco")
         for k, pts in self.weights.eco.items():

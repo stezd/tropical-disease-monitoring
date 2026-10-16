@@ -161,6 +161,9 @@ def upsert_facilities(session: Session, records: list[dict[str, Any]]) -> int:
     if not records:
         return 0
 
+    # Only MSI-owned columns are refreshed here. In particular `wa_number` is a
+    # human-curated field (PUT /facilities/{id}/whatsapp) and is deliberately
+    # left out, so a nightly re-sync never wipes it.
     stmt = pg_insert(Facility).values(records)
     stmt = stmt.on_conflict_do_update(
         index_elements=[Facility.satusehat_id],

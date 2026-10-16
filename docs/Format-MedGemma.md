@@ -1,28 +1,29 @@
-# Format Masukan dan Keluaran MedGemma
+# Format Masukan dan Keluaran Gemma4
 
 - **Untuk:** ST. Ini usulan; ST yang memutuskan.
-- **ID penyakit dan temuan:** `backend/app/triage/content/<flow>/diseases.json` dan `flow.json`
-- **Kode:** `backend/app/triage/medgemma.py` (kalau berbeda dengan dokumen ini, kode yang benar)
-  - Input: `TextRequest`, `PhotoRequest`
-  - Output: `TextOutput`, `PhotoOutput`
+- **ID penyakit dan pilihan:** `backend/app/triage/content/<flow>/diseases.json` dan `flow.json`
+- **Kode:** `backend/app/triage/Gemma4.py` (kalau berbeda dengan dokumen ini, kode yang benar)
+  - Input: `TextRequest`
+  - Output: `TextOutput`
   - Jawaban → fakta: `build_request()`
   - Output → skor: `to_breakdown()`
 
 ## Status
 
 **Sudah ada**
-- ✅ Kontrak input/output (Pydantic) untuk skor teks dan foto
-- ✅ Jawaban pasien → fakta F1..Fn → pesan ke MedGemma
+- ✅ Kontrak input/output (Pydantic) untuk skor teks. Tahap foto dihapus (15 Okt 2026), jadi tidak ada lagi kontrak foto dan fakta "Temuan foto".
+- ✅ Jawaban pasien → fakta F1..Fn → pesan ke Gemma4
 - ✅ Lokasi pasien → nama provinsi → fakta `Provinsi tempat tinggal`, ditanya di data diri jalur infeksi (tanpa koordinat)
 - ✅ JSON Schema untuk membatasi jawaban model
-- ✅ Keluaran MedGemma → skor dan alasan → hasil (rute tetap dari aturan)
+- ✅ Keluaran Gemma4 → skor dan alasan → hasil (rute tetap dari aturan)
 
 **Belum ada**
-- ⏳ Memanggil MedGemma di server (ST)
-- ⏳ `ModelEngine` + kembali ke `RuleEngine` kalau model gagal (ST)
-- ⏳ Literatur RAG: sumber dipilih DR, korpus dibuat ST. Usul: kueri pencarian memakai fakta pasien, termasuk provinsi, supaya potongan tentang daerah endemis ikut terambil
-- ⏳ Analisis foto sungguhan (ST, prioritas rendah)
-- ⏳ BE: meter maskot tetap pakai aturan; endpoint foto terima `flow_id`; catat versi model
+- ✅ Memanggil model di server: `backend/app/triage/ai` (Gemini, atau API kompatibel OpenAI seperti OpenRouter)
+- ✅ Engine AI kembali ke `RuleEngine` kalau model gagal atau kuota habis (`TRIAGE_SCORING_ENGINE=ai`)
+- 🔧 Literatur RAG: ada pembangun sementara (BM25 per penyakit); sumber final dipilih DR, korpus final dibuat ST. Usul: kueri pencarian memakai fakta pasien, termasuk provinsi, supaya potongan tentang daerah endemis ikut terambil
+- ✅ Hasil skor (`ScoreResult`) membawa `engine` (`ai` / `rules` / `model`) dan `fallback`; skrining tersimpan mencatat engine yang benar-benar dipakai
+- ✅ Hasil AI yang sukses dicache di memori per jawaban, supaya simpan skrining dan halaman QR tidak memanggil model lagi; pratinjau di tengah kuis (`?preview=true`) selalu memakai aturan
+- ⏳ BE: meter maskot tetap pakai aturan; catat versi model
 
 ## 1. Skor teks
 
@@ -79,11 +80,10 @@ F3 Keluhan utama: {teks klaster}
 F4 Pola gejala: {teks pilihan}
 F5 Gejala penyerta: {teks pilihan}            ← satu baris per pilihan
 F6 Riwayat / faktor risiko: {teks pilihan}    ← satu baris per pilihan
-F7 Suhu: {38,6 °C | tidak diukur}             ← kronis: Tensi, Gula darah, Lingkar perut
+F7 Suhu: {38,6 °C | tidak diukur}             ← jalur infeksi
 F8 Pengganti alat ukur: {teks pilihan}
 F9 Gizi: {IMT 22,4 | teks proksi}
-F10 Nyeri: {wilayah tubuh}, nyeri {0–10}/10
-F11 Temuan foto: {teks temuan | tidak ada}
+F10 Nyeri: {wilayah tubuh}, nyeri {0–10}/10   ← kedua jalur; termasuk lutut, siku, bahu
 
 <obat_pasien>{teks bebas pasien}</obat_pasien>
 
@@ -101,6 +101,21 @@ Catatan:
 - Jawaban `null` → lewati barisnya. Jawaban `"none"` → tulis `tidak ada`.
 - Ada tanda bahaya → model tidak dipanggil (MERAH, aturan tetap).
 - Tanpa nama, NIK, nomor BPJS, koordinat, atau foto.
+- Fakta pengukuran jalur kronis, menggantikan baris Suhu (urutan sama dengan kuis; baris kosong dilewati):
+
+  ```text
+  Tensi: {sistolik}/{diastolik} mmHg ({normal | meningkat | tinggi | sangat tinggi}) | tidak diukur
+  Gula darah sewaktu: {nilai} mg/dL{ (≥ 200, tinggi)}
+  Pengganti alat ukur: {teks pilihan}           ← hanya bila tidak punya tensimeter
+  Asam urat: {nilai} mg/dL                      ← pemeriksaan opsional
+  Kolesterol total: {nilai} mg/dL               ← pemeriksaan opsional
+  Gizi: {IMT | teks proksi}
+  Lingkar perut: {nilai} cm
+  Nyeri: {wilayah tubuh}, nyeri {0–10}/10
+  ```
+
+  Kategori tensi dan patokan GDS ≥ 200 mg/dL dari DR (15 Okt 2026, [Acuan-Medis.md](Acuan-Medis.md) §8). Asam urat dan kolesterol total dikirim apa adanya, tanpa label, karena ambangnya belum diputuskan (K32).
+- Versi format fakta: `PROMPT_VERSION = "p2"` di `Gemma4.py` (`"ai-2"` di `ai/prompts.py`).
 - Lokasi: hanya nama provinsi (38 provinsi, nama sama dengan `frontend/src/features/triage/location.ts`). Tidak ada bobot per provinsi; model menimbang provinsi bersama fakta lain dan literatur RAG.
 
 Contoh `user` (jalur infeksi, cocok dengan contoh keluaran di bawah):
@@ -119,7 +134,6 @@ F7 Suhu: tidak diukur
 F8 Pengganti alat ukur: Menggigil hebat atau keringat sampai baju basah
 F9 Gizi: Pakaian/celana sangat longgar dalam 1-2 bulan terakhir
 F10 Nyeri: Kepala / mata, nyeri 4/10
-F11 Temuan foto: tidak ada
 
 <obat_pasien>Paracetamol</obat_pasien>
 
@@ -134,7 +148,7 @@ Kandidat:
 - diare: Diare Akut
 - tifoid: Demam Tifoid (Tipes)
 - amoeba: Amebiasis (Disentri Amuba)
-- hepa: Hepatitis A/B
+- hepa: Hepatitis Akut
 - sth: Cacingan (STH)
 - scabies: Skabies (Kudis)
 - tinea: Tinea (Jamur Kulit)
@@ -156,7 +170,7 @@ Literatur:
 | `facts[].id` | `F1`..`Fn` | berurutan, tanpa loncat |
 | `facts[].label`, `text` | label dan teks satu baris | teks pilihan, bukan ID |
 | `facts[].reason` | teks alasan untuk pasien, atau `null` | **tidak dikirim ke model** |
-| `drugs` | teks bebas pasien | ≤ 500 karakter; `<`, `>`, baris baru dibuang |
+| `drugs` | teks bebas pasien | ≤ 500 karakter; `<`, `>`, baris baru dibuang. **Di engine saat ini dikosongkan sebelum panggilan skor** (`backend/app/triage/ai/engine.py`); teks obat hanya dikirim terpisah ke pengenal obat bila ada nama yang tidak dikenal |
 | `candidates[]` | `id` + `name` dari `diseases.json` | tidak dobel; tanpa `rabies` |
 | `sources[]` | `S1`..`Sk`, kutipan, teks potongan | berurutan; boleh `[]` |
 
@@ -189,44 +203,3 @@ Literatur:
 | `sources` | ID literatur yang dipakai, boleh kosong |
 
 Server mengubahnya ke `ScoreBreakdown` (`scoring.py`). JSON tidak valid atau model lewat batas waktu → `RuleEngine`.
-
-## 2. Analisis foto
-
-### Masukan
-
-```text
-[gambar]
-
-Jalur: {infeksi | kronis}
-Which of these visible signs are present? Choose only from the list.
-If the photo is unclear, set image_ok to false. Reply with JSON only.
-- {id}: {teks temuan}
-- ...
-```
-
-Input JSON (`PhotoRequest`), dibuat dengan `findings_for(content)`:
-
-```json
-{
-  "flow_id": "{infection | chronic}",
-  "findings": [
-    {
-      "id": "{id temuan}",
-      "text": "{teks temuan}"
-    }
-  ]
-}
-```
-
-Gambar tidak masuk JSON; dikirim terpisah ke model dan hanya ada di memori.
-
-### Keluaran
-
-```json
-{
-  "image_ok": true,
-  "findings": ["lenting"]
-}
-```
-
-`findings` hanya berisi ID temuan jalur itu, tanpa nama penyakit. Foto tidak disimpan ke disk, log, atau database.

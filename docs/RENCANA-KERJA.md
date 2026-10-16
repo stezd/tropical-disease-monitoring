@@ -11,11 +11,11 @@
 | Siapa                     | Tugas utama                                                                                                                |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | **Dokter (DR)**     | Tentukan jalur kronis dan buat kartu kasus (vignette) untuk testing                                                       |
-| **Statistika (ST)** | Cara menghitung skor, koordinasi uji coba aplikasi, visualisasi dan olah hasil uji coba. Fitur analisis foto (lihat bawah) |
+| **Statistika (ST)** | Cara menghitung skor, koordinasi uji coba aplikasi, visualisasi dan olah hasil uji coba. |
 | **Backend (BE)**    | Server dan database, simpan hasil skrining, akun pengguna, aplikasi online, README                                         |
 | **Frontend (FE)**   | Semua tampilan aplikasi, sambungkan ke server                                                                              |
 
-**Fitur foto (jalur infeksi, prioritas rendah):** pengguna diminta mengunggah foto (misalnya ruam atau bengkak) untuk membantu skrining. ST yang mengembangkan, **target selesai Rabu**. Bebannya bisa besar, jadi kerjakan setelah rumus skor beres. Kalau Rabu belum jadi, pakai tampilan simulasi (pengguna memilih temuan sendiri) dan sebut sebagai rencana pengembangan.
+**Fitur foto:** dihapus atas keputusan tim (15 Okt 2026). Jalur infeksi tidak punya langkah foto.
 
 **Luaran akhir:**
 
@@ -30,14 +30,13 @@
 **Selasa — siapkan dasar**
 
 - DR: tentukan penyakit dan alur jalur kronis, lalu mulai tulis kartu kasus untuk testing.
-- ST: mulai rumus skor, buat Google Form survei, mulai cari peserta. Setelah rumus skor jalan, mulai fitur foto.
+- ST: mulai rumus skor, buat Google Form survei, mulai cari peserta.
 - BE: bersihkan kode dan deploy ASAP
 - FE: mulai pindahkan tampilan simulasi HTML ke aplikasi asli.
 
 **Rabu — jalur kronis, aplikasi online, uji coba mulai**
 
 - Jalur kronis dibuat.
-- Fitur foto selesai (opsional)
 - Deploy Aplikasi dan dicoba tim sendiri dulu.
 - Setelah itu, bagikan survei.
 

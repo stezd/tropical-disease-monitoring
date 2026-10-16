@@ -62,10 +62,13 @@ class Settings(BaseSettings):
         return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
 
     # Triage. "rules" = weights in app/triage/content. "model" = ST's trained model (skeleton).
-    TRIAGE_SCORING_ENGINE: Literal["rules", "model"] = "rules"
+    # "ai" = language model scoring (app/triage/ai, settings TRIAGE_AI_*), falls back to rules.
+    TRIAGE_SCORING_ENGINE: Literal["rules", "model", "ai"] = "rules"
     TRIAGE_MODEL_PATH: str | None = None
-    # Photo analysis is a skeleton until ST plugs in a model. "none" = not available.
-    TRIAGE_PHOTO_ANALYZER: Literal["none"] = "none"
+
+    # "Sign in with Google": OAuth client ID (type Web) from Google Cloud Console.
+    # Unset = POST /login/google answers 503.
+    GOOGLE_CLIENT_ID: str | None = None
 
     # SATUSEHAT Master Sarana Index (MSI) mirror. Credentials come from the SSP
     # Kode Akses API page; sync is a CLI job (backend/scripts/sync_facilities.py).

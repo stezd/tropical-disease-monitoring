@@ -1,0 +1,12 @@
+/* Small additions from the FE agent (wave 2). Tokens from tropicek.css. */
+
+/* Hint under a field label, e.g. "diukur kapan saja, tidak perlu puasa".
+   <label class="fld"><span>Label</span><small class="fhint">…</small>… */
+.fld > .fhint {
+  display: block;
+  margin: calc(-1 * var(--sp-1h)) 0 var(--sp-2) var(--sp-1);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--tc-ink2);
+}

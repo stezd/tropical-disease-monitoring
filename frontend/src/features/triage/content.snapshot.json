@@ -13,17 +13,9 @@
       "q6",
       "q7",
       "q8",
-      "q9",
-      "q10"
+      "q9"
     ],
-    "step_text": {
-      "q10": {
-        "tab": null,
-        "say": null,
-        "title": "Foto ruam, luka, atau mata",
-        "hint": null
-      }
-    },
+    "step_text": {},
     "stages": [
       {
         "emoji": "🚨",
@@ -67,6 +59,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -81,6 +75,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -95,6 +91,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -109,6 +107,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       }
     ],
@@ -125,6 +125,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -139,6 +141,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       }
     ],
@@ -154,7 +158,8 @@
         "condition": "Syok Dengue (DSS)",
         "facility": "Resusitasi / ICU",
         "first_aid": "Baringkan dengan kaki ditinggikan. Minum oralit bertahap jika pasien sadar.",
-        "dont": "Beri makan/minum jika pasien mulai mengantuk/penurunan kesadaran (risiko tersedak/aspirasi)."
+        "dont": "Beri makan/minum jika pasien mulai mengantuk/penurunan kesadaran (risiko tersedak/aspirasi).",
+        "listed": true
       },
       {
         "id": "darah",
@@ -165,7 +170,8 @@
         "condition": "Pendarahan masif / TBC batuk darah masif",
         "facility": "ICU & Transfusi Darah",
         "first_aid": "Mimisan: duduk condong ke depan, tekan cuping hidung 10 menit.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "ginjal",
@@ -176,7 +182,8 @@
         "condition": "Gagal ginjal akut (Leptospirosis/Malaria)",
         "facility": "Hemodialisa",
         "first_aid": "Jangan minum obat anti-nyeri sembarangan; segera berangkat.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "napas",
@@ -187,7 +194,8 @@
         "condition": "Gagal napas / Pneumonia berat",
         "facility": "Oksigen & ICU",
         "first_aid": "Posisikan setengah duduk, longgarkan pakaian.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "otak",
@@ -198,7 +206,8 @@
         "condition": "Ensefalopati / Malaria serebral / Tifoid toksik",
         "facility": "ICU",
         "first_aid": "Saat kejang: miringkan tubuh, jangan masukkan apa pun ke mulut.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "dehidrasi",
@@ -209,7 +218,8 @@
         "condition": "Dehidrasi berat",
         "facility": "Resusitasi cairan IGD",
         "first_aid": "Beri oralit sedikit-sedikit tapi sering selama perjalanan.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "rabies",
@@ -220,7 +230,8 @@
         "condition": "Rabies / gigitan hewan penular rabies",
         "facility": "Rabies Center (Vaksin Anti-Rabies)",
         "first_aid": "Cuci luka gigitan di air mengalir dengan SABUN selama minimal 15 menit tanpa henti sebelum ke RS.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "jantung",
@@ -231,7 +242,8 @@
         "condition": "Sindrom Koroner Akut (STEMI)",
         "facility": "EKG & penanganan serangan jantung",
         "first_aid": "Posisikan pasien dengan kepala agak ditinggikan 30°.",
-        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru)."
+        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru).",
+        "listed": true
       },
       {
         "id": "stroke",
@@ -242,7 +254,8 @@
         "condition": "Stroke akut",
         "facility": "CT scan & penanganan stroke",
         "first_aid": "Posisikan pasien dengan kepala agak ditinggikan 30°.",
-        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru)."
+        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru).",
+        "listed": true
       },
       {
         "id": "krisis_ht",
@@ -253,7 +266,8 @@
         "condition": "Krisis Hipertensi",
         "facility": "IGD rumah sakit",
         "first_aid": null,
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "koma_dm",
@@ -264,7 +278,20 @@
         "condition": "Koma Diabetik (Ketoasidosis / Hipoglikemia berat)",
         "facility": "IGD rumah sakit",
         "first_aid": null,
-        "dont": null
+        "dont": null,
+        "listed": true
+      },
+      {
+        "id": "kuning",
+        "emoji": "💛",
+        "text": "Mata atau kulit sangat kuning saat demam",
+        "detail": "Ditanya sebagai gejala penyerta demam, tidak di daftar tahap 1",
+        "label": "Leptospirosis berat",
+        "condition": "Leptospirosis berat (Weil's disease), risiko gagal ginjal akut",
+        "facility": "IGD rumah sakit",
+        "first_aid": null,
+        "dont": null,
+        "listed": false
       }
     ],
     "red_flag_first": [],
@@ -351,6 +378,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -365,6 +394,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -379,6 +410,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -393,6 +426,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -407,6 +442,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -421,6 +458,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -441,6 +480,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -455,6 +496,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -469,6 +512,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -489,6 +534,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -503,6 +550,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -517,6 +566,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -531,6 +582,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -545,6 +598,8 @@
             "age_min": 1,
             "age_max": 12,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -559,6 +614,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -579,6 +636,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -593,6 +652,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -607,6 +668,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -621,6 +684,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -635,6 +700,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -649,6 +716,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -663,6 +732,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -683,6 +754,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -697,6 +770,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -719,6 +794,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -733,6 +810,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -747,6 +826,24 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
+            "wide": false
+          },
+          {
+            "id": "kuning",
+            "emoji": "💛",
+            "text": "Mata atau kulit sangat kuning",
+            "detail": null,
+            "reason": "Mata/kulit sangat kuning",
+            "disease": null,
+            "diseases": [],
+            "child_only": false,
+            "age_min": null,
+            "age_max": null,
+            "min_route": null,
+            "red_flag": "kuning",
+            "staff_note": null,
             "wide": false
           },
           {
@@ -761,6 +858,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -781,6 +880,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -795,6 +896,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -809,10 +912,84 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
         "patterns": null
+      },
+      "C": {
+        "title": "Ada tanda ini pada anak?",
+        "options": [
+          {
+            "id": "lesu",
+            "emoji": "🥱",
+            "text": "Lesu, mudah lelah",
+            "detail": null,
+            "reason": "Lesu",
+            "disease": null,
+            "diseases": [],
+            "child_only": false,
+            "age_min": null,
+            "age_max": null,
+            "min_route": "yellow",
+            "red_flag": null,
+            "staff_note": "Cek hemoglobin (Hb). Beri obat cacing program Kemenkes (Albendazol, dosis sesuai usia).",
+            "wide": false
+          },
+          {
+            "id": "pucat",
+            "emoji": "😶",
+            "text": "Pucat",
+            "detail": null,
+            "reason": "Pucat",
+            "disease": null,
+            "diseases": [],
+            "child_only": false,
+            "age_min": null,
+            "age_max": null,
+            "min_route": "yellow",
+            "red_flag": null,
+            "staff_note": "Cek hemoglobin (Hb). Beri obat cacing program Kemenkes (Albendazol, dosis sesuai usia).",
+            "wide": false
+          },
+          {
+            "id": "buncit",
+            "emoji": "🎈",
+            "text": "Perut buncit",
+            "detail": null,
+            "reason": "Perut buncit",
+            "disease": null,
+            "diseases": [],
+            "child_only": false,
+            "age_min": null,
+            "age_max": null,
+            "min_route": "yellow",
+            "red_flag": null,
+            "staff_note": "Cek hemoglobin (Hb). Beri obat cacing program Kemenkes (Albendazol, dosis sesuai usia).",
+            "wide": false
+          },
+          {
+            "id": "none",
+            "emoji": "🙅",
+            "text": "Tidak ada",
+            "detail": null,
+            "reason": null,
+            "disease": null,
+            "diseases": [],
+            "child_only": false,
+            "age_min": null,
+            "age_max": null,
+            "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
+            "wide": false
+          }
+        ],
+        "patterns": [
+          "sth"
+        ]
       },
       "D": {
         "title": "Ada tanda ini pada lentingnya?",
@@ -829,6 +1006,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": "yellow",
+            "red_flag": null,
+            "staff_note": "Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata.",
             "wide": false
           },
           {
@@ -842,7 +1021,9 @@
             "child_only": false,
             "age_min": null,
             "age_max": null,
-            "min_route": "yellow",
+            "min_route": null,
+            "red_flag": "napas",
+            "staff_note": null,
             "wide": false
           },
           {
@@ -857,6 +1038,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": "yellow",
+            "red_flag": null,
+            "staff_note": "Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata.",
             "wide": false
           },
           {
@@ -871,6 +1054,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -892,6 +1077,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -906,6 +1093,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -920,6 +1109,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -934,6 +1125,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -948,6 +1141,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -962,6 +1157,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -976,6 +1173,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": true
       }
     ],
@@ -1006,6 +1205,8 @@
           "age_min": null,
           "age_max": null,
           "min_route": null,
+          "red_flag": null,
+          "staff_note": null,
           "wide": false
         },
         {
@@ -1020,6 +1221,8 @@
           "age_min": null,
           "age_max": null,
           "min_route": null,
+          "red_flag": null,
+          "staff_note": null,
           "wide": false
         },
         {
@@ -1034,6 +1237,8 @@
           "age_min": null,
           "age_max": null,
           "min_route": null,
+          "red_flag": null,
+          "staff_note": null,
           "wide": false
         }
       ]
@@ -1052,6 +1257,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1066,6 +1273,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1080,6 +1289,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       }
     ],
@@ -1087,6 +1298,14 @@
       {
         "id": "head",
         "name": "Kepala / mata"
+      },
+      {
+        "id": "shoulder_r",
+        "name": "Bahu kanan"
+      },
+      {
+        "id": "shoulder_l",
+        "name": "Bahu kiri"
       },
       {
         "id": "chest",
@@ -1113,6 +1332,14 @@
         "name": "Lengan kiri"
       },
       {
+        "id": "elbow_r",
+        "name": "Siku kanan"
+      },
+      {
+        "id": "elbow_l",
+        "name": "Siku kiri"
+      },
+      {
         "id": "wrist_r",
         "name": "Pergelangan tangan kanan"
       },
@@ -1127,6 +1354,14 @@
       {
         "id": "thigh_l",
         "name": "Paha kiri"
+      },
+      {
+        "id": "knee_r",
+        "name": "Lutut kanan"
+      },
+      {
+        "id": "knee_l",
+        "name": "Lutut kiri"
       },
       {
         "id": "calf_r",
@@ -1175,98 +1410,6 @@
         "value": 10,
         "emoji": "😭",
         "label": "Sakit sekali"
-      }
-    ],
-    "findings": [
-      {
-        "id": "ruam",
-        "emoji": "🔴",
-        "text": "Ruam kemerahan / bintik",
-        "detail": null,
-        "reason": "Foto: ruam kemerahan / bintik",
-        "disease": null,
-        "diseases": [
-          "campak",
-          "dbd"
-        ],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "wide": false
-      },
-      {
-        "id": "lenting",
-        "emoji": "🫧",
-        "text": "Lenting berair / lepuh",
-        "detail": null,
-        "reason": "Foto: lenting berair / lepuh",
-        "disease": "varicella",
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "wide": false
-      },
-      {
-        "id": "bercak",
-        "emoji": "⚪",
-        "text": "Bercak putih mati rasa",
-        "detail": null,
-        "reason": "Foto: bercak putih mati rasa",
-        "disease": "kusta",
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "wide": false
-      },
-      {
-        "id": "borok",
-        "emoji": "🩹",
-        "text": "Luka borok / bernanah",
-        "detail": null,
-        "reason": "Foto: luka borok / bernanah",
-        "disease": "frambusia",
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "wide": false
-      },
-      {
-        "id": "mata",
-        "emoji": "👁️",
-        "text": "Mata kuning / mata merah",
-        "detail": null,
-        "reason": "Foto: mata kuning / mata merah",
-        "disease": null,
-        "diseases": [
-          "hepa",
-          "lepto"
-        ],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "wide": false
-      },
-      {
-        "id": "none",
-        "emoji": "🙅",
-        "text": "Tidak ada temuan",
-        "detail": null,
-        "reason": null,
-        "disease": null,
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "wide": true
       }
     ],
     "routes": {
@@ -1363,7 +1506,7 @@
         "route": "yellow"
       },
       "hepa": {
-        "name": "Hepatitis A/B",
+        "name": "Hepatitis Akut",
         "emoji": "🟡",
         "route": "yellow"
       },
@@ -1412,8 +1555,7 @@
         "emoji": "🐕",
         "route": "red"
       }
-    },
-    "photo_analysis": false
+    }
   },
   "chronic": {
     "id": "chronic",
@@ -1428,8 +1570,9 @@
       "q5",
       "q6",
       "q7",
+      "labs",
       "q8",
-      "q10"
+      "q9"
     ],
     "step_text": {
       "q2": {
@@ -1450,10 +1593,16 @@
         "title": null,
         "hint": null
       },
-      "q10": {
+      "labs": {
+        "tab": "TAHAP 5 · PEMERIKSAAN OPSIONAL",
+        "say": "Punya hasil cek lab? **Boleh dilewati** 🧪",
+        "title": "Pemeriksaan opsional",
+        "hint": "Isi dari hasil cek terakhir. Kosongkan kalau tidak ada."
+      },
+      "q9": {
         "tab": null,
-        "say": null,
-        "title": "Foto kulit, luka, atau sendi",
+        "say": "Ada **sendi** atau bagian tubuh yang sakit? 👆",
+        "title": null,
         "hint": null
       }
     },
@@ -1500,6 +1649,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1514,6 +1665,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1528,6 +1681,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1542,6 +1697,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       }
     ],
@@ -1558,6 +1715,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1572,6 +1731,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       }
     ],
@@ -1587,7 +1748,8 @@
         "condition": "Sindrom Koroner Akut (STEMI)",
         "facility": "EKG & penanganan serangan jantung",
         "first_aid": "Posisikan pasien dengan kepala agak ditinggikan 30°.",
-        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru)."
+        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru).",
+        "listed": true
       },
       {
         "id": "stroke",
@@ -1598,7 +1760,8 @@
         "condition": "Stroke akut",
         "facility": "CT scan & penanganan stroke",
         "first_aid": "Posisikan pasien dengan kepala agak ditinggikan 30°.",
-        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru)."
+        "dont": "Beri minum/makanan apa pun bila kesadaran turun/ngantuk (cegah aspirasi paru).",
+        "listed": true
       },
       {
         "id": "krisis_ht",
@@ -1609,7 +1772,8 @@
         "condition": "Krisis Hipertensi",
         "facility": "IGD rumah sakit",
         "first_aid": null,
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "koma_dm",
@@ -1620,7 +1784,8 @@
         "condition": "Koma Diabetik (Ketoasidosis / Hipoglikemia berat)",
         "facility": "IGD rumah sakit",
         "first_aid": null,
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "syok",
@@ -1631,7 +1796,8 @@
         "condition": "Syok Dengue (DSS)",
         "facility": "Resusitasi / ICU",
         "first_aid": "Baringkan dengan kaki ditinggikan. Minum oralit bertahap jika pasien sadar.",
-        "dont": "Beri makan/minum jika pasien mulai mengantuk/penurunan kesadaran (risiko tersedak/aspirasi)."
+        "dont": "Beri makan/minum jika pasien mulai mengantuk/penurunan kesadaran (risiko tersedak/aspirasi).",
+        "listed": true
       },
       {
         "id": "darah",
@@ -1642,7 +1808,8 @@
         "condition": "Pendarahan masif / TBC batuk darah masif",
         "facility": "ICU & Transfusi Darah",
         "first_aid": "Mimisan: duduk condong ke depan, tekan cuping hidung 10 menit.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "ginjal",
@@ -1653,7 +1820,8 @@
         "condition": "Gagal ginjal akut (Leptospirosis/Malaria)",
         "facility": "Hemodialisa",
         "first_aid": "Jangan minum obat anti-nyeri sembarangan; segera berangkat.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "napas",
@@ -1664,7 +1832,8 @@
         "condition": "Gagal napas / Pneumonia berat",
         "facility": "Oksigen & ICU",
         "first_aid": "Posisikan setengah duduk, longgarkan pakaian.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "otak",
@@ -1675,7 +1844,8 @@
         "condition": "Ensefalopati / Malaria serebral / Tifoid toksik",
         "facility": "ICU",
         "first_aid": "Saat kejang: miringkan tubuh, jangan masukkan apa pun ke mulut.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "dehidrasi",
@@ -1686,7 +1856,8 @@
         "condition": "Dehidrasi berat",
         "facility": "Resusitasi cairan IGD",
         "first_aid": "Beri oralit sedikit-sedikit tapi sering selama perjalanan.",
-        "dont": null
+        "dont": null,
+        "listed": true
       },
       {
         "id": "rabies",
@@ -1697,7 +1868,20 @@
         "condition": "Rabies / gigitan hewan penular rabies",
         "facility": "Rabies Center (Vaksin Anti-Rabies)",
         "first_aid": "Cuci luka gigitan di air mengalir dengan SABUN selama minimal 15 menit tanpa henti sebelum ke RS.",
-        "dont": null
+        "dont": null,
+        "listed": true
+      },
+      {
+        "id": "kuning",
+        "emoji": "💛",
+        "text": "Mata atau kulit sangat kuning saat demam",
+        "detail": "Ditanya sebagai gejala penyerta demam, tidak di daftar tahap 1",
+        "label": "Leptospirosis berat",
+        "condition": "Leptospirosis berat (Weil's disease), risiko gagal ginjal akut",
+        "facility": "IGD rumah sakit",
+        "first_aid": null,
+        "dont": null,
+        "listed": false
       }
     ],
     "red_flag_first": [
@@ -1760,6 +1944,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -1774,6 +1960,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -1788,6 +1976,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -1811,6 +2001,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -1825,6 +2017,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -1839,6 +2033,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -1859,6 +2055,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           },
           {
@@ -1873,6 +2071,8 @@
             "age_min": null,
             "age_max": null,
             "min_route": null,
+            "red_flag": null,
+            "staff_note": null,
             "wide": false
           }
         ],
@@ -1893,6 +2093,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1907,6 +2109,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1921,6 +2125,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -1935,6 +2141,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": true
       }
     ],
@@ -1965,6 +2173,8 @@
           "age_min": null,
           "age_max": null,
           "min_route": null,
+          "red_flag": null,
+          "staff_note": null,
           "wide": false
         },
         {
@@ -1979,6 +2189,8 @@
           "age_min": null,
           "age_max": null,
           "min_route": null,
+          "red_flag": null,
+          "staff_note": null,
           "wide": false
         },
         {
@@ -1993,6 +2205,8 @@
           "age_min": null,
           "age_max": null,
           "min_route": null,
+          "red_flag": null,
+          "staff_note": null,
           "wide": false
         }
       ]
@@ -2011,6 +2225,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -2025,6 +2241,8 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       },
       {
@@ -2039,67 +2257,127 @@
         "age_min": null,
         "age_max": null,
         "min_route": null,
+        "red_flag": null,
+        "staff_note": null,
         "wide": false
       }
     ],
-    "body_regions": [],
-    "pain_faces": [],
-    "findings": [
+    "body_regions": [
       {
-        "id": "borok",
-        "emoji": "🩹",
-        "text": "Luka borok / bernanah / menghitam",
-        "detail": null,
-        "reason": "Foto: luka borok / bernanah / menghitam",
-        "disease": "dm",
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "wide": false
+        "id": "head",
+        "name": "Kepala / mata"
       },
       {
-        "id": "tofus",
-        "emoji": "🦴",
-        "text": "Benjolan keras di sendi",
-        "detail": null,
-        "reason": "Foto: benjolan keras di sendi",
-        "disease": "gout",
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "wide": false
+        "id": "shoulder_r",
+        "name": "Bahu kanan"
       },
       {
-        "id": "leher",
-        "emoji": "🟤",
-        "text": "Lipatan leher hitam menebal",
-        "detail": null,
-        "reason": "Foto: lipatan leher hitam menebal",
-        "disease": "dm",
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "wide": false
+        "id": "shoulder_l",
+        "name": "Bahu kiri"
       },
       {
-        "id": "none",
-        "emoji": "🙅",
-        "text": "Tidak ada temuan",
-        "detail": null,
-        "reason": null,
-        "disease": null,
-        "diseases": [],
-        "child_only": false,
-        "age_min": null,
-        "age_max": null,
-        "min_route": null,
-        "wide": true
+        "id": "chest",
+        "name": "Dada"
+      },
+      {
+        "id": "ruq",
+        "name": "Perut kanan atas"
+      },
+      {
+        "id": "luq",
+        "name": "Ulu hati / perut kiri atas"
+      },
+      {
+        "id": "low",
+        "name": "Perut tengah/bawah"
+      },
+      {
+        "id": "arm_r",
+        "name": "Lengan kanan"
+      },
+      {
+        "id": "arm_l",
+        "name": "Lengan kiri"
+      },
+      {
+        "id": "elbow_r",
+        "name": "Siku kanan"
+      },
+      {
+        "id": "elbow_l",
+        "name": "Siku kiri"
+      },
+      {
+        "id": "wrist_r",
+        "name": "Pergelangan tangan kanan"
+      },
+      {
+        "id": "wrist_l",
+        "name": "Pergelangan tangan kiri"
+      },
+      {
+        "id": "thigh_r",
+        "name": "Paha kanan"
+      },
+      {
+        "id": "thigh_l",
+        "name": "Paha kiri"
+      },
+      {
+        "id": "knee_r",
+        "name": "Lutut kanan"
+      },
+      {
+        "id": "knee_l",
+        "name": "Lutut kiri"
+      },
+      {
+        "id": "calf_r",
+        "name": "Betis kanan"
+      },
+      {
+        "id": "calf_l",
+        "name": "Betis kiri"
+      },
+      {
+        "id": "ankle_r",
+        "name": "Pergelangan kaki kanan"
+      },
+      {
+        "id": "ankle_l",
+        "name": "Pergelangan kaki kiri"
+      }
+    ],
+    "pain_faces": [
+      {
+        "value": 0,
+        "emoji": "😄",
+        "label": "Tidak sakit"
+      },
+      {
+        "value": 2,
+        "emoji": "🙂",
+        "label": "Sedikit sakit"
+      },
+      {
+        "value": 4,
+        "emoji": "😐",
+        "label": "Agak sakit"
+      },
+      {
+        "value": 6,
+        "emoji": "🙁",
+        "label": "Lebih sakit"
+      },
+      {
+        "value": 8,
+        "emoji": "😣",
+        "label": "Sangat sakit"
+      },
+      {
+        "value": 10,
+        "emoji": "😭",
+        "label": "Sakit sekali"
       }
     ],
     "routes": {
@@ -2175,7 +2453,6 @@
         "emoji": "🦶",
         "route": "yellow"
       }
-    },
-    "photo_analysis": false
+    }
   }
 }

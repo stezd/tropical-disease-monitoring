@@ -15,7 +15,7 @@ export function PrivacyScreen() {
         <div className="htitle">Privasi</div>
       </div>
       <div className="rscroll">
-        <Card tab="KEBIJAKAN PRIVASI" style={{ marginTop: 34 }}>
+        <Card tab="KEBIJAKAN PRIVASI" className="card-solo">
           <PrivacyText />
         </Card>
       </div>

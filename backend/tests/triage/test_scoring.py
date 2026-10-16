@@ -2,6 +2,7 @@ import math
 
 import pytest
 
+from app.domain.vitals import bp_category
 from app.triage.advice import build_result, drug_flags
 from app.triage.content import FLOW_IDS, FlowContent, get_content
 from app.triage.schemas import Answers, ScoreResult
@@ -16,6 +17,13 @@ def content() -> FlowContent:
 @pytest.fixture(scope="module")
 def chronic() -> FlowContent:
     return get_content("chronic")
+
+
+@pytest.fixture(scope="module")
+def no_refer(content: FlowContent) -> FlowContent:
+    """Infection content with the low-confidence rule off, to test the plain green routes."""
+    weights = content.weights.model_copy(update={"refer_below_pct": None})
+    return content.model_copy(update={"weights": weights})
 
 
 def run(content: FlowContent, **kw: object) -> ScoreResult:
@@ -125,7 +133,6 @@ def test_measles_goes_to_special_route(content: FlowContent) -> None:
         age=6,
         complaint="D",
         pattern="campak",
-        findings=["ruam"],
         temp=38.5,
         nutrition_proxy="normal",
     )
@@ -134,9 +141,9 @@ def test_measles_goes_to_special_route(content: FlowContent) -> None:
     assert "Isolasi" in r.place
 
 
-def test_mild_varicella_stays_green(content: FlowContent) -> None:
+def test_mild_varicella_stays_green(no_refer: FlowContent) -> None:
     r = run(
-        content,
+        no_refer,
         age=9,
         complaint="D",
         pattern="varicella",
@@ -148,9 +155,9 @@ def test_mild_varicella_stays_green(content: FlowContent) -> None:
     assert r.route == "green"
 
 
-@pytest.mark.parametrize("sign", ["mata", "sesak", "nanah"])
+@pytest.mark.parametrize("sign", ["mata", "nanah"])
 def test_severe_varicella_goes_yellow(content: FlowContent, sign: str) -> None:
-    """DR no. 8: blisters near the eye, short of breath, or pus → yellow."""
+    """Blisters near the eye or pus → yellow, with a referral note for the doctor."""
     r = run(
         content,
         age=9,
@@ -163,11 +170,56 @@ def test_severe_varicella_goes_yellow(content: FlowContent, sign: str) -> None:
     assert r.top is not None and r.top.id == "varicella"
     assert r.route == "yellow"
     assert any(w.icon == "⬆️" for w in r.warnings)
+    assert any("Spesialis Kulit/Mata" in w.text for w in r.warnings)
+    assert "Spesialis Kulit/Mata" in r.summary
 
 
-def test_varicella_signs_ignored_for_other_patterns(content: FlowContent) -> None:
+def test_varicella_short_of_breath_goes_red(content: FlowContent) -> None:
+    """Varicella pneumonia: short of breath → red (danger sign "napas")."""
+    r = run(content, age=9, complaint="D", pattern="varicella", companion=["sesak"])
+    assert r.route == "red"
+    assert r.top is None
+    assert "Sesak napas sangat berat" in r.summary
+
+
+@pytest.mark.parametrize("pattern", ["lepto", "malaria"])
+def test_fever_with_very_yellow_eyes_goes_red(
+    content: FlowContent, pattern: str
+) -> None:
+    """Weil's disease risk: very yellow eyes or skin with fever → red."""
+    r = run(content, age=30, complaint="A", pattern=pattern, companion=["kuning"])
+    assert r.route == "red"
+
+
+def test_lepto_without_danger_signs_goes_yellow(content: FlowContent) -> None:
     r = run(
         content,
+        age=30,
+        complaint="A",
+        pattern="lepto",
+        companion=["none"],
+        eco=["banjir"],
+        temp=38.5,
+        nutrition_proxy="normal",
+    )
+    assert r.top is not None and r.top.id == "lepto"
+    assert r.route == "yellow"
+
+
+def test_hidden_red_flags_need_a_companion(content: FlowContent) -> None:
+    hidden = {f.id for f in content.flow.red_flags if not f.listed}
+    used = {
+        o.red_flag
+        for q in content.flow.companions.values()
+        for o in q.options
+        if o.red_flag
+    }
+    assert hidden and hidden <= used
+
+
+def test_varicella_signs_ignored_for_other_patterns(no_refer: FlowContent) -> None:
+    r = run(
+        no_refer,
         age=20,
         complaint="D",
         pattern="scabies",
@@ -217,10 +269,36 @@ def test_sth_shown_for_children(content: FlowContent, age: int) -> None:
     assert r.top is not None and r.top.id == "sth"
 
 
-def test_photo_chip_scores_several_diseases(content: FlowContent) -> None:
-    b = RuleEngine().score(Answers(findings=["ruam", "mata"]), content)
-    scored = {d for d, s in b.scores.items() if s > 0}
-    assert scored == {"campak", "dbd", "hepa", "lepto"}
+def test_sth_without_signs_stays_green(no_refer: FlowContent) -> None:
+    r = run(
+        no_refer,
+        age=8,
+        complaint="C",
+        pattern="sth",
+        companion=["none"],
+        temp=37.0,
+        nutrition_proxy="normal",
+    )
+    assert r.top is not None and r.top.id == "sth"
+    assert r.route == "green"
+
+
+@pytest.mark.parametrize("sign", ["lesu", "pucat", "buncit"])
+def test_sth_with_signs_goes_yellow(content: FlowContent, sign: str) -> None:
+    """Child with worms and tiredness, pallor, or a swollen belly → Puskesmas (Hb)."""
+    r = run(
+        content,
+        age=8,
+        complaint="C",
+        pattern="sth",
+        companion=[sign, "pucat"] if sign != "pucat" else [sign],
+        temp=37.0,
+        nutrition_proxy="normal",
+    )
+    assert r.top is not None and r.top.id == "sth"
+    assert r.route == "yellow"
+    notes = [w for w in r.warnings if "hemoglobin" in w.text]
+    assert len(notes) == 1
 
 
 def test_no_thermometer_proxies_in_summary(content: FlowContent) -> None:
@@ -254,7 +332,7 @@ def test_drug_flags(content: FlowContent) -> None:
 def test_drug_popup_in_result(content: FlowContent) -> None:
     r = run(content, complaint="C", pattern="amoeba", drugs="imodium", no_thermo=True)
     assert len(r.drug_popups) == 1
-    assert "obat mampat" in r.drug_popups[0].text
+    assert "penghenti mencret" in r.drug_popups[0].text
     assert r.drug_popups[0].level == "y"
 
 
@@ -271,7 +349,6 @@ def test_patient_text_never_says_diagnosis(content: FlowContent) -> None:
         age=30,
         complaint="D",
         pattern="kusta",
-        findings=["bercak"],
         no_thermo=True,
     )
     patient_text = [r.summary, *r.todo, *r.reasons, *r.cross_checks, *r.analysis_steps]
@@ -320,7 +397,6 @@ def test_chronic_gout(chronic: FlowContent) -> None:
         sex="L",
         complaint="H",
         pattern="gout",
-        findings=["tofus"],
         bp_sys=130,
         bp_dia=85,
         glucose=110,
@@ -331,10 +407,79 @@ def test_chronic_gout(chronic: FlowContent) -> None:
     assert r.top is not None and r.top.id == "gout"
     assert r.route == "yellow"
     assert any("BERPUASA" in w.text for w in r.warnings)
-    assert "Tensi     : 130/85 mmHg" in r.summary
+    assert "Tensi     : 130/85 mmHg (meningkat)" in r.summary
+    assert "Gula darah sewaktu: 110 mg/dL" in r.summary.splitlines()
     assert "Lingkar perut: 98 cm" in r.summary
     assert "Suhu" not in r.summary
-    assert "Peta nyeri" not in r.summary
+    # The pain map is in both paths now (DR 2026-10-15).
+    assert "Peta nyeri: -" in r.summary
+    assert "Asam urat : -" in r.summary
+    assert r.engine == "rules" and r.fallback is False
+
+
+def test_chronic_labs_and_joints_in_summary(chronic: FlowContent) -> None:
+    r = run(
+        chronic,
+        age=55,
+        complaint="H",
+        pattern="gout",
+        uric_acid=8.5,
+        cholesterol_total=240,
+        body=["knee_r", "elbow_l"],
+        pain=7,
+    )
+    rows = {row.key: row.value for row in r.summary_rows}
+    assert rows["uric_acid"] == "8.5 mg/dL"
+    assert rows["cholesterol_total"] == "240 mg/dL"
+    assert rows["body"] == "Siku kiri, Lutut kanan (nyeri 7/10)"
+    # Recorded, not scored (weights need ST): same scores as without them.
+    plain = run(chronic, age=55, complaint="H", pattern="gout")
+    assert r.top is not None and plain.top is not None
+    assert r.top.score == plain.top.score
+
+
+def test_labs_only_where_asked(content: FlowContent) -> None:
+    r = run(content, complaint="A", pattern="dbd", uric_acid=8.5)
+    assert "uric_acid" not in {row.key for row in r.summary_rows}
+
+
+@pytest.mark.parametrize(
+    ("sys_bp", "dia_bp", "label"),
+    [
+        (110, 70, "normal"),
+        (120, 80, "normal"),
+        (121, 80, "meningkat"),
+        (139, 89, "meningkat"),
+        (135, 90, "tinggi"),
+        (140, 80, "tinggi"),
+        (160, 100, "tinggi"),
+        (161, 95, "sangat tinggi"),
+    ],
+)
+def test_bp_category(sys_bp: int, dia_bp: int, label: str) -> None:
+    assert bp_category(sys_bp, dia_bp) == label
+
+
+@pytest.mark.parametrize(
+    ("glucose", "warned"), [(199, False), (200, True), (310, True)]
+)
+def test_high_random_glucose_warns_without_changing_route(
+    chronic: FlowContent, glucose: float, warned: bool
+) -> None:
+    """GDS ≥ 200 mg/dL (DR 2026-10-15): a yellow notice only."""
+    kw = {"age": 50, "complaint": "G", "pattern": "hipertensi", "no_bp": True}
+    r = run(chronic, glucose=glucose, **kw)
+    plain = run(chronic, **kw)
+    notes = [w for w in r.warnings if "Gula darah sewaktu" in w.text]
+    assert bool(notes) is warned
+    if warned:
+        assert notes[0].level == "y" and f"{glucose:g} mg/dL" in notes[0].text
+    assert r.route == plain.route
+    assert r.top is not None and plain.top is not None
+    assert r.top.score == plain.top.score
+    rows = {row.key: row.value for row in r.summary_rows}
+    suffix = " (≥ 200, tinggi)" if warned else ""
+    assert rows["glucose"] == f"{glucose:g} mg/dL{suffix}"
 
 
 def test_chronic_tengkuk_scores_hypertension_and_lipids(chronic: FlowContent) -> None:
@@ -381,7 +526,12 @@ def test_features_are_numeric(content: FlowContent) -> None:
     assert math.isnan(f["temp"])
     assert math.isnan(f["bp_sys"])
     assert f["vital_temp_menggigil"] == 0.0
+    assert math.isnan(f["uric_acid"]) and math.isnan(f["cholesterol_total"])
+    assert f["body_knee_r"] == 0.0
+    assert not any(k.startswith("finding_") for k in f)
     assert all(isinstance(v, float) for v in f.values())
+    labs = features(Answers(uric_acid=7.2, cholesterol_total=210), content)
+    assert (labs["uric_acid"], labs["cholesterol_total"]) == (7.2, 210.0)
 
 
 def test_cvd_risk_is_a_skeleton(chronic: FlowContent) -> None:

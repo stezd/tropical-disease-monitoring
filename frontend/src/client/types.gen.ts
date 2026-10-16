@@ -5,9 +5,173 @@ export type ClientOptions = {
 };
 
 /**
+ * AIDrug
+ */
+export type AIDrug = {
+    /**
+     * Mention
+     */
+    mention: string;
+    /**
+     * Generic
+     */
+    generic: string;
+    /**
+     * Drug Class
+     */
+    drug_class: string;
+};
+
+/**
+ * AIDrugsRequest
+ */
+export type AIDrugsRequest = {
+    /**
+     * Flow Id
+     */
+    flow_id?: 'infection' | 'chronic';
+    /**
+     * Text
+     *
+     * The patient's free-text drug answer
+     */
+    text: string;
+};
+
+/**
+ * AIDrugsResponse
+ */
+export type AIDrugsResponse = {
+    /**
+     * Request Id
+     */
+    request_id: string;
+    /**
+     * Classes
+     */
+    classes: Array<string>;
+    /**
+     * Drugs
+     */
+    drugs: Array<AIDrug>;
+    /**
+     * Engine
+     */
+    engine: string;
+    /**
+     * Fallback
+     */
+    fallback: boolean;
+    /**
+     * Reason
+     */
+    reason: string | null;
+    /**
+     * Model
+     */
+    model: string;
+    /**
+     * Latency Ms
+     */
+    latency_ms: number;
+};
+
+/**
+ * AIScoreRequest
+ */
+export type AIScoreRequest = {
+    /**
+     * Flow Id
+     */
+    flow_id: 'infection' | 'chronic';
+    answers: Answers;
+};
+
+/**
+ * AIScoreResponse
+ */
+export type AIScoreResponse = {
+    /**
+     * Request Id
+     */
+    request_id: string;
+    /**
+     * Engine
+     */
+    engine: 'ai' | 'rules';
+    /**
+     * Fallback
+     */
+    fallback: boolean;
+    /**
+     * Reason
+     */
+    reason: string | null;
+    /**
+     * Mode
+     */
+    mode: string;
+    /**
+     * Model
+     */
+    model: string;
+    /**
+     * Prompt Version
+     */
+    prompt_version: string;
+    /**
+     * Latency Ms
+     */
+    latency_ms: number;
+    /**
+     * Calls
+     */
+    calls: number;
+    /**
+     * Ranked
+     */
+    ranked: Array<AIScoredDisease>;
+    /**
+     * Scores
+     *
+     * Every scored disease, 0 if not picked
+     */
+    scores: {
+        [key: string]: number;
+    };
+};
+
+/**
+ * AIScoredDisease
+ */
+export type AIScoredDisease = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Score
+     */
+    score: number;
+    /**
+     * Share
+     */
+    share: number;
+    /**
+     * Reasons
+     */
+    reasons: Array<string>;
+    /**
+     * Sources
+     */
+    sources: Array<string>;
+};
+
+/**
  * Answers
  *
- * Everything the patient answered. Never holds a name, NIK, BPJS number, or photo.
+ * Everything the patient answered. Never holds a name, NIK, BPJS number, or
+ * coordinates.
  */
 export type Answers = {
     /**
@@ -75,6 +239,14 @@ export type Answers = {
      */
     glucose?: number | null;
     /**
+     * Uric Acid
+     */
+    uric_acid?: number | null;
+    /**
+     * Cholesterol Total
+     */
+    cholesterol_total?: number | null;
+    /**
      * Vital Proxy
      */
     vital_proxy?: Array<string>;
@@ -102,10 +274,6 @@ export type Answers = {
      * Pain
      */
     pain?: number | null;
-    /**
-     * Findings
-     */
-    findings?: Array<string>;
     /**
      * Province
      */
@@ -161,18 +329,6 @@ export type Body_login_login_access_token = {
 };
 
 /**
- * Body_triage-analyze_photo
- */
-export type Body_triage_analyze_photo = {
-    /**
-     * Photo
-     *
-     * Rash, wound, tongue, or eye
-     */
-    photo: Blob | File;
-};
-
-/**
  * Cluster
  */
 export type Cluster = {
@@ -217,6 +373,20 @@ export type DiseasePublic = {
 };
 
 /**
+ * FacilitiesNearestPublic
+ */
+export type FacilitiesNearestPublic = {
+    /**
+     * Data
+     */
+    data: Array<FacilityNearestPublic>;
+    /**
+     * Count
+     */
+    count: number;
+};
+
+/**
  * FacilitiesPublic
  */
 export type FacilitiesPublic = {
@@ -228,6 +398,96 @@ export type FacilitiesPublic = {
      * Count
      */
     count: number;
+};
+
+/**
+ * FacilityNearestPublic
+ */
+export type FacilityNearestPublic = {
+    /**
+     * Satusehat Id
+     */
+    satusehat_id: string;
+    /**
+     * Code
+     */
+    code: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Jenis Sarana Kode
+     */
+    jenis_sarana_kode: string;
+    /**
+     * Jenis Sarana Nama
+     */
+    jenis_sarana_nama: string;
+    /**
+     * Province Code
+     */
+    province_code: string;
+    /**
+     * Province Name
+     */
+    province_name: string;
+    /**
+     * City Name
+     */
+    city_name: string | null;
+    /**
+     * Address
+     */
+    address: string | null;
+    /**
+     * Phone
+     */
+    phone: string | null;
+    /**
+     * Wa Number
+     */
+    wa_number?: string | null;
+    /**
+     * Status Sarana
+     */
+    status_sarana?: string | null;
+    /**
+     * Latitude
+     */
+    latitude: number | null;
+    /**
+     * Longitude
+     */
+    longitude: number | null;
+    /**
+     * Distance Km
+     */
+    distance_km: number;
+};
+
+/**
+ * FacilityNearestRequest
+ */
+export type FacilityNearestRequest = {
+    /**
+     * Latitude
+     */
+    latitude: number;
+    /**
+     * Longitude
+     */
+    longitude: number;
+    /**
+     * Kind
+     *
+     * Facility kind: 'puskesmas' (102), 'rs' (104), 'apotek' (105)
+     */
+    kind?: string | null;
+    /**
+     * Limit
+     */
+    limit?: number;
 };
 
 /**
@@ -275,6 +535,14 @@ export type FacilityPublic = {
      */
     phone: string | null;
     /**
+     * Wa Number
+     */
+    wa_number?: string | null;
+    /**
+     * Status Sarana
+     */
+    status_sarana?: string | null;
+    /**
      * Latitude
      */
     latitude: number | null;
@@ -282,6 +550,18 @@ export type FacilityPublic = {
      * Longitude
      */
     longitude: number | null;
+};
+
+/**
+ * FacilityWhatsappUpdate
+ */
+export type FacilityWhatsappUpdate = {
+    /**
+     * Wa Number
+     *
+     * Indonesian mobile number (08… / +62 8…), or null/empty to clear. Stored in international form (628…).
+     */
+    wa_number?: string | null;
 };
 
 /**
@@ -303,7 +583,7 @@ export type FlowPublic = {
     /**
      * Steps
      */
-    steps: Array<'who' | 'q1' | 'q2' | 'q3' | 'q4' | 'q5' | 'q6' | 'q7' | 'q8' | 'q9' | 'q10'>;
+    steps: Array<'who' | 'q1' | 'q2' | 'q3' | 'q4' | 'q5' | 'q6' | 'q7' | 'labs' | 'q8' | 'q9'>;
     /**
      * Step Text
      */
@@ -403,10 +683,6 @@ export type FlowPublic = {
      */
     pain_faces: Array<PainFace>;
     /**
-     * Findings
-     */
-    findings: Array<Option>;
-    /**
      * Routes
      */
     routes: {
@@ -418,10 +694,16 @@ export type FlowPublic = {
     diseases: {
         [key: string]: DiseasePublic;
     };
+};
+
+/**
+ * GoogleLogin
+ */
+export type GoogleLogin = {
     /**
-     * Photo Analysis
+     * Credential
      */
-    photo_analysis: boolean;
+    credential: string;
 };
 
 /**
@@ -507,6 +789,14 @@ export type Option = {
      */
     min_route?: 'green' | 'yellow' | 'special' | 'red' | null;
     /**
+     * Red Flag
+     */
+    red_flag?: string | null;
+    /**
+     * Staff Note
+     */
+    staff_note?: string | null;
+    /**
      * Wide
      */
     wide?: boolean;
@@ -528,24 +818,6 @@ export type PainFace = {
      * Label
      */
     label: string;
-};
-
-/**
- * PhotoAnalysis
- */
-export type PhotoAnalysis = {
-    /**
-     * Available
-     */
-    available: boolean;
-    /**
-     * Findings
-     */
-    findings: Array<string>;
-    /**
-     * Message
-     */
-    message: string;
 };
 
 /**
@@ -654,6 +926,10 @@ export type RedFlag = {
      * Dont
      */
     dont?: string | null;
+    /**
+     * Listed
+     */
+    listed?: boolean;
 };
 
 /**
@@ -767,6 +1043,14 @@ export type ScoreResult = {
      * Summary Rows
      */
     summary_rows: Array<SummaryRow>;
+    /**
+     * Engine
+     */
+    engine: 'ai' | 'rules' | 'model';
+    /**
+     * Fallback
+     */
+    fallback: boolean;
 };
 
 /**
@@ -784,6 +1068,40 @@ export type ScreeningCreate = {
      * Must be true. The patient agreed to save.
      */
     consent: boolean;
+};
+
+/**
+ * ScreeningHistoryItem
+ */
+export type ScreeningHistoryItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Flow Id
+     */
+    flow_id: string;
+    /**
+     * Route
+     */
+    route: string;
+    /**
+     * Unknown
+     */
+    unknown: boolean;
+    /**
+     * Top Disease
+     */
+    top_disease: string | null;
+    /**
+     * Top Score
+     */
+    top_score: number | null;
+    /**
+     * Created At
+     */
+    created_at?: string | null;
 };
 
 /**
@@ -831,6 +1149,60 @@ export type ScreeningPublic = {
 };
 
 /**
+ * ScreeningStatRow
+ */
+export type ScreeningStatRow = {
+    /**
+     * Period
+     */
+    period: string;
+    /**
+     * Province
+     */
+    province: string | null;
+    /**
+     * Disease
+     */
+    disease: string | null;
+    /**
+     * Route
+     */
+    route: string;
+    /**
+     * Count
+     */
+    count: number | null;
+};
+
+/**
+ * ScreeningStatSummary
+ */
+export type ScreeningStatSummary = {
+    /**
+     * Data
+     */
+    data: Array<ScreeningStatRow>;
+    /**
+     * K
+     */
+    k: number;
+};
+
+/**
+ * ScreeningsHistoryPublic
+ */
+export type ScreeningsHistoryPublic = {
+    /**
+     * Data
+     */
+    data: Array<ScreeningHistoryItem>;
+    /**
+     * Count
+     */
+    count: number;
+};
+
+/**
  * ScreeningsPublic
  */
 export type ScreeningsPublic = {
@@ -856,6 +1228,26 @@ export type Stage = {
      * Name
      */
     name: string;
+};
+
+/**
+ * StatCreate
+ *
+ * A finished screening for statistics. Carries no account and no consent flag:
+ * the privacy gate already happened before the first question.
+ */
+export type StatCreate = {
+    /**
+     * Event Id
+     *
+     * Random id of one quiz run, made in the browser. Only used to avoid counting the same run twice.
+     */
+    event_id: string;
+    /**
+     * Flow Id
+     */
+    flow_id: string;
+    answers: Answers;
 };
 
 /**
@@ -1127,6 +1519,31 @@ export type loginLoginAccessTokenResponses = {
 
 export type loginLoginAccessTokenResponse = loginLoginAccessTokenResponses[keyof loginLoginAccessTokenResponses];
 
+export type loginLoginGoogleData = {
+    body: GoogleLogin;
+    path?: never;
+    query?: never;
+    url: '/api/v1/login/google';
+};
+
+export type loginLoginGoogleErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type loginLoginGoogleError = loginLoginGoogleErrors[keyof loginLoginGoogleErrors];
+
+export type loginLoginGoogleResponses = {
+    /**
+     * Successful Response
+     */
+    200: Token;
+};
+
+export type loginLoginGoogleResponse = loginLoginGoogleResponses[keyof loginLoginGoogleResponses];
+
 export type loginTestTokenData = {
     body?: never;
     path?: never;
@@ -1369,6 +1786,70 @@ export type usersUpdatePasswordMeResponses = {
 
 export type usersUpdatePasswordMeResponse = usersUpdatePasswordMeResponses[keyof usersUpdatePasswordMeResponses];
 
+export type usersReadMyScreeningsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/users/me/screenings';
+};
+
+export type usersReadMyScreeningsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type usersReadMyScreeningsError = usersReadMyScreeningsErrors[keyof usersReadMyScreeningsErrors];
+
+export type usersReadMyScreeningsResponses = {
+    /**
+     * Successful Response
+     */
+    200: ScreeningsHistoryPublic;
+};
+
+export type usersReadMyScreeningsResponse = usersReadMyScreeningsResponses[keyof usersReadMyScreeningsResponses];
+
+export type usersDeleteMyScreeningData = {
+    body?: never;
+    path: {
+        /**
+         * Screening Id
+         */
+        screening_id: string;
+    };
+    query?: never;
+    url: '/api/v1/users/me/screenings/{screening_id}';
+};
+
+export type usersDeleteMyScreeningErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type usersDeleteMyScreeningError = usersDeleteMyScreeningErrors[keyof usersDeleteMyScreeningErrors];
+
+export type usersDeleteMyScreeningResponses = {
+    /**
+     * Successful Response
+     */
+    200: Message;
+};
+
+export type usersDeleteMyScreeningResponse = usersDeleteMyScreeningResponses[keyof usersDeleteMyScreeningResponses];
+
 export type usersRegisterUserData = {
     body: UserRegister;
     path?: never;
@@ -1570,7 +2051,14 @@ export type triageScoreFlowData = {
          */
         flow_id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Preview
+         *
+         * True for calls during the quiz (e.g. drug pop-ups at the drug step): scores with the rules, never with the language model.
+         */
+        preview?: boolean;
+    };
     url: '/api/v1/triage/flows/{flow_id}/score';
 };
 
@@ -1651,30 +2139,142 @@ export type triageCreateScreeningResponses = {
 
 export type triageCreateScreeningResponse = triageCreateScreeningResponses[keyof triageCreateScreeningResponses];
 
-export type triageAnalyzePhotoData = {
-    body: Body_triage_analyze_photo;
+export type triageRecordStatData = {
+    body: StatCreate;
     path?: never;
     query?: never;
-    url: '/api/v1/triage/photo/analyze';
+    url: '/api/v1/triage/stats';
 };
 
-export type triageAnalyzePhotoErrors = {
+export type triageRecordStatErrors = {
     /**
      * Validation Error
      */
     422: HTTPValidationError;
 };
 
-export type triageAnalyzePhotoError = triageAnalyzePhotoErrors[keyof triageAnalyzePhotoErrors];
+export type triageRecordStatError = triageRecordStatErrors[keyof triageRecordStatErrors];
 
-export type triageAnalyzePhotoResponses = {
+export type triageRecordStatResponses = {
     /**
      * Successful Response
      */
-    200: PhotoAnalysis;
+    204: void;
 };
 
-export type triageAnalyzePhotoResponse = triageAnalyzePhotoResponses[keyof triageAnalyzePhotoResponses];
+export type triageRecordStatResponse = triageRecordStatResponses[keyof triageRecordStatResponses];
+
+export type triageReadStatsSummaryData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Period
+         */
+        period?: 'day' | 'week';
+        /**
+         * Date From
+         */
+        date_from?: string | null;
+        /**
+         * Date To
+         */
+        date_to?: string | null;
+        /**
+         * Flow Id
+         */
+        flow_id?: string | null;
+    };
+    url: '/api/v1/triage/stats/summary';
+};
+
+export type triageReadStatsSummaryErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type triageReadStatsSummaryError = triageReadStatsSummaryErrors[keyof triageReadStatsSummaryErrors];
+
+export type triageReadStatsSummaryResponses = {
+    /**
+     * Successful Response
+     */
+    200: ScreeningStatSummary;
+};
+
+export type triageReadStatsSummaryResponse = triageReadStatsSummaryResponses[keyof triageReadStatsSummaryResponses];
+
+export type aiAiScoreData = {
+    body: AIScoreRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ai/score';
+};
+
+export type aiAiScoreErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type aiAiScoreError = aiAiScoreErrors[keyof aiAiScoreErrors];
+
+export type aiAiScoreResponses = {
+    /**
+     * Successful Response
+     */
+    200: AIScoreResponse;
+};
+
+export type aiAiScoreResponse = aiAiScoreResponses[keyof aiAiScoreResponses];
+
+export type aiAiDrugsData = {
+    body: AIDrugsRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ai/drugs';
+};
+
+export type aiAiDrugsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type aiAiDrugsError = aiAiDrugsErrors[keyof aiAiDrugsErrors];
+
+export type aiAiDrugsResponses = {
+    /**
+     * Successful Response
+     */
+    200: AIDrugsResponse;
+};
+
+export type aiAiDrugsResponse = aiAiDrugsResponses[keyof aiAiDrugsResponses];
+
+export type aiAiStatusData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ai/status';
+};
+
+export type aiAiStatusResponses = {
+    /**
+     * Response Ai-Ai Status
+     *
+     * Successful Response
+     */
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type aiAiStatusResponse = aiAiStatusResponses[keyof aiAiStatusResponses];
 
 export type facilitiesListFacilitiesData = {
     body?: never;
@@ -1700,6 +2300,12 @@ export type facilitiesListFacilitiesData = {
          * Skip
          */
         skip?: number;
+        /**
+         * With Coords
+         *
+         * Only facilities that have coordinates (needed to sort by distance; most Apotek rows lack them)
+         */
+        with_coords?: boolean;
     };
     url: '/api/v1/facilities/';
 };
@@ -1721,6 +2327,61 @@ export type facilitiesListFacilitiesResponses = {
 };
 
 export type facilitiesListFacilitiesResponse = facilitiesListFacilitiesResponses[keyof facilitiesListFacilitiesResponses];
+
+export type facilitiesNearestFacilitiesData = {
+    body: FacilityNearestRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/facilities/nearest';
+};
+
+export type facilitiesNearestFacilitiesErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type facilitiesNearestFacilitiesError = facilitiesNearestFacilitiesErrors[keyof facilitiesNearestFacilitiesErrors];
+
+export type facilitiesNearestFacilitiesResponses = {
+    /**
+     * Successful Response
+     */
+    200: FacilitiesNearestPublic;
+};
+
+export type facilitiesNearestFacilitiesResponse = facilitiesNearestFacilitiesResponses[keyof facilitiesNearestFacilitiesResponses];
+
+export type facilitiesSetFacilityWhatsappData = {
+    body: FacilityWhatsappUpdate;
+    path: {
+        /**
+         * Satusehat Id
+         */
+        satusehat_id: string;
+    };
+    query?: never;
+    url: '/api/v1/facilities/{satusehat_id}/whatsapp';
+};
+
+export type facilitiesSetFacilityWhatsappErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type facilitiesSetFacilityWhatsappError = facilitiesSetFacilityWhatsappErrors[keyof facilitiesSetFacilityWhatsappErrors];
+
+export type facilitiesSetFacilityWhatsappResponses = {
+    /**
+     * Successful Response
+     */
+    200: FacilityPublic;
+};
+
+export type facilitiesSetFacilityWhatsappResponse = facilitiesSetFacilityWhatsappResponses[keyof facilitiesSetFacilityWhatsappResponses];
 
 export type privateCreateUserData = {
     body: PrivateUserCreate;

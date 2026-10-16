@@ -17,20 +17,20 @@ export const Mascot = forwardRef<SVGSVGElement, { className?: string }>(
         <rect x="53" y="88" width="14" height="15" rx="5" fill="#F6B183" />
         <path
           d="M45 104Q39 128 54 133"
-          stroke="#6C4CE0"
+          stroke="#0F6B66"
           strokeWidth="3.5"
           fill="none"
           strokeLinecap="round"
         />
         <path
           d="M75 104Q80 120 74 128"
-          stroke="#6C4CE0"
+          stroke="#0F6B66"
           strokeWidth="3.5"
           fill="none"
           strokeLinecap="round"
         />
-        <circle cx="56" cy="134" r="5.5" fill="#6C4CE0" />
-        <circle cx="56" cy="134" r="2.4" fill="#CBB9FF" />
+        <circle cx="56" cy="134" r="5.5" fill="#0F6B66" />
+        <circle cx="56" cy="134" r="2.4" fill="#BFE6E0" />
         <rect
           x="78"
           y="118"
@@ -47,16 +47,16 @@ export const Mascot = forwardRef<SVGSVGElement, { className?: string }>(
         />
         <circle cx="33" cy="63" r="5" fill="#F6B183" />
         <circle cx="87" cy="63" r="5" fill="#F6B183" />
-        <circle cx="33" cy="71" r="2.2" fill="#8B4DFF" />
-        <circle cx="87" cy="71" r="2.2" fill="#8B4DFF" />
+        <circle cx="33" cy="71" r="2.2" fill="#F06A6A" />
+        <circle cx="87" cy="71" r="2.2" fill="#F06A6A" />
         <circle cx="60" cy="61" r="27" fill="#FFC99B" />
         <path
           d="M33 56Q36 35 60 34Q84 35 87 56Q75 44 62 47Q50 41 33 56Z"
           fill="#4B2B3F"
         />
         <path d="M41 37Q60 24 79 37L76 43Q60 35 44 43Z" fill="#fff" />
-        <path d="M58 30h4v3h3v4h-3v3h-4v-3h-3v-4h3z" fill="#FF7E9A" />
-        <g fill="none" stroke="#7B3FF2" strokeWidth="3">
+        <path d="M58 30h4v3h3v4h-3v3h-4v-3h-3v-4h3z" fill="#F06A6A" />
+        <g fill="none" stroke="#0F6B66" strokeWidth="3">
           <circle cx="49" cy="61" r="9" />
           <circle cx="71" cy="61" r="9" />
           <path d="M58 60Q60 58 62 60" />
@@ -118,62 +118,49 @@ export function Sparkles({ n = 16 }: { n?: number }) {
   )
 }
 
-function Palm({ x, y, s, c }: { x: number; y: number; s: number; c: string }) {
+/** Dot grid for the hero (decoration only). */
+function Dots({
+  x,
+  y,
+  cols,
+  rows,
+}: {
+  x: number
+  y: number
+  cols: number
+  rows: number
+}) {
+  const out = []
+  for (let r = 0; r < rows; r++)
+    for (let c = 0; c < cols; c++)
+      out.push(
+        <circle key={`${r}-${c}`} cx={x + c * 14} cy={y + r * 14} r="2" />,
+      )
   return (
-    <g transform={`translate(${x} ${y}) scale(${s})`} fill={c}>
-      <path
-        d="M0 0Q-8 -45 6 -92"
-        stroke={c}
-        strokeWidth="7"
-        fill="none"
-        strokeLinecap="round"
-      />
-      <path d="M6 -92Q-22 -108 -52 -88Q-24 -96 6 -88Z" />
-      <path d="M6 -92Q30 -112 62 -92Q34 -98 6 -88Z" />
-      <path d="M6 -92Q-8 -120 -36 -122Q-12 -110 4 -88Z" />
-      <path d="M6 -92Q24 -124 50 -120Q26 -110 8 -88Z" />
-      <path d="M6 -92Q-26 -82 -40 -56Q-22 -80 4 -86Z" />
-      <path d="M6 -92Q40 -84 50 -58Q32 -80 8 -86Z" />
+    <g fill="#fff" opacity=".55">
+      {out}
     </g>
   )
 }
 
-/** Wavy hills left and right so the scene stays whole on wide screens. */
-function SideHill({
-  a,
-  step,
-  yL,
-  yR,
-  fill,
-  op = 1,
-}: {
-  a: number
-  step: number
-  yL: number
-  yR: number
-  fill: string
-  op?: number
-}) {
-  let L = `M-1300 ${yL} q${step / 2} ${-a} ${step} 0`
-  let R = `M400 ${yR} q${step / 2} ${-a} ${step} 0`
-  for (let i = 1; i < 1300 / step; i++) {
-    L += ` t${step} 0`
-    R += ` t${step} 0`
-  }
+function Plus({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
   return (
-    <>
-      <path d={`${L} V820 H-1300Z`} fill={fill} opacity={op} />
-      <path d={`${R} V820 H400Z`} fill={fill} opacity={op} />
-    </>
+    <path
+      transform={`translate(${x} ${y}) scale(${s})`}
+      d="M-2.5 -9h5v6.5h6.5v5h-6.5v6.5h-5v-6.5h-6.5v-5h6.5z"
+      fill="#fff"
+      opacity=".6"
+    />
   )
 }
 
+/** Calm teal hero: soft blobs, faint "+" marks and dot grids. */
 export function Scene() {
   return (
     <div className="scene">
       <svg
         viewBox="0 0 400 800"
-        preserveAspectRatio="xMidYMax meet"
+        preserveAspectRatio="xMidYMax slice"
         aria-hidden="true"
       >
         <defs>
@@ -185,93 +172,23 @@ export function Scene() {
             x2="0"
             y2="800"
           >
-            <stop offset="0" stopColor="#5D52D9" />
-            <stop offset=".3" stopColor="#9A62D8" />
-            <stop offset=".52" stopColor="#F0839A" />
-            <stop offset=".68" stopColor="#FFA97A" />
-            <stop offset=".8" stopColor="#FFD08A" />
-          </linearGradient>
-          <radialGradient id="glow">
-            <stop offset="0" stopColor="#FFF1B8" stopOpacity=".95" />
-            <stop offset=".4" stopColor="#FFD27A" stopOpacity=".5" />
-            <stop offset="1" stopColor="#FFB27A" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#FFB88A" />
-            <stop offset="1" stopColor="#E77FA2" />
+            <stop offset="0" stopColor="#E4F4F1" />
+            <stop offset=".5" stopColor="#CDE8E3" />
+            <stop offset="1" stopColor="#A9D7D0" />
           </linearGradient>
         </defs>
         <rect x="-1300" y="-900" width="3000" height="1800" fill="url(#sky)" />
-        <circle cx="200" cy="530" r="190" fill="url(#glow)" />
-        <circle cx="200" cy="535" r="62" fill="#FFE9A6" />
-        <g
-          fill="none"
-          stroke="#fff"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          opacity=".55"
-        >
-          <path d="M80 300q7-7 14 0q7-7 14 0" />
-          <path d="M118 330q5-5 10 0q5-5 10 0" />
-          <path d="M290 270q6-6 12 0q6-6 12 0" />
-          <path d="M-260 250q8-8 16 0q8-8 16 0" />
-          <path d="M560 320q6-6 12 0q6-6 12 0" />
-          <path d="M640 260q8-8 16 0q8-8 16 0" />
-        </g>
-        <g fill="#fff" opacity=".35">
-          <ellipse cx="90" cy="420" rx="60" ry="12" />
-          <ellipse cx="320" cy="390" rx="70" ry="13" />
-          <ellipse cx="290" cy="440" rx="40" ry="8" />
-          <ellipse cx="-180" cy="380" rx="90" ry="14" />
-          <ellipse cx="-420" cy="450" rx="60" ry="10" />
-          <ellipse cx="600" cy="420" rx="90" ry="14" />
-          <ellipse cx="820" cy="370" rx="70" ry="12" />
-        </g>
-        <rect x="-1300" y="560" width="3000" height="70" fill="url(#sea)" />
-        <g stroke="#FFE7B0" strokeWidth="3" strokeLinecap="round" opacity=".7">
-          <path d="M150 578h40" />
-          <path d="M210 592h50" />
-          <path d="M170 606h30" />
-          <path d="M-120 585h50" />
-          <path d="M520 590h60" />
-        </g>
-        <SideHill a={30} step={130} yL={585} yR={548} fill="#C46FB0" op={0.9} />
-        <path
-          d="M0 585Q70 548 140 572T280 560T400 548V800H0Z"
-          fill="#C46FB0"
-          opacity=".9"
-        />
-        <SideHill a={34} step={260} yL={630} yR={612} fill="#9554BC" />
-        <path d="M0 630Q110 590 220 628T400 612V800H0Z" fill="#9554BC" />
-        <g transform="translate(262 560)">
-          <rect x="0" y="22" width="78" height="44" rx="6" fill="#FFF1E4" />
-          <path d="M-8 26L39 -4L86 26Z" fill="#F0778A" />
-          <rect x="31" y="40" width="16" height="26" rx="3" fill="#8F5BD6" />
-          <rect x="8" y="34" width="15" height="13" rx="3" fill="#FFD36E" />
-          <rect x="55" y="34" width="15" height="13" rx="3" fill="#FFD36E" />
-          <circle cx="39" cy="12" r="9" fill="#fff" />
-          <path d="M37 6h4v4h4v4h-4v4h-4v-4h-4v-4h4z" fill="#26C4B1" />
-        </g>
-        <SideHill a={36} step={325} yL={690} yR={680} fill="#6E3DA6" />
-        <path d="M0 690Q130 650 250 690T400 680V800H0Z" fill="#6E3DA6" />
-        <Palm x={52} y={700} s={1.05} c="#4A2683" />
-        <Palm x={368} y={690} s={0.85} c="#4A2683" />
-        <Palm x={330} y={705} s={0.6} c="#5A3196" />
-        <Palm x={-140} y={705} s={0.95} c="#4A2683" />
-        <Palm x={-300} y={690} s={0.7} c="#5A3196" />
-        <Palm x={-480} y={705} s={1.1} c="#4A2683" />
-        <Palm x={560} y={705} s={1} c="#4A2683" />
-        <Palm x={700} y={690} s={0.72} c="#5A3196" />
-        <Palm x={880} y={705} s={1.1} c="#4A2683" />
-        <SideHill a={22} step={260} yL={740} yR={742} fill="#4A2683" />
-        <path d="M0 740Q140 712 400 742V800H0Z" fill="#4A2683" />
-        <g fill="#3B1E6E">
-          <path d="M90 742q8-30 14 0z" />
-          <path d="M100 742q12-26 16 0z" />
-          <path d="M300 744q6-24 12 0z" />
-          <path d="M-220 744q8-28 14 0z" />
-          <path d="M620 744q8-28 14 0z" />
-        </g>
+        <circle cx="350" cy="110" r="150" fill="#A9D7D0" opacity=".45" />
+        <circle cx="30" cy="330" r="120" fill="#E4F4F1" opacity=".7" />
+        <circle cx="330" cy="470" r="90" fill="#A9D7D0" opacity=".35" />
+        <circle cx="70" cy="60" r="60" fill="#fff" opacity=".35" />
+        <Dots x={296} y={40} cols={5} rows={4} />
+        <Dots x={22} y={420} cols={4} rows={3} />
+        <Plus x={60} y={200} s={1.3} />
+        <Plus x={340} y={290} />
+        <Plus x={120} y={110} s={0.8} />
+        <Plus x={370} y={400} s={0.8} />
+        <Plus x={40} y={520} s={0.9} />
       </svg>
     </div>
   )
@@ -283,9 +200,9 @@ export function Orb() {
       <defs>
         <radialGradient id="og" cx=".35" cy=".3" r=".85">
           <stop offset="0" stopColor="#fff" />
-          <stop offset=".22" stopColor="#D6C8FF" />
-          <stop offset=".65" stopColor="#8A55FF" />
-          <stop offset="1" stopColor="#3A1C9E" />
+          <stop offset=".22" stopColor="#CDE8E3" />
+          <stop offset=".65" stopColor="#5FB3AA" />
+          <stop offset="1" stopColor="#0B524E" />
         </radialGradient>
         <linearGradient id="ob" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#FFD36E" />

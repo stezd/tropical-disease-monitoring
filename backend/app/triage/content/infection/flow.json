@@ -2,10 +2,7 @@
   "id": "infection",
   "title": "Skrining penyakit infeksi tropis",
   "child_age_limit": 18,
-  "steps": ["who", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"],
-  "step_text": {
-    "q10": { "title": "Foto ruam, luka, atau mata" }
-  },
+  "steps": ["who", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9"],
   "stages": [
     { "emoji": "🚨", "name": "Darurat" },
     { "emoji": "🧭", "name": "Keluhan" },
@@ -122,6 +119,7 @@
         { "id": "dbd", "disease": "dbd", "emoji": "👁️", "text": "Nyeri belakang mata / sakit kepala hebat", "reason": "Nyeri belakang bola mata / sakit kepala hebat" },
         { "id": "chik", "disease": "chik", "emoji": "🦴", "text": "Nyeri sendi berat, tanpa sakit kepala", "reason": "Nyeri sendi melumpuhkan tanpa sakit kepala" },
         { "id": "malaria", "disease": "malaria", "emoji": "💦", "text": "Keringat dingin deras & pucat usai demam", "reason": "Keringat dingin deras setelah demam turun, pucat" },
+        { "id": "kuning", "emoji": "💛", "text": "Mata atau kulit sangat kuning", "reason": "Mata/kulit sangat kuning", "red_flag": "kuning" },
         { "id": "none", "emoji": "🙅", "text": "Tidak ada" }
       ]
     },
@@ -133,13 +131,23 @@
         { "id": "none", "emoji": "🙅", "text": "Tidak ada" }
       ]
     },
+    "C": {
+      "title": "Ada tanda ini pada anak?",
+      "patterns": ["sth"],
+      "options": [
+        { "id": "lesu", "emoji": "🥱", "text": "Lesu, mudah lelah", "reason": "Lesu", "min_route": "yellow", "staff_note": "Cek hemoglobin (Hb). Beri obat cacing program Kemenkes (Albendazol, dosis sesuai usia)." },
+        { "id": "pucat", "emoji": "😶", "text": "Pucat", "reason": "Pucat", "min_route": "yellow", "staff_note": "Cek hemoglobin (Hb). Beri obat cacing program Kemenkes (Albendazol, dosis sesuai usia)." },
+        { "id": "buncit", "emoji": "🎈", "text": "Perut buncit", "reason": "Perut buncit", "min_route": "yellow", "staff_note": "Cek hemoglobin (Hb). Beri obat cacing program Kemenkes (Albendazol, dosis sesuai usia)." },
+        { "id": "none", "emoji": "🙅", "text": "Tidak ada" }
+      ]
+    },
     "D": {
       "title": "Ada tanda ini pada lentingnya?",
       "patterns": ["varicella"],
       "options": [
-        { "id": "mata", "emoji": "👁️", "text": "Lenting menyebar sampai ke area dekat mata", "reason": "Lenting dekat mata", "min_route": "yellow" },
-        { "id": "sesak", "emoji": "😮‍💨", "text": "Sesak napas", "reason": "Sesak napas", "min_route": "yellow" },
-        { "id": "nanah", "emoji": "🟡", "text": "Cairan lenting berubah jadi nanah hijau/kuning", "reason": "Cairan lenting bernanah", "min_route": "yellow" },
+        { "id": "mata", "emoji": "👁️", "text": "Lenting menyebar sampai ke area dekat mata", "reason": "Lenting dekat mata", "min_route": "yellow", "staff_note": "Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata." },
+        { "id": "sesak", "emoji": "😮‍💨", "text": "Sesak napas", "reason": "Sesak napas", "red_flag": "napas" },
+        { "id": "nanah", "emoji": "🟡", "text": "Cairan lenting berubah jadi nanah hijau/kuning", "reason": "Cairan lenting bernanah", "min_route": "yellow", "staff_note": "Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata." },
         { "id": "none", "emoji": "🙅", "text": "Tidak ada, lenting bening biasa" }
       ]
     }
@@ -169,16 +177,22 @@
   ],
   "body_regions": [
     { "id": "head", "name": "Kepala / mata" },
+    { "id": "shoulder_r", "name": "Bahu kanan" },
+    { "id": "shoulder_l", "name": "Bahu kiri" },
     { "id": "chest", "name": "Dada" },
     { "id": "ruq", "name": "Perut kanan atas" },
     { "id": "luq", "name": "Ulu hati / perut kiri atas" },
     { "id": "low", "name": "Perut tengah/bawah" },
     { "id": "arm_r", "name": "Lengan kanan" },
     { "id": "arm_l", "name": "Lengan kiri" },
+    { "id": "elbow_r", "name": "Siku kanan" },
+    { "id": "elbow_l", "name": "Siku kiri" },
     { "id": "wrist_r", "name": "Pergelangan tangan kanan" },
     { "id": "wrist_l", "name": "Pergelangan tangan kiri" },
     { "id": "thigh_r", "name": "Paha kanan" },
     { "id": "thigh_l", "name": "Paha kiri" },
+    { "id": "knee_r", "name": "Lutut kanan" },
+    { "id": "knee_l", "name": "Lutut kiri" },
     { "id": "calf_r", "name": "Betis kanan" },
     { "id": "calf_l", "name": "Betis kiri" },
     { "id": "ankle_r", "name": "Pergelangan kaki kanan" },
@@ -191,14 +205,6 @@
     { "value": 6, "emoji": "🙁", "label": "Lebih sakit" },
     { "value": 8, "emoji": "😣", "label": "Sangat sakit" },
     { "value": 10, "emoji": "😭", "label": "Sakit sekali" }
-  ],
-  "findings": [
-    { "id": "ruam", "emoji": "🔴", "text": "Ruam kemerahan / bintik", "diseases": ["campak", "dbd"], "reason": "Foto: ruam kemerahan / bintik" },
-    { "id": "lenting", "emoji": "🫧", "text": "Lenting berair / lepuh", "disease": "varicella", "reason": "Foto: lenting berair / lepuh" },
-    { "id": "bercak", "emoji": "⚪", "text": "Bercak putih mati rasa", "disease": "kusta", "reason": "Foto: bercak putih mati rasa" },
-    { "id": "borok", "emoji": "🩹", "text": "Luka borok / bernanah", "disease": "frambusia", "reason": "Foto: luka borok / bernanah" },
-    { "id": "mata", "emoji": "👁️", "text": "Mata kuning / mata merah", "diseases": ["hepa", "lepto"], "reason": "Foto: mata kuning / mata merah" },
-    { "id": "none", "emoji": "🙅", "text": "Tidak ada temuan", "wide": true }
   ],
   "routes": {
     "green": { "name": "KONDISI RINGAN", "sub": "Perawatan Mandiri · Apotek", "emoji": "🌿", "color_from": "#4FDDA0", "color_to": "#1FA86E", "place": "Apotek terdekat", "maps_query": "apotek terdekat", "nav_label": "Apotek" },

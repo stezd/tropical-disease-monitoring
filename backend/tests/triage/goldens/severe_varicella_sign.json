@@ -49,6 +49,16 @@
     },
     {
       "level": "b",
+      "icon": "⬆️",
+      "text": "Perkiraan ini belum cukup meyakinkan (60%). Sebaiknya periksakan ke dokter untuk memastikan."
+    },
+    {
+      "level": "y",
+      "icon": "🩺",
+      "text": "Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata."
+    },
+    {
+      "level": "b",
       "icon": "🤖",
       "text": "IMT tidak diisi — AI memakai **proksi kelonggaran pakaian**."
     }
@@ -71,7 +81,7 @@
     "Menghitung klasifikasi kecocokan 20 penyakit",
     "Menentukan kondisi rujukan & faskes"
   ],
-  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 9 th · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Kulit\nPola      : Lenting berisi air di seluruh tubuh\nPenyerta  : Lenting menyebar sampai ke area dekat mata\nEkologi   : tidak ada\nObat      : -\nSuhu      : 37.8 °C\nGizi      : proksi: Normal\nPeta nyeri: -\nFoto      : -\nLab       : -\nDugaan    : Varicella (Cacar Air) (60%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 9 th · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Kulit\nPola      : Lenting berisi air di seluruh tubuh\nPenyerta  : Lenting menyebar sampai ke area dekat mata\nEkologi   : tidak ada\nObat      : -\nSuhu      : 37.8 °C\nGizi      : proksi: Normal\nPeta nyeri: -\nLab       : -\nCatatan petugas: Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata.\nDugaan    : Varicella (Cacar Air) (60%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
   "summary_rows": [
     {
       "key": "date",
@@ -134,14 +144,14 @@
       "value": "-"
     },
     {
-      "key": "findings",
-      "label": "Foto",
-      "value": "-"
-    },
-    {
       "key": "lab",
       "label": "Lab",
       "value": "-"
+    },
+    {
+      "key": "staff_note",
+      "label": "Catatan petugas",
+      "value": "Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata."
     },
     {
       "key": "estimate",
@@ -153,5 +163,7 @@
       "label": "Kondisi",
       "value": "KONDISI SEDANG – Puskesmas · Klinik Pratama"
     }
-  ]
+  ],
+  "engine": "rules",
+  "fallback": false
 }

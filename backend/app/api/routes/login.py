@@ -4,12 +4,23 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from google.auth import exceptions as google_exceptions
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token as google_id_token
 
 from app import crud
 from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
 from app.core import security
 from app.core.config import settings
-from app.models import Message, NewPassword, Token, UserPublic, UserUpdate
+from app.models import (
+    GoogleLogin,
+    Message,
+    NewPassword,
+    Token,
+    User,
+    UserPublic,
+    UserUpdate,
+)
 from app.utils import (
     generate_password_reset_token,
     generate_reset_password_email,
@@ -34,6 +45,53 @@ def login_access_token(
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
+    return _token_for(user)
+
+
+@router.post("/login/google")
+def login_google(session: SessionDep, body: GoogleLogin) -> Token:
+    """
+    Sign in with a Google ID token (Google Identity Services `credential`).
+    Creates the account on first sign-in.
+    """
+    if not settings.GOOGLE_CLIENT_ID:
+        raise HTTPException(status_code=503, detail="Google sign-in is not set up")
+    try:
+        claims: dict[str, Any] = google_id_token.verify_oauth2_token(  # type: ignore[no-untyped-call]
+            body.credential,
+            google_requests.Request(),
+            settings.GOOGLE_CLIENT_ID,
+            clock_skew_in_seconds=10,
+        )
+    except google_exceptions.TransportError:
+        raise HTTPException(
+            status_code=503, detail="Could not reach Google to verify sign-in"
+        ) from None
+    except ValueError, google_exceptions.GoogleAuthError:
+        raise HTTPException(
+            status_code=400, detail="Invalid Google credential"
+        ) from None
+
+    email = claims.get("email")
+    if not email or claims.get("email_verified") not in (True, "true"):
+        raise HTTPException(status_code=400, detail="Google email is not verified")
+    sub = claims.get("sub")
+    if not sub:
+        raise HTTPException(status_code=400, detail="Invalid Google credential")
+    try:
+        user = crud.get_or_create_external_user(
+            session=session, sub=str(sub), email=email, full_name=claims.get("name")
+        )
+    except ValueError:
+        raise HTTPException(
+            status_code=400, detail="Email is linked to another Google account"
+        ) from None
+    if not user.is_active:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return _token_for(user)
+
+
+def _token_for(user: User) -> Token:
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     return Token(
         access_token=security.create_access_token(

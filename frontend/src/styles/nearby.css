@@ -1,0 +1,115 @@
+/* Nearest facilities (components/Nearby.tsx). Uses the tokens from tropicek.css
+   :root. Works inside a white .card on both the result screen and the red
+   emergency screen.
+   <Card tab="FASILITAS TERDEKAT" className="nf">
+     <p class="nf-lead">…</p> [<button class="btn btn-primary">📍 …</button>]
+     <ul class="nf-list">
+       <li class="nf-item">
+         <div class="nf-head"><b>Name</b><span class="nf-dist">1.2 km</span></div>
+         <small class="nf-sub">Puskesmas · address · city</small>
+         <div class="nf-actions">
+           <a class="btn btn-secondary">🗺 Cari di Google Maps</a>
+           <a class="btn btn-wa">💬 Kirim rangkuman via WhatsApp</a>  (or 📞 Telepon)
+         </div>
+       </li>
+     </ul>
+     <p class="nf-note">…</p>
+   </Card>
+   Actions flow by the card's own width, not the viewport (two-column result
+   layouts make the card narrow at tablet width): side by side when each gets
+   ≥ 13rem, stacked otherwise, so a label wraps to 2 lines at most. A lone
+   action spans the row. Tap targets stay ≥ 2.75rem (.btn min height). */
+.nf-lead {
+  margin: 0;
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
+  color: var(--tc-ink2);
+}
+.nf-lead + .btn {
+  margin-top: var(--sp-3);
+}
+.nf-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.nf-item {
+  background: var(--tc-field);
+  border: 1px solid var(--tc-line);
+  border-radius: var(--r-md);
+  padding: calc(var(--sp-3) + 1.5px);
+}
+.nf-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+}
+.nf-head b {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--tc-fh);
+  font-weight: 600;
+  font-size: var(--fs-base);
+  line-height: var(--lh-tight);
+  color: var(--tc-ink);
+  overflow-wrap: anywhere;
+}
+.nf-dist {
+  flex: none;
+  /* Deep teal, not the mid teal: white on it stays ≥4.5:1 (DESIGN.md
+     accessibility: important text on white never drops below that). */
+  background: var(--tc-purpleSh);
+  color: #fff;
+  border-radius: var(--r-pill);
+  padding: var(--sp-0) var(--sp-2h);
+  font-weight: 600;
+  font-size: var(--fs-xs);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.nf-sub {
+  display: block;
+  margin-top: var(--sp-1);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--tc-ink2);
+}
+.nf-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+.nf-actions .btn {
+  min-height: var(--h-ctl);
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-base);
+}
+.nf-note {
+  margin: var(--sp-3) 0 0;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--tc-ink2);
+}
+.nf-actions > .btn:only-child {
+  grid-column: 1 / -1;
+}
+/* Phones: smaller labels and more room between facility cards. */
+@media (max-width: 39.9375rem) {
+  .nf-list {
+    gap: var(--sp-4);
+  }
+  .nf-actions .btn {
+    min-height: var(--tap);
+    font-size: var(--fs-sm);
+  }
+}
+
+/* .btn-wa (WhatsApp) is teal-soft like the other secondary buttons; its colors live with
+   .btn-secondary in tropicek.css. */

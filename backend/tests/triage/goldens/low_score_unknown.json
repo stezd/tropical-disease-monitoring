@@ -45,7 +45,7 @@
     "Menghitung klasifikasi kecocokan 20 penyakit",
     "Menentukan kondisi rujukan & faskes"
   ],
-  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 30 th · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Bengkak Kronis\nPola      : Bukan seperti itu\nPenyerta  : -\nEkologi   : tidak ada\nObat      : -\nSuhu      : tidak diukur (tidak punya termometer)\nProksi    : tidak ada\nGizi      : proksi: Normal\nPeta nyeri: -\nFoto      : -\nLab       : -\nDugaan    : belum dapat ditentukan\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 30 th · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Bengkak Kronis\nPola      : Bukan seperti itu\nPenyerta  : -\nEkologi   : tidak ada\nObat      : -\nSuhu      : tidak diukur (tidak punya termometer)\nProksi    : tidak ada\nGizi      : proksi: Normal\nPeta nyeri: -\nLab       : -\nDugaan    : belum dapat ditentukan\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
   "summary_rows": [
     {
       "key": "date",
@@ -113,11 +113,6 @@
       "value": "-"
     },
     {
-      "key": "findings",
-      "label": "Foto",
-      "value": "-"
-    },
-    {
       "key": "lab",
       "label": "Lab",
       "value": "-"
@@ -132,5 +127,7 @@
       "label": "Kondisi",
       "value": "KONDISI SEDANG – Puskesmas · Klinik Pratama"
     }
-  ]
+  ],
+  "engine": "rules",
+  "fallback": false
 }

@@ -6,12 +6,17 @@
 // the estimate, then the answers. Everything else is one tap away.
 import { useQuery } from "@tanstack/react-query"
 import { Link, useRouterState } from "@tanstack/react-router"
+import { AxiosError } from "axios"
 import { useMemo } from "react"
-
 import type { ScoreResult, SummaryRow } from "@/client"
 import { scoreAnswers, useFlow } from "../api"
 import { Card, copyText, Rich, toast, WarnBox } from "../components/Ui"
 import { readSummaryHash, unpackAnswers } from "../qr"
+import { useGrowScroll } from "../useGrowScroll"
+
+/** The API refused these answers (unknown flow, number out of range). */
+const isBadCode = (e: unknown) =>
+  e instanceof AxiosError && [404, 422].includes(e.response?.status ?? 0)
 
 // Rows shown elsewhere on the page, not in "Data pasien".
 const OWN_PLACE = new Set(["date", "lab", "estimate", "route"])
@@ -20,6 +25,7 @@ const EMPTY = new Set(["-", ""])
 const QR_TODO = /QR rangkuman/
 
 export function SummaryScreen() {
+  const growRef = useGrowScroll()
   const hash = useRouterState({ select: (s) => s.location.hash })
   const packed = useMemo(() => {
     const code = readSummaryHash(hash)
@@ -38,6 +44,7 @@ export function SummaryScreen() {
     queryFn: () => scoreAnswers(answers!, flowId),
     enabled: !!answers,
     staleTime: Number.POSITIVE_INFINITY,
+    retry: (n, e) => !isBadCode(e) && n < 2,
   })
   const r = score.data
   const route = r && flow ? flow.routes[r.route] : null
@@ -50,12 +57,14 @@ export function SummaryScreen() {
         </Link>
         <div className="htitle">Rangkuman Pasien</div>
       </div>
-      <div className="rscroll">
+      <div className="rscroll" ref={growRef}>
         {!answers || score.isError ? (
-          <Card tab="TIDAK BISA DIBACA" style={{ marginTop: 34 }}>
+          <Card tab="TIDAK BISA DIBACA" className="card-solo">
             <p className="saveinfo">
               {answers
-                ? "Server TropiCare tidak bisa dihubungi. Coba muat ulang halaman ini."
+                ? isBadCode(score.error)
+                  ? "Kode QR tidak valid. Minta pasien menampilkan QR dari halaman hasil sekali lagi."
+                  : "Server TropiCare tidak bisa dihubungi. Coba muat ulang halaman ini."
                 : "Kode QR ini tidak lengkap atau rusak. Minta pasien menampilkan QR dari halaman hasil sekali lagi."}
             </p>
           </Card>

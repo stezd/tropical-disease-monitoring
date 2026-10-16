@@ -1,5 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 
 import {
   type Answers,
@@ -27,44 +26,39 @@ export function useFlow(flowId = FLOW_ID) {
   return { flow, offline: !query.data && query.isError, query }
 }
 
+/** Score answers. `preview` = rules only, never a model call: for mid-quiz
+ * checks such as the drug pop-ups after step q6. The final result (Thinking,
+ * Result) uses the server's configured engine. */
 export async function scoreAnswers(
   answers: Answers,
   flowId: string,
+  preview = false,
 ): Promise<ScoreResult> {
   return (
-    await TriageService.scoreFlow({ path: { flow_id: flowId }, body: answers })
+    await TriageService.scoreFlow({
+      path: { flow_id: flowId },
+      body: answers,
+      ...(preview ? { query: { preview: true } } : {}),
+    })
   ).data
 }
 
-export const scoreKey = (answers: Answers, flowId: string) => [
+/** Log one finished screening as a stats row without direct identity (no login,
+ * no account link). Fire and forget: never throws, never blocks the UI, and an
+ * offline server is fine. `runId` makes a repeat call update the same row. */
+export function recordStat(
+  answers: Answers,
+  flowId: string,
+  runId: string,
+): void {
+  void TriageService.recordStat({
+    body: { event_id: runId, flow_id: flowId, answers },
+  }).catch(() => {})
+}
+
+export const scoreKey = (answers: Answers, flowId: string, preview = false) => [
   "triage",
-  "score",
+  preview ? "score-preview" : "score",
   flowId,
   answers,
 ]
-
-function useDebounced<T>(value: T, ms: number): T {
-  const [v, setV] = useState(value)
-  useEffect(() => {
-    const t = setTimeout(() => setV(value), ms)
-    return () => clearTimeout(t)
-  }, [value, ms])
-  return v
-}
-
-/** Live score for the mascot meter. Silent when the server is unreachable.
- * Only runs once a complaint is chosen and no red flag is picked. */
-export function useLiveScore(answers: Answers, flowId: string) {
-  const debounced = useDebounced(answers, 250)
-  const enabled =
-    !!debounced.complaint &&
-    !(debounced.red_flags ?? []).some((x) => x !== "none")
-  return useQuery({
-    queryKey: scoreKey(debounced, flowId),
-    queryFn: () => scoreAnswers(debounced, flowId),
-    enabled,
-    placeholderData: keepPreviousData,
-    staleTime: Number.POSITIVE_INFINITY,
-    retry: false,
-  })
-}

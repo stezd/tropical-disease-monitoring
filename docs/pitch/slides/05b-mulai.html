@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TropiCare · Mulai</title>
+<link rel="stylesheet" href="../shared/deck.css">
+<link rel="stylesheet" href="../shared/phone.css">
+<style>
+  .mulai { flex-direction: row; align-items: center; gap: 72px; }
+  .phones { display: flex; gap: 52px; padding: 0 14px; flex: none; }
+  .phones .phone-fig { --s: 0.82; }
+  .phones figcaption { font-size: 24px; }
+  .mulai-right { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .mulai-right .title-wrap { margin-bottom: 30px; }
+  .mulai-right .title { font-size: 64px; }
+  .points { display: flex; flex-direction: column; gap: 22px; }
+  .point { display: flex; align-items: center; gap: 24px; padding: 24px 30px; }
+  .point .icon-dot { width: 80px; height: 80px; font-size: 40px; }
+  .point p { margin: 0; font-size: 28px; line-height: 1.35; font-weight: 500; color: var(--ink2); }
+  .point p b { color: var(--teal-deep); font-weight: 700; }
+</style>
+</head>
+<body data-slide="05b-mulai">
+<div class="slide">
+  <div class="slide-inner mulai">
+    <div class="phones">
+      <figure class="phone-fig">
+        <div class="phone"><iframe src="../mockups/home.html" title="Layar awal TropiCare" scrolling="no"></iframe></div>
+        <figcaption>1 · Pilih jalur</figcaption>
+      </figure>
+      <figure class="phone-fig">
+        <div class="phone"><iframe src="../mockups/consent.html" title="Gerbang privasi" scrolling="no"></iframe></div>
+        <figcaption>2 · Setuju privasi dulu</figcaption>
+      </figure>
+    </div>
+    <div class="mulai-right">
+      <div class="title-wrap">
+        <span class="kicker">Mulai</span>
+        <h1 class="title">Mulai: pilih jalur &amp; privasi dulu</h1>
+      </div>
+      <div class="points">
+        <div class="card point">
+          <div class="icon-dot sky">🧭</div>
+          <p><b>Dua jalur:</b> infeksi tropis dan risiko penyakit jangka panjang.</p>
+        </div>
+        <div class="card point">
+          <div class="icon-dot mint">🔒</div>
+          <p><b>Wajib setuju privasi</b> sebelum pertanyaan pertama.</p>
+        </div>
+        <div class="card point">
+          <div class="icon-dot butter">📍</div>
+          <p><b>Lokasi diminta setelah setuju.</b> Koordinat tetap di perangkat; hanya provinsi yang dikirim ke server.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/deck.js"></script>
+</body>
+</html>

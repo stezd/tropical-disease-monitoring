@@ -40,11 +40,11 @@ function qrImage(qr: HTMLCanvasElement): Promise<Blob> {
   ctx.imageSmoothingEnabled = false
   ctx.drawImage(qr, pad, pad)
   ctx.textAlign = "center"
-  ctx.fillStyle = "#3a2e6e"
-  ctx.font = '600 26px Fredoka, Nunito, "Segoe UI", sans-serif'
+  ctx.fillStyle = "#15323a"
+  ctx.font = '600 26px Poppins, "Segoe UI", sans-serif'
   ctx.fillText(CAPTION, out.width / 2, size + pad + 34, out.width - pad)
-  ctx.fillStyle = "#5e5890"
-  ctx.font = '700 19px Nunito, "Segoe UI", sans-serif'
+  ctx.fillStyle = "#566d74"
+  ctx.font = '600 19px Poppins, "Segoe UI", sans-serif'
   ctx.fillText(CAPTION_SUB, out.width / 2, size + pad + 64, out.width - pad)
   return new Promise((resolve, reject) =>
     out.toBlob(

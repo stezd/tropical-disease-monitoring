@@ -1,8 +1,13 @@
 // User location → province, in the browser (AGENTS.md "Data diri · Lokasi").
-// Asked in step "who" when the flow has `ask_province` (infection path only).
-// Only the province name is kept and sent; the coordinates never leave this file.
-// The server passes it to MedGemma as the fact "Provinsi tempat tinggal"
-// (backend/app/triage/medgemma.py, docs/Format-MedGemma.md). No per-province weights.
+// Asked right after the privacy tick (screens/Consent.tsx), on both paths.
+// The server passes the province to Gemma4 as the fact "Provinsi tempat
+// tinggal" (backend/app/triage/Gemma4.py, docs/Format-Gemma4.md). No
+// per-province weights.
+//
+// Coordinates stay on the device: nearest-facility picking ranks in the browser
+// by default. The one exception is the opt-in server endpoint (see
+// features/triage/nearby.ts and docs/SATUSEHAT.md §3), which sends the point
+// only when VITE_FACILITIES_SERVER_NEAREST=true.
 //
 // Boundaries: public/data/provinsi.json, 38 provinces, packed from
 // "Indonesia GeoJSON & TopoJSON Maps (38 Provinces)" (CC BY 4.0, see
@@ -132,12 +137,26 @@ export async function provinceFromCoords(
   }
 }
 
+export type Coords = { latitude: number; longitude: number }
+
 export type LocateResult =
-  | { ok: true; province: Province }
+  | { ok: true; province: Province; latitude: number; longitude: number }
   | { ok: false; reason: "unsupported" | "denied" | "unavailable" | "outside" }
 
-/** Ask the browser for the location and turn it into a province. */
-export async function askProvince(): Promise<LocateResult> {
+export type CoordsResult =
+  | { ok: true; coords: Coords }
+  | { ok: false; reason: "unsupported" | "denied" | "unavailable" }
+
+// Granted this session, in memory only. Cleared when the tab closes: never in
+// localStorage, never sent anywhere unless the opt-in endpoint is enabled.
+let lastCoords: Coords | null = null
+
+/** Coordinates already granted this session, if any (no prompt). */
+export const cachedCoords = (): Coords | null => lastCoords
+
+/** Ask for the browser location once, then reuse it for the session. */
+export async function locateCoords(): Promise<CoordsResult> {
+  if (lastCoords) return { ok: true, coords: lastCoords }
   if (!("geolocation" in navigator)) return { ok: false, reason: "unsupported" }
   const pos = await new Promise<GeolocationPosition | GeolocationPositionError>(
     (resolve) =>
@@ -152,14 +171,24 @@ export async function askProvince(): Promise<LocateResult> {
       reason: pos.code === pos.PERMISSION_DENIED ? "denied" : "unavailable",
     }
   }
+  lastCoords = {
+    latitude: pos.coords.latitude,
+    longitude: pos.coords.longitude,
+  }
+  return { ok: true, coords: lastCoords }
+}
+
+/** Ask the browser for the location and turn it into a province. */
+export async function askProvince(): Promise<LocateResult> {
+  const r = await locateCoords()
+  if (!r.ok) return { ok: false, reason: r.reason }
   let province: Province | null
   try {
-    province = await provinceFromCoords(
-      pos.coords.latitude,
-      pos.coords.longitude,
-    )
+    province = await provinceFromCoords(r.coords.latitude, r.coords.longitude)
   } catch {
     return { ok: false, reason: "unavailable" }
   }
-  return province ? { ok: true, province } : { ok: false, reason: "outside" }
+  return province
+    ? { ok: true, province, ...r.coords }
+    : { ok: false, reason: "outside" }
 }

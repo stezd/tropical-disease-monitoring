@@ -13,10 +13,13 @@ summary live in advice.py and work with either engine.
 
 import math
 from dataclasses import dataclass, field
-from typing import Protocol
+from typing import Literal, Protocol
 
 from app.domain.answers import Answers
 from app.triage.content import NONE_ID, FlowContent, Option, Question
+
+# What produced the scores. "rules" = RuleEngine, also when the AI engine fell back.
+EngineId = Literal["ai", "rules", "model"]
 
 
 @dataclass
@@ -34,6 +37,18 @@ class ScoreBreakdown:
     reasons: dict[str, list[str]]
     # Diseases with a positive score, highest first.
     ranked: list[Ranked] = field(default_factory=list)
+    # What produced the scores, saved with a screening: "rules", "model", "ai", or
+    # "ai-fb:<reason>" when the AI engine fell back to rules. At most 20 characters.
+    engine: str = "rules"
+    # True = the configured engine failed and RuleEngine answered instead.
+    fallback: bool = False
+
+    @property
+    def engine_id(self) -> EngineId:
+        """`engine` without the fallback reason, for the API (`ScoreResult.engine`)."""
+        if self.engine == "ai":
+            return "ai"
+        return "model" if self.engine == "model" else "rules"
 
 
 class ScoringEngine(Protocol):
@@ -84,6 +99,18 @@ def visible(o: Option, answers: Answers, content: FlowContent) -> bool:
 
 def companion_shown(q: Question, answers: Answers) -> bool:
     return q.patterns is None or answers.pattern in q.patterns
+
+
+def red_flag_ids(answers: Answers, content: FlowContent) -> list[str]:
+    """Danger signs picked in step q1, plus picked companion options that are one
+    (e.g. very yellow eyes with fever). Any of them means route MERAH."""
+    out = [f for f in answers.red_flags if f != NONE_ID]
+    q = content.flow.companions.get(answers.complaint or "")
+    if q and companion_shown(q, answers):
+        for o in q.options:
+            if o.red_flag and o.id in answers.companion and o.red_flag not in out:
+                out.append(o.red_flag)
+    return out
 
 
 def rank(scores: dict[str, float], temperature: float) -> list[Ranked]:
@@ -173,8 +200,8 @@ class RuleEngine:
                 for d, p in w.province.get(answers.province, {}).items()
             ]
 
-        # Vital proxies, blood pressure, glucose, and waist score nothing until ST sets
-        # weights. They are still in the summary and in features().
+        # Vital proxies, blood pressure, glucose, uric acid, cholesterol, and waist score
+        # nothing until ST sets weights. They are still in the summary and in features().
         t = answers.temp
         fever = w.fever
         if fever and not answers.no_thermo and t is not None and t >= fever.min_temp:
@@ -215,13 +242,6 @@ class RuleEngine:
                     Contribution(d, p, asym.reason) for d, p in asym.points.items()
                 ]
 
-        contrib += [
-            Contribution(d, w.finding, o.reason)
-            for o in flow.findings
-            if o.id in answers.findings
-            for d in o.targets()
-        ]
-
         scores, reasons = accumulate(contrib, content.scored_diseases)
         return ScoreBreakdown(scores, reasons, rank(scores, w.softmax_temperature))
 
@@ -245,6 +265,9 @@ def features(answers: Answers, content: FlowContent) -> dict[str, float]:
         "bp_sys": _num(None if answers.no_bp else answers.bp_sys),
         "bp_dia": _num(None if answers.no_bp else answers.bp_dia),
         "glucose": _num(answers.glucose),
+        # Optional exams (chronic "labs" step). Not scored by RuleEngine yet (ST).
+        "uric_acid": _num(answers.uric_acid),
+        "cholesterol_total": _num(answers.cholesterol_total),
         "waist": _num(answers.waist_cm),
     }
     for c in flow.clusters:
@@ -268,9 +291,6 @@ def features(answers: Answers, content: FlowContent) -> dict[str, float]:
                 f[f"vital_{vital}_{o.id}"] = float(o.id in answers.vital_proxy)
     for r in flow.body_regions:
         f[f"body_{r.id}"] = float(r.id in answers.body)
-    for o in flow.findings:
-        if o.id != NONE_ID:
-            f[f"finding_{o.id}"] = float(o.id in answers.findings)
     return f
 
 

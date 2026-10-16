@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TropiCare · Solusi</title>
+<link rel="stylesheet" href="../shared/deck.css">
+<style>
+  .title-wrap { margin-bottom: 20px; }
+  .lead { font-size: 32px; max-width: 1400px; }
+  .flow { margin-top: 40px; align-items: stretch; gap: 20px; }
+  .flow .card { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+  .flow h3 { margin: 0; font-size: 34px; font-weight: 600; }
+  .flow p { margin: 0; font-size: 25px; line-height: 1.4; color: var(--ink2); }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; }
+  .chips .route-chip { font-size: 22px; padding: 8px 18px 8px 10px; }
+  .chips .route-chip i { width: 32px; height: 32px; font-size: 18px; }
+  .bottom { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; }
+  .bottom .bubble { font-size: 26px; padding: 18px 26px; max-width: 560px; }
+  .bottom .mascot { width: 96px; }
+  .bottom .mwrap { display: flex; align-items: flex-end; gap: 24px; }
+</style>
+</head>
+<body data-slide="03-solusi">
+<div class="slide">
+  <div class="slide-inner">
+    <span class="kicker">Solusi</span>
+    <div class="title-wrap"><h1 class="title">Solusi</h1></div>
+    <p class="lead">Skrining awal yang mudah diakses, berbasis acuan medis, dan mengarahkan pasien ke layanan yang tepat.</p>
+
+    <div class="row flow">
+      <div class="card has-tab">
+        <span class="tab">1 · Kuesioner adaptif</span>
+        <p>Dimulai dari data diri, lalu pertanyaan menyesuaikan keluhan, gejala, riwayat lingkungan, riwayat obat, dan peta nyeri.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card has-tab">
+        <span class="tab">2 · Analisis AI</span>
+        <p>Gemma4 + RAG menganalisis jawaban berdasarkan literatur medis yang disetujui dokter, lalu memberi satu perkiraan utama dengan skor kecocokan, tiga kemungkinan lain, dan alasan &ldquo;kenapa aku menebak ini&rdquo;.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card has-tab">
+        <span class="tab">3 · Hasil &amp; tindak lanjut</span>
+        <p>Jenis penanganan, langkah yang perlu dilakukan, peringatan obat, faskes terdekat, dan QR rangkuman untuk petugas faskes.</p>
+        <div class="chips">
+          <span class="route-chip merah"><i>🚨</i>Darurat</span>
+          <span class="route-chip khusus"><i>🎯</i>Poli program</span>
+          <span class="route-chip kuning"><i>🏥</i>Puskesmas</span>
+          <span class="route-chip hijau"><i>🌿</i>Rawat mandiri</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom">
+      <div class="pill">🩺 Hasilnya berupa skrining, bukan diagnosis dokter</div>
+      <div class="mwrap">
+        <div class="bubble tail-left">Tiga langkah saja, <b>±3 menit</b>!</div>
+        <img class="mascot" src="../shared/mascot.svg" alt="Kak Tropi">
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/deck.js"></script>
+</body>
+</html>

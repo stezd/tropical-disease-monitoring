@@ -44,6 +44,11 @@
   "warnings": [
     {
       "level": "b",
+      "icon": "⬆️",
+      "text": "Perkiraan ini belum cukup meyakinkan (65%). Sebaiknya periksakan ke dokter untuk memastikan."
+    },
+    {
+      "level": "b",
       "icon": "🌡️",
       "text": "Suhu tidak diukur. Klasifikasi tetap memakai **pola demam** yang kamu pilih tadi."
     },
@@ -72,7 +77,7 @@
     "Menghitung klasifikasi kecocokan 20 penyakit",
     "Menentukan kondisi rujukan & faskes"
   ],
-  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 30 th · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Demam & Badan\nPola      : Menggigil berulang tiap 2–3 hari\nPenyerta  : -\nEkologi   : tidak ada\nObat      : -\nSuhu      : tidak diukur (tidak punya termometer)\nProksi    : Menggigil hebat atau keringat sampai baju basah; Nadi terasa sangat cepat saat istirahat\nGizi      : proksi: Normal\nPeta nyeri: -\nFoto      : -\nLab       : Apusan Darah Tebal (Giemsa) / RDT Malaria\nDugaan    : Malaria (65%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
+  "summary": "TROPICARE – RANGKUMAN SKRINING\nTanggal   : -\nPasien    : - · 30 th · -\nProvinsi  : -\nTanda bahaya: tidak ada\nKeluhan   : Demam & Badan\nPola      : Menggigil berulang tiap 2–3 hari\nPenyerta  : -\nEkologi   : tidak ada\nObat      : -\nSuhu      : tidak diukur (tidak punya termometer)\nProksi    : Menggigil hebat atau keringat sampai baju basah; Nadi terasa sangat cepat saat istirahat\nGizi      : proksi: Normal\nPeta nyeri: -\nLab       : Apusan Darah Tebal (Giemsa) / RDT Malaria\nDugaan    : Malaria (65%)\nKondisi   : KONDISI SEDANG – Puskesmas · Klinik Pratama",
   "summary_rows": [
     {
       "key": "date",
@@ -140,11 +145,6 @@
       "value": "-"
     },
     {
-      "key": "findings",
-      "label": "Foto",
-      "value": "-"
-    },
-    {
       "key": "lab",
       "label": "Lab",
       "value": "Apusan Darah Tebal (Giemsa) / RDT Malaria"
@@ -159,5 +159,7 @@
       "label": "Kondisi",
       "value": "KONDISI SEDANG – Puskesmas · Klinik Pratama"
     }
-  ]
+  ],
+  "engine": "rules",
+  "fallback": false
 }

@@ -10,13 +10,13 @@ plain text + structured rows). This module stays the entry point and only wires 
 
 from app.domain.answers import Answers
 from app.domain.narration import analysis_steps, cross_checks, meter, pct
-from app.domain.route_policy import decide_route, resolve_place
+from app.domain.route_policy import decide_route, resolve_place, staff_notes_for
 from app.domain.summary import summary, summary_rows, summary_text
 from app.domain.warnings import drug_flags as drug_flags  # re-exported for callers
 from app.domain.warnings import red_flags, warnings_for
 from app.triage.content import FlowContent
 from app.triage.schemas import RankedDisease, ScoreResult
-from app.triage.scoring import ScoreBreakdown
+from app.triage.scoring import ScoreBreakdown, red_flag_ids
 
 __all__ = [
     "build_result",
@@ -29,10 +29,15 @@ __all__ = [
 
 
 def build_result(
-    flow_id: str, answers: Answers, content: FlowContent, b: ScoreBreakdown
+    flow_id: str,
+    answers: Answers,
+    content: FlowContent,
+    b: ScoreBreakdown,
+    drug_classes: frozenset[str] = frozenset(),
 ) -> ScoreResult:
+    """`drug_classes`: classes the drug recognizer found in `answers.drugs` (may be empty)."""
     flow, advice = content.flow, content.advice
-    flags = red_flags(answers)
+    flags = red_flag_ids(answers, content)
     ranked = b.ranked
     top = ranked[0] if ranked else None
 
@@ -55,7 +60,18 @@ def build_result(
     disease = content.diseases[top.id] if top_public and top else None
     route_info = flow.routes[route]
 
-    warns, drug_popups = warnings_for(answers, content, b, route, unknown, flags, notes)
+    staff_notes = staff_notes_for(answers, content)
+    warns, drug_popups = warnings_for(
+        answers,
+        content,
+        b,
+        route,
+        unknown,
+        flags,
+        notes,
+        staff_notes,
+        drug_classes=drug_classes,
+    )
 
     # "Yang perlu dilakukan".
     care = disease.care if disease else []
@@ -101,4 +117,6 @@ def build_result(
         analysis_steps=analysis,
         summary=summary_text(rows),
         summary_rows=rows,
+        engine=b.engine_id,
+        fallback=b.fallback,
     )

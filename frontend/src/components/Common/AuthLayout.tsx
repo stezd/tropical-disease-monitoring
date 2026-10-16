@@ -7,14 +7,14 @@ interface AuthLayoutProps {
   children: React.ReactNode
 }
 
-// Login, sign up, password reset in the TropiCare look: purple sky, white card.
+// Login, sign up, password reset in the TropiCare look: teal backdrop, white card.
 export function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="flex min-h-svh flex-col items-center bg-[linear-gradient(180deg,#4B44C4_0%,#6E4FDB_34%,#A85ED0_64%,#F07F9A_88%,#FFAE7E_100%)] px-4 py-6">
+    <div className="flex min-h-svh flex-col items-center bg-[radial-gradient(ellipse_at_50%_0%,#E4F4F1_0,#CDE8E3_62%)] px-4 py-6">
       <div className="flex w-full max-w-sm items-center justify-between">
         <Link
           to="/"
-          className="grid size-10 place-items-center rounded-[13px] bg-white/20 text-2xl font-extrabold text-white"
+          className="grid size-10 place-items-center rounded-full border border-[#E1EDEA] bg-white text-2xl font-semibold text-[#0F6B66] shadow-[0_6px_20px_rgba(15,107,102,.08)]"
           aria-label="Kembali ke beranda"
         >
           ‹
@@ -24,13 +24,13 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         <div className="w-24">
           <Mascot />
         </div>
-        <div className="w-full rounded-[26px] bg-white p-6 shadow-[0_8px_0_rgba(60,40,150,.22),0_22px_44px_rgba(30,15,90,.28)]">
+        <div className="w-full rounded-[26px] border border-[#E1EDEA] bg-white p-6 shadow-[0_6px_20px_rgba(15,107,102,.08)]">
           <div className="mb-4 flex justify-center">
             <Logo asLink={false} />
           </div>
           {children}
         </div>
-        <p className="mt-2 text-center text-xs font-extrabold text-white">
+        <p className="mt-2 text-center text-xs font-semibold text-[#15323A]">
           Masuk itu opsional. Skrining tetap bisa dipakai tanpa akun.
         </p>
       </div>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TropiCare · Pratinjau Pitch Deck</title>
+<link rel="stylesheet" href="shared/deck.css">
+<style>
+  html, body { overflow: auto; height: auto; width: auto; }
+  body { background: var(--backdrop); padding: 40px 48px 64px; }
+  h1 { margin: 0 0 6px; font-size: 40px; color: var(--teal-deep); }
+  p.sub { margin: 0 0 32px; font-size: 18px; color: var(--ink); font-weight: 500; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(384px, 1fr)); gap: 28px; }
+  a.thumb { display: block; text-decoration: none; color: var(--ink); }
+  .frame { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #fff; border-radius: 18px; overflow: hidden;
+           border: 1px solid var(--line); box-shadow: var(--shadow-card); }
+  .frame iframe { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; border: 0; transform-origin: 0 0; pointer-events: none; }
+  .cap { margin-top: 10px; font-size: 18px; font-weight: 600; }
+  .cap span { color: var(--teal); margin-right: 8px; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<h1>TropiCare · Pitch deck</h1>
+<p class="sub">Satu slide = satu file HTML di <b>slides/</b>. Klik thumbnail untuk membuka. Ekspor PDF: <b>export-pdf.ps1</b>.</p>
+<div class="grid" id="grid"></div>
+<script>
+  var slides = [
+    ["01-cover", "Cover"], ["02-masalah", "Masalah"], ["03-solusi", "Solusi"],
+    ["04-kompetitor", "Perbandingan"], ["05a-fitur", "Fitur utama"], ["05b-mulai", "Mulai"],
+    ["05c-kuesioner", "Kuesioner"], ["05d-hasil", "Hasil"], ["05e-keselamatan", "Keselamatan"],
+    ["06-alur", "Flow diagram"], ["07-skalabilitas", "Skalabilitas"], ["08-feasibility", "Feasibility"],
+    ["09-terima-kasih", "Terima kasih"]
+  ];
+  var grid = document.getElementById("grid");
+  slides.forEach(function (s, i) {
+    var a = document.createElement("a");
+    a.className = "thumb";
+    a.href = "slides/" + s[0] + ".html";
+    a.innerHTML = '<div class="frame"><iframe loading="lazy" src="slides/' + s[0] + '.html" title="' + s[1] +
+      '" scrolling="no"></iframe></div><div class="cap"><span>' + String(i + 1).padStart(2, "0") + "</span>" + s[1] + "</div>";
+    grid.appendChild(a);
+  });
+  function scaleFrames() {
+    document.querySelectorAll(".frame").forEach(function (f) {
+      f.querySelector("iframe").style.transform = "scale(" + (f.clientWidth / 1920) + ")";
+    });
+  }
+  window.addEventListener("resize", scaleFrames);
+  scaleFrames();
+</script>
+</body>
+</html>

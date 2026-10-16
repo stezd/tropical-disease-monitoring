@@ -68,6 +68,8 @@ Set these on the **`backend`** service:
 | `FIRST_SUPERUSER` | admin email | Used only for ST's screening-data export; login is optional for patients |
 | `FIRST_SUPERUSER_PASSWORD` | random | |
 | `FRONTEND_HOST` | `https://<domain>` | CORS allow-list. Cosmetic in the single-origin setup, but keep it correct |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID (Web) | Enables "Masuk dengan Google". Add the production domain to Authorized JavaScript origins |
+| `TRIAGE_AI_CACHE_TTL_S` | optional | TTL (seconds, default 86400) of the in-memory AI result cache; `0` turns it off |
 | `WEB_CONCURRENCY` | `1` (default) or `2` | Optional. `start.sh` defaults to 1; raise on a larger instance |
 
 Generate secrets:
@@ -75,6 +77,10 @@ Generate secrets:
 ```bash
 python -c "import secrets; print(secrets.token_urlsafe(32))"
 ```
+
+**Frontend build-time variable:** `VITE_GOOGLE_CLIENT_ID` (same client ID) must be present when the image is built, because Vite inlines it. Changing it needs a rebuild.
+
+**Migration on deploy:** Alembic revision `b7d2e4f19a6c` (adds `screening.user_id`) runs automatically via `prestart.sh` on the next deploy.
 
 ### Two traps
 
@@ -137,7 +143,16 @@ Notes:
 | Restart policy | `ON_FAILURE` | Avoids a crash loop burning usage |
 | Domain port | leave default | The app reads Railway's injected `PORT` automatically and binds `0.0.0.0` |
 
-Port handling needs no configuration: `fastapi run` reads the `PORT` environment variable, and Railway injects it.
+Port handling needs no configuration: the server reads the `PORT` environment variable, and Railway injects it.
+
+### Logs and client IPs
+
+Every finished screening (guests too) adds a statistics row without direct identity, so client IPs must not end up in Railway logs.
+
+- The server runs **without the access log** (`--no-access-log`, set in `backend/scripts/start.sh`), so request lines with client IPs are not written.
+- No app code logs `request.client` or the `X-Forwarded-For` header. Keep it that way in review.
+- Set Railway log retention to the shortest the plan allows (Project settings).
+- After a deploy, check `railway logs`: no request lines with an IP address.
 
 ---
 
@@ -215,8 +230,8 @@ Rates: RAM $10/GB/month, CPU $20/vCPU/month, egress $0.05/GB. **Builds are free.
 ## 10. What this app deliberately does not do
 
 - No BPJS API, telemedicine, or faskes integrations — plain links only (Google Maps search, opening Mobile JKN).
-- Photos are never stored; the photo analyzer is a skeleton returning `available: false`.
-- Nothing is sent outside our own server. SATUSEHAT integration is under consideration and not covered by this rule.
+- No photo feature: it was removed by team decision on 2026-10-15, so no images are uploaded or stored.
+- Screening answers (no identity) may be sent to OpenRouter and Google for AI scoring (stated in the consent text). SATUSEHAT integration was dropped (team decision, 16 Oct 2026); the existing facility mirror still runs.
 
 See `AGENTS.md` for the full "Must not break" list.
 
@@ -286,13 +301,13 @@ Watch paths live on the **service instance**, so they are set per environment - 
 
 A **second service** in the project mirrors the SATUSEHAT Master Sarana Index into the `facility` table (see [docs/SATUSEHAT.md](docs/SATUSEHAT.md)). It is a normal Railway service with a cron schedule, not a separate scheduler primitive: Railway starts the container on schedule, runs the start command, and stops it when the process exits.
 
-Created 2026-10-14 in the **`development`** environment only. **Production still needs its own** (§12's branch gate means it is a separate service instance, so create it per environment).
+Exists in **both** environments, as a separate service instance per environment (§12's branch gate): `facility-sync` in `development`, `facility-sync-prod` in `production`, both created 2026-10-14.
 
 | Setting | Value |
 | --- | --- |
 | Source | `stezd/tropical-disease-monitoring` |
 | `RAILWAY_DOCKERFILE_PATH` | `backend/Dockerfile` (same image as the web app) |
-| Start command | `python scripts/sync_facilities.py` |
+| Start command | `python scripts/sync_facilities.py --include-apotek` |
 | Cron schedule | `0 19 * * *` = **02:00 WIB**. Railway cron is always UTC - this offset is deliberate, not a typo |
 | Restart policy | `NEVER` - it must not restart after finishing |
 | Auto-deploy | **off** |
@@ -321,7 +336,13 @@ railway cron run  -s facility-sync -e development -y  # off-schedule run ("Run n
 railway logs      -s facility-sync -e development --since 2026-10-14T16:52:20Z
 ```
 
-A healthy run takes ~10 s and ends with `Sync complete. Total facilities synced: 13930`.
+`--include-apotek` adds Apotek (105) so the HIJAU route can offer a pharmacy. It grows the mirror from ~13.900 to ~67.000 rows and the run from ~10 s to a couple of minutes (~78 pages). Only 2,1% of Apotek rows carry coordinates; the app passes `?with_coords=true` when ranking so the coordinate-less majority is never fetched. A healthy run ends with `Sync complete. Total facilities synced: <count>`, where `<count>` is now on the order of 67.000.
+
+`development`'s `facility-sync` already uses this start command. **`production`'s `facility-sync-prod` still runs the plain `python scripts/sync_facilities.py`** and needs the same one-line change when Apotek should be mirrored in production too.
+
+### Enabling server-side nearest ranking
+
+The front end accepts `VITE_FACILITIES_SERVER_NEAREST` as a build arg (`backend/Dockerfile`). Set it on the **`fullstack`** service and redeploy so the built bundle uses `POST /facilities/nearest` (coordinates leave the device; see [docs/SATUSEHAT.md §3](docs/SATUSEHAT.md)). Without it, ranking happens in the browser and coordinates never leave the device. Either way the cron only mirrors data — it never serves requests, so do **not** set this variable on `facility-sync`.
 
 ### Three traps
 

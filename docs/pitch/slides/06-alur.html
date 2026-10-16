@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TropiCare · Flow diagram</title>
+<link rel="stylesheet" href="../shared/deck.css">
+<style>
+  .slide-inner { inset: 120px 120px 70px 120px; }
+  .head { display: flex; align-items: center; gap: 28px; margin-bottom: 8px; }
+  .head .kicker { margin: 0; }
+  .head .title { font-size: 58px; }
+  .dia { position: relative; width: 1680px; height: 670px; margin-top: 16px; }
+  .dia svg.lines { position: absolute; inset: 0; width: 1680px; height: 670px; overflow: visible; }
+
+  /* node = icon tile (center on the arrow line) + label */
+  .n { position: absolute; width: 200px; transform: translate(-50%, -42px); text-align: center; }
+  .tile { width: 84px; height: 84px; border-radius: 26px; margin: 0 auto; display: grid; place-items: center; font-size: 42px; line-height: 1; }
+  .tile svg { width: 46px; height: 46px; }
+  .t-dev { background: #fff; border: 3px solid var(--teal-mid); color: var(--teal); }
+  .t-srv { background: var(--sky); border: 3px solid var(--sky-ink); color: var(--sky-ink); }
+  .t-ext { background: var(--butter); border: 3px dashed #c99a1d; color: var(--butter-ink); }
+  .t-red { background: #c8203a; border: 3px solid #c8203a; color: #fff; }
+  .t-dia { background: #fff; border: 0; border-radius: 0; width: 96px; height: 96px; margin-top: -6px;
+           clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); background: var(--teal); color: #fff; font-size: 40px; font-weight: 700; }
+  .lbl { margin-top: 10px; }
+  .lbl b { display: block; font-size: 23px; line-height: 1.2; font-weight: 700; color: var(--ink); }
+  .lbl span { display: block; margin-top: 3px; font-size: 20px; line-height: 1.25; font-weight: 500; color: var(--ink); }
+  /* label above the icon */
+  .n.top { transform: translate(-50%, calc(-100% + 42px)); display: flex; flex-direction: column-reverse; }
+  .n.top .lbl { margin: 0 0 10px; }
+  /* label to the right of the icon */
+  .n.side { width: auto; display: flex; align-items: center; gap: 16px; text-align: left; transform: translate(-42px, -42px); }
+  .n.side .tile { margin: 0; flex: none; }
+  .n.side .lbl { margin: 0; width: 290px; }
+  .n.side.narrow .lbl { width: 190px; }
+
+  .pill-l { position: absolute; transform: translate(-50%, -50%); background: #fff; border: 2px solid var(--line);
+            border-radius: 999px; padding: 4px 16px; font-size: 20px; font-weight: 600; color: var(--teal-deep); white-space: nowrap; }
+  .pill-l.red { color: #b4142c; border-color: #f3b9c1; background: #ffe1e5; }
+  .pill-l.ext { color: var(--butter-ink); border-color: #e7cf8a; background: var(--butter); }
+
+  .legend { position: absolute; left: 300px; top: 618px; display: flex; gap: 40px; align-items: center; font-size: 21px; font-weight: 600; color: var(--ink); }
+  .legend i { display: inline-block; width: 30px; height: 30px; border-radius: 10px; vertical-align: middle; margin-right: 10px; }
+  .legend .l-dev { background: #fff; border: 3px solid var(--teal-mid); }
+  .legend .l-srv { background: var(--sky); border: 3px solid var(--sky-ink); }
+  .legend .l-ext { background: var(--butter); border: 3px dashed #c99a1d; }
+</style>
+</head>
+<body data-slide="06-alur">
+<div class="slide">
+  <div class="slide-inner">
+    <div class="head"><span class="kicker">Alur sistem</span><h1 class="title">Dari jawaban pasien sampai rute layanan</h1></div>
+
+    <div class="dia">
+      <!-- connectors -->
+      <svg class="lines" viewBox="0 0 1680 670" aria-hidden="true">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0f6b66"/></marker>
+          <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c8203a"/></marker>
+          <marker id="ax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9a6f00"/></marker>
+        </defs>
+        <g fill="none" stroke="#0f6b66" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <!-- main line -->
+          <path d="M120 295H218" marker-end="url(#ah)"/>
+          <path d="M320 295H418" marker-end="url(#ah)"/>
+          <path d="M522 295H618" marker-end="url(#ah)"/>
+          <!-- danger branch -->
+          <path d="M470 247V145" stroke="#c8203a" marker-end="url(#ar)"/>
+          <!-- patient -> location (parallel) -->
+          <path d="M70 342V508" marker-end="url(#ah)"/>
+          <!-- location -> server (province only) -->
+          <path d="M122 555H595V295"/>
+          <!-- server -> parallel AI branches (data leaves our server) -->
+          <path d="M722 295H775" />
+          <path d="M775 150V490" />
+          <path d="M775 150H832" stroke="#9a6f00" stroke-dasharray="10 9" marker-end="url(#ax)"/>
+          <path d="M775 490H832" stroke="#9a6f00" stroke-dasharray="10 9" marker-end="url(#ax)"/>
+          <!-- AI results back -> join -->
+          <path d="M928 150H985V295H1038" marker-end="url(#ah)"/>
+          <path d="M928 490H985V295"/>
+          <!-- join -> outputs -->
+          <path d="M1142 295H1231"/>
+          <path d="M1231 80V530"/>
+          <path d="M1231 80H1284" marker-end="url(#ah)"/>
+          <path d="M1231 230H1284" marker-end="url(#ah)"/>
+          <path d="M1231 380H1284" marker-end="url(#ah)"/>
+          <path d="M1231 530H1284" marker-end="url(#ah)"/>
+        </g>
+      </svg>
+
+      <!-- actor: patient (label above) -->
+      <div class="n top" style="left:70px;top:295px">
+        <div class="tile t-dev"><svg viewBox="0 0 48 48" fill="currentColor"><circle cx="24" cy="14" r="9"/><path d="M6 44c0-11 8-17 18-17s18 6 18 17z"/></svg></div>
+        <div class="lbl"><b>Pasien</b><span>tamu atau login</span></div>
+      </div>
+
+      <!-- browser: adaptive quiz -->
+      <div class="n" style="left:270px;top:295px">
+        <div class="tile t-dev"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><rect x="5" y="8" width="38" height="32" rx="6"/><path d="M5 18H43"/><circle cx="11" cy="13" r="1" fill="currentColor"/><circle cx="16" cy="13" r="1" fill="currentColor"/></svg></div>
+        <div class="lbl"><b>Kuesioner adaptif</b><span>React · di browser</span></div>
+      </div>
+
+      <!-- decision: danger sign -->
+      <div class="n" style="left:470px;top:295px">
+        <div class="tile t-dia">?</div>
+        <div class="lbl"><b>Ada tanda bahaya?</b><span>dicek di browser</span></div>
+      </div>
+      <span class="pill-l red" style="left:470px;top:196px">ya</span>
+      <span class="pill-l" style="left:562px;top:256px">tidak</span>
+
+      <!-- red route (label to the right) -->
+      <div class="n side narrow" style="left:470px;top:95px">
+        <div class="tile t-red">🚨</div>
+        <div class="lbl"><b>Layar MERAH + 119</b><span>langsung, tanpa server</span></div>
+      </div>
+
+      <!-- patient -> location parallel -->
+      <span class="pill-l" style="left:70px;top:425px">paralel</span>
+      <div class="n" style="left:70px;top:555px">
+        <div class="tile t-dev">📍</div>
+        <div class="lbl"><b>Lokasi → provinsi</b><span>diolah di perangkat</span></div>
+      </div>
+      <span class="pill-l" style="left:360px;top:555px">hanya provinsi, bukan koordinat</span>
+
+      <!-- server -->
+      <div class="n top" style="left:670px;top:295px">
+        <div class="tile t-srv"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><rect x="6" y="7" width="36" height="14" rx="5"/><rect x="6" y="27" width="36" height="14" rx="5"/><circle cx="14" cy="14" r="1.5" fill="currentColor"/><circle cx="14" cy="34" r="1.5" fill="currentColor"/></svg></div>
+        <div class="lbl"><b>Terima jawaban</b><span>FastAPI</span></div>
+      </div>
+      <span class="pill-l" style="left:775px;top:295px">paralel</span>
+      <span class="pill-l ext" style="left:775px;top:400px">data keluar server</span>
+
+      <!-- parallel AI branch 1 (label above icon) -->
+      <div class="n top" style="left:880px;top:150px">
+        <div class="tile t-ext">✨</div>
+        <div class="lbl"><b>Skor kecocokan</b><span>Gemma4 + RAG</span></div>
+      </div>
+      <!-- parallel AI branch 2 -->
+      <div class="n" style="left:880px;top:490px">
+        <div class="tile t-ext">💊</div>
+        <div class="lbl"><b>Kenali obat</b><span>AI baca teks obat</span></div>
+      </div>
+
+      <!-- join: rules -->
+      <div class="n" style="left:1090px;top:295px">
+        <div class="tile t-srv"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 8v32M10 14h24l-5 7 5 7H10"/></svg></div>
+        <div class="lbl"><b>Aturan rute</b><span>4 rute + peringatan</span></div>
+      </div>
+
+      <!-- outputs (labels to the right) -->
+      <div class="n side" style="left:1330px;top:80px">
+        <div class="tile t-dev">📋</div>
+        <div class="lbl"><b>Layar hasil</b><span>perkiraan, skor kecocokan, langkah</span></div>
+      </div>
+      <div class="n side" style="left:1330px;top:230px">
+        <div class="tile t-ext">🗺️</div>
+        <div class="lbl"><b>Faskes terdekat</b><span>Google Maps · Mobile JKN</span></div>
+      </div>
+      <div class="n side" style="left:1330px;top:380px">
+        <div class="tile t-dev"><svg viewBox="0 0 48 48" fill="currentColor"><circle cx="24" cy="14" r="9"/><path d="M6 44c0-11 8-17 18-17s18 6 18 17z"/></svg></div>
+        <div class="lbl"><b>QR → Petugas faskes</b><span>rangkuman dibuka di browser petugas</span></div>
+      </div>
+      <div class="n side" style="left:1330px;top:530px">
+        <div class="tile t-srv"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><ellipse cx="24" cy="11" rx="15" ry="6"/><path d="M9 11v13c0 3.3 6.7 6 15 6s15-2.700 15-6V11"/><path d="M9 24v13c0 3.300 6.700 6 15 6s15-2.700 15-6V24"/></svg></div>
+        <div class="lbl"><b>PostgreSQL</b><span>statistik tanpa identitas langsung; riwayat bila login</span></div>
+      </div>
+
+      <div class="legend">
+        <span><i class="l-dev"></i>Di perangkat pasien</span>
+        <span><i class="l-srv"></i>Server TropiCare</span>
+        <span><i class="l-ext"></i>Layanan luar (data keluar server)</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/deck.js"></script>
+</body>
+</html>

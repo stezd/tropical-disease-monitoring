@@ -6,15 +6,12 @@ from app.triage.content import FlowContent, get_content
 from app.triage.medgemma import (
     Candidate,
     Fact,
-    PhotoOutput,
-    PhotoRequest,
     Source,
     TextOutput,
     TextRequest,
     build_request,
     candidates_for,
     case_facts,
-    findings_for,
     to_breakdown,
 )
 from app.triage.schemas import Answers
@@ -50,12 +47,6 @@ def test_candidates_are_scored_diseases(content: FlowContent) -> None:
     ids = [c.id for c in candidates_for(content)]
     assert ids == content.scored_diseases
     assert "rabies" not in ids
-
-
-def test_findings_skip_none() -> None:
-    for flow_id in ("infection", "chronic"):
-        ids = [c.id for c in findings_for(get_content(flow_id))]
-        assert ids and "none" not in ids
 
 
 def test_user_message_layout(content: FlowContent) -> None:
@@ -148,19 +139,7 @@ def test_restrict_to_drops_unknown_ids(content: FlowContent) -> None:
     assert out.candidates[1].sources == []
 
 
-def test_photo_round_trip() -> None:
-    req = PhotoRequest(flow_id="chronic", findings=findings_for(get_content("chronic")))
-    assert req.prompt().startswith("Jalur: kronis\n")
-    assert "- tofus: Benjolan keras di sendi\n" in req.prompt()
-    out = PhotoOutput.model_validate_json(
-        '{"image_ok": true, "findings": ["lenting", "tofus"]}'
-    ).restrict_to(req)
-    assert out.findings == ["tofus"]
-    unclear = PhotoOutput(image_ok=False, findings=["tofus"]).restrict_to(req)
-    assert unclear.findings == []
-
-
-# Same case as the example in docs/Format-MedGemma.md.
+# Same case as the example in docs/Format-Gemma4.md.
 DOC_ANSWERS = {
     "who": "self",
     "age": 22,
@@ -177,7 +156,6 @@ DOC_ANSWERS = {
     "nutrition_proxy": "longgar",
     "body": ["head"],
     "pain": 4,
-    "findings": ["none"],
 }
 
 DOC_FACTS = """\
@@ -191,7 +169,6 @@ F7 Suhu: tidak diukur
 F8 Pengganti alat ukur: Menggigil hebat atau keringat sampai baju basah
 F9 Gizi: Pakaian/celana sangat longgar dalam 1-2 bulan terakhir
 F10 Nyeri: Kepala / mata, nyeri 4/10
-F11 Temuan foto: tidak ada
 """
 
 
@@ -236,7 +213,6 @@ def test_null_skipped_none_written(content: FlowContent) -> None:
     # Not answered: no line at all.
     assert "Gejala penyerta" not in facts
     assert "Gizi" not in facts
-    assert "Temuan foto" not in facts
     assert "Provinsi tempat tinggal" not in facts
 
 
@@ -274,11 +250,38 @@ def test_chronic_facts() -> None:
     facts = {f.label: f.text for f in case_facts(answers, chronic)}
     assert facts["Pasien"] == "58 tahun, perempuan, tidak hamil"
     assert facts["Keluhan utama"] == "tidak ada keluhan (cek risiko)"
-    assert facts["Tensi"] == "150/95 mmHg"
-    assert facts["Gula darah"] == "180 mg/dL"
+    assert facts["Tensi"] == "150/95 mmHg (tinggi)"
+    assert facts["Gula darah sewaktu"] == "180 mg/dL"
     assert facts["Gizi"] == "IMT 29,1"
     assert facts["Lingkar perut"] == "92,5 cm"
     assert "Suhu" not in facts and "Nyeri" not in facts
+    assert "Asam urat" not in facts and "Kolesterol total" not in facts
+
+
+def test_chronic_labs_glucose_and_joint_facts() -> None:
+    chronic = get_content("chronic")
+    answers = Answers.model_validate(
+        {
+            "age": 60,
+            "complaint": "H",
+            "pattern": "gout",
+            "bp_sys": 130,
+            "bp_dia": 80,
+            "glucose": 250,
+            "uric_acid": 9.1,
+            "cholesterol_total": 245,
+            "body": ["knee_l"],
+            "pain": 8,
+        }
+    )
+    facts = [f"{f.label}: {f.text}" for f in case_facts(answers, chronic)]
+    assert facts[-5:] == [
+        "Tensi: 130/80 mmHg (meningkat)",
+        "Gula darah sewaktu: 250 mg/dL (≥ 200, tinggi)",
+        "Asam urat: 9,1 mg/dL",
+        "Kolesterol total: 245 mg/dL",
+        "Nyeri: Lutut kiri, nyeri 8/10",
+    ]
 
 
 def test_province_only_where_asked(content: FlowContent) -> None:

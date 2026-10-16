@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TropiCare · Keselamatan</title>
+<link rel="stylesheet" href="../shared/deck.css">
+<link rel="stylesheet" href="../shared/phone.css">
+<style>
+  .wrap { display: flex; flex-direction: row; align-items: center; gap: 64px; height: 100%; }
+  .phones { display: flex; gap: 60px; align-items: flex-start; flex: none; }
+  .phone-fig figcaption { font-size: 24px; }
+  .right { flex: 1; min-width: 0; }
+  .right .title { font-size: 56px; }
+  .right .title-wrap { margin-bottom: 24px; }
+  .right .card { padding: 28px 30px; }
+  .pts { display: flex; flex-direction: column; gap: 22px; }
+  .pt { display: flex; align-items: flex-start; gap: 22px; }
+  .pt .icon-dot { width: 72px; height: 72px; font-size: 38px; }
+  .pt h3 { margin: 0 0 4px; font-size: 30px; line-height: 1.2; font-weight: 700; color: var(--teal-deep); }
+  .pt p { margin: 0; font-size: 24px; line-height: 1.4; color: var(--ink2); }
+  .pill.big { margin-top: 24px; font-size: 26px; padding: 12px 28px; }
+</style>
+</head>
+<body data-slide="05e-keselamatan">
+<div class="slide">
+  <div class="slide-inner">
+    <div class="wrap">
+      <div class="phones">
+        <figure class="phone-fig" style="--s:0.85">
+          <div class="phone"><iframe src="../mockups/merah.html" title="Layar darurat" scrolling="no"></iframe></div>
+          <figcaption>Rute MERAH, tenang</figcaption>
+        </figure>
+        <figure class="phone-fig" style="--s:0.85">
+          <div class="phone"><iframe src="../mockups/obat.html" title="Peringatan obat" scrolling="no"></iframe></div>
+          <figcaption>Peringatan obat</figcaption>
+        </figure>
+      </div>
+      <div class="right">
+        <span class="kicker">KESELAMATAN</span>
+        <div class="title-wrap"><h1 class="title">Aman sejak pertanyaan pertama</h1></div>
+        <div class="card">
+          <div class="pts">
+            <div class="pt">
+              <div class="icon-dot rose">🚨</div>
+              <div><h3>Bahaya dikenali lebih dulu</h3><p>Tanda bahaya ditanyakan sebelum yang lain. Bila ada, pasien langsung diarahkan ke IGD tanpa menunggu kuesioner selesai, dan ini tetap berjalan di browser meski server sedang mati.</p></div>
+            </div>
+            <div class="pt">
+              <div class="icon-dot sky">📞</div>
+              <div><h3>Darurat tetap tenang</h3><p>Layar merah dibuat tanpa animasi. Pasien cukup menekan satu tombol untuk menelepon 119, dan nomor 119 serta 112 bisa disalin bila tombolnya tidak berfungsi.</p></div>
+            </div>
+            <div class="pt">
+              <div class="icon-dot butter">💊</div>
+              <div><h3>Obat dicek saat diisi</h3><p>Begitu pasien menulis obat yang sudah diminum, aplikasi memberi peringatan, misalnya NSAID saat demam atau obat penahan diare saat diare.</p></div>
+            </div>
+          </div>
+        </div>
+        <span class="pill big">🩺 Skrining, bukan diagnosis dokter</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/deck.js"></script>
+</body>
+</html>

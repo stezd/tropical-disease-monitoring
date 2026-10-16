@@ -17,7 +17,14 @@ Quiz text, options, and weights live here, not in React. The backend serves them
 - **Option IDs are shared** by FE, BE, and scoring. Rename in all three together.
 - Use `**bold**` for emphasis. No HTML.
 - Never put disease names in option `text`. Only in `reason`, which shows on the result page.
-- An option can point to several diseases with `diseases: [...]` (e.g. photo chips).
+- An option can point to several diseases with `diseases: [...]` (e.g. the chronic
+  "tengkuk" pattern → hypertension and dyslipidemia).
+- Steps: `labs` (optional exams: uric acid, total cholesterol) is chronic only. `q9` (pain
+  map) needs `body_regions` and `pain_faces`; both paths have it.
+- Companion options can raise the route: `min_route` (at least that route), `red_flag`
+  (a red flag ID: red screen right away, in the browser), and `staff_note` (a note for the
+  doctor on the result and in the summary). A red flag with `"listed": false` is not in
+  step 1; only a `red_flag` option reaches it.
 - After editing any JSON, run `bash scripts/generate-client.sh` from the repo root. It copies a
   snapshot to the front end so the emergency check works offline. A backend test fails if the
   snapshot is stale.
@@ -28,6 +35,6 @@ Quiz text, options, and weights live here, not in React. The backend serves them
 - Medical content (criteria, routes, text, and who approves what):
   [docs/Acuan-Medis.md](../../../../docs/Acuan-Medis.md). If a JSON file disagrees with it,
   the document wins.
-- MedGemma input/output formats and the model scoring contract:
-  [docs/Format-MedGemma.md](../../../../docs/Format-MedGemma.md).
-- Open items for DR and ST: Acuan-Medis section 1 (K1–K29).
+- Gemma4 input/output formats and the model scoring contract:
+  [docs/Format-Gemma4.md](../../../../docs/Format-Gemma4.md).
+- Open items for DR and ST: Acuan-Medis section 1 (K1–K33).

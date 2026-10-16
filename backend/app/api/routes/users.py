@@ -1,7 +1,7 @@
 import uuid
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import col, func, select
 
 from app import crud
@@ -14,6 +14,8 @@ from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
 from app.models import (
     Message,
+    ScreeningHistoryItem,
+    ScreeningsHistoryPublic,
     UpdatePassword,
     User,
     UserCreate,
@@ -131,7 +133,7 @@ def read_user_me(current_user: CurrentUser) -> Any:
 @router.delete("/me", response_model=Message)
 def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
     """
-    Delete own user.
+    Delete own user, together with their saved screenings.
     """
     if current_user.is_superuser:
         raise HTTPException(
@@ -140,6 +142,42 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
     session.delete(current_user)
     session.commit()
     return Message(message="User deleted successfully")
+
+
+@router.get("/me/screenings", response_model=ScreeningsHistoryPublic)
+def read_my_screenings(
+    session: SessionDep,
+    current_user: CurrentUser,
+    skip: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=100)] = 20,
+) -> Any:
+    """
+    Own saved screenings, newest first. No raw answers.
+    """
+    screenings, count = crud.get_user_screenings(
+        session=session, user_id=current_user.id, skip=skip, limit=limit
+    )
+    return ScreeningsHistoryPublic(
+        data=[ScreeningHistoryItem.model_validate(s) for s in screenings],
+        count=count,
+    )
+
+
+@router.delete("/me/screenings/{screening_id}", response_model=Message)
+def delete_my_screening(
+    session: SessionDep, current_user: CurrentUser, screening_id: uuid.UUID
+) -> Any:
+    """
+    Delete one of your own saved screenings.
+    """
+    screening = crud.get_user_screening(
+        session=session, user_id=current_user.id, screening_id=screening_id
+    )
+    if screening is None:
+        raise HTTPException(status_code=404, detail="Screening not found")
+    session.delete(screening)
+    session.commit()
+    return Message(message="Screening deleted successfully")
 
 
 @router.post("/signup", response_model=UserPublic)

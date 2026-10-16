@@ -8,13 +8,15 @@ from pydantic import BaseModel, Field
 from app.domain.answers import Answers as DomainAnswers
 from app.domain.answers import IdList as IdList
 from app.triage.content import Flow, FlowContent, RouteId, WarningLevel
+from app.triage.scoring import EngineId
 
 
 # ponytail: the inbound DTO keeps the public name `Answers` (frozen OpenAPI contract) and
 # subclasses the domain VO, so `to_domain()` is a real mapping while callers stay source
 # compatible. Give it its own copy of the fields if the API and domain shapes diverge (D1c).
 class Answers(DomainAnswers):
-    """Everything the patient answered. Never holds a name, NIK, BPJS number, or photo."""
+    """Everything the patient answered. Never holds a name, NIK, BPJS number, or
+    coordinates."""
 
     def to_domain(self) -> DomainAnswers:
         return DomainAnswers.model_validate(self.model_dump())
@@ -28,8 +30,6 @@ class DiseasePublic(BaseModel):
 
 class FlowPublic(Flow):
     diseases: dict[str, DiseasePublic]
-    # False = photo stays on the device and the patient picks findings (simulated step).
-    photo_analysis: bool
 
 
 class RankedDisease(BaseModel):
@@ -76,6 +76,11 @@ class ScoreResult(BaseModel):
     # Plain text for copying, and the same content as rows for the QR page.
     summary: str
     summary_rows: list[SummaryRow]
+    # The engine that produced the scores: "ai" (language model), "rules" (RuleEngine),
+    # or "model" (ST's trained model). `fallback` = the configured engine failed and
+    # RuleEngine answered instead. Not shown to the patient.
+    engine: EngineId
+    fallback: bool
 
 
 class ScreeningCreate(BaseModel):
@@ -84,13 +89,7 @@ class ScreeningCreate(BaseModel):
     consent: bool = Field(description="Must be true. The patient agreed to save.")
 
 
-class PhotoAnalysis(BaseModel):
-    available: bool
-    findings: list[str]
-    message: str
-
-
-def flow_public(content: FlowContent, photo_analysis: bool = False) -> FlowPublic:
+def flow_public(content: FlowContent) -> FlowPublic:
     """What the front end gets: questions and public disease info. No weights or lab."""
     return FlowPublic(
         **content.flow.model_dump(),
@@ -98,5 +97,4 @@ def flow_public(content: FlowContent, photo_analysis: bool = False) -> FlowPubli
             k: DiseasePublic(name=d.name, emoji=d.emoji, route=d.route)
             for k, d in content.diseases.items()
         },
-        photo_analysis=photo_analysis,
     )

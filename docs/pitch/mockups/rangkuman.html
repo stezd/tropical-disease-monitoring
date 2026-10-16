@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>Mockup · rangkuman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../frontend/src/styles/tropicek.css">
+<link rel="stylesheet" href="../../../frontend/src/styles/result.css">
+<link rel="stylesheet" href="../../../frontend/src/styles/nearby.css">
+<style>
+  *,*::before,*::after{box-sizing:border-box;animation:none!important;transition:none!important}
+  html,body{margin:0;padding:0;width:390px;height:844px;overflow:hidden;font-family:"Poppins",system-ui,sans-serif}
+  a{text-decoration:none;color:inherit}
+  button{border:0;background:none;cursor:default}
+  img{max-width:100%}
+  .spk{display:none}
+  .tc-app{position:absolute;left:0;top:0;right:auto;bottom:auto;width:390px;height:844px}
+</style>
+</head>
+<body>
+<div class="tc-app">
+<div class="screen bg-result">
+  <div class="hud"><span class="icon-btn">⌂</span><div class="htitle">Hasil Skrining</div></div>
+  <div class="rscroll" style="zoom:.8">
+    <div class="rcols res">
+      <div class="rgrp">
+        <div class="card">
+          <div class="tab">SIMPAN RIWAYAT</div>
+          <p class="saveinfo">Simpan hasil ini ke akunmu? Kamu bisa menghapusnya kapan saja di Riwayat skrining.</p>
+          <div class="save-btns"><a class="btn btn-primary">💾 Simpan ke riwayatku</a><a class="btn btn-secondary">📜 Lihat riwayat</a></div>
+        </div>
+        <div class="card qrcard">
+          <div class="tab">QR UNTUK PETUGAS</div>
+          <svg id="qr" width="120" height="120" viewBox="0 0 25 25" shape-rendering="crispEdges" role="img" aria-label="QR rangkuman contoh"></svg>
+          <p class="qrcap"><b>QR Rangkuman</b>Tunjukkan ke petugas agar tidak perlu ditanya ulang. Tidak disimpan di server.</p>
+          <div class="qrbtns"><a class="btn btn-secondary">📋 Salin QR</a><a class="btn btn-secondary">💾 Simpan QR</a></div>
+        </div>
+        <div class="card rsum">
+          <div class="tab">RANGKUMAN</div>
+          <details class="sum"><summary>📄 Lihat rangkuman lengkap</summary></details>
+          <a class="btn btn-secondary">📋 Salin Rangkuman</a>
+          <a class="btn btn-secondary">⬇️ Unduh PDF</a>
+        </div>
+        <a class="btn btn-jkn">📅 Buat janji dokter (Mobile JKN)</a>
+      </div>
+    </div>
+    <p class="footdisc">⚠️ Ini adalah skrining awal, bukan diagnosis dokter. Jika kondisi memburuk, segera ke fasilitas kesehatan atau hubungi 119.</p>
+  </div>
+</div>
+<script>
+  // Decorative QR-like pattern (not a real code): 3 finder squares + pseudo-random modules.
+  var N=25,s=7;function r(){s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff}
+  function fin(x,y){return (x<8&&y<8)||(x>16&&y<8)||(x<8&&y>16)}
+  var o='<rect width="25" height="25" fill="#fff"/>';
+  function box(x,y){o+='<rect x="'+x+'" y="'+y+'" width="7" height="7" fill="#15323a"/><rect x="'+(x+1)+'" y="'+(y+1)+'" width="5" height="5" fill="#fff"/><rect x="'+(x+2)+'" y="'+(y+2)+'" width="3" height="3" fill="#15323a"/>'}
+  for(var y=0;y<N;y++)for(var x=0;x<N;x++){if(!fin(x,y)&&r()>.5)o+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="#15323a"/>'}
+  box(0,0);box(18,0);box(0,18);
+  document.getElementById('qr').innerHTML=o;
+</script>
+</div></body></html>

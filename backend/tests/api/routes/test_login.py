@@ -1,9 +1,13 @@
-from unittest.mock import patch
+from collections.abc import Iterator
+from typing import Any
+from unittest.mock import MagicMock, patch
 
+import pytest
 from fastapi.testclient import TestClient
 from pwdlib.hashers.bcrypt import BcryptHasher
-from sqlmodel import Session
+from sqlmodel import Session, func, select
 
+from app import crud
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
 from app.crud import create_user
@@ -187,3 +191,168 @@ def test_login_with_argon2_password_keeps_hash(client: TestClient, db: Session) 
 
     assert user.hashed_password == original_hash
     assert user.hashed_password.startswith("$argon2")
+
+
+GOOGLE_URL = f"{settings.API_V1_STR}/login/google"
+VERIFY = "app.api.routes.login.google_id_token.verify_oauth2_token"
+
+
+def google_claims(email: str, **extra: Any) -> dict[str, Any]:
+    return {
+        "iss": "https://accounts.google.com",
+        "aud": "test-client-id.apps.googleusercontent.com",
+        "sub": random_lower_string(),
+        "email": email,
+        "email_verified": True,
+        "name": "Siti Google",
+        **extra,
+    }
+
+
+@pytest.fixture
+def google_client_id() -> Iterator[str]:
+    client_id = "test-client-id.apps.googleusercontent.com"
+    with patch.object(settings, "GOOGLE_CLIENT_ID", client_id):
+        yield client_id
+
+
+def test_login_google_creates_user(
+    client: TestClient, db: Session, google_client_id: str
+) -> None:
+    email = random_email()
+    with patch(VERIFY, return_value=google_claims(email)) as verify:
+        r = client.post(GOOGLE_URL, json={"credential": "google-id-token"})
+    assert r.status_code == 200
+    token = r.json()["access_token"]
+    assert token
+    args = verify.call_args.args
+    assert args[0] == "google-id-token"
+    assert args[2] == google_client_id
+
+    user = crud.get_user_by_email(session=db, email=email)
+    assert user is not None
+    assert user.is_active
+    assert not user.is_superuser
+    assert user.full_name == "Siti Google"
+    # The random password is hashed and is not the Google token.
+    assert user.hashed_password.startswith("$argon2")
+    assert not verify_password("google-id-token", user.hashed_password)[0]
+
+    me = client.post(
+        f"{settings.API_V1_STR}/login/test-token",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert me.status_code == 200
+    assert me.json()["email"] == email
+
+
+@pytest.mark.usefixtures("google_client_id")
+def test_login_google_reuses_existing_user(client: TestClient, db: Session) -> None:
+    email = random_email()
+    with patch(VERIFY, return_value=google_claims(email)):
+        first = client.post(GOOGLE_URL, json={"credential": "token-1"})
+        second = client.post(GOOGLE_URL, json={"credential": "token-2"})
+    assert first.status_code == 200
+    assert second.status_code == 200
+
+    count = db.exec(
+        select(func.count()).select_from(User).where(User.email == email)
+    ).one()
+    assert count == 1
+    ids = []
+    for r in (first, second):
+        me = client.post(
+            f"{settings.API_V1_STR}/login/test-token",
+            headers={"Authorization": f"Bearer {r.json()['access_token']}"},
+        )
+        ids.append(me.json()["id"])
+    assert ids[0] == ids[1]
+
+
+@pytest.mark.usefixtures("google_client_id")
+def test_login_google_links_password_account(client: TestClient, db: Session) -> None:
+    email = random_email()
+    password = random_lower_string()
+    user = create_user(
+        session=db, user_create=UserCreate(email=email, password=password)
+    )
+    claims = google_claims(email)
+    with patch(VERIFY, return_value=claims):
+        first = client.post(GOOGLE_URL, json={"credential": "google-id-token"})
+        second = client.post(GOOGLE_URL, json={"credential": "google-id-token-2"})
+    assert first.status_code == 200
+    assert second.status_code == 200
+    db.refresh(user)
+    # Linked on first Google sign-in; the pre-set password no longer works, so a
+    # pre-registered account cannot be used to read the real owner's data.
+    assert user.google_sub == claims["sub"]
+    assert not verify_password(password, user.hashed_password)[0]
+    old = client.post(
+        f"{settings.API_V1_STR}/login/access-token",
+        data={"username": email, "password": password},
+    )
+    assert old.status_code == 400
+    # The second Google sign-in reuses the same user.
+    ids = []
+    for r in (first, second):
+        me = client.post(
+            f"{settings.API_V1_STR}/login/test-token",
+            headers={"Authorization": f"Bearer {r.json()['access_token']}"},
+        )
+        ids.append(me.json()["id"])
+    assert ids[0] == ids[1] == str(user.id)
+
+
+@pytest.mark.usefixtures("google_client_id")
+def test_login_google_other_sub_for_linked_email_rejected(client: TestClient) -> None:
+    email = random_email()
+    with patch(VERIFY, return_value=google_claims(email)):
+        assert client.post(GOOGLE_URL, json={"credential": "a"}).status_code == 200
+    with patch(VERIFY, return_value=google_claims(email)):
+        r = client.post(GOOGLE_URL, json={"credential": "b"})
+    assert r.status_code == 400
+
+
+@pytest.mark.usefixtures("google_client_id")
+def test_login_google_unverified_email_rejected(
+    client: TestClient, db: Session
+) -> None:
+    email = random_email()
+    claims = google_claims(email, email_verified=False)
+    with patch(VERIFY, return_value=claims):
+        r = client.post(GOOGLE_URL, json={"credential": "google-id-token"})
+    assert r.status_code == 400
+    assert crud.get_user_by_email(session=db, email=email) is None
+
+
+@pytest.mark.usefixtures("google_client_id")
+def test_login_google_invalid_token(client: TestClient) -> None:
+    with patch(VERIFY, side_effect=ValueError("Token expired")):
+        r = client.post(GOOGLE_URL, json={"credential": "bad-token"})
+    assert r.status_code == 400
+    assert r.json()["detail"] == "Invalid Google credential"
+
+
+@pytest.mark.usefixtures("google_client_id")
+def test_login_google_inactive_user(client: TestClient, db: Session) -> None:
+    email = random_email()
+    user = User(
+        email=email, hashed_password=get_password_hash("x" * 12), is_active=False
+    )
+    db.add(user)
+    db.commit()
+    with patch(VERIFY, return_value=google_claims(email)):
+        r = client.post(GOOGLE_URL, json={"credential": "google-id-token"})
+    assert r.status_code == 400
+    assert r.json()["detail"] == "Inactive user"
+
+
+def test_login_google_not_configured(client: TestClient) -> None:
+    verify = MagicMock()
+    with (
+        patch.object(settings, "GOOGLE_CLIENT_ID", None),
+        patch(VERIFY, verify),
+    ):
+        r = client.post(GOOGLE_URL, json={"credential": "google-id-token"})
+    assert r.status_code == 503
+    verify.assert_not_called()

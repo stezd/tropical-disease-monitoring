@@ -1,34 +1,50 @@
+import uuid
+from dataclasses import asdict
+from datetime import date
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
+from pydantic import BaseModel, Field
 
 from app.adapters.outbound.sqlmodel.screening_repository import (
     SqlModelScreeningRepository,
 )
-from app.api.deps import SessionDep, get_current_active_superuser
+from app.api.deps import (
+    CurrentUser,
+    SessionDep,
+    get_current_active_superuser,
+    stats_rate_limit,
+)
 from app.application.ports.outbound.screening_repository import ScreeningRepository
+from app.application.ports.outbound.screening_stat_repository import Period
 from app.application.use_cases.score_flow import (
     EngineUnavailableError,
+    Scored,
     UnknownFlowError,
 )
 from app.composition.triage_container import (
     get_content_repository,
-    get_photo_analyzer,
+    get_record_screening_use_case,
     get_score_use_case,
+    get_stats_summary_use_case,
 )
-from app.core.config import settings
 from app.domain.answers import Answers as DomainAnswers
-from app.models import Screening, ScreeningPublic, ScreeningsPublic
+from app.domain.screening_stat import SMALL_CELL_K
+from app.models import (
+    Screening,
+    ScreeningPublic,
+    ScreeningsPublic,
+    ScreeningStatRow,
+    ScreeningStatSummary,
+)
 from app.triage.content import FlowContent
 from app.triage.schemas import (
     Answers,
     FlowPublic,
-    PhotoAnalysis,
     ScoreResult,
     ScreeningCreate,
     flow_public,
 )
-from app.triage.vision import ALLOWED_TYPES, MAX_PHOTO_BYTES
 
 router = APIRouter(prefix="/triage", tags=["triage"])
 
@@ -40,10 +56,18 @@ def _content(flow_id: str) -> FlowContent:
         raise HTTPException(status_code=404, detail="Flow not found")
 
 
-def score_answers(flow_id: str, answers: DomainAnswers) -> ScoreResult:
+def score_answers(
+    flow_id: str, answers: DomainAnswers, preview: bool = False
+) -> ScoreResult:
     """Score answers via the use case. Kept for backwards compatibility."""
+    return score_detailed(flow_id, answers, preview).result
+
+
+def score_detailed(
+    flow_id: str, answers: DomainAnswers, preview: bool = False
+) -> Scored:
     try:
-        return get_score_use_case().execute(flow_id, answers)
+        return get_score_use_case().execute_detailed(flow_id, answers, preview)
     except UnknownFlowError:
         raise HTTPException(status_code=404, detail="Flow not found")
     except EngineUnavailableError as e:
@@ -53,29 +77,52 @@ def score_answers(flow_id: str, answers: DomainAnswers) -> ScoreResult:
 @router.get("/flows/{flow_id}")
 def read_flow(flow_id: str) -> FlowPublic:
     """Questions and options for a flow. Weights are not included."""
-    return flow_public(_content(flow_id), photo_analysis=get_photo_analyzer().available)
+    return flow_public(_content(flow_id))
 
 
 @router.post("/flows/{flow_id}/score")
-def score_flow(flow_id: str, answers: Answers) -> ScoreResult:
+def score_flow(
+    flow_id: str,
+    answers: Answers,
+    preview: Annotated[
+        bool,
+        Query(
+            description="True for calls during the quiz (e.g. drug pop-ups at the drug "
+            "step): scores with the rules, never with the language model."
+        ),
+    ] = False,
+) -> ScoreResult:
     """Score answers. Stateless: nothing is saved."""
-    return score_answers(flow_id, answers.to_domain())
+    return score_answers(flow_id, answers.to_domain(), preview)
 
 
 @router.post("/screenings")
-def create_screening(session: SessionDep, body: ScreeningCreate) -> ScoreResult:
-    """Save an anonymous screening. Only when the patient agreed (`consent=true`)."""
+def create_screening(
+    session: SessionDep, current_user: CurrentUser, body: ScreeningCreate
+) -> ScoreResult:
+    """Save a screening for a logged-in user. Only when they agreed (`consent=true`).
+
+    The score is recomputed here with the configured engine, not copied from the
+    result the patient saw. With the AI engine the model response is cached by
+    the same key as /score (flow + answers), so a save with the same answers is a
+    cache hit: same result, no second Gemini call. If the cache entry has expired
+    or the engine fell back in between, the saved result can differ from the
+    one shown.
+    """
     if not body.consent:
         raise HTTPException(status_code=400, detail="Consent is required to save")
-    result = score_answers(body.flow_id, body.answers.to_domain())
+    scored = score_detailed(body.flow_id, body.answers.to_domain())
+    result = scored.result
     screening = Screening(
+        user_id=current_user.id,
         flow_id=body.flow_id,
         answers=body.answers.model_dump(mode="json", exclude_defaults=True),
         route=result.route,
         unknown=result.unknown,
         top_disease=result.top.id if result.top else None,
         top_score=result.top.score if result.top else None,
-        engine=settings.TRIAGE_SCORING_ENGINE,
+        # What actually produced the scores ("ai", "rules", "ai-fb:timeout", ...).
+        engine=scored.engine[:20],
     )
     repository: ScreeningRepository = SqlModelScreeningRepository(session)
     repository.save(screening)
@@ -96,23 +143,55 @@ def read_screenings(session: SessionDep, skip: int = 0, limit: int = 100) -> Any
     )
 
 
-@router.post("/photo/analyze")
-def analyze_photo(
-    photo: Annotated[UploadFile, File(description="Rash, wound, tongue, or eye")],
-) -> PhotoAnalysis:
-    """Find visible signs in a photo. The photo is never stored.
+class StatCreate(BaseModel):
+    """A finished screening for statistics. Carries no account and no consent flag:
+    the privacy gate already happened before the first question."""
 
-    Skeleton: returns `available=false` until ST plugs in a model (app/triage/vision.py).
+    event_id: uuid.UUID = Field(
+        description="Random id of one quiz run, made in the browser. Only used to "
+        "avoid counting the same run twice."
+    )
+    flow_id: str = Field(max_length=20)
+    answers: Answers
+
+
+@router.post("/stats", status_code=204, dependencies=[Depends(stats_rate_limit)])
+def record_stat(session: SessionDep, body: StatCreate) -> Response:
+    """Record one finished screening as statistics without direct identity.
+
+    Open to guests. Even when the caller is signed in, the account is not read or
+    stored. Sending the same `event_id` again overwrites the row (last answer wins).
     """
-    analyzer = get_photo_analyzer()
-    if not analyzer.available:
-        return PhotoAnalysis(
-            available=False, findings=[], message="Analisis foto belum tersedia."
+    try:
+        get_record_screening_use_case(session).execute(
+            body.event_id, body.flow_id, body.answers.to_domain()
         )
-    if photo.content_type not in ALLOWED_TYPES:
-        raise HTTPException(status_code=415, detail="Unsupported image type")
-    data = photo.file.read(MAX_PHOTO_BYTES + 1)
-    if len(data) > MAX_PHOTO_BYTES:
-        raise HTTPException(status_code=413, detail="Photo too large")
-    findings = analyzer.analyze(data, photo.content_type)
-    return PhotoAnalysis(available=True, findings=findings, message="")
+    except UnknownFlowError:
+        raise HTTPException(status_code=404, detail="Flow not found")
+    except EngineUnavailableError as e:
+        raise HTTPException(status_code=503, detail=str(e))
+    return Response(status_code=204)
+
+
+@router.get(
+    "/stats/summary",
+    dependencies=[Depends(get_current_active_superuser)],
+    response_model=ScreeningStatSummary,
+)
+def read_stats_summary(
+    session: SessionDep,
+    period: Period = "day",
+    date_from: date | None = None,
+    date_to: date | None = None,
+    flow_id: Annotated[str | None, Query(max_length=20)] = None,
+) -> Any:
+    """Counts per day or week x province x disease x route. Superusers only.
+
+    A group with fewer than 10 screenings has `count: null`.
+    """
+    groups = get_stats_summary_use_case(session).execute(
+        period, date_from, date_to, flow_id
+    )
+    return ScreeningStatSummary(
+        data=[ScreeningStatRow(**asdict(g)) for g in groups], k=SMALL_CELL_K
+    )

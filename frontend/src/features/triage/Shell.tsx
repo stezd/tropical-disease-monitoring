@@ -5,6 +5,9 @@ import type { FlowPublic } from "@/client"
 import { useFlow } from "./api"
 import { Mascot } from "./components/Art"
 import { ToastHost } from "./components/Ui"
+import { hasRedFlag, steps } from "./model"
+import { ConsentScreen } from "./screens/Consent"
+import { HistoryScreen } from "./screens/History"
 import { HomeScreen } from "./screens/Home"
 import { PrivacyScreen } from "./screens/Privacy"
 import { QuizScreen } from "./screens/Quiz"
@@ -27,8 +30,8 @@ export function Shell({ children }: { children: ReactNode }) {
 export function Loading() {
   return (
     <div className="screen bg-quiz">
-      <div className="think" style={{ justifyContent: "center" }}>
-        <Mascot className="m-think" />
+      <div className="loading" role="status" aria-live="polite">
+        <Mascot className="m-load" />
         <p className="footdisc">Kak Tropi sedang bersiap…</p>
       </div>
     </div>
@@ -59,6 +62,14 @@ export function PrivacyPage() {
   return (
     <Shell>
       <PrivacyScreen />
+    </Shell>
+  )
+}
+
+export function HistoryPage() {
+  return (
+    <Shell>
+      <HistoryScreen />
     </Shell>
   )
 }
@@ -100,12 +111,21 @@ export function ScreeningPage({ flowId }: { flowId: string }) {
         {(flow) => {
           switch (phase) {
             case "red":
-              // Back goes to stage 1 (the red-flag question).
+              // Back goes to the question that raised the danger sign: stage 1,
+              // or the companion question (e.g. very yellow eyes with fever).
+              // Looked up by id, so it stays right when the step list changes.
               return (
                 <RedScreen
                   flow={flow}
                   answers={answers}
-                  onBack={() => quiz.set({ phase: "quiz", step: 1 })}
+                  onBack={() => {
+                    const list = steps(answers, flow)
+                    const at = list.indexOf(hasRedFlag(answers) ? "q1" : "q4")
+                    quiz.set({
+                      phase: "quiz",
+                      step: at >= 0 ? at : Math.max(0, list.indexOf("q1")),
+                    })
+                  }}
                   onRestart={restart}
                 />
               )
@@ -127,6 +147,8 @@ export function ScreeningPage({ flowId }: { flowId: string }) {
                   onRestart={restart}
                 />
               )
+            case "privacy":
+              return <ConsentScreen flow={flow} />
             default:
               return <QuizScreen flow={flow} />
           }

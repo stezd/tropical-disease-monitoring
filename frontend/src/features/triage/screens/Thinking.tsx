@@ -102,10 +102,7 @@ export function ThinkingScreen({
           <div className="htitle">Koneksi terputus</div>
         </div>
         <div className="think">
-          <Card
-            tab="BELUM BISA MENEBAK"
-            style={{ marginTop: 34, width: "100%" }}
-          >
+          <Card tab="BELUM BISA MENEBAK" className="card-solo">
             <p className="saveinfo">
               Kak Tropi tidak bisa menghubungi server. Jawabanmu masih aman di
               perangkat ini. Coba lagi sebentar lagi.

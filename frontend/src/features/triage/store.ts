@@ -1,11 +1,12 @@
 // Quiz progress for the current tab. sessionStorage only, so a refresh keeps the
 // answers but closing the tab clears them. Nothing goes to the server until the
-// patient asks for a score or agrees to save.
+// patient asks for a score or (logged in) saves it to their history.
 import { useSyncExternalStore } from "react"
 
 import { blankAnswers, type QuizAnswers } from "./model"
 
-export type Phase = "quiz" | "red" | "thinking" | "result"
+// "privacy" is the consent gate shown before the first question.
+export type Phase = "privacy" | "quiz" | "red" | "thinking" | "result"
 
 export type QuizState = {
   // Which flow these answers belong to ("infection" or "chronic").
@@ -13,7 +14,24 @@ export type QuizState = {
   answers: QuizAnswers
   step: number
   phase: Phase
+  // Ticked "Saya setuju" at the privacy gate (kept when going back to it).
+  consented: boolean
+  // Random id of this quiz run. Sent with the de-identified stats row so the
+  // server counts one run once, even if the result page is opened twice.
+  runId: string
 }
+
+// randomUUID needs a secure context (https or localhost); the server wants a UUID.
+const newRunId = () =>
+  typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+        (
+          Number(c) ^
+          (crypto.getRandomValues(new Uint8Array(1))[0] &
+            (15 >> (Number(c) / 4)))
+        ).toString(16),
+      )
 
 const KEY = "tropicek_quiz"
 const listeners = new Set<() => void>()
@@ -22,7 +40,9 @@ const fresh = (flowId = "infection"): QuizState => ({
   flowId,
   answers: blankAnswers(),
   step: 0,
-  phase: "quiz",
+  phase: "privacy",
+  consented: false,
+  runId: newRunId(),
 })
 
 function read(): QuizState {
@@ -30,7 +50,15 @@ function read(): QuizState {
     const raw = sessionStorage.getItem(KEY)
     if (!raw) return fresh()
     const s = JSON.parse(raw) as QuizState
-    return { ...fresh(), ...s, answers: { ...blankAnswers(), ...s.answers } }
+    const next = {
+      ...fresh(),
+      ...s,
+      answers: { ...blankAnswers(), ...s.answers },
+      // A session saved by an older version has no runId.
+      runId: s.runId ?? newRunId(),
+    }
+    // No question before consent, even for a session saved by an older version.
+    return next.consented ? next : { ...next, phase: "privacy" }
   } catch {
     return fresh()
   }

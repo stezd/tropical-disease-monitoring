@@ -42,10 +42,9 @@ export function Card({
 export const RED_TAB: CSSProperties = {
   background: "#FFD6DA",
   color: "#C8102E",
-  boxShadow: "0 4px 0 #FFAAB3",
 }
 
-export type Choice = {
+type Choice = {
   id: string
   emoji: string
   text: string
@@ -71,6 +70,12 @@ export function Options({
   // Screen readers always get them.
   const [showAll, setShowAll] = useState(false)
   const hasDetail = options.some((o) => o.detail)
+  // Desktop tile grid has 4 columns; with 2–3 tiles, use that many so they fill the card.
+  const tileCount = options.filter((o) => !o.cls?.includes("wide")).length
+  const fewTiles =
+    layout.includes("tiles") && tileCount >= 2 && tileCount <= 3
+      ? `tiles-n${tileCount}`
+      : ""
   return (
     <>
       {hasDetail && (
@@ -83,7 +88,7 @@ export function Options({
           {showAll ? "Sembunyikan ciri-ciri ▲" : "ⓘ Lihat ciri-ciri ▼"}
         </button>
       )}
-      <div className={`opts ${layout}`}>
+      <div className={`opts ${layout} ${fewTiles}`}>
         {options.map((o) => {
           const on = selected.includes(o.id)
           return (

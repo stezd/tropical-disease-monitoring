@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TropiCare · Kuesioner</title>
+<link rel="stylesheet" href="../shared/deck.css">
+<link rel="stylesheet" href="../shared/phone.css">
+<style>
+  .kues { flex-direction: row; align-items: center; gap: 64px; }
+  .phones { display: flex; gap: 44px; padding: 0 12px; flex: none; }
+  .phones .phone-fig { --s: 0.78; align-self: flex-start; }
+  .phones figcaption { font-size: 24px; line-height: 1.3; }
+  .kues-right { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .kues-right .title-wrap { margin-bottom: 30px; }
+  .kues-right .title { font-size: 64px; }
+  .lead-card { font-size: 28px; line-height: 1.4; font-weight: 500; color: var(--ink); }
+  .lead-card b { color: var(--teal-deep); }
+</style>
+</head>
+<body data-slide="05c-kuesioner">
+<div class="slide">
+  <div class="slide-inner kues">
+    <div class="phones">
+      <figure class="phone-fig">
+        <div class="phone"><iframe src="../mockups/data-diri.html" title="Data diri" scrolling="no"></iframe></div>
+        <figcaption>Isi data diri</figcaption>
+      </figure>
+      <figure class="phone-fig">
+        <div class="phone"><iframe src="../mockups/tanda-bahaya.html" title="Tanda bahaya" scrolling="no"></iframe></div>
+        <figcaption>Pertanyaan screening yang adaptif</figcaption>
+      </figure>
+      <figure class="phone-fig">
+        <div class="phone"><iframe src="../mockups/peta-nyeri.html" title="Peta nyeri" scrolling="no"></iframe></div>
+        <figcaption>Diagram interaktif</figcaption>
+      </figure>
+    </div>
+    <div class="kues-right">
+      <div class="title-wrap">
+        <span class="kicker">Kuesioner</span>
+        <h1 class="title">Kuesioner adaptif</h1>
+      </div>
+      <div class="mint-card lead-card">
+        Pertanyaan <b>menyesuaikan jawabanmu</b>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/deck.js"></script>
+</body>
+</html>
