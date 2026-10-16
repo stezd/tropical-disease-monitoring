@@ -19,20 +19,18 @@ Tim merancang arsitektur TropiCare agar dapat diperluas pada tiga dimensi:
     Tim memperluas jangkauan layanan melalui lima tahap berurutan: \textbf{(1) Validasi Klinis} $\rightarrow$ \textbf{(2) Pilot Klinik \& Puskesmas} $\rightarrow$ \textbf{(3) TropiCare Plus (Pemantauan PTM)} $\rightarrow$ \textbf{(4) White-label untuk LSM Kesehatan} $\rightarrow$ \textbf{(5) API Mitra \& Surveilans Dinas Kesehatan}. Untuk mendukung pemantauan wilayah oleh Dinas Kesehatan sekaligus menjaga privasi warga, peladen menyajikan statistik dari agregat tanpa identitas langsung dan \textbf{menyembunyikan kelompok agregat dengan jumlah kasus $<10$} guna mencegah pelacakan balik individu.
 \end{enumerate}
 
-\subsection{Analisis Kelayakan Finansial (\textit{Feasibility}) dan Ekonomi Unit}
+\subsection{Kelayakan Operasional: Efisiensi Biaya dan Keberlanjutan}
 
-Arsitektur ringan TropiCare menekan biaya operasional bulanan hingga Rp295.280, sehingga layanan dapat beroperasi mandiri dari pendapatan langganan mitra sejak tahap pilot tanpa bergantung pada anggaran pengadaan pemerintah. Tabel~\ref{tab:feasibility} merinci perhitungan biaya infrastruktur bulanan dan skema pendapatan pendukung.
+Arsitektur ringan TropiCare menekan biaya operasional bulanan hingga Rp295.280, sehingga layanan dapat berjalan tanpa menunggu anggaran pengadaan pemerintah. Skrining inti tetap gratis dan tanpa iklan bagi masyarakat, dan tim tidak menjual atau membagikan data skrining per orang. Tabel~\ref{tab:feasibility} merinci perhitungan biaya infrastruktur bulanan.
 
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Rincian Biaya Operasional Bulanan dan Skema Monetisasi Berkelanjutan TropiCare}\label{tab:feasibility}
+\caption{Rincian Biaya Operasional Bulanan TropiCare}\label{tab:feasibility}
 \vspace{3pt}
-\begin{tabularx}{\textwidth}{p{3.4cm} p{2.8cm} X}
+\begin{tabularx}{\textwidth}{p{4.0cm} p{2.6cm} X}
 \toprule
-\textbf{Komponen Biaya / Layanan} & \textbf{Nilai Finansial} & \textbf{Dasar Perhitungan Teknis \& Model Bisnis} \\
-\midrule
-\multicolumn{3}{l}{\textbf{A. Struktur Biaya Operasional Aplikasi (\textit{Monthly Burn Rate})}} \\
+\textbf{Komponen Biaya} & \textbf{Nilai Finansial} & \textbf{Dasar Perhitungan Teknis} \\
 \midrule
 \textbf{Server \& Basis Data\newline(\textit{Railway Hobby Plan})} & \textbf{Rp90.000 / bulan} & Menjalankan kontainer backend FastAPI \textit{stateless} dan basis data PostgreSQL (menyimpan 13.930 mirror faskes, riwayat akun opsional, dan agregat statistik). \\
 \midrule
@@ -40,15 +38,7 @@ Arsitektur ringan TropiCare menekan biaya operasional bulanan hingga Rp295.280, 
 \midrule
 \textbf{Domain \& DNS Resmi} & \textbf{Rp25.000 / bulan} & Biaya tahunan nama domain resmi (\text{Rp}300.000/tahun) dibagi rata per bulan. \\
 \midrule
-\textbf{Total Biaya Server} & \textbf{Rp295.280 / bulan} & \textbf{Titik Impas (\textit{Break-Even}): Satu langganan klinik mitra (Rp400.000/bulan) sudah menutup seluruh biaya server sebulan penuh.} \\
-\midrule
-\multicolumn{3}{l}{\textbf{B. Skema Keberlanjutan Pendapatan (Skrining Inti Masyarakat Tetap Gratis)}} \\
-\midrule
-\textbf{1. Dasbor Faskes\newline(Klinik \& Puskesmas)} & \textbf{Rp250.000--Rp400.000\newline/ bulan / faskes} & Layanan B2B pra-triase loket lewat pemindaian QR dan rekapitulasi keluhan pasien datang untuk memangkas antrean administrasi. \\
-\midrule
-\textbf{2. Lisensi API \& Kemitraan Surveilans} & \textbf{Rp15.000.000--Rp40.000.000 / tahun} & Akses agregat tren penyakit per wilayah tanpa identitas langsung (kelompok $<10$ disembunyikan) bagi LSM/NGO eliminasi penyakit tropis, institusi riset, atau kemitraan CSR kesehatan. \\
-\midrule
-\textbf{3. TropiCare Plus\newline(Pantau PTM Mandiri)} & \textbf{Rp15.000 / bulan\newline(Opsional)} & Fitur tambahan bagi penderita hipertensi atau diabetes untuk memantau grafik tren tekanan darah dan gula darah jangka panjang. \\
+\textbf{Total Biaya Server} & \textbf{Rp295.280 / bulan} & Biaya tetap yang dapat ditanggung bersama mitra faskes dan lembaga, sehingga skrining inti untuk masyarakat tetap gratis. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -68,11 +58,11 @@ Purwarupa (MVP) TropiCare saat ini telah mengoperasikan kuesioner adaptif 20 inf
 \midrule
 \textbf{Tahap 1: Validasi\newline(Bulan 1--2)} & Kalibrasi Klinis \& Mitigasi Bias/Halusinasi AI & Uji kartu kasus klinis dokter (\textit{vignettes}) sesuai pedoman \textit{Regulatory Sandbox} \citep{UUKesehatan2023,KemenkesDTO2024}; finalisasi bobot aturan JSON, skor risiko PTM, dan 3 skema obat komorbid dengue bersama dokter \& statistisi; survei kemudahan pakai (SUS). & Kesesuaian rute $\ge 90\%$ pada kartu kasus dokter; 0 tanda bahaya terlewat; skor SUS $>80$ (\textit{Grade A}). \\
 \midrule
-\textbf{Tahap 2: Pilot Klinik\newline(Bulan 3--5)} & Dasbor Faskes \& Mitigasi Beban Loket & Pembangunan dasbor pra-triase klinik/Puskesmas; uji coba pemindaian QR rangkuman sebagai pendamping pencatatan RME dokter \citep{Permenkes2022}; kurasi nomor WhatsApp aktif faskes di wilayah pilot. & Pilot aktif di 5--10 klinik/Puskesmas; titik impas server ($\ge 1$ klinik mitra Rp400 rb/bln) tercapai. \\
+\textbf{Tahap 2: Pilot Klinik\newline(Bulan 3--5)} & Dasbor Faskes \& Mitigasi Beban Loket & Pembangunan dasbor pra-triase klinik/Puskesmas; uji coba pemindaian QR rangkuman sebagai pendamping pencatatan RME dokter \citep{Permenkes2022}; kurasi nomor WhatsApp aktif faskes di wilayah pilot. & Pilot aktif di 5--10 klinik/Puskesmas; masukan alur pra-triase loket terdokumentasi. \\
 \midrule
 \textbf{Tahap 3: TropiCare Plus\newline(Bulan 6--8)} & Pemantauan PTM \& Kepatuhan Privasi & Peluncuran fitur opsional \textit{TropiCare Plus} (grafik tren tensi dan gula darah jangka panjang di atas modul riwayat akun); audit kepatuhan UU PDP No. 27/2022 (Zero-NIK, lokasi tetap di perangkat) \citep{UUPDP2022}. & Modul grafik tren PTM beroperasi; kepatuhan puasa pra-lab 10--12 jam meningkat di faskes pilot. \\
 \midrule
-\textbf{Tahap 4: White-Label\newline(Bulan 9--10)} & Kemitraan LSM \& Kapasitas Infrastruktur & Penyediaan kustomisasi \textit{white-label} berbasis JSON bagi LSM kesehatan (eliminasi TBC, Kusta, NTD); replikasi kontainer \textit{stateless} yang dibiayai dari pendapatan langganan mitra (\textit{self-funding scaling}). & Kemitraan \textit{white-label} LSM berjalan; kapasitas peladen meningkat proporsional tanpa subsidi silang. \\
+\textbf{Tahap 4: White-Label\newline(Bulan 9--10)} & Kemitraan LSM \& Kapasitas Infrastruktur & Penyediaan kustomisasi \textit{white-label} berbasis JSON bagi LSM kesehatan (eliminasi TBC, Kusta, NTD); penambahan kapasitas peladen mengikuti bertambahnya mitra. & Kemitraan \textit{white-label} LSM berjalan; kapasitas peladen meningkat proporsional. \\
 \midrule
 \textbf{Tahap 5: API Mitra\newline(Bulan 11--12)} & Surveilans Wilayah \& Pencegahan Re-identifikasi & Pembukaan endpoint API agregat tren penyakit per wilayah bagi Dinkes/institusi riset tanpa identitas langsung (tanpa push FHIR pasien demi menjaga prinsip Zero-NIK), disertai penyembunyian kelompok berjumlah $<10$. & API agregat wilayah dan sinkronisasi berkala mirror faskes SATUSEHAT beroperasi. \\
 \bottomrule
@@ -96,7 +86,7 @@ Purwarupa (MVP) TropiCare saat ini telah mengoperasikan kuesioner adaptif 20 inf
 \midrule
 \textbf{KPI-4} & Efisiensi Pra-Triase \& Kesiapan Lab & $\mathbf{\ge 40\%}$ lebih cepat & Pengurangan waktu wawancara awal di loket faskes pilot lewat pemindaian QR rangkuman dan instruksi puasa 10--12 jam pra-lab PTM. \\
 \midrule
-\textbf{KPI-5} & Efisiensi Biaya \& Titik Impas & $\mathbf{\ge 1}$ \textbf{Klinik Mitra} & Biaya inferensi rata-rata $\le \text{Rp}15$/skrining; biaya dasar peladen (Rp295,28 rb/bulan) tertutup sejak 1 klinik mitra aktif. \\
+\textbf{KPI-5} & Efisiensi Biaya Operasional & $\le \text{Rp}15$ / skrining & Biaya inferensi rata-rata per skrining selesai dari log pemakaian model, dengan \textit{cache} 24 jam dan pratinjau berbasis aturan. \\
 \bottomrule
 \end{tabularx}
 \end{table}

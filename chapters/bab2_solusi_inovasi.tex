@@ -34,33 +34,71 @@ Sistem memisahkan pemrosesan di perangkat pasien, di peladen TropiCare, dan di l
 
 \begin{figure}[H]
 \centering
-\resizebox{0.96\textwidth}{!}{%
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
-    node distance=0.55cm and 0.45cm,
-    box/.style={rectangle, draw=black!70, fill=black!4, rounded corners=2mm, text centered, font=\footnotesize, minimum height=0.85cm, line width=0.7pt},
-    cloud/.style={rectangle, draw=black, fill=black!10, rounded corners=2mm, text centered, font=\footnotesize\bfseries, minimum height=0.85cm, line width=0.8pt},
-    arrow/.style={-{Stealth[scale=0.8]}, draw=black!70, line width=0.7pt}
+    font=\footnotesize,
+    dev/.style={rectangle, draw=black!55, fill=white, rounded corners=1.8mm, align=center, text width=2.5cm, minimum height=1.05cm, line width=0.7pt, inner sep=3pt},
+    srv/.style={rectangle, draw=black, fill=black!12, rounded corners=1.8mm, align=center, text width=2.5cm, minimum height=1.05cm, line width=1pt, inner sep=3pt},
+    ext/.style={rectangle, draw=black!75, dashed, fill=white, rounded corners=1.8mm, align=center, text width=2.5cm, minimum height=1.05cm, line width=0.8pt, inner sep=3pt},
+    merah/.style={rectangle, draw=black, fill=black!80, text=white, rounded corners=1.8mm, align=center, text width=3.0cm, minimum height=1.05cm, line width=1.1pt, inner sep=3pt},
+    dia/.style={diamond, draw=black, fill=black!10, aspect=1.7, align=center, text width=1.7cm, inner sep=0pt, line width=0.9pt},
+    hasil/.style={rectangle, draw=black!45, fill=white, rounded corners=1.8mm, align=left, text width=3.0cm, minimum height=1.0cm, line width=0.6pt, inner sep=4pt},
+    ar/.style={-{Stealth[scale=0.75]}, draw=black!75, line width=0.8pt},
+    ared/.style={-{Stealth[scale=0.75]}, draw=black, line width=1.2pt},
+    aext/.style={-{Stealth[scale=0.75]}, draw=black!70, dashed, line width=0.8pt},
+    lab/.style={font=\scriptsize, inner sep=1.5pt, fill=white}
 ]
-    % Top pipeline
-    \node[box, text width=4.3cm] (input) {\textbf{Di Perangkat Pasien (React)}\\Persetujuan Privasi, Lokasi $\rightarrow$ Provinsi, \& Cek 11 Tanda Bahaya};
-    \node[cloud, text width=4.6cm, right=of input] (engine) {\textbf{Peladen TropiCare (FastAPI)}\\Endpoint Stateless, Aturan Rute, \& Mirror 13.930 Faskes};
-    \node[box, text width=4.3cm, right=of engine] (output) {\textbf{Layar Hasil \& Tindak Lanjut}\\4 Rute, 5 Faskes Terdekat, Mobile JKN, \& QR Petugas};
+    % ---- nodes ----
+    \node[dev] (K) at (0,0) {\textbf{Kuesioner adaptif}\\React \textperiodcentered\ di browser};
+    \node[dia] (D) at (3.3,0) {\textbf{Tanda\\bahaya?}};
+    \node[font=\scriptsize, below=1pt of D] {dicek di browser};
+    \node[srv] (S) at (6.6,0) {\textbf{Terima jawaban}\\FastAPI};
+    \node[srv] (R) at (12.6,0) {\textbf{Aturan rute}\\4 rute + peringatan};
 
-    % Bottom pipeline
-    \node[box, text width=4.3cm, below=0.7cm of input] (red) {\textbf{Layar MERAH + 119}\\Jalan langsung di browser walau peladen mati};
-    \node[box, text width=4.6cm, below=0.7cm of engine] (ai) {\textbf{Layanan AI (Gemma 4 / MedGemma)}\\Skor kecocokan + RAG 350 potongan \& kenali teks obat};
-    \node[box, text width=4.3cm, below=0.7cm of output] (qr) {\textbf{PostgreSQL \& Pemindai QR}\\Statistik tanpa identitas langsung; rangkuman dibuka petugas};
+    \node[merah] (M) at (3.3,2.2) {\textbf{\mbox{Layar MERAH} + 119}\\langsung, tanpa server};
+    \node[dev] (L) at (0,-2.4) {\textbf{Lokasi $\rightarrow$ provinsi}\\diolah di perangkat};
+    \node[ext] (A1) at (9.6,2.2) {\textbf{Skor kecocokan}\\Gemma~4 + RAG};
+    \node[ext] (A2) at (9.6,-2.4) {\textbf{Kenali obat}\\AI baca teks obat};
 
-    % Arrows
-    \draw[arrow] (input) -- (engine);
-    \draw[arrow] (engine) -- (output);
-    \draw[arrow] (input) -- (red);
-    \draw[arrow] (engine) -- (ai);
-    \draw[arrow] (ai) -- (engine);
-    \draw[arrow] (output) -- (qr);
+    \node[hasil] (O1) at (16.2,2.5) {\textbf{Layar hasil}\\perkiraan, skor, \mbox{langkah}};
+    \node[hasil] (O2) at (16.2,1.0) {\textbf{Faskes terdekat}\\Maps \textperiodcentered\ Mobile JKN};
+    \node[hasil] (O3) at (16.2,-0.5) {\textbf{QR $\rightarrow$ petugas faskes}\\rangkuman di browser petugas};
+    \node[hasil] (O4) at (16.2,-2.0) {\textbf{PostgreSQL}\\statistik tanpa identitas langsung};
+
+    % ---- edges ----
+    \draw[ar] (K) -- (D);
+    \draw[ar] (D) -- (S) node[midway, above, lab] {tidak};
+    \draw[ared] (D) -- (M) node[midway, right=2pt, lab] {ya};
+    \draw[ar] (K) -- (L) node[midway, right=2pt, lab] {paralel};
+    \draw[ar] (L.east) -- (6.6,-2.4) -- (S.south);
+    \node[lab] at (4.1,-2.7) {hanya provinsi, bukan koordinat};
+
+    \draw[ar] (S.east) -- (8.05,0);
+    \draw[aext] (8.05,0) -- (8.05,2.2) -- (A1.west);
+    \draw[aext] (8.05,0) -- (8.05,-2.4) -- (A2.west);
+    \node[lab] at (8.6,0.85) {paralel};
+    \node[lab] at (9.9,1.05) {data keluar server};
+
+    \draw[ar] (A1.east) -- (11.1,2.2) -- (11.1,0);
+    \draw[ar] (A2.east) -- (11.1,-2.4) -- (11.1,0);
+    \draw[ar] (11.1,0) -- (R.west);
+
+    \draw[ar] (R.east) -- (14.3,0);
+    \draw[ar] (14.3,0) -- (14.3,2.5) -- (O1.west);
+    \draw[ar] (14.3,0) -- (14.3,1.0) -- (O2.west);
+    \draw[ar] (14.3,0) -- (14.3,-0.5) -- (O3.west);
+    \draw[ar] (14.3,0) -- (14.3,-2.0) -- (O4.west);
+
+    % ---- legend ----
+    \draw[draw=black!55, fill=white, line width=0.7pt, rounded corners=1mm] (2.4,-4.05) rectangle ++(0.45,0.45);
+    \node[anchor=west, font=\scriptsize] at (2.95,-3.83) {Di perangkat pasien};
+    \draw[draw=black, fill=black!12, line width=1pt, rounded corners=1mm] (7.1,-4.05) rectangle ++(0.45,0.45);
+    \node[anchor=west, font=\scriptsize] at (7.65,-3.83) {Peladen TropiCare};
+    \draw[draw=black!75, dashed, fill=white, line width=0.8pt, rounded corners=1mm] (11.2,-4.05) rectangle ++(0.45,0.45);
+    \node[anchor=west, font=\scriptsize] at (11.75,-3.83) {Layanan luar (data keluar server)};
 \end{tikzpicture}%
 }
-\caption{Alur Sistem TropiCare dari Perangkat Pasien, Peladen FastAPI, hingga Layanan AI dan Petugas Faskes}
+\caption{Alur sistem TropiCare: kuesioner dan gerbang tanda bahaya di perangkat pasien, pengolahan di peladen FastAPI, penalaran pada layanan AI luar, hingga empat keluaran (layar hasil, faskes terdekat, QR petugas, dan basis data statistik)}
 \label{fig:arsitektur}
 \end{figure}
 
