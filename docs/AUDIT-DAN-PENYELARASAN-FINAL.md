@@ -29,6 +29,8 @@ Tabel berikut mendokumentasikan seluruh temuan dari dua subagent auditor indepen
 
 ## 2. Verifikasi Perhitungan Biaya & Kelayakan (Feasibility Math)
 
+> **Catatan revisi (16 Oktober 2026).** Bagian monetisasi di bawah ini **sudah dihapus** dari proposal dan pitch deck karena dinilai terlalu materialistis untuk alat skrining kesehatan masyarakat. Yang dipertahankan hanya **sisi biaya operasional** (Bab IV 4.2 dan Slide 12 "Biaya aplikasi"), dengan bingkai keberlanjutan: skrining inti tetap gratis dan data skrining per orang tidak dijual. Angka pendapatan dan titik impas di bawah ini disimpan hanya sebagai catatan historis.
+
 Untuk mendukung klaim di **Slide 12 Pitch Deck** dan **Bab IV Proposal**, berikut adalah rincian perhitungan teknis dan ekonomi unit (*unit economics*) yang dimasukkan ke dalam Bab IV:
 
 1. **Biaya Infrastruktur Bulanan (*Monthly Burn Rate*):**
