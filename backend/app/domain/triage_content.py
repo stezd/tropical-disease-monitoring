@@ -236,6 +236,9 @@ class Warnings(BaseModel):
     # Notice only: no score or route change. Text needs DR's OK.
     glucose_high: str | None = None
     no_bmi: str
+    # Top guess below `weights.refer_below_pct`: see a doctor. `{pct}` = the top percent.
+    # Text needs DR's OK.
+    low_confidence: str | None = None
 
 
 class Todo(BaseModel):
@@ -352,6 +355,9 @@ class Weights(BaseModel):
     candidate_min_share: float
     max_display_pct: int
     low_score_threshold: float
+    # Top guess below this percent (as the patient sees it): green becomes yellow and a
+    # "see a doctor" note is added. None = off. ST sets the value.
+    refer_below_pct: float | None = None
     # Route rules: measured temp from / systolic above this raises green to yellow.
     high_fever_upgrade: float | None = None
     bp_upgrade_above: float | None = None

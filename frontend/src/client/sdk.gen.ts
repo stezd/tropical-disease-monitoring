@@ -2,7 +2,7 @@
 
 import { type Client, type Options as Options2, type TDataShape, urlSearchParamsBodySerializer } from './client';
 import { client } from './client.gen';
-import type { aiAiDrugsData, aiAiDrugsErrors, aiAiDrugsResponses, aiAiScoreData, aiAiScoreErrors, aiAiScoreResponses, aiAiStatusData, aiAiStatusResponses, facilitiesListFacilitiesData, facilitiesListFacilitiesErrors, facilitiesListFacilitiesResponses, facilitiesNearestFacilitiesData, facilitiesNearestFacilitiesErrors, facilitiesNearestFacilitiesResponses, facilitiesSetFacilityWhatsappData, facilitiesSetFacilityWhatsappErrors, facilitiesSetFacilityWhatsappResponses, loginLoginAccessTokenData, loginLoginAccessTokenErrors, loginLoginAccessTokenResponses, loginLoginGoogleData, loginLoginGoogleErrors, loginLoginGoogleResponses, loginRecoverPasswordData, loginRecoverPasswordErrors, loginRecoverPasswordHtmlContentData, loginRecoverPasswordHtmlContentErrors, loginRecoverPasswordHtmlContentResponses, loginRecoverPasswordResponses, loginResetPasswordData, loginResetPasswordErrors, loginResetPasswordResponses, loginTestTokenData, loginTestTokenResponses, privateCreateUserData, privateCreateUserErrors, privateCreateUserResponses, triageCreateScreeningData, triageCreateScreeningErrors, triageCreateScreeningResponses, triageReadFlowData, triageReadFlowErrors, triageReadFlowResponses, triageReadScreeningsData, triageReadScreeningsErrors, triageReadScreeningsResponses, triageScoreFlowData, triageScoreFlowErrors, triageScoreFlowResponses, usersCreateUserData, usersCreateUserErrors, usersCreateUserResponses, usersDeleteMyScreeningData, usersDeleteMyScreeningErrors, usersDeleteMyScreeningResponses, usersDeleteUserData, usersDeleteUserErrors, usersDeleteUserMeData, usersDeleteUserMeResponses, usersDeleteUserResponses, usersReadMyScreeningsData, usersReadMyScreeningsErrors, usersReadMyScreeningsResponses, usersReadUserByIdData, usersReadUserByIdErrors, usersReadUserByIdResponses, usersReadUserMeData, usersReadUserMeResponses, usersReadUsersData, usersReadUsersErrors, usersReadUsersResponses, usersRegisterUserData, usersRegisterUserErrors, usersRegisterUserResponses, usersUpdatePasswordMeData, usersUpdatePasswordMeErrors, usersUpdatePasswordMeResponses, usersUpdateUserData, usersUpdateUserErrors, usersUpdateUserMeData, usersUpdateUserMeErrors, usersUpdateUserMeResponses, usersUpdateUserResponses, utilsHealthCheckData, utilsHealthCheckResponses, utilsTestEmailData, utilsTestEmailErrors, utilsTestEmailResponses } from './types.gen';
+import type { aiAiDrugsData, aiAiDrugsErrors, aiAiDrugsResponses, aiAiScoreData, aiAiScoreErrors, aiAiScoreResponses, aiAiStatusData, aiAiStatusResponses, facilitiesListFacilitiesData, facilitiesListFacilitiesErrors, facilitiesListFacilitiesResponses, facilitiesNearestFacilitiesData, facilitiesNearestFacilitiesErrors, facilitiesNearestFacilitiesResponses, facilitiesSetFacilityWhatsappData, facilitiesSetFacilityWhatsappErrors, facilitiesSetFacilityWhatsappResponses, loginLoginAccessTokenData, loginLoginAccessTokenErrors, loginLoginAccessTokenResponses, loginLoginGoogleData, loginLoginGoogleErrors, loginLoginGoogleResponses, loginRecoverPasswordData, loginRecoverPasswordErrors, loginRecoverPasswordHtmlContentData, loginRecoverPasswordHtmlContentErrors, loginRecoverPasswordHtmlContentResponses, loginRecoverPasswordResponses, loginResetPasswordData, loginResetPasswordErrors, loginResetPasswordResponses, loginTestTokenData, loginTestTokenResponses, privateCreateUserData, privateCreateUserErrors, privateCreateUserResponses, triageCreateScreeningData, triageCreateScreeningErrors, triageCreateScreeningResponses, triageReadFlowData, triageReadFlowErrors, triageReadFlowResponses, triageReadScreeningsData, triageReadScreeningsErrors, triageReadScreeningsResponses, triageReadStatsSummaryData, triageReadStatsSummaryErrors, triageReadStatsSummaryResponses, triageRecordStatData, triageRecordStatErrors, triageRecordStatResponses, triageScoreFlowData, triageScoreFlowErrors, triageScoreFlowResponses, usersCreateUserData, usersCreateUserErrors, usersCreateUserResponses, usersDeleteMyScreeningData, usersDeleteMyScreeningErrors, usersDeleteMyScreeningResponses, usersDeleteUserData, usersDeleteUserErrors, usersDeleteUserMeData, usersDeleteUserMeResponses, usersDeleteUserResponses, usersReadMyScreeningsData, usersReadMyScreeningsErrors, usersReadMyScreeningsResponses, usersReadUserByIdData, usersReadUserByIdErrors, usersReadUserByIdResponses, usersReadUserMeData, usersReadUserMeResponses, usersReadUsersData, usersReadUsersErrors, usersReadUsersResponses, usersRegisterUserData, usersRegisterUserErrors, usersRegisterUserResponses, usersUpdatePasswordMeData, usersUpdatePasswordMeErrors, usersUpdatePasswordMeResponses, usersUpdateUserData, usersUpdateUserErrors, usersUpdateUserMeData, usersUpdateUserMeErrors, usersUpdateUserMeResponses, usersUpdateUserResponses, utilsHealthCheckData, utilsHealthCheckResponses, utilsTestEmailData, utilsTestEmailErrors, utilsTestEmailResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -397,6 +397,41 @@ export class TriageService {
                 'Content-Type': 'application/json',
                 ...options.headers
             }
+        });
+    }
+    
+    /**
+     * Record Stat
+     *
+     * Record one finished screening as statistics without direct identity.
+     *
+     * Open to guests. Even when the caller is signed in, the account is not read or
+     * stored. Sending the same `event_id` again overwrites the row (last answer wins).
+     */
+    public static recordStat<ThrowOnError extends boolean = true>(options: Options<triageRecordStatData, ThrowOnError>) {
+        return (options.client ?? client).post<triageRecordStatResponses, triageRecordStatErrors, ThrowOnError>({
+            url: '/api/v1/triage/stats',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+    
+    /**
+     * Read Stats Summary
+     *
+     * Counts per day or week x province x disease x route. Superusers only.
+     *
+     * A group with fewer than 10 screenings has `count: null`.
+     */
+    public static readStatsSummary<ThrowOnError extends boolean = true>(options?: Options<triageReadStatsSummaryData, ThrowOnError>) {
+        return (options?.client ?? client).get<triageReadStatsSummaryResponses, triageReadStatsSummaryErrors, ThrowOnError>({
+            responseType: 'json',
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/api/v1/triage/stats/summary',
+            ...options
         });
     }
 }

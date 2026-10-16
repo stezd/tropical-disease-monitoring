@@ -43,6 +43,19 @@ export async function scoreAnswers(
   ).data
 }
 
+/** Log one finished screening as a stats row without direct identity (no login,
+ * no account link). Fire and forget: never throws, never blocks the UI, and an
+ * offline server is fine. `runId` makes a repeat call update the same row. */
+export function recordStat(
+  answers: Answers,
+  flowId: string,
+  runId: string,
+): void {
+  void TriageService.recordStat({
+    body: { event_id: runId, flow_id: flowId, answers },
+  }).catch(() => {})
+}
+
 export const scoreKey = (answers: Answers, flowId: string, preview = false) => [
   "triage",
   preview ? "score-preview" : "score",

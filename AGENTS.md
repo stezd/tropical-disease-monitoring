@@ -72,7 +72,7 @@ bun run lint && bun test                 # from repo root
 
 - **Use `127.0.0.1`, never `localhost`, in `DATABASE_URL`.** On Windows with Docker Desktop, `localhost` resolves to IPv6 `::1` first; the port forward accepts the SYN but never completes the handshake, so the OS waits out a ~21s TCP timeout before falling back to IPv4. One connection costs **~130s instead of ~0.015s**. This alone made the backend suite take 260s instead of 7s. `.env` and `.env.example` already use `127.0.0.1`. Linux CI is unaffected, so don't "fix" the workflow files.
 - **`bash` does not work on Windows here.** It resolves to the WSL shim, and the default distro is `docker-desktop`, which has no `/bin/bash`. So `scripts/*.sh` fail, and the `generate-frontend-sdk` pre-commit hook is always red locally. Run the underlying command instead (`bun run generate-client` after dumping `openapi.json`), and expect that one hook to fail locally only.
-- **Running `pytest` empties the `facility` mirror.** The `clean_facilities` fixture deletes every row on setup and teardown. Re-run `scripts/sync_facilities.py` after tests, before demoing, or the facilities endpoint returns an empty list.
+- **Running `pytest` empties the `facility` mirror.** The `clean_facilities` fixture deletes every row on setup and teardown. Re-run `scripts/sync_facilities.py` after tests, before demoing, or the facilities endpoint returns an empty list. The same goes for `screening_stat`: the test fixtures delete every row, and stats rows cannot be rebuilt. **Never run `pytest` against a database that holds real stats** (check `DATABASE_URL`; the repo `.env` may point at Railway).
 - **`except A, B:` without parentheses is valid on Python 3.14** (PEP 758). `ruff format` normalises to it. Don't "fix" it to `except (A, B):` — ruff will revert it.
 - **`uv run` is not free.** It re-resolves the environment on every call. For a tight dev loop, activate `.venv` once and call `python -m pytest` directly. Also skip `scripts/test.sh` while iterating: it runs `coverage`, which instruments every line.
 
@@ -81,12 +81,14 @@ bun run lint && bun test                 # from repo root
 - **Quiz content lives in JSON**, not React. DR and ST edit it without FE. Option IDs are shared by FE, BE, and scoring; rename all three together.
 - **API** (`/api/v1`): `GET /triage/flows/{flow_id}` · `POST /triage/flows/{flow_id}/score`
 - **Emergency check runs in the browser.** Any danger sign → MERAH screen right away, even if the server is down.
-- **Standalone.** No integrations that need a legal agreement or admin approval (BPJS API, telemedicine providers, faskes systems). Plain links are fine (Google Maps search, opening Mobile JKN). Data may leave our server (e.g. to the Gemini API for AI scoring); say so in the consent text. SATUSEHAT integration is under consideration by the team and is not covered by this rule.
-- **Login is optional.** Guests can do the whole quiz, but results are not saved for them; the result page invites them to create an account. Signed-in users (email + password, or "Masuk dengan Google") can save a screening to their history (`/riwayat`) and delete it. Google sign-in is a normal login, not an integration that needs an agreement.
+- **Data may leave our server** (e.g. to the Gemini API for AI scoring); say so in the consent text.
+- **Login is optional.** Guests can do the whole quiz, but personal history is not saved for them; the result page invites them to create an account. Signed-in users (email + password, or "Masuk dengan Google") can save a screening to their history (`/riwayat`) and delete it. Google sign-in is a normal login, not an integration that needs an agreement.
+- **Statistics without direct identity (all users, guests too).** Every finished screening adds one row to `screening_stat`, separate from personal history. Fields enter only through an explicit whitelist in `backend/app/domain/screening_stat.py` (a new `Answers` field is not stored automatically). Never stored: user id, IP, exact age, raw vital numbers, drug text, coordinates, clock time. Aggregates hide groups < 10. Never call this data "anonim"; say "tanpa identitas langsung" (UU PDP still applies).
 - **Location stays in the browser.** Coordinates (asked after the privacy tick) are used on the device for the province and the nearest facilities (up to 5); only the province goes to the server. Denied → the patient may pick a province, and the result page can ask again.
 - **Max 3 fields per page.** A 4th field appears in the same card once the first three are filled (`.reveal-in`), or moves to its own step.
 - **Ask age and sex first.** They change which questions and options appear.
 - **Low score** → "belum dapat ditentukan" + route KUNING.
+- **Low confidence** → top confidence (`top.pct`) below 80% (`refer_below_pct` in `weights.json`) raises GREEN to YELLOW with a see-a-doctor note. RED and KUNING KHUSUS are unchanged. ST must OK the value; DR must OK the note text.
 - **Backend changes follow ports & adapters:**
   - Route handlers (`api/routes/triage.py`) stay dumb: parse the request, call `get_score_use_case().execute(...)`, return schemas.
   - Triage orchestration lives in `application/use_cases/score_flow.py`, not in route functions.
@@ -103,7 +105,7 @@ bun run lint && bun test                 # from repo root
 - Pain scale: 0–10 with faces and labels, like the prototype. No starting value. Save 0–10.
 - Every result page has a disclaimer: this is screening, not a doctor's diagnosis.
 - Medical text changes need DR's OK. Weight changes need ST's OK.
-- **Privacy:** consent gate before the first question; save only for signed-in users who press save. No real patient data in the repo. No real secrets in git.
+- **Privacy:** consent gate before the first question. Two tiers: personal history only for signed-in users who press save; statistics without direct identity for every finished screening (see "Login is optional"). The consent text must stay in line with `Privacy.tsx`. Never call this data "anonim". No real patient data in the repo. No real secrets in git.
 
 ## Mobile JKN button
 
@@ -192,8 +194,8 @@ Status: ✅ ada di simulasi, pindahkan ke React · 🔧 ada di simulasi, perlu d
 
 | Fitur          | Deskripsi                                                             | Alasan                                     | Status                                                                                                               |
 | -------------- | --------------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| Login opsional | Tamu bisa skrining sampai selesai, tapi hasil tidak disimpan; di halaman hasil diajak "Buat akun" / "Masuk". Akun: email + password atau Masuk dengan Google. | Tidak menghalangi orang yang sedang sakit. | ✅ butuh `GOOGLE_CLIENT_ID` / `VITE_GOOGLE_CLIENT_ID` untuk tombol Google |
-| Riwayat skrining | Pengguna login menekan "Simpan ke riwayatku"; daftar di `/riwayat`, bisa dihapus per item. Hapus akun = riwayat ikut terhapus. | Pasien bisa melihat skrining sebelumnya. | ✅ |
+| Login opsional | Tamu bisa skrining sampai selesai, tapi riwayat pribadi tidak disimpan; di halaman hasil diajak "Buat akun" / "Masuk". Akun: email + password atau Masuk dengan Google. | Tidak menghalangi orang yang sedang sakit. | ✅ butuh `GOOGLE_CLIENT_ID` / `VITE_GOOGLE_CLIENT_ID` untuk tombol Google |
+| Riwayat skrining | Pengguna login menekan "Simpan ke riwayatku"; daftar di `/riwayat`, bisa dihapus per item. Hapus akun = riwayat ikut terhapus. Terpisah dari itu, setiap skrining selesai (tamu juga) menambah satu baris statistik tanpa identitas langsung (`screening_stat`): tanpa akun, IP, usia pasti, angka vital, teks obat, koordinat, jam; agregat menyembunyikan kelompok < 10; tidak bisa dihapus per orang. | Pasien bisa melihat skrining sebelumnya; tim mendapat tren penyakit per wilayah. | ✅ teks privasi baru perlu OK DR (Acuan-Medis K35) |
 
 ### Permainan dan tampilan
 
@@ -212,7 +214,6 @@ Blueprint dan jawaban dokter sudah digabung di [docs/Acuan-Medis.md](docs/Acuan-
 
 - **Jujur soal "AI".** Model yang dipakai: **MedGemma** (large multimodal model) + **RAG** atas sumber literatur yang disetujui DR. Tidak memakai XGBoost. Model boleh dipanggil lewat API pihak luar (sekarang Gemini) atau dijalankan di server sendiri; data boleh keluar server, sebutkan di teks persetujuan. Hasil diuji dengan kartu kasus dokter. Fitur foto dihapus (keputusan tim 15 Okt 2026).
 - **Rute MERAH tetap tanpa animasi dan suara** (keputusan tim; Blueprint sudah disesuaikan).
-- **Tetap aturan tetap, bukan model:** pemeriksaan tanda bahaya di browser, naik ke KUNING bila suhu ≥ 39,5 °C, dan skor rendah → KUNING. Pembagian tugas MedGemma dan skor aturan: ST.
+- **Tetap aturan tetap, bukan model:** pemeriksaan tanda bahaya di browser, naik ke KUNING bila suhu ≥ 39,5 °C, skor rendah → KUNING, dan keyakinan teratas < 80 % (`refer_below_pct`) menaikkan HIJAU ke KUNING dengan catatan periksa ke dokter (nilai: ST, teks: DR). Pembagian tugas MedGemma dan skor aturan: ST.
 - **Uji coba pakai kartu kasus,** bukan data kesehatan asli peserta. Peserta mengisi survei kemudahan pakai (SUS).
 - **Jangan pakai kata "diagnosis"** di aplikasi. Pakai "skrining" atau "perkiraan".
-- **Aplikasi berdiri sendiri.** Tidak terhubung ke sistem faskes atau layanan telemedisin, supaya tidak ada beban hukum dan administrasi.

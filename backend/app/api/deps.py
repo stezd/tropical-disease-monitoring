@@ -12,6 +12,7 @@ from app.core import security
 from app.core.config import settings
 from app.core.db import engine
 from app.models import TokenPayload, User
+from app.triage.ai.quota import QuotaGuard
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
@@ -24,6 +25,17 @@ def get_db() -> Generator[Session]:
 
 
 SessionDep = Annotated[Session, Depends(get_db)]
+
+# Abuse guard for the open stats endpoint: a global cap per process, not per client,
+# so no client address is ever looked at or kept. Each accepted call can re-score.
+_stats_guard = QuotaGuard(rpm=120)
+
+
+def stats_rate_limit() -> None:
+    if not _stats_guard.try_acquire():
+        raise HTTPException(status_code=429, detail="Too many requests")
+
+
 TokenDep = Annotated[str, Depends(reusable_oauth2)]
 
 

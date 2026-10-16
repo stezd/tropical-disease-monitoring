@@ -1149,6 +1149,46 @@ export type ScreeningPublic = {
 };
 
 /**
+ * ScreeningStatRow
+ */
+export type ScreeningStatRow = {
+    /**
+     * Period
+     */
+    period: string;
+    /**
+     * Province
+     */
+    province: string | null;
+    /**
+     * Disease
+     */
+    disease: string | null;
+    /**
+     * Route
+     */
+    route: string;
+    /**
+     * Count
+     */
+    count: number | null;
+};
+
+/**
+ * ScreeningStatSummary
+ */
+export type ScreeningStatSummary = {
+    /**
+     * Data
+     */
+    data: Array<ScreeningStatRow>;
+    /**
+     * K
+     */
+    k: number;
+};
+
+/**
  * ScreeningsHistoryPublic
  */
 export type ScreeningsHistoryPublic = {
@@ -1188,6 +1228,26 @@ export type Stage = {
      * Name
      */
     name: string;
+};
+
+/**
+ * StatCreate
+ *
+ * A finished screening for statistics. Carries no account and no consent flag:
+ * the privacy gate already happened before the first question.
+ */
+export type StatCreate = {
+    /**
+     * Event Id
+     *
+     * Random id of one quiz run, made in the browser. Only used to avoid counting the same run twice.
+     */
+    event_id: string;
+    /**
+     * Flow Id
+     */
+    flow_id: string;
+    answers: Answers;
 };
 
 /**
@@ -2078,6 +2138,73 @@ export type triageCreateScreeningResponses = {
 };
 
 export type triageCreateScreeningResponse = triageCreateScreeningResponses[keyof triageCreateScreeningResponses];
+
+export type triageRecordStatData = {
+    body: StatCreate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/triage/stats';
+};
+
+export type triageRecordStatErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type triageRecordStatError = triageRecordStatErrors[keyof triageRecordStatErrors];
+
+export type triageRecordStatResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type triageRecordStatResponse = triageRecordStatResponses[keyof triageRecordStatResponses];
+
+export type triageReadStatsSummaryData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Period
+         */
+        period?: 'day' | 'week';
+        /**
+         * Date From
+         */
+        date_from?: string | null;
+        /**
+         * Date To
+         */
+        date_to?: string | null;
+        /**
+         * Flow Id
+         */
+        flow_id?: string | null;
+    };
+    url: '/api/v1/triage/stats/summary';
+};
+
+export type triageReadStatsSummaryErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type triageReadStatsSummaryError = triageReadStatsSummaryErrors[keyof triageReadStatsSummaryErrors];
+
+export type triageReadStatsSummaryResponses = {
+    /**
+     * Successful Response
+     */
+    200: ScreeningStatSummary;
+};
+
+export type triageReadStatsSummaryResponse = triageReadStatsSummaryResponses[keyof triageReadStatsSummaryResponses];
 
 export type aiAiScoreData = {
     body: AIScoreRequest;

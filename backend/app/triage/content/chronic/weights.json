@@ -18,5 +18,6 @@
   "candidate_min_share": 0.05,
   "max_display_pct": 97,
   "low_score_threshold": 30.0,
+  "refer_below_pct": 80,
   "bp_upgrade_above": 160
 }

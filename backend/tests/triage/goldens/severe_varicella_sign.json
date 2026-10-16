@@ -48,6 +48,11 @@
       "text": "Kondisi dinaikkan ke SEDANG karena ada tanda: lenting dekat mata."
     },
     {
+      "level": "b",
+      "icon": "⬆️",
+      "text": "Perkiraan ini belum cukup meyakinkan (60%). Sebaiknya periksakan ke dokter untuk memastikan."
+    },
+    {
       "level": "y",
       "icon": "🩺",
       "text": "Peringatan untuk Dokter FKTP: indikasi rujukan segera ke Spesialis Kulit/Mata."

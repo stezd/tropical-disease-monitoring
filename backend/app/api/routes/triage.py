@@ -1,12 +1,22 @@
+import uuid
+from dataclasses import asdict
+from datetime import date
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
+from pydantic import BaseModel, Field
 
 from app.adapters.outbound.sqlmodel.screening_repository import (
     SqlModelScreeningRepository,
 )
-from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
+from app.api.deps import (
+    CurrentUser,
+    SessionDep,
+    get_current_active_superuser,
+    stats_rate_limit,
+)
 from app.application.ports.outbound.screening_repository import ScreeningRepository
+from app.application.ports.outbound.screening_stat_repository import Period
 from app.application.use_cases.score_flow import (
     EngineUnavailableError,
     Scored,
@@ -14,10 +24,19 @@ from app.application.use_cases.score_flow import (
 )
 from app.composition.triage_container import (
     get_content_repository,
+    get_record_screening_use_case,
     get_score_use_case,
+    get_stats_summary_use_case,
 )
 from app.domain.answers import Answers as DomainAnswers
-from app.models import Screening, ScreeningPublic, ScreeningsPublic
+from app.domain.screening_stat import SMALL_CELL_K
+from app.models import (
+    Screening,
+    ScreeningPublic,
+    ScreeningsPublic,
+    ScreeningStatRow,
+    ScreeningStatSummary,
+)
 from app.triage.content import FlowContent
 from app.triage.schemas import (
     Answers,
@@ -121,4 +140,58 @@ def read_screenings(session: SessionDep, skip: int = 0, limit: int = 100) -> Any
     rows, count = repository.list(skip, limit)
     return ScreeningsPublic(
         data=[ScreeningPublic.model_validate(r) for r in rows], count=count
+    )
+
+
+class StatCreate(BaseModel):
+    """A finished screening for statistics. Carries no account and no consent flag:
+    the privacy gate already happened before the first question."""
+
+    event_id: uuid.UUID = Field(
+        description="Random id of one quiz run, made in the browser. Only used to "
+        "avoid counting the same run twice."
+    )
+    flow_id: str = Field(max_length=20)
+    answers: Answers
+
+
+@router.post("/stats", status_code=204, dependencies=[Depends(stats_rate_limit)])
+def record_stat(session: SessionDep, body: StatCreate) -> Response:
+    """Record one finished screening as statistics without direct identity.
+
+    Open to guests. Even when the caller is signed in, the account is not read or
+    stored. Sending the same `event_id` again overwrites the row (last answer wins).
+    """
+    try:
+        get_record_screening_use_case(session).execute(
+            body.event_id, body.flow_id, body.answers.to_domain()
+        )
+    except UnknownFlowError:
+        raise HTTPException(status_code=404, detail="Flow not found")
+    except EngineUnavailableError as e:
+        raise HTTPException(status_code=503, detail=str(e))
+    return Response(status_code=204)
+
+
+@router.get(
+    "/stats/summary",
+    dependencies=[Depends(get_current_active_superuser)],
+    response_model=ScreeningStatSummary,
+)
+def read_stats_summary(
+    session: SessionDep,
+    period: Period = "day",
+    date_from: date | None = None,
+    date_to: date | None = None,
+    flow_id: Annotated[str | None, Query(max_length=20)] = None,
+) -> Any:
+    """Counts per day or week x province x disease x route. Superusers only.
+
+    A group with fewer than 10 screenings has `count: null`.
+    """
+    groups = get_stats_summary_use_case(session).execute(
+        period, date_from, date_to, flow_id
+    )
+    return ScreeningStatSummary(
+        data=[ScreeningStatRow(**asdict(g)) for g in groups], k=SMALL_CELL_K
     )

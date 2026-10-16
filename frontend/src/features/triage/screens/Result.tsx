@@ -3,7 +3,7 @@ import { Link, useRouterState } from "@tanstack/react-router"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { type FlowPublic, TriageService } from "@/client"
 import { isLoggedIn } from "@/hooks/useAuth"
-import { scoreAnswers, scoreKey } from "../api"
+import { recordStat, scoreAnswers, scoreKey } from "../api"
 import { Sparkles } from "../components/Art"
 import { NearestFacilities } from "../components/Nearby"
 import { QrCard } from "../components/QrCard"
@@ -12,6 +12,7 @@ import { confetti, sfx, vibrate } from "../fx"
 import { isAndroid, jknURL, mapsURL } from "../links"
 import { type QuizAnswers, toApi } from "../model"
 import { resultShareText } from "../share"
+import { quiz } from "../store"
 import { useGrowScroll } from "../useGrowScroll"
 import "@/styles/result.css"
 
@@ -43,6 +44,16 @@ export function ResultScreen({
   const host = useRef<HTMLDivElement>(null)
   const growRef = useGrowScroll()
   const [grow, setGrow] = useState(false)
+
+  // One de-identified stats row per quiz run. Sent again only when the answers
+  // change (e.g. a province picked on this page); the server keeps the last one.
+  const statSent = useRef("")
+  useEffect(() => {
+    const key = JSON.stringify(api)
+    if (!r || statSent.current === key) return
+    statSent.current = key
+    recordStat(api, flow.id, quiz.get().runId)
+  }, [r, api, flow.id])
 
   // Celebrate the first result only, not each re-score.
   const celebrated = useRef(false)

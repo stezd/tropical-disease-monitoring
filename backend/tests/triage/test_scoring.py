@@ -19,6 +19,13 @@ def chronic() -> FlowContent:
     return get_content("chronic")
 
 
+@pytest.fixture(scope="module")
+def no_refer(content: FlowContent) -> FlowContent:
+    """Infection content with the low-confidence rule off, to test the plain green routes."""
+    weights = content.weights.model_copy(update={"refer_below_pct": None})
+    return content.model_copy(update={"weights": weights})
+
+
 def run(content: FlowContent, **kw: object) -> ScoreResult:
     answers = Answers.model_validate({"red_flags": ["none"], **kw})
     return build_result(
@@ -134,9 +141,9 @@ def test_measles_goes_to_special_route(content: FlowContent) -> None:
     assert "Isolasi" in r.place
 
 
-def test_mild_varicella_stays_green(content: FlowContent) -> None:
+def test_mild_varicella_stays_green(no_refer: FlowContent) -> None:
     r = run(
-        content,
+        no_refer,
         age=9,
         complaint="D",
         pattern="varicella",
@@ -210,9 +217,9 @@ def test_hidden_red_flags_need_a_companion(content: FlowContent) -> None:
     assert hidden and hidden <= used
 
 
-def test_varicella_signs_ignored_for_other_patterns(content: FlowContent) -> None:
+def test_varicella_signs_ignored_for_other_patterns(no_refer: FlowContent) -> None:
     r = run(
-        content,
+        no_refer,
         age=20,
         complaint="D",
         pattern="scabies",
@@ -262,9 +269,9 @@ def test_sth_shown_for_children(content: FlowContent, age: int) -> None:
     assert r.top is not None and r.top.id == "sth"
 
 
-def test_sth_without_signs_stays_green(content: FlowContent) -> None:
+def test_sth_without_signs_stays_green(no_refer: FlowContent) -> None:
     r = run(
-        content,
+        no_refer,
         age=8,
         complaint="C",
         pattern="sth",
