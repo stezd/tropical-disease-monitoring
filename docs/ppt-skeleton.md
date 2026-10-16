@@ -44,7 +44,7 @@ OpenRouter : Rp180,28k/bulan
 domain : Rp25k/bulan
 total : Rp295,28k/bulan
 
-monetization : freemium & subcription B2B
-dasbor klinik / puskesmas (~Rp250k - 400k per bulan)
-skrining karyawan perusahaan di wilayah endermis (~Rp5-6jt)
-pemantauan Penderita hipertensi atau diabetes (~Rp15k/bulan)
+monetization : tidak ditampilkan di slide (dinilai terlalu materialistis)
+keberlanjutan : skrining inti tetap gratis dan tanpa iklan
+kemitraan faskes dan lembaga menanggung biaya server bersama
+data skrining per orang tidak dijual atau dibagikan
