@@ -34,6 +34,16 @@ async function stubGeo(page: Page, mode: "ok" | "denied" = "ok") {
   }, mode)
 }
 
+/** Count POST /triage/stats calls (the de-identified stats row). */
+function countStats(page: Page) {
+  const bodies: Record<string, unknown>[] = []
+  page.on("request", (req) => {
+    if (req.method() === "POST" && req.url().includes("/triage/stats"))
+      bodies.push(req.postDataJSON())
+  })
+  return bodies
+}
+
 const facility = (
   id: string,
   name: string,
@@ -161,6 +171,7 @@ test("Guest finishes the infection quiz and sees a route", async ({ page }) => {
   test.slow()
   await stubGeo(page)
   await mockFacilities(page)
+  const stats = countStats(page)
   await startAs(page, "25")
   await page.getByText("Tidak ada, saya aman").click()
   await next(page)
@@ -212,6 +223,10 @@ test("Guest finishes the infection quiz and sees a route", async ({ page }) => {
   await expect(
     page.getByRole("button", { name: /Simpan ke riwayatku/ }),
   ).toHaveCount(0)
+  // Exactly one de-identified stats row for this run, keyed by a run id.
+  expect(stats).toHaveLength(1)
+  expect(stats[0].flow_id).toBe("infection")
+  expect(typeof stats[0].event_id).toBe("string")
 })
 
 test("Back button returns to the previous question", async ({ page }) => {
@@ -339,6 +354,31 @@ test("Loading screen shows the mascot without a scrollbar", async ({
 test("Broken summary QR shows a clear message", async ({ page }) => {
   await page.goto("/ringkasan#d=not-a-real-code")
   await expect(page.getByText("TIDAK BISA DIBACA")).toBeVisible()
+})
+
+// A staff member scanning a QR must not add a second stats row.
+test("Summary page (QR scan) sends no stats", async ({ page }) => {
+  const stats = countStats(page)
+  await page.goto("/ringkasan#d=not-a-real-code")
+  await expect(page.getByText("TIDAK BISA DIBACA")).toBeVisible()
+  await page.waitForTimeout(500)
+  expect(stats).toHaveLength(0)
+})
+
+test("Red route sends one stats row, even when the server is down", async ({
+  page,
+}) => {
+  await stubGeo(page, "denied")
+  await startAs(page, "40")
+  const stats = countStats(page)
+  await page.getByText("Sesak napas sangat berat").click()
+  await next(page)
+  await expect(
+    page.getByRole("heading", { name: "KONDISI DARURAT" }),
+  ).toBeVisible()
+  await expect.poll(() => stats.length).toBe(1)
+  await page.waitForTimeout(500)
+  expect(stats).toHaveLength(1)
 })
 
 // Guest → "Buat akun" on the result → sign up → log in → back to the same

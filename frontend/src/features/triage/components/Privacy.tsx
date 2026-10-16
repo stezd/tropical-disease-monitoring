@@ -5,7 +5,7 @@
 
 import { USE_SERVER } from "../nearby"
 
-const PRIVACY_UPDATED = "15 Oktober 2026"
+const PRIVACY_UPDATED = "16 Oktober 2026"
 
 export function PrivacyText() {
   return (
@@ -13,6 +13,10 @@ export function PrivacyText() {
       <ul className="privacy-key">
         <li>TropiCare adalah skrining awal, bukan diagnosis dokter.</li>
         <li>Kamu bisa memakai TropiCare sampai selesai tanpa akun.</li>
+        <li>
+          Statistik tanpa identitas langsung dicatat untuk melihat tren
+          penyakit.
+        </li>
       </ul>
 
       <h3>1. Data yang dipakai</h3>
@@ -43,15 +47,20 @@ export function PrivacyText() {
       <ul>
         <li>
           Jawaban tanpa identitas (pilihan jawaban, usia, jenis kelamin, dan
-          provinsi) dikirim ke server TropiCare dan ke layanan AI milik Google
-          (Gemini) untuk dihitung. Nama dan email tidak ikut dikirim. Titik
-          lokasi tidak ikut dikirim ke layanan AI.
+          provinsi) dikirim ke server TropiCare dan ke layanan AI pihak ketiga
+          (OpenRouter dan Google) untuk dihitung. Nama dan email tidak ikut
+          dikirim. Titik lokasi tidak ikut dikirim ke layanan AI.
         </li>
         <li>
-          Kami memakai kuota gratis Gemini. Pada kuota gratis, Google bisa
+          Kami memakai model gratis. Pada model gratis, penyedia layanan bisa
           memakai data yang dikirim untuk memperbaiki produknya.
         </li>
-        <li>Teks obat yang kamu ketik sendiri tidak dikirim ke AI.</li>
+        <li>
+          Teks obat yang kamu ketik sendiri tidak ikut dikirim untuk menghitung
+          perkiraan. Kalau ada nama obat yang tidak dikenali aplikasi, teks obat
+          itu (tanpa jawaban lain) dikirim ke layanan AI hanya untuk mengenali
+          jenis obatnya.
+        </li>
         <li>
           Selama skrining, jawaban disimpan sementara di browser. Menutup tab
           akan menghapusnya.
@@ -61,9 +70,10 @@ export function PrivacyText() {
       <h3>3. Menyimpan riwayat</h3>
       <ul>
         <li>
-          Hasil skrining disimpan di server hanya kalau kamu sudah masuk akun
-          dan menekan <b>"Simpan ke riwayatku"</b>. Tanpa itu, tidak ada yang
-          disimpan.
+          Riwayat pribadi disimpan di server hanya kalau kamu sudah masuk akun
+          dan menekan <b>"Simpan ke riwayatku"</b>. Statistik tanpa identitas
+          langsung (lihat bagian 4) tetap dicatat untuk setiap skrining yang
+          selesai, dengan atau tanpa akun.
         </li>
         <li>
           Skrining yang disimpan terhubung ke akunmu. Tim TropiCare bisa
@@ -75,7 +85,32 @@ export function PrivacyText() {
         </li>
       </ul>
 
-      <h3>4. QR dan WhatsApp</h3>
+      <h3>4. Statistik tanpa identitas langsung</h3>
+      <ul>
+        <li>
+          <b>Yang dicatat:</b> kelompok usia, jenis kelamin, provinsi, tanggal,
+          pilihan jawaban, kategori tanda vital, dan hasil perkiraan.
+        </li>
+        <li>
+          <b>Yang tidak dicatat:</b> nama, email, akun, usia persis, angka tanda
+          vital, teks obat, lokasi atau koordinat, alamat IP, dan jam.
+        </li>
+        <li>
+          <b>Untuk apa:</b> melihat tren penyakit. Data dibagikan ke mitra hanya
+          sebagai agregat, dan kelompok yang kurang dari 10 orang disembunyikan.
+        </li>
+        <li>
+          Catatan ini tidak terhubung ke siapa pun, jadi tidak bisa dihapus per
+          orang dan tidak ikut terhapus saat akun dihapus.
+        </li>
+        <li>
+          Kami berusaha agar catatan ini tidak menunjuk ke satu orang. Meski
+          begitu, gabungan beberapa keterangan (misalnya usia, jenis kelamin,
+          provinsi, dan gejala) secara teori masih bisa mengarah ke seseorang.
+        </li>
+      </ul>
+
+      <h3>5. QR dan WhatsApp</h3>
       <ul>
         <li>
           QR dan tautan rangkuman berisi jawabanmu dalam kode ringkas, tanpa
@@ -89,7 +124,7 @@ export function PrivacyText() {
         </li>
       </ul>
 
-      <h3>5. Tautan ke aplikasi lain</h3>
+      <h3>6. Tautan ke aplikasi lain</h3>
       <ul>
         <li>
           Tombol Google Maps, WhatsApp, telepon, dan Mobile JKN membuka aplikasi
@@ -97,7 +132,7 @@ export function PrivacyText() {
         </li>
       </ul>
 
-      <h3>6. Pilihanmu</h3>
+      <h3>7. Pilihanmu</h3>
       <ul>
         <li>Kamu boleh berhenti kapan saja.</li>
         <li>Izin lokasi boleh ditolak; skrining tetap berjalan.</li>

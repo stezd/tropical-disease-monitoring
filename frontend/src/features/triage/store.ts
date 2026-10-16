@@ -16,7 +16,21 @@ export type QuizState = {
   phase: Phase
   // Ticked "Saya setuju" at the privacy gate (kept when going back to it).
   consented: boolean
+  // Random id of this quiz run. Sent with the de-identified stats row so the
+  // server counts one run once, even if the result page is opened twice.
+  runId: string
 }
+
+// randomUUID needs a secure context (https or localhost); the server wants a UUID.
+const newRunId = () =>
+  typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+        (
+          Number(c) ^
+          (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (Number(c) / 4)))
+        ).toString(16),
+      )
 
 const KEY = "tropicek_quiz"
 const listeners = new Set<() => void>()
@@ -27,6 +41,7 @@ const fresh = (flowId = "infection"): QuizState => ({
   step: 0,
   phase: "privacy",
   consented: false,
+  runId: newRunId(),
 })
 
 function read(): QuizState {
@@ -38,6 +53,8 @@ function read(): QuizState {
       ...fresh(),
       ...s,
       answers: { ...blankAnswers(), ...s.answers },
+      // A session saved by an older version has no runId.
+      runId: s.runId ?? newRunId(),
     }
     // No question before consent, even for a session saved by an older version.
     return next.consented ? next : { ...next, phase: "privacy" }

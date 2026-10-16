@@ -1,14 +1,17 @@
-// Red route. Runs fully in the browser: no server call, so it works offline.
+// Red route. Runs fully in the browser: the screen needs no server, so it works
+// offline (the stats row it sends is fire and forget).
 // Calm and serious: no confetti, no game sounds, no mascot (AGENTS.md "Must not break").
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
 import type { FlowPublic } from "@/client"
+import { recordStat } from "../api"
 import { NearestFacilities } from "../components/Nearby"
 import { Card, copyText, RED_TAB, toast } from "../components/Ui"
 import { vibrate } from "../fx"
 import { mapsURL } from "../links"
-import { type QuizAnswers, redFlagIds } from "../model"
+import { type QuizAnswers, redFlagIds, toApi } from "../model"
 import { redShareText } from "../share"
+import { quiz } from "../store"
 
 export function RedScreen({
   flow,
@@ -34,6 +37,15 @@ export function RedScreen({
   useEffect(() => {
     vibrate([220, 100, 220, 100, 220])
   }, [])
+
+  // One de-identified stats row per quiz run. Fire and forget: an offline
+  // server changes nothing here (this screen works without it).
+  const statSent = useRef(false)
+  useEffect(() => {
+    if (statSent.current) return
+    statSent.current = true
+    recordStat(toApi(answers), flow.id, quiz.get().runId)
+  }, [answers, flow.id])
 
   const copy = async (n: string) => {
     toast((await copyText(n)) ? `Nomor ${n} tersalin` : `Nomor darurat: ${n}`)
