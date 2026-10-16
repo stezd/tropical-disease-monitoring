@@ -69,7 +69,8 @@
     "route_upgraded_sign": "Kondisi dinaikkan ke SEDANG karena ada tanda: {sign}.",
     "no_thermo_fever_pattern": "Suhu tidak diukur. Klasifikasi tetap memakai **pola demam** yang kamu pilih tadi.",
     "no_thermo_other": "Suhu tidak diukur. Klasifikasi tetap dihitung dari **jawaban lainnya**.",
-    "no_bmi": "IMT tidak diisi — AI memakai **proksi kelonggaran pakaian**."
+    "no_bmi": "IMT tidak diisi — AI memakai **proksi kelonggaran pakaian**.",
+    "low_confidence": "Perkiraan ini belum cukup meyakinkan ({pct}%). Sebaiknya periksakan ke dokter untuk memastikan."
   },
   "todo": {
     "green_before": ["Isolasi mandiri & istirahat cukup di rumah", "Perbaiki sanitasi kamar/asrama: cuci sprei, jemur kasur, buka ventilasi"],

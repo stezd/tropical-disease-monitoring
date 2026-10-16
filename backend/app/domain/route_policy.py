@@ -84,6 +84,15 @@ def decide_route(
                         sign=(o.reason or o.text).lower()
                     )
                 )
+        # Weak top guess: green becomes yellow, and the patient is told to see a doctor.
+        # Red, special and unknown are already at least yellow, so they keep their route.
+        pct = round(top.share * 100)
+        low_text = content.advice.warnings.low_confidence
+        if w.refer_below_pct is not None and pct < w.refer_below_pct and route != "red":
+            if route == "green":
+                route = "yellow"
+            if low_text:
+                notes.append(low_text.format(pct=pct))
     return route, unknown, notes
 
 

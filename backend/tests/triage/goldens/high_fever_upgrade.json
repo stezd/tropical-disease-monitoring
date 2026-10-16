@@ -54,6 +54,11 @@
     },
     {
       "level": "b",
+      "icon": "⬆️",
+      "text": "Perkiraan ini belum cukup meyakinkan (51%). Sebaiknya periksakan ke dokter untuk memastikan."
+    },
+    {
+      "level": "b",
       "icon": "🤖",
       "text": "IMT tidak diisi — AI memakai **proksi kelonggaran pakaian**."
     }

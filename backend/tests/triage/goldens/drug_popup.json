@@ -50,6 +50,11 @@
     },
     {
       "level": "b",
+      "icon": "⬆️",
+      "text": "Perkiraan ini belum cukup meyakinkan (65%). Sebaiknya periksakan ke dokter untuk memastikan."
+    },
+    {
+      "level": "b",
       "icon": "🌡️",
       "text": "Suhu tidak diukur. Klasifikasi tetap dihitung dari **jawaban lainnya**."
     },
