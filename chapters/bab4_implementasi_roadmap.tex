@@ -53,26 +53,28 @@ Keunggulan utama desain arsitektur ringan TropiCare adalah biaya operasional bul
 \end{tabularx}
 \end{table}
 
-\subsection{Peta Jalan Pengembangan, Mitigasi Risiko, dan Indikator Kinerja (KPI)}
+\subsection{Peta Jalan Pengembangan 5 Tahap, Mitigasi Risiko, dan Indikator Kinerja (KPI)}
 
-Pelaksanaan pengembangan selama 12 bulan dari tahap validasi hingga integrasi ekosistem, beserta matriks mitigasi risiko dan indikator kinerja utama (KPI), dirangkum pada Tabel~\ref{tab:roadmap} dan Tabel~\ref{tab:kpi}.
+Berangkat dari fondasi purwarupa (MVP) yang telah berjalan saat ini---mencakup kuesioner adaptif 20 infeksi tropis dan 6 kondisi PTM, 11 tanda bahaya di peramban, penalaran Gemma 4 / MedGemma + RAG 203 kutipan, QR rangkuman pasien, mirror 13.930 faskes, penyimpanan riwayat akun, serta 304 pengujian otomatis backend (cakupan 96\%)---pengembangan menuju skala penuh dilaksanakan melalui \textbf{lima tahap ekspansi} selama 12 bulan (Tabel~\ref{tab:roadmap}) dengan indikator kinerja terukur (Tabel~\ref{tab:kpi}).
 
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Peta Jalan Pengembangan 12 Bulan dan Matriks Mitigasi Risiko Utama}\label{tab:roadmap}
+\caption{Peta Jalan Pengembangan 5 Tahap (12 Bulan) dan Matriks Mitigasi Risiko Utama}\label{tab:roadmap}
 \vspace{3pt}
-\begin{tabularx}{\textwidth}{p{2.5cm} p{3.1cm} X p{3.8cm}}
+\begin{tabularx}{\textwidth}{p{2.4cm} p{2.9cm} X p{3.7cm}}
 \toprule
 \textbf{Tahap \& Periode} & \textbf{Fokus \& Risiko Utama} & \textbf{Aktivitas Eksekusi \& Mitigasi Konkret} & \textbf{Luaran Kunci (\textit{Milestone})} \\
 \midrule
-\textbf{Tahap 1\newline(Bulan 1--3)} & Validasi Klinis \& Mitigasi Risiko Halusinasi AI & Uji buta 100 kartu kasus dokter; kalibrasi bobot aturan JSON bersama statistisi; pemutusan 11 tanda bahaya langsung di browser tanpa AI (\textit{safety gate}); uji kemudahan pakai (SUS). & Akurasi triase $>92\%$ tanpa kasus darurat terlewat; skor SUS $>80$ (\textit{Grade A}); 304 kasus uji backend lulus. \\
+\textbf{Tahap 1: Validasi\newline(Bulan 1--2)} & Kalibrasi Klinis \& Mitigasi Bias/Halusinasi AI & Uji kartu kasus klinis dokter (\textit{vignettes}) sesuai pedoman \textit{Regulatory Sandbox} \citep{UUKesehatan2023,KemenkesDTO2024}; finalisasi bobot aturan JSON, skor risiko PTM, dan 3 skema obat komorbid dengue bersama dokter \& statistisi; survei kemudahan pakai (SUS). & Kesesuaian rute $\ge 90\%$ pada kartu kasus dokter; 0 tanda bahaya terlewat; skor SUS $>80$ (\textit{Grade A}). \\
 \midrule
-\textbf{Tahap 2\newline(Bulan 4--6)} & Pilot Klinik/FKTP \& Mitigasi Beban Loket & Pilot di 10 klinik pratama dan Puskesmas wilayah endemis; penerapan pemindaian QR rangkuman tanpa ketik ulang (\textit{zero-retyping}); kurasi nomor WhatsApp aktif faskes. & Operasional di 10 faskes pilot; biaya server tertutup penuh dari langganan mitra awal (\textit{self-sustaining}). \\
+\textbf{Tahap 2: Pilot Klinik\newline(Bulan 3--5)} & Dasbor Faskes \& Mitigasi Beban Loket & Pembangunan dasbor pra-triase klinik/Puskesmas; uji coba pemindaian QR rangkuman sebagai pendamping pencatatan RME dokter \citep{Permenkes2022}; kurasi nomor WhatsApp aktif faskes di wilayah pilot. & Pilot aktif di 5--10 klinik/Puskesmas; titik impas server ($\ge 1$ klinik mitra Rp400 rb/bln) tercapai. \\
 \midrule
-\textbf{Tahap 3\newline(Bulan 7--9)} & TropiCare Plus, Regulasi \& Privasi Data & Peluncuran modul grafik Pantau PTM; pendaftaran \textit{Regulatory Sandbox} Kemenkes RI \citep{UUKesehatan2023,KemenkesDTO2024}; audit kepatuhan UU PDP No. 27/2022 (Zero-NIK, lokasi tetap di perangkat) \citep{UUPDP2022}. & Terdaftar di \textit{Regulatory Sandbox} Kemenkes; modul Pantau PTM aktif; jembatan rujukan Mobile JKN teruji. \\
+\textbf{Tahap 3: TropiCare Plus\newline(Bulan 6--8)} & Pemantauan PTM \& Kepatuhan Privasi & Peluncuran fitur opsional \textit{TropiCare Plus} (grafik tren tensi dan gula darah jangka panjang di atas modul riwayat akun); audit kepatuhan UU PDP No. 27/2022 (Zero-NIK, lokasi tetap di perangkat) \citep{UUPDP2022}. & Modul grafik tren PTM beroperasi; kepatuhan puasa pra-lab 10--12 jam meningkat di faskes pilot. \\
 \midrule
-\textbf{Tahap 4--5\newline(Bulan 10--12)} & White-Label LSM \& API Mitra Surveilans & Kemitraan white-label dengan LSM pemberantasan penyakit tropis (TBC, Kusta, NTD); pembukaan API agregat wilayah bagi Dinkes (kelompok $<10$ disembunyikan); persiapan pemetaan standar FHIR R4. & Adopsi di 100+ faskes; dasbor surveilans agregat wilayah beroperasi; kesiapan interoperabilitas nasional. \\
+\textbf{Tahap 4: White-Label\newline(Bulan 9--10)} & Kemitraan LSM \& Kapasitas Infrastruktur & Penyediaan kustomisasi \textit{white-label} berbasis JSON bagi LSM kesehatan (eliminasi TBC, Kusta, NTD); replikasi kontainer \textit{stateless} yang dibiayai otomatis dari pendapatan langganan mitra (\textit{self-funding scaling}). & Kemitraan \textit{white-label} LSM berjalan; kapasitas peladen meningkat proporsional tanpa subsidi silang. \\
+\midrule
+\textbf{Tahap 5: API Mitra\newline(Bulan 11--12)} & Surveilans Wilayah \& Pencegahan Re-identifikasi & Pembukaan endpoint API agregat tren penyakit per wilayah bagi Dinkes/institusi riset tanpa identitas langsung (tanpa push FHIR pasien demi menjaga prinsip Zero-NIK), dengan penyembunyian otomatis kelompok berjumlah $<10$. & API agregat wilayah dan sinkronisasi berkala mirror faskes SATUSEHAT beroperasi penuh. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -82,19 +84,19 @@ Pelaksanaan pengembangan selama 12 bulan dari tahap validasi hingga integrasi ek
 \footnotesize
 \caption{Indikator Kinerja Utama (KPI) Keberhasilan Implementasi TropiCare}\label{tab:kpi}
 \vspace{3pt}
-\begin{tabularx}{\textwidth}{p{1.4cm} p{4.2cm} p{2.2cm} X}
+\begin{tabularx}{\textwidth}{p{1.3cm} p{4.0cm} p{2.3cm} X}
 \toprule
-\textbf{Kode} & \textbf{Indikator Kinerja} & \textbf{Target} & \textbf{Metode Pengukuran} \\
+\textbf{Kode} & \textbf{Indikator Kinerja} & \textbf{Target} & \textbf{Metode Pengukuran \& Verifikasi} \\
 \midrule
-\textbf{KPI-1} & Akurasi Triase terhadap Dokter & $\mathbf{>92\%}$ & Uji kesesuaian rute triase pada 100 kartu kasus klinis dokter, dengan syarat tidak ada satu pun kondisi darurat yang terlewat. \\
+\textbf{KPI-1} & Kesesuaian Triase Kartu Kasus & $\mathbf{\ge 90\%}$ (\textbf{0\%} darurat lolos) & Uji kesesuaian rute pada kartu kasus klinis dokter (\textit{vignettes}), dengan syarat mutlak tidak ada kondisi gawat darurat yang terlewat. \\
 \midrule
-\textbf{KPI-2} & Efisiensi Waktu Registrasi Loket & $\mathbf{\ge 40\%}$ & Pemangkasan waktu wawancara awal di loket faskes melalui pemindaian QR rangkuman dibandingkan pendaftaran manual. \\
+\textbf{KPI-2} & Respon Deteksi Tanda Bahaya & $\mathbf{<500\text{ ms}}$ & Waktu respon peramban dari ketukan tanda bahaya hingga layar Rute Merah dan tombol 119 tampil di ponsel pasien tanpa menunggu server. \\
 \midrule
-\textbf{KPI-3} & Kepatuhan Puasa Pra-Laboratorium & $\mathbf{>85\%}$ & Proporsi pasien skrining jalur PTM yang datang ke FKTP memenuhi syarat puasa 10--12 jam berkat instruksi pada hasil skrining. \\
+\textbf{KPI-3} & Kemudahan Pakai \& Durasi Kuis & \textbf{SUS $\mathbf{>80}$} ($\mathbf{\approx 3\text{ mnt}}$) & Evaluasi kuesioner standar \textit{System Usability Scale} pada peserta uji coba serta median durasi penyelesaian skrining. \\
 \midrule
-\textbf{KPI-4} & Kecepatan Deteksi Tanda Bahaya & $\mathbf{<500\text{ ms}}$ & Waktu respon peramban dari ketukan tanda bahaya hingga layar Rute Merah dan tombol 119 tampil di ponsel pasien. \\
+\textbf{KPI-4} & Efisiensi Pra-Triase \& Kesiapan Lab & $\mathbf{\ge 40\%}$ lebih cepat & Pengurangan waktu wawancara awal di loket faskes pilot lewat pemindaian QR rangkuman dan instruksi puasa 10--12 jam pra-lab PTM. \\
 \midrule
-\textbf{KPI-5} & Skor Kemudahan Pakai (\textit{SUS}) & $\mathbf{>80}$ (\textit{Grade A}) & Evaluasi kuesioner standar \textit{System Usability Scale} pada masyarakat umum dan petugas faskes. \\
+\textbf{KPI-5} & Efisiensi Biaya \& Titik Impas & $\mathbf{\ge 1}$ \textbf{Klinik Mitra} & Biaya inferensi rata-rata $\le \text{Rp}15$/skrining; biaya dasar peladen (Rp295,28 rb/bulan) tertutup penuh sejak 1 klinik mitra aktif. \\
 \bottomrule
 \end{tabularx}
 \end{table}
