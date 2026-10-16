@@ -1,6 +1,6 @@
 """Build app/triage/ai/data/<flow>_literature.json from a chunk file. Run offline, once.
 
-    PYTHONPATH=. uv run --with sentence-transformers --with torch --with pillow python scripts/build_literature.py \
+    PYTHONPATH=. uv run --with sentence-transformers --with torch python scripts/build_literature.py \
         --flow infection --chunks app/triage/ai/data/infection_chunks.jsonl
 
 Input: JSON lines with `disease`, `sumber`, `judul_bab`, `halaman`, `teks`. Every `teks`
