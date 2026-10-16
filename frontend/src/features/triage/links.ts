@@ -1,4 +1,4 @@
-// Plain links only: no API, no data sent anywhere (AGENTS.md "Standalone").
+// Plain links only: no API, no data sent anywhere.
 
 const JKN_PACKAGE = "app.bpjs.mobile"
 const PLAY_JKN = `https://play.google.com/store/apps/details?id=${JKN_PACKAGE}`

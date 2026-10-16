@@ -98,7 +98,7 @@ Sudah diterapkan. Patokan dari DR; **teks yang tampil ke pasien/petugas masih pe
 - Nama penyakit tidak boleh ada di teks pilihan jawaban, hanya di halaman hasil. `[Tim]`
 - Pemeriksaan tanda bahaya, kenaikan rute karena suhu, dan skor rendah → KUNING adalah **aturan tetap**, bukan keluaran model. `[Tim]`
 - Rute MERAH: layar tenang, tanpa animasi dan suara, dengan tombol telepon 119 serta nomor 119 dan 112 yang bisa disalin. `[Tim]` `[B-T8]`
-- Aplikasi berdiri sendiri. Fitur integrasi di Blueprint tidak dibangun (§12), kecuali integrasi SATUSEHAT yang sedang dipertimbangkan tim. `[Tim]`
+- Fitur integrasi di Blueprint belum dibangun (§12). `[Tim]`
 - Tidak pernah meminta nama atau foto. Tahap foto dihapus (15 Okt 2026). `[Tim]`
 
 ---
@@ -462,7 +462,7 @@ Penyakit rute HIJAU tidak punya daftar lab. Cacingan yang naik ke KUNING mendapa
 
 ## 12. Isi Blueprint yang tidak dibangun
 
-Dihapus karena keputusan tim: aplikasi berdiri sendiri, tanpa integrasi yang butuh perjanjian atau izin `[Tim]`. Tetap disebut sebagai rencana di proposal.
+Belum dibangun (keputusan tim) `[Tim]`. Tetap disebut sebagai rencana di proposal.
 
 | Isi Blueprint | Pengganti di aplikasi |
 | --- | --- |

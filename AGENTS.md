@@ -81,7 +81,7 @@ bun run lint && bun test                 # from repo root
 - **Quiz content lives in JSON**, not React. DR and ST edit it without FE. Option IDs are shared by FE, BE, and scoring; rename all three together.
 - **API** (`/api/v1`): `GET /triage/flows/{flow_id}` · `POST /triage/flows/{flow_id}/score`
 - **Emergency check runs in the browser.** Any danger sign → MERAH screen right away, even if the server is down.
-- **Standalone.** No integrations that need a legal agreement or admin approval (BPJS API, telemedicine providers, faskes systems). Plain links are fine (Google Maps search, opening Mobile JKN). Data may leave our server (e.g. to the Gemini API for AI scoring); say so in the consent text. SATUSEHAT integration is under consideration by the team and is not covered by this rule.
+- **Data may leave our server** (e.g. to the Gemini API for AI scoring); say so in the consent text.
 - **Login is optional.** Guests can do the whole quiz, but results are not saved for them; the result page invites them to create an account. Signed-in users (email + password, or "Masuk dengan Google") can save a screening to their history (`/riwayat`) and delete it. Google sign-in is a normal login, not an integration that needs an agreement.
 - **Location stays in the browser.** Coordinates (asked after the privacy tick) are used on the device for the province and the nearest facilities (up to 5); only the province goes to the server. Denied → the patient may pick a province, and the result page can ask again.
 - **Max 3 fields per page.** A 4th field appears in the same card once the first three are filled (`.reveal-in`), or moves to its own step.
@@ -215,4 +215,3 @@ Blueprint dan jawaban dokter sudah digabung di [docs/Acuan-Medis.md](docs/Acuan-
 - **Tetap aturan tetap, bukan model:** pemeriksaan tanda bahaya di browser, naik ke KUNING bila suhu ≥ 39,5 °C, dan skor rendah → KUNING. Pembagian tugas MedGemma dan skor aturan: ST.
 - **Uji coba pakai kartu kasus,** bukan data kesehatan asli peserta. Peserta mengisi survei kemudahan pakai (SUS).
 - **Jangan pakai kata "diagnosis"** di aplikasi. Pakai "skrining" atau "perkiraan".
-- **Aplikasi berdiri sendiri.** Tidak terhubung ke sistem faskes atau layanan telemedisin, supaya tidak ada beban hukum dan administrasi.
