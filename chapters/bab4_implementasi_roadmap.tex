@@ -1,81 +1,100 @@
 %==============================================================
-% BAB IV RENCANA IMPLEMENTASI DAN PENGEMBANGAN
+% BAB IV SKALABILITAS, KELAYAKAN, DAN RENCANA PENGEMBANGAN
 %==============================================================
 
-\section{Rencana Implementasi dan Pengembangan}
+\section{Skalabilitas, Kelayakan, dan Rencana Pengembangan}
 
-\subsection{Peta Jalan Pengembangan 12 Bulan (\textit{Roadmap})}
+\subsection{Arsitektur Skalabilitas Tiga Dimensi (Teknis, Konten, dan Jangkauan)}
 
-Pengembangan TropiCare dirancang bertahap selama 12 bulan (empat kuartal) untuk membawa purwarupa fungsional (\textit{working MVP}) menuju integrasi penuh dengan ekosistem SatuSehat Kementerian Kesehatan RI. Peta jalan ini mematuhi kerangka kerja \textit{Regulatory Sandbox} DTO Kemenkes RI \citep{KemenkesDTO2024} dan amanat UU Kesehatan No. 17 Tahun 2023 \citep{UUKesehatan2023}, memastikan uji validasi klinis berbasis simulasi kasus (\textit{in-silico}) tuntas sebelum sistem diterapkan langsung pada pasien di Puskesmas.
+Agar dapat tumbuh dari purwarupa fungsional menjadi layanan yang melayani ribuan pengguna di seluruh Indonesia tanpa membebani infrastruktur, TropiCare dirancang dengan skalabilitas pada tiga dimensi utama:
 
-Rincian sasaran strategis kuartalan dirangkum pada Tabel~\ref{tab:roadmap}.
+\begin{enumerate}
+    \item \textbf{Skalabilitas Teknis (\textit{Stateless \& Modular}):} 
+    Endpoint skoring pada backend FastAPI bersifat \textit{stateless} sehingga dapat direplikasi secara horizontal dengan mudah. Arsitektur menggunakan pola \textit{Ports and Adapters} (heksagonal): mesin skoring aturan deterministik maupun penyedia model AI (Gemma 4 / MedGemma via OpenRouter, vLLM mandiri, atau Gemini) dipasang pada lapisan komposisi (\textit{composition root}) dan dapat diganti hanya melalui konfigurasi tanpa mengubah logika bisnis. Selain itu, deteksi 11 tanda bahaya darurat dijalankan sepenuhnya di peramban pasien (biaya komputasi server nol), dan pratinjau skor selama pengisian kuis memakai mesin aturan lokal serta \textit{cache} memori 24 jam sehingga pemanggilan LLM hanya terjadi satu kali di akhir sesi skrining non-darurat.
+
+    \item \textbf{Skalabilitas Konten Klinis (\textit{Data-Driven JSON}):} 
+    Seluruh pertanyaan, opsi jawaban, aturan peringatan obat, dan bobot penyakit disimpan dalam berkas konfigurasi JSON terstruktur yang terpisah dari kode antarmuka React. Dokter dan statistisi dapat menambahkan penyakit baru, memperbarui bobot gejala, atau menyesuaikan profil endemisitas wilayah secara langsung tanpa perlu memodifikasi kode tampilan frontend. Setiap perubahan teks medis dan aturan klinis dikendalikan melalui persetujuan kolaborator dokter.
+
+    \item \textbf{Skalabilitas Jangkauan \& Surveilans Berprivasi:} 
+    Ekspansi layanan dirancang melalui lima tahap berurutan: \textbf{(1) Validasi Klinis} $\rightarrow$ \textbf{(2) Pilot Klinik \& Puskesmas} $\rightarrow$ \textbf{(3) TropiCare Plus (Pemantauan PTM)} $\rightarrow$ \textbf{(4) White-label untuk LSM Kesehatan} $\rightarrow$ \textbf{(5) API Mitra \& Surveilans Dinas Kesehatan}. Untuk mendukung Dinas Kesehatan tanpa melanggar privasi warga, statistik wilayah disajikan murni dari agregat tanpa identitas langsung dengan aturan privasi ketat: \textbf{kelompok agregat dengan jumlah kasus $<10$ disembunyikan} guna mencegah pelacakan balik individu.
+\end{enumerate}
+
+\subsection{Analisis Kelayakan Finansial (\textit{Feasibility}) dan Ekonomi Unit}
+
+Keunggulan utama desain arsitektur ringan TropiCare adalah biaya operasional bulanan yang sangat rendah, sehingga layanan ini dapat bertahan hidup secara mandiri tanpa harus menunggu anggaran pengadaan pemerintah yang panjang. Rincian perhitungan biaya infrastruktur bulanan dan model keberlanjutan disajikan pada Tabel~\ref{tab:feasibility}.
 
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Peta Jalan Pengembangan dan Implementasi TropiCare 12 Bulan}\label{tab:roadmap}
+\caption{Rincian Biaya Operasional Bulanan dan Skema Monetisasi Berkelanjutan TropiCare}\label{tab:feasibility}
 \vspace{3pt}
-\begin{tabularx}{\textwidth}{p{2.3cm} p{3.2cm} X p{4cm}}
+\begin{tabularx}{\textwidth}{p{3.4cm} p{2.8cm} X}
 \toprule
-\textbf{Periode} & \textbf{Fokus Strategis} & \textbf{Aktivitas Utama} & \textbf{Luaran Kunci (\textit{Milestone})} \\
+\textbf{Komponen Biaya / Layanan} & \textbf{Nilai Finansial} & \textbf{Dasar Perhitungan Teknis \& Model Bisnis} \\
 \midrule
-\textbf{Kuartal I\newline(Bulan 1--3)} & Validasi Klinis \& Audit Sistem & Uji akurasi menggunakan 100 kartu kasus dokter spesialis; uji kemudahan pakai antarmuka pada warga; audit keamanan kode backend dan frontend. & Akurasi triase $>92\%$ tanpa kasus darurat terlewat; skor SUS $>80$ (\textit{Grade A}); kode bebas celah keamanan kritis. \\
+\multicolumn{3}{l}{\textbf{A. Struktur Biaya Operasional Aplikasi (\textit{Monthly Burn Rate})}} \\
 \midrule
-\textbf{Kuartal II\newline(Bulan 4--6)} & Uji Lapangan Terbatas (\textit{Pilot Project}) & Penerapan di 10 Puskesmas wilayah endemis (Jawa Barat dan NTT); pelatihan kader Posyandu untuk pemindaian QR; pengumpulan kontak WhatsApp resmi faskes. & Operasional di 10 FKTP; pemindaian QR cepat di loket; kontak faskes pada pilot terverifikasi. \\
+\textbf{Server \& Basis Data\newline(\textit{Railway Hobby Plan})} & \textbf{Rp90.000 / bulan} & Menjalankan kontainer backend FastAPI \textit{stateless} dan basis data PostgreSQL (menyimpan 13.930 mirror faskes, riwayat akun opsional, dan agregat statistik). \\
 \midrule
-\textbf{Kuartal III\newline(Bulan 7--9)} & Regulasi \& Interoperabilitas & Pendaftaran ke \textit{Regulatory Sandbox} Kemenkes RI klaster telekesehatan; pemetaan ringkasan skrining ke HL7 FHIR R4 dan injeksi ke sistem informasi Puskesmas; integrasi tautan rujukan ke antrean Mobile JKN BPJS Kesehatan. & Status peserta resmi \textit{Regulatory Sandbox}; serah terima data berstandar FHIR R4; integrasi pendaftaran poli via Mobile JKN. \\
+\textbf{Inferensi AI\newline(\textit{OpenRouter API})} & \textbf{Rp180.280 / bulan} & Melayani panggilan tunggal terstruktur (\textit{single-call JSON}) model keluarga Gemma + pengenalan obat. Dengan $\sim 1.550$ token/skrining dan \textit{cache} 24 jam, anggaran ini mencukupi $\sim \mathbf{15.000\text{--}20.000}$ skrining penuh/bulan ($\approx \text{Rp}9\text{--}\text{Rp}12$ per pasien). \\
 \midrule
-\textbf{Kuartal IV\newline(Bulan 10--12)} & Perluasan Nasional \& Komunitas & Perluasan ke 100+ Puskesmas di berbagai provinsi; integrasi data skrining mandiri dengan Posbindu PTM dan program Cek Kesehatan Gratis (CKG). & Adopsi aktif di 100+ Puskesmas; deteksi dini tren penyakit komunitas tanpa pengumpulan NIK. \\
+\textbf{Domain \& DNS Resmi} & \textbf{Rp25.000 / bulan} & Biaya tahunan nama domain resmi (\text{Rp}300.000/tahun) dibagi rata per bulan. \\
+\midrule
+\textbf{Total Biaya Server} & \textbf{Rp295.280 / bulan} & \textbf{Titik Impas (\textit{Break-Even}): Cukup 1 langganan klinik mitra (Rp400.000/bulan) sudah menutup seluruh biaya server sebulan penuh.} \\
+\midrule
+\multicolumn{3}{l}{\textbf{B. Skema Keberlanjutan Pendapatan (Skrining Inti Masyarakat Tetap Gratis)}} \\
+\midrule
+\textbf{1. Dasbor Faskes\newline(Klinik \& Puskesmas)} & \textbf{Rp250.000--Rp400.000\newline/ bulan / faskes} & Layanan B2B pra-triase loket lewat pemindaian QR dan rekapitulasi keluhan pasien datang untuk memangkas antrean administrasi. \\
+\midrule
+\textbf{2. Lisensi API \& Kemitraan Surveilans} & \textbf{Rp15.000.000--Rp40.000.000 / tahun} & Akses agregat tren penyakit per wilayah tanpa identitas langsung (kelompok $<10$ disembunyikan) bagi LSM/NGO eliminasi penyakit tropis, institusi riset, atau kemitraan CSR kesehatan. \\
+\midrule
+\textbf{3. TropiCare Plus\newline(Pantau PTM Mandiri)} & \textbf{Rp15.000 / bulan\newline(Opsional)} & Fitur tambahan bagi penderita hipertensi atau diabetes untuk memantau grafik tren tekanan darah dan gula darah jangka panjang. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsection{Matriks Analisis Risiko dan Strategi Mitigasi Konkret}
+\subsection{Peta Jalan Pengembangan, Mitigasi Risiko, dan Indikator Kinerja (KPI)}
 
-Penerapan kecerdasan buatan pada sektor kesehatan memerlukan mitigasi risiko berlapis. TropiCare menanamkan prinsip keselamatan dan pelindungan privasi langsung ke dalam arsitektur sistem (\textit{safety and privacy by design}), sebagaimana dirangkum pada Tabel~\ref{tab:risiko}.
+Pelaksanaan pengembangan selama 12 bulan dari tahap validasi hingga integrasi ekosistem, beserta matriks mitigasi risiko dan indikator kinerja utama (KPI), dirangkum pada Tabel~\ref{tab:roadmap} dan Tabel~\ref{tab:kpi}.
 
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Matriks Analisis Risiko dan Mitigasi TropiCare}\label{tab:risiko}
+\caption{Peta Jalan Pengembangan 12 Bulan dan Matriks Mitigasi Risiko Utama}\label{tab:roadmap}
 \vspace{3pt}
-\begin{tabularx}{\textwidth}{p{2.8cm} X X p{3.2cm}}
+\begin{tabularx}{\textwidth}{p{2.5cm} p{3.1cm} X p{3.8cm}}
 \toprule
-\textbf{Dimensi} & \textbf{Potensi Risiko} & \textbf{Strategi Mitigasi Konkret} & \textbf{Standar Acuan} \\
+\textbf{Tahap \& Periode} & \textbf{Fokus \& Risiko Utama} & \textbf{Aktivitas Eksekusi \& Mitigasi Konkret} & \textbf{Luaran Kunci (\textit{Milestone})} \\
 \midrule
-\textbf{Risiko Klinis} & Halusinasi model AI atau salah rujukan kondisi gawat darurat. & Deteksi 11 tanda bahaya darurat langsung di peramban tanpa AI; pembatasan rujukan murni pada pedoman resmi Kemenkes; penafian tegas non-diagnosis. & KMK No. 1186/2022 \citep{Kemenkes2022a}; Standar Kompetensi Dokter \citep{KKI2012}. \\
+\textbf{Tahap 1\newline(Bulan 1--3)} & Validasi Klinis \& Mitigasi Risiko Halusinasi AI & Uji buta 100 kartu kasus dokter; kalibrasi bobot aturan JSON bersama statistisi; pemutusan 11 tanda bahaya langsung di browser tanpa AI (\textit{safety gate}); uji kemudahan pakai (SUS). & Akurasi triase $>92\%$ tanpa kasus darurat terlewat; skor SUS $>80$ (\textit{Grade A}); 304 kasus uji backend lulus. \\
 \midrule
-\textbf{Risiko Privasi \& Hukum} & Kebocoran data kesehatan sensitif atau nomor identitas kependudukan (NIK). & Arsitektur \textit{Zero-NIK}; hitung jarak faskes lokal di HP tanpa kirim GPS ke peladen; pertukaran data via QR Code luring tanpa simpan data di cloud. & UU Pelindungan Data Pribadi No. 27/2022 \citep{UUPDP2022}. \\
+\textbf{Tahap 2\newline(Bulan 4--6)} & Pilot Klinik/FKTP \& Mitigasi Beban Loket & Pilot di 10 klinik pratama dan Puskesmas wilayah endemis; penerapan pemindaian QR rangkuman tanpa ketik ulang (\textit{zero-retyping}); kurasi nomor WhatsApp aktif faskes. & Operasional di 10 faskes pilot; biaya server tertutup penuh dari langganan mitra awal (\textit{self-sustaining}). \\
 \midrule
-\textbf{Risiko Teknis} & Internet terputus (\textit{blank spot}) di daerah terpencil saat pasien membutuhkan bantuan. & Logika 11 tanda bahaya darurat dan navigasi faskes berjalan di peramban tanpa jaringan; jawaban non-darurat tersimpan di memori ponsel sampai koneksi pulih. & Cetak Biru DTO Kemenkes 2024--2030 \citep{KemenkesDTO2024}. \\
+\textbf{Tahap 3\newline(Bulan 7--9)} & TropiCare Plus, Regulasi \& Privasi Data & Peluncuran modul grafik Pantau PTM; pendaftaran \textit{Regulatory Sandbox} Kemenkes RI \citep{UUKesehatan2023,KemenkesDTO2024}; audit kepatuhan UU PDP No. 27/2022 (Zero-NIK, lokasi tetap di perangkat) \citep{UUPDP2022}. & Terdaftar di \textit{Regulatory Sandbox} Kemenkes; modul Pantau PTM aktif; jembatan rujukan Mobile JKN teruji. \\
 \midrule
-\textbf{Risiko Adopsi Puskesmas} & Petugas loket menolak memakai sistem karena menambah beban pengetikan manual. & Alur \textit{Zero-Retyping}: petugas memindai kode QR di layar HP pasien dan ringkasan terstruktur langsung tampil di layar, tanpa entri ulang. & Permenkes No. 24/2022 tentang Rekam Medis \citep{Permenkes2022}. \\
+\textbf{Tahap 4--5\newline(Bulan 10--12)} & White-Label LSM \& API Mitra Surveilans & Kemitraan white-label dengan LSM pemberantasan penyakit tropis (TBC, Kusta, NTD); pembukaan API agregat wilayah bagi Dinkes (kelompok $<10$ disembunyikan); persiapan pemetaan standar FHIR R4. & Adopsi di 100+ faskes; dasbor surveilans agregat wilayah beroperasi; kesiapan interoperabilitas nasional. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsection{Indikator Kinerja Utama Terukur (\textit{Key Performance Indicators})}
-
-Keberhasilan implementasi TropiCare diukur menggunakan lima indikator kinerja utama kuantitatif yang transparan dan dapat diaudit (Tabel~\ref{tab:kpi}).
-
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Indikator Kinerja Utama (KPI) Implementasi TropiCare}\label{tab:kpi}
+\caption{Indikator Kinerja Utama (KPI) Keberhasilan Implementasi TropiCare}\label{tab:kpi}
 \vspace{3pt}
 \begin{tabularx}{\textwidth}{p{1.4cm} p{4.2cm} p{2.2cm} X}
 \toprule
 \textbf{Kode} & \textbf{Indikator Kinerja} & \textbf{Target} & \textbf{Metode Pengukuran} \\
 \midrule
-\textbf{KPI-1} & Akurasi Triase terhadap Dokter Spesialis & $\mathbf{>92\%}$ & Uji buta ganda kesesuaian rekomendasi triase pada 100 kartu kasus klinis dan rekam medis, dengan syarat tidak ada satu pun kasus darurat yang terlewat. \\
+\textbf{KPI-1} & Akurasi Triase terhadap Dokter & $\mathbf{>92\%}$ & Uji kesesuaian rute triase pada 100 kartu kasus klinis dokter, dengan syarat tidak ada satu pun kondisi darurat yang terlewat. \\
 \midrule
-\textbf{KPI-2} & Pengurangan Waktu Tunggu Loket Puskesmas & $\mathbf{\ge 40\%}$ & Pengukuran waktu registrasi pasien pengguna QR TropiCare dibandingkan pendaftaran konvensional. \\
+\textbf{KPI-2} & Efisiensi Waktu Registrasi Loket & $\mathbf{\ge 40\%}$ & Pemangkasan waktu wawancara awal di loket faskes melalui pemindaian QR rangkuman dibandingkan pendaftaran manual. \\
 \midrule
-\textbf{KPI-3} & Kepatuhan Pasien Puasa Sebelum Cek Darah & $\mathbf{>85\%}$ & Persentase pasien skrining PTM yang datang memenuhi syarat puasa 10--12 jam berkat panduan otomatis sistem. \\
+\textbf{KPI-3} & Kepatuhan Puasa Pra-Laboratorium & $\mathbf{>85\%}$ & Proporsi pasien skrining jalur PTM yang datang ke FKTP memenuhi syarat puasa 10--12 jam berkat instruksi pada hasil skrining. \\
 \midrule
-\textbf{KPI-4} & Kecepatan Respons Deteksi Tanda Bahaya & $\mathbf{<500\text{ ms}}$ & Waktu respon peramban dari ketukan gejala bahaya hingga layar darurat IGD aktif di ponsel pengguna awam. \\
+\textbf{KPI-4} & Kecepatan Deteksi Tanda Bahaya & $\mathbf{<500\text{ ms}}$ & Waktu respon peramban dari ketukan tanda bahaya hingga layar Rute Merah dan tombol 119 tampil di ponsel pasien. \\
 \midrule
-\textbf{KPI-5} & Skor Kemudahan Pakai (\textit{Usability Scale}) & $\mathbf{>80}$ (\textit{Grade A}) & Pengujian antarmuka standar \textit{System Usability Scale} pada pengguna lintas generasi dan kader Posyandu. \\
+\textbf{KPI-5} & Skor Kemudahan Pakai (\textit{SUS}) & $\mathbf{>80}$ (\textit{Grade A}) & Evaluasi kuesioner standar \textit{System Usability Scale} pada masyarakat umum dan petugas faskes. \\
 \bottomrule
 \end{tabularx}
 \end{table}
