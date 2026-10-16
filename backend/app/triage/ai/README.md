@@ -141,3 +141,37 @@ TRIAGE_AI_DEADLINE_S=40
 ## Privasi
 
 Data boleh keluar server (keputusan tim). Dengan Gemini API atau OpenRouter, fakta pasien (teks pilihan, usia, jenis kelamin, provinsi; tanpa identitas) dikirim ke Google (lewat OpenRouter bila memakai OpenRouter). Menurut Google, data di kuota gratis dipakai untuk memperbaiki produknya dan bisa dibaca peninjau manusia. Sebutkan ini di teks persetujuan dan di klaim deck.
+
+## Literatur: embedding offline
+
+`data/<flow>_literature.json` dibangun oleh `scripts/build_literature.py` dengan `google/embeddinggemma-2` (teks saja, float32, CPU, 768 dimensi, dinormalisasi; `method = "embedding-v1"`). Skor = cosine similarity. Runtime tidak memuat model, hanya membaca JSON.
+
+```bash
+cd backend
+cp /path/infection_chunks_merged_v5.jsonl app/triage/ai/data/infection_chunks.jsonl
+uv run --with sentence-transformers python scripts/embed_langcheck.py --chunks app/triage/ai/data/infection_chunks.jsonl   # harus LOLOS dulu
+uv run --with sentence-transformers python scripts/build_literature.py --flow infection --chunks app/triage/ai/data/infection_chunks.jsonl
+```
+
+Jangan pakai float16 (NaN). Skrip menolak vektor NaN atau tidak ternormalisasi. Persentil cosine dicetak ke stderr; kalau mau membuang hit lemah, ulangi dengan `--min-score`.
+
+**Prioritas kartu.** Awalan `[Penyakit · Bagian]` di teks kartu dibaca saat runtime. Skor tiap kartu dikali bobot bagian (`SECTION_WEIGHT` di `literature.py`): Gejala dan Kriteria Diagnosis 1,5, Tatalaksana, Pencegahan, dan Kriteria Rujukan 0,6, lainnya 1. Jawaban `eco:` tidak diberi bobot (itu soal asal penyakit, bukan gejala). Mengubah bobot tidak perlu membangun ulang JSON.
+
+## A/B: rules vs AI tanpa RAG vs AI dengan RAG
+
+Paling bersih lewat skrip (tiap arm punya engine dan cache sendiri):
+
+```bash
+cd backend
+TRIAGE_AI_API_KEY=... python scripts/ab_compare.py --repeat 2 --out ab.jsonl
+```
+
+Lewat Swagger (`/docs`, Authorize sebagai superuser):
+
+| Arm | Setelan server | Endpoint |
+|---|---|---|
+| rules | bebas | `POST /api/v1/triage/flows/infection/score?preview=true` |
+| ai_no_rag | `TRIAGE_AI_SOURCES_PER_CANDIDATE_SINGLE=0` | `POST /api/v1/ai/score` |
+| ai_rag | `TRIAGE_AI_SOURCES_PER_CANDIDATE_SINGLE=1` (atau 2) | `POST /api/v1/ai/score` |
+
+Ganti setelan lalu **restart server** di antara arm. Cache hasil AI di memori dan kuncinya tidak memuat setelan, jadi tanpa restart (atau `TRIAGE_AI_CACHE_TTL_S=0`) arm kedua menjawab dengan hasil arm pertama. Tanda cache kena: `calls: 0` dan `latency_ms: 0`. Hasil dengan `engine: "rules"` dan `fallback: true` bukan hasil AI, buang. Pakai body jawaban yang sama persis di ketiga arm.

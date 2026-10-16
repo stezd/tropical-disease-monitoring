@@ -4,7 +4,7 @@ The form is multiple choice, so "which excerpts fit this answer" is computed onc
 offline, for every option, and saved as data/<flow_id>_literature.json:
 
     {
-      "version": 1, "flow_id": "infection", "method": "bm25-v1", "built_at": "...",
+      "version": 1, "flow_id": "infection", "method": "embedding-v1", "built_at": "...",
       "chunks":  {"c001": {"disease": "tbc", "citation": "...", "text": "..."}},
       "default": {"tbc": ["c003", "c001"]},            # when no answer points anywhere
       "options": {"pattern:tbc": {"tbc": [["c003", 4.1], ["c001", 2.0]]}}
@@ -37,6 +37,23 @@ FORMAT_VERSION = 1
 # A search for "tanpa darah" finds excerpts about blood, the opposite of the answer, so
 # they are cut for retrieval only. The model always sees the full option text.
 _NEGATIVE = re.compile(r"\b(tanpa|tidak|belum)\b[^,;()]*", re.IGNORECASE)
+
+
+# Each excerpt starts with "[Penyakit · Bagian]". Facts the patient gave are symptoms, so
+# the cards that describe symptoms and the diagnostic criteria come first; treatment,
+# prevention and referral cards only fill the remaining slots. Weights multiply the
+# retrieval score at runtime, so the JSON on disk does not change when they are tuned.
+_SECTION = re.compile(r"^\[[^\]\n]*? · ([^\]\n]+)\]")
+SECTION_WEIGHT: dict[str, float] = {
+    "Gejala": 1.5,
+    "Kriteria Diagnosis": 1.5,
+    "Tatalaksana": 0.6,
+    "Pencegahan": 0.6,
+    "Kriteria Rujukan": 0.6,
+}
+# Exposure answers (flood, lake, crowded housing) are about where the disease comes
+# from, which lives in Definisi and Pencegahan cards: no section preference there.
+_UNWEIGHTED_KEYS = ("eco:",)
 
 
 def retrieval_text(text: str) -> str:
@@ -114,6 +131,16 @@ class Chunk:
     citation: str
     text: str
 
+    @property
+    def section(self) -> str:
+        """The card type from the "[Penyakit · Bagian]" prefix, "" when there is none."""
+        m = _SECTION.match(self.text)
+        return m.group(1).strip() if m else ""
+
+    @property
+    def weight(self) -> float:
+        return SECTION_WEIGHT.get(self.section, 1.0)
+
 
 class Literature:
     """Excerpts for one flow. Empty when the file does not exist (no sources sent)."""
@@ -149,18 +176,24 @@ class Literature:
         return lit
 
     def for_disease(self, disease: str, keys: list[str], k: int) -> list[Chunk]:
-        """Top `k` excerpts about `disease` for the picked options (summed scores)."""
+        """Top `k` excerpts about `disease` for the picked options.
+
+        Score = sum over picked options of retrieval score x section weight, so Gejala
+        and Kriteria Diagnosis cards win over closer-matching Tatalaksana cards.
+        """
         if k <= 0:
             return []
         total: dict[str, float] = {}
         for key in keys:
+            plain = key.startswith(_UNWEIGHTED_KEYS)
             for cid, score in self.options.get(key, {}).get(disease, []):
-                total[cid] = total.get(cid, 0.0) + float(score)
+                w = 1.0 if plain else self.chunks[cid].weight
+                total[cid] = total.get(cid, 0.0) + float(score) * w
         ranked = sorted(total, key=lambda c: total[c], reverse=True)
-        for cid in self.default.get(disease, []):
-            if cid not in total:
-                ranked.append(cid)
-        return [self.chunks[c] for c in ranked[:k]]
+        # sorted() is stable: inside a weight class the builder's order is kept.
+        rest = [c for c in self.default.get(disease, []) if c not in total]
+        rest.sort(key=lambda c: self.chunks[c].weight, reverse=True)
+        return [self.chunks[c] for c in (ranked + rest)[:k]]
 
 
 def as_sources(chunks: list[Chunk]) -> list[Source]:

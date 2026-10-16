@@ -98,3 +98,66 @@ def test_sources_are_labelled() -> None:
 def test_missing_file_means_no_sources() -> None:
     lit = Literature.load(DATA_DIR / "does_not_exist.json")
     assert lit.for_disease("dbd", [], 3) == []
+
+
+def _lit(chunks: dict[str, str], default: list[str], options: dict) -> Literature:
+    return Literature(
+        {
+            "chunks": {
+                cid: {"disease": "dbd", "citation": "x", "text": text}
+                for cid, text in chunks.items()
+            },
+            "default": {"dbd": default},
+            "options": options,
+        }
+    )
+
+
+SECTIONS = {
+    "t": "[Dengue · Tatalaksana] Beri cairan.",
+    "g": "[Dengue · Gejala] Demam tinggi mendadak.",
+    "k": "[Dengue · Kriteria Diagnosis] Demam 2 sampai 7 hari ditambah dua tanda.",
+    "p": "[Dengue · Pencegahan] Berantas sarang nyamuk.",
+    "n": "Teks tanpa awalan.",
+}
+
+
+def test_section_is_read_from_the_prefix() -> None:
+    lit = _lit(SECTIONS, [], {})
+    assert {c: lit.chunks[c].section for c in SECTIONS} == {
+        "t": "Tatalaksana",
+        "g": "Gejala",
+        "k": "Kriteria Diagnosis",
+        "p": "Pencegahan",
+        "n": "",
+    }
+    assert lit.chunks["n"].weight == 1.0
+
+
+def test_symptom_cards_beat_closer_treatment_cards() -> None:
+    lit = _lit(
+        SECTIONS,
+        [],
+        {"pattern:A:dbd": {"dbd": [["t", 0.62], ["g", 0.50], ["k", 0.48]]}},
+    )
+    got = [c.id for c in lit.for_disease("dbd", ["pattern:A:dbd"], 3)]
+    assert got == ["g", "k", "t"]
+
+
+def test_exposure_answers_have_no_section_preference() -> None:
+    lit = _lit(
+        SECTIONS,
+        [],
+        {"eco:banjir": {"dbd": [["p", 0.60], ["g", 0.55]]}},
+    )
+    assert [c.id for c in lit.for_disease("dbd", ["eco:banjir"], 2)] == ["p", "g"]
+
+
+def test_default_excerpts_put_symptom_cards_first() -> None:
+    lit = _lit(SECTIONS, ["t", "p", "k", "g"], {})
+    assert [c.id for c in lit.for_disease("dbd", [], 2)] == ["k", "g"]
+
+
+def test_section_weights_do_not_hide_cards_when_nothing_else_exists() -> None:
+    lit = _lit({"t": SECTIONS["t"]}, ["t"], {})
+    assert [c.id for c in lit.for_disease("dbd", [], 3)] == ["t"]
