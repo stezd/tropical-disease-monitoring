@@ -124,7 +124,7 @@ def test_openai_compat() -> None:
         return httpx.Response(
             200,
             json={
-                "model": "medgemma",
+                "model": "Gemma4",
                 "choices": [
                     {"message": {"content": '{"score": 1}'}, "finish_reason": "stop"}
                 ],
@@ -134,7 +134,7 @@ def test_openai_compat() -> None:
 
     http = httpx.Client(transport=httpx.MockTransport(handler))
     c = OpenAICompatClient(
-        "medgemma",
+        "Gemma4",
         "http://gpu:8000/v1",
         "tok",
         http=http,

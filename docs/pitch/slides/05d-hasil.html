@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TropiCare · Hasil &amp; tindak lanjut</title>
+<link rel="stylesheet" href="../shared/deck.css">
+<link rel="stylesheet" href="../shared/phone.css">
+<style>
+  .wrap { display: flex; flex-direction: row; align-items: center; gap: 56px; height: 100%; }
+  .left { width: 520px; flex: none; }
+  .left .title { font-size: 68px; }
+  .left .lead { font-size: 32px; margin-top: 8px; }
+  .left .chips { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; margin-top: 36px; }
+  .phones { display: flex; gap: 52px; align-items: flex-start; justify-content: center; flex: 1; }
+  .phone-fig figcaption { font-size: 24px; }
+  .phone-fig figcaption small { font-size: 22px; line-height: 1.3; }
+</style>
+</head>
+<body data-slide="05d-hasil">
+<div class="slide">
+  <div class="slide-inner">
+    <div class="wrap">
+      <div class="left">
+        <span class="kicker">HASIL</span>
+        <div class="title-wrap"><h1 class="title">Hasil &amp; tindak lanjut</h1></div>
+        <p class="lead">Pasien langsung tahu harus ke mana, dan petugas tidak perlu menanyakan ulang.</p>
+        <div class="chips">
+          <span class="route-chip kuning"><i>🏥</i>Kuning · Puskesmas</span>
+          <span class="pill">🩺 Skrining, bukan diagnosis dokter</span>
+        </div>
+      </div>
+      <div class="phones">
+        <figure class="phone-fig" style="--s:0.8">
+          <div class="phone"><iframe src="../mockups/hasil.html" title="Layar hasil" scrolling="no"></iframe></div>
+          <figcaption>Rute &amp; skor kecocokan<small>Perkiraan penyakit beserta tindakan yang harus dilakukan</small></figcaption>
+        </figure>
+        <figure class="phone-fig" style="--s:0.8">
+          <div class="phone"><iframe src="../mockups/faskes.html" title="Faskes terdekat" scrolling="no"></iframe></div>
+          <figcaption>5 Fasilitas kesehatan terdekat<small>dilengkapi Google Maps &amp; WhatsApp</small></figcaption>
+        </figure>
+        <figure class="phone-fig" style="--s:0.8">
+          <div class="phone"><iframe src="../mockups/rangkuman.html" title="Rangkuman" scrolling="no"></iframe></div>
+          <figcaption>Riwayat, QR &amp; Mobile JKN<small>Simpan rangkuman, tunjukkan QR ke petugas, akses Mobile JKN</small></figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/deck.js"></script>
+</body>
+</html>

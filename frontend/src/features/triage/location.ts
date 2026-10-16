@@ -1,7 +1,7 @@
 // User location → province, in the browser (AGENTS.md "Data diri · Lokasi").
 // Asked right after the privacy tick (screens/Consent.tsx), on both paths.
-// The server passes the province to MedGemma as the fact "Provinsi tempat
-// tinggal" (backend/app/triage/medgemma.py, docs/Format-MedGemma.md). No
+// The server passes the province to Gemma4 as the fact "Provinsi tempat
+// tinggal" (backend/app/triage/Gemma4.py, docs/Format-Gemma4.md). No
 // per-province weights.
 //
 // Coordinates stay on the device: nearest-facility picking ranks in the browser

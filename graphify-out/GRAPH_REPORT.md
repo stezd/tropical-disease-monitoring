@@ -262,7 +262,7 @@ Nodes (11): create_user(), delete_user(), delete_user_me(), read_user_by_id(), r
 
 ### Community 28 - "Project Documentation Overview"
 Cohesion: 0.12
-Nodes (18): Deploy with Docker Compose, Playwright Tests Workflow, Serena Project Config, Chronic Path (PTM Screening), Infection Path (20 Tropical Diseases), JSON Quiz Content (backend/app/triage/content/), MedGemma + RAG Prediction (self-hosted), Referral Routes (MERAH / KUNING KHUSUS / KUNING / HIJAU) (+10 more)
+Nodes (18): Deploy with Docker Compose, Playwright Tests Workflow, Serena Project Config, Chronic Path (PTM Screening), Infection Path (20 Tropical Diseases), JSON Quiz Content (backend/app/triage/content/), Gemma4 + RAG Prediction (self-hosted), Referral Routes (MERAH / KUNING KHUSUS / KUNING / HIJAU) (+10 more)
 
 ### Community 29 - "Frontend Bootstrap & Theming"
 Cohesion: 0.11

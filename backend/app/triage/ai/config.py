@@ -26,7 +26,7 @@ class AISettings(BaseSettings):
     )
 
     # "gemini" = Google AI Studio API. "openai_compat" = any OpenAI-style server
-    # (e.g. vLLM serving MedGemma on a GPU). "off" = always use RuleEngine.
+    # (e.g. vLLM serving Gemma4 on a GPU). "off" = always use RuleEngine.
     PROVIDER: Provider = "gemini"
     # Flash-Lite answered reliably on the free tier (15 Oct 2026); gemini-3.6-flash
     # answered 503 three times in a row. Flash can be the main model with Flash-Lite

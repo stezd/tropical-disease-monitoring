@@ -1,0 +1,58 @@
+/* Phone frame for app mockups.
+   Usage:
+   <figure class="phone-fig" style="--s:1">
+     <div class="phone"><iframe src="../mockups/home.html" title="..." scrolling="no"></iframe></div>
+     <figcaption>Keterangan</figcaption>
+   </figure>
+   --s scales the phone (1 = 390×844). The iframe keeps a 390px viewport,
+   so the app's mobile CSS applies as-is. */
+.phone-fig {
+  --s: 1;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+.phone {
+  position: relative;
+  width: calc(390px * var(--s));
+  height: calc(844px * var(--s));
+  border-radius: calc(40px * var(--s));
+  overflow: hidden;
+  background: #fff;
+  box-shadow:
+    0 0 0 9px #fff,
+    0 0 0 10px #e1edea,
+    0 28px 60px rgba(15, 107, 102, 0.25);
+}
+
+.phone iframe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 390px;
+  height: 844px;
+  border: 0;
+  transform: scale(var(--s));
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.phone-fig figcaption {
+  max-width: calc(390px * var(--s) + 40px);
+  text-align: center;
+  font-size: 26px;
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.phone-fig figcaption small {
+  display: block;
+  margin-top: 6px;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink2);
+}

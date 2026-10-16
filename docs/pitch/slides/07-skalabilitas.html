@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TropiCare · Skalabilitas</title>
+<link rel="stylesheet" href="../shared/deck.css">
+<style>
+  .title-wrap { margin-bottom: 20px; }
+  .sc { padding-top: 60px; padding-bottom: 20px; }
+  .sc .icon-dot { margin-bottom: 16px; }
+  .sc ul { margin: 0; padding-left: 28px; font-size: 26px; line-height: 1.4; }
+  .sc li { margin-bottom: 10px; }
+  .sc li::marker { color: var(--teal-mid); }
+  .road { margin-top: 40px; position: relative; display: flex; justify-content: space-between; }
+  .road::before { content: ""; position: absolute; left: 70px; right: 70px; top: 34px; height: 6px; background: var(--teal-mid); border-radius: 3px; }
+  .rs { position: relative; z-index: 1; width: 280px; text-align: center; }
+  .rs .dot { width: 74px; height: 74px; margin: 0 auto 14px; border-radius: 50%; background: var(--teal); color: #fff; font-size: 34px; font-weight: 700; display: grid; place-items: center; box-shadow: var(--shadow-btn); border: 6px solid var(--backdrop); }
+  .rs .nm { font-size: 28px; font-weight: 600; line-height: 1.2; }
+</style>
+</head>
+<body data-slide="07-skalabilitas">
+<div class="slide">
+  <div class="slide-inner">
+    <span class="kicker">SKALABILITAS</span>
+    <div class="title-wrap"><h1 class="title">Skalabilitas</h1></div>
+
+    <div class="grid3" >
+      <div class="card has-tab sc">
+        <span class="tab">Teknis</span>
+        <div class="icon-dot sm sky">⚙️</div>
+        <ul>
+          <li>Endpoint skoring stateless</li>
+          <li>Ports &amp; adapters: mesin skor atau model AI diganti di lapisan composition tanpa mengubah logika</li>
+          <li>Tanda bahaya jalan di browser</li>
+        </ul>
+      </div>
+      <div class="card has-tab sc">
+        <span class="tab">Konten</span>
+        <div class="icon-dot sm mint">📝</div>
+        <ul>
+          <li>Soal, opsi, dan bobot ada di JSON, bukan di React</li>
+          <li>Dokter dan statistikawan menambah penyakit atau wilayah tanpa menyentuh frontend</li>
+          <li>Perubahan medis wajib OK dokter</li>
+        </ul>
+      </div>
+      <div class="card has-tab sc">
+        <span class="tab">Jangkauan</span>
+        <div class="icon-dot sm butter">🗺️</div>
+        <ul>
+          <li>Dasbor Puskesmas dan klinik</li>
+          <li>Surveilans wilayah untuk Dinkes dari statistik tanpa identitas langsung (kelompok &lt; 10 disembunyikan)</li>
+          <li>White-label untuk LSM dan API untuk mitra</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="road">
+      <div class="rs"><div class="dot">1</div><div class="nm">Validasi</div></div>
+      <div class="rs"><div class="dot">2</div><div class="nm">Pilot klinik</div></div>
+      <div class="rs"><div class="dot">3</div><div class="nm">TropiCare Plus</div></div>
+      <div class="rs"><div class="dot">4</div><div class="nm">White-label</div></div>
+      <div class="rs"><div class="dot">5</div><div class="nm">API mitra</div></div>
+    </div>
+  </div>
+</div>
+<script src="../shared/deck.js"></script>
+</body>
+</html>

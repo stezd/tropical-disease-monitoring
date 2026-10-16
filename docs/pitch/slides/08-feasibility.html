@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TropiCare · Kelayakan</title>
+<link rel="stylesheet" href="../shared/deck.css">
+<style>
+  .main { display: grid; grid-template-columns: 640px 1fr; gap: 40px; margin-top: 14px; }
+  .fc { padding-top: 64px; }
+  .cost { display: flex; justify-content: space-between; align-items: center; font-size: 28px; padding: 14px 0; border-bottom: 2px solid var(--line); }
+  .cost span:last-child { font-weight: 600; }
+  .total { display: flex; justify-content: space-between; align-items: baseline; margin-top: 22px; }
+  .total .l { font-size: 28px; font-weight: 600; }
+  .total .v { font-size: 54px; font-weight: 700; color: var(--teal-deep); line-height: 1; }
+  .tiles3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .mt { background: var(--mint-card); border-radius: 22px; padding: 24px 22px; display: flex; flex-direction: column; }
+  .mt .icon-dot { margin-bottom: 14px; }
+  .mt h3 { margin: 0; font-size: 30px; line-height: 1.2; font-weight: 700; color: var(--ink); }
+  .mt p { margin: 10px 0 0; font-size: 24px; line-height: 1.4; font-weight: 400; color: var(--ink2); }
+  .mt .pr { margin-top: auto; padding-top: 14px; font-size: 29px; white-space: nowrap; font-weight: 700; color: var(--teal-deep); line-height: 1.15; }
+  .mt .pr small { display: block; margin-top: 2px; font-size: 22px; font-weight: 600; color: var(--ink2); }
+  .punch { margin-top: 22px; font-size: 28px; line-height: 1.45; font-weight: 600; display: flex; gap: 16px; align-items: center; }
+</style>
+</head>
+<body data-slide="08-feasibility">
+<div class="slide">
+  <div class="slide-inner">
+    <span class="kicker">KELAYAKAN</span>
+    <div class="title-wrap"><h1 class="title">Feasibility</h1></div>
+
+    <div class="main">
+      <div class="card has-tab fc">
+        <span class="tab">Biaya aplikasi</span>
+        <div class="cost"><span>Railway hobby plan</span><span>Rp90 rb/bulan</span></div>
+        <div class="cost"><span>OpenRouter</span><span>Rp180,28 rb/bulan</span></div>
+        <div class="cost"><span>Domain</span><span>Rp25 rb/bulan</span></div>
+        <div class="total"><span class="l">Total</span><span class="v">Rp295,28 rb<small style="font-size:26px;font-weight:600;">/bulan</small></span></div>
+      </div>
+
+      <div class="card has-tab fc">
+        <span class="tab">Monetisasi</span>
+        <div class="tiles3">
+          <div class="mt"><div class="icon-dot sky">🏥</div><h3>Dasbor faskes</h3><p>Pra-triase lewat QR dan rekap keluhan untuk Puskesmas dan klinik.</p><div class="pr">~Rp250–400 rb<small>/bulan</small></div></div>
+          <div class="mt"><div class="icon-dot butter">🔌</div><h3>Sewa API</h3><p>Akses data skrining tanpa identitas langsung, berupa agregat per wilayah.</p><div class="pr">~Rp15–40 jt<small>/tahun</small></div></div>
+          <div class="mt"><div class="icon-dot rose">❤️</div><h3>Pantau PTM</h3><p>Grafik tren tensi dan gula darah untuk penderita hipertensi atau diabetes.</p><div class="pr">~Rp15 rb<small>/bulan</small></div></div>
+        </div>
+        <div style="margin-top: 26px;"><span class="pill">🌿 Skrining inti tetap gratis</span></div>
+      </div>
+    </div>
+
+    <div class="punch"><span class="icon-dot sm mint">💡</span><span>Satu langganan klinik (Rp400 rb) sudah menutup biaya server sebulan (Rp295,28 rb).</span></div>
+  </div>
+</div>
+<script src="../shared/deck.js"></script>
+</body>
+</html>

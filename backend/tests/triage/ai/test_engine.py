@@ -26,7 +26,7 @@ from app.triage.ai.quota import QuotaGuard
 from app.triage.content import FlowContent, get_content
 from app.triage.scoring import RuleEngine
 
-# Same case as docs/Format-MedGemma.md: malaria pattern, Papua, Paracetamol.
+# Same case as docs/Format-Gemma4.md: malaria pattern, Papua, Paracetamol.
 MALARIA = {
     "who": "self",
     "age": 22,

@@ -1,8 +1,8 @@
-# Format Masukan dan Keluaran MedGemma
+# Format Masukan dan Keluaran Gemma4
 
 - **Untuk:** ST. Ini usulan; ST yang memutuskan.
 - **ID penyakit dan pilihan:** `backend/app/triage/content/<flow>/diseases.json` dan `flow.json`
-- **Kode:** `backend/app/triage/medgemma.py` (kalau berbeda dengan dokumen ini, kode yang benar)
+- **Kode:** `backend/app/triage/Gemma4.py` (kalau berbeda dengan dokumen ini, kode yang benar)
   - Input: `TextRequest`
   - Output: `TextOutput`
   - Jawaban → fakta: `build_request()`
@@ -12,10 +12,10 @@
 
 **Sudah ada**
 - ✅ Kontrak input/output (Pydantic) untuk skor teks. Tahap foto dihapus (15 Okt 2026), jadi tidak ada lagi kontrak foto dan fakta "Temuan foto".
-- ✅ Jawaban pasien → fakta F1..Fn → pesan ke MedGemma
+- ✅ Jawaban pasien → fakta F1..Fn → pesan ke Gemma4
 - ✅ Lokasi pasien → nama provinsi → fakta `Provinsi tempat tinggal`, ditanya di data diri jalur infeksi (tanpa koordinat)
 - ✅ JSON Schema untuk membatasi jawaban model
-- ✅ Keluaran MedGemma → skor dan alasan → hasil (rute tetap dari aturan)
+- ✅ Keluaran Gemma4 → skor dan alasan → hasil (rute tetap dari aturan)
 
 **Belum ada**
 - ✅ Memanggil model di server: `backend/app/triage/ai` (Gemini, atau API kompatibel OpenAI seperti OpenRouter)
@@ -115,7 +115,7 @@ Catatan:
   ```
 
   Kategori tensi dan patokan GDS ≥ 200 mg/dL dari DR (15 Okt 2026, [Acuan-Medis.md](Acuan-Medis.md) §8). Asam urat dan kolesterol total dikirim apa adanya, tanpa label, karena ambangnya belum diputuskan (K32).
-- Versi format fakta: `PROMPT_VERSION = "p2"` di `medgemma.py` (`"ai-2"` di `ai/prompts.py`).
+- Versi format fakta: `PROMPT_VERSION = "p2"` di `Gemma4.py` (`"ai-2"` di `ai/prompts.py`).
 - Lokasi: hanya nama provinsi (38 provinsi, nama sama dengan `frontend/src/features/triage/location.ts`). Tidak ada bobot per provinsi; model menimbang provinsi bersama fakta lain dan literatur RAG.
 
 Contoh `user` (jalur infeksi, cocok dengan contoh keluaran di bawah):
