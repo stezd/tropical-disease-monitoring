@@ -10,7 +10,8 @@ offline, for every option, and saved as data/<flow_id>_literature.json:
       "options": {"pattern:tbc": {"tbc": [["c003", 4.1], ["c001", 2.0]]}}
     }
 
-Option keys come from `option_queries()` (offline) and `answer_keys()` (runtime), so both
+Cards start with a "[Penyakit · Bagian]" tag; for_disease() favours the Gejala and
+Kriteria Diagnosis ones (see SYMPTOM_BOOST). Option keys come from `option_queries()` (offline) and `answer_keys()` (runtime), so both
 sides always agree. Any builder (BM25 script, Colab with EmbeddingGemma) only has to
 write this format. Excerpts are always looked up per disease: the model only sees
 literature labelled with the candidate it is about.
@@ -32,6 +33,26 @@ from app.triage.scoring import companion_shown, visible
 logger = logging.getLogger("app.triage.ai")
 
 FORMAT_VERSION = 1
+
+# Every card text starts with "[Penyakit · Bagian] ...", the PPK heading it was cut from.
+# The patient's answers are symptom facts, so cards about symptoms and diagnostic
+# criteria are what the model should see first. Tatalaksana, Komplikasi, Pencegahan
+# and the like are only useful when they match much better. Cards without a tag
+# (no heading) get no boost.
+SYMPTOM_SECTIONS = frozenset({"gejala", "kriteria diagnosis"})
+# Multiplies the summed score of a Gejala / Kriteria Diagnosis card. Measured with
+# EmbeddingGemma 2 (16 Oct 2026): cosine scores of the top cards sit within about
+# 0.67 to 0.78 of each other, so 1.05 already means "a symptom card wins if it is
+# within about 5% of the best card". 1.3 would act as a hard tier. Tune with the A/B test.
+SYMPTOM_BOOST = 1.05
+_SECTION = re.compile(r"^\[[^\]·]*·\s*([^\]]+?)\s*\]")
+
+
+def section_of(text: str) -> str:
+    """Heading from the `[Penyakit · Bagian]` tag at the start of a card, lower-cased."""
+    m = _SECTION.match(text)
+    return m.group(1).lower() if m else ""
+
 
 # Negative clauses inside option texts ("tanpa darah", "TIDAK mencekung", "belum lengkap").
 # A search for "tanpa darah" finds excerpts about blood, the opposite of the answer, so
@@ -114,6 +135,14 @@ class Chunk:
     citation: str
     text: str
 
+    @property
+    def section(self) -> str:
+        return section_of(self.text)
+
+    @property
+    def is_symptom_card(self) -> bool:
+        return self.section in SYMPTOM_SECTIONS
+
 
 class Literature:
     """Excerpts for one flow. Empty when the file does not exist (no sources sent)."""
@@ -148,19 +177,31 @@ class Literature:
             raise ValueError(f"{path}: unknown chunk ids {sorted(missing)[:5]}")
         return lit
 
-    def for_disease(self, disease: str, keys: list[str], k: int) -> list[Chunk]:
-        """Top `k` excerpts about `disease` for the picked options (summed scores)."""
+    def for_disease(
+        self,
+        disease: str,
+        keys: list[str],
+        k: int,
+        symptom_boost: float = SYMPTOM_BOOST,
+    ) -> list[Chunk]:
+        """Top `k` excerpts about `disease` for the picked options (summed scores).
+
+        Gejala and Kriteria Diagnosis cards have their score multiplied by
+        `symptom_boost` (1.0 = off), and come first among the default excerpts.
+        """
         if k <= 0:
             return []
         total: dict[str, float] = {}
         for key in keys:
             for cid, score in self.options.get(key, {}).get(disease, []):
                 total[cid] = total.get(cid, 0.0) + float(score)
+        for cid in total:
+            if self.chunks[cid].is_symptom_card:
+                total[cid] *= symptom_boost
         ranked = sorted(total, key=lambda c: total[c], reverse=True)
-        for cid in self.default.get(disease, []):
-            if cid not in total:
-                ranked.append(cid)
-        return [self.chunks[c] for c in ranked[:k]]
+        fallback = [c for c in self.default.get(disease, []) if c not in total]
+        fallback.sort(key=lambda c: not self.chunks[c].is_symptom_card)  # stable
+        return [self.chunks[c] for c in (ranked + fallback)[:k]]
 
 
 def as_sources(chunks: list[Chunk]) -> list[Source]:

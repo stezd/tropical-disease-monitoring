@@ -97,12 +97,37 @@ Tiga aturan baru dari Referensi Medis (Tahap 4, Sub-Trigger 1B) sudah ada di `ad
 
 ## Literatur
 
+Peringkat potongan dihitung offline dengan EmbeddingGemma 2 (`google/embeddinggemma-2`, teks saja, float32 di CPU, 768 dimensi, dinormalisasi). Saat runtime tidak ada model embedding; `literature.py` hanya membaca JSON.
+
 ```bash
-python scripts/build_literature.py --flow infection \
+cd backend
+# 1. Cek dulu model paham bahasa Indonesia (sekali saja, butuh unduhan model ~1 GB)
+PYTHONPATH=. uv run --with sentence-transformers --with torch --with pillow python scripts/embedding_probe.py \
     --chunks app/triage/ai/data/infection_chunks.jsonl
+# 2. Bangun ulang indeks (method "embedding-v1")
+PYTHONPATH=. uv run --with sentence-transformers --with torch --with pillow python scripts/build_literature.py \
+    --flow infection --chunks app/triage/ai/data/infection_chunks.jsonl
 ```
 
-Pembangun sementara memakai BM25 per penyakit. Notebook Colab (EmbeddingGemma) bisa menggantikannya selama menulis format yang sama (lihat docstring `literature.py`); service tidak perlu diubah. Judul lengkap dokumen 54, 20, dan 57 masih perlu diisi di `SOURCE_TITLES` dan disetujui DR. Jalur kronis belum punya literatur, jadi model menilai tanpa sumber.
+- Query = teks opsi kuis (bagian negatif dipotong, lihat `retrieval_text`), prefiks `task: search result | query: `. Dokumen = kartu, prefiks `title: none | text: `.
+- `pillow` wajib ikut dipasang walau model dipakai teks saja: prosesor EmbeddingGemma 2 mengimpornya.
+- Kartu tanpa tag `[Penyakit · Bagian]` dilewati dan dilaporkan di stderr (`--keep-untagged` untuk menyertakan).
+- `for_disease()` mengalikan skor kartu **Gejala** dan **Kriteria Diagnosis** dengan `SYMPTOM_BOOST` (1.3) dan menaruhnya lebih dulu di potongan bawaan. Atur nilainya dari hasil A/B.
+- Judul lengkap dokumen 54 masih placeholder di `SOURCE_TITLES`. Jalur kronis belum punya literatur, jadi model menilai tanpa sumber.
+
+### A/B: aturan vs AI tanpa RAG vs AI + RAG
+
+Otomatis: `TRIAGE_AI_API_KEY=... python scripts/ab_literature.py [per_candidate]`.
+
+Di Swagger (login superuser), kasus yang sama dijalankan tiga kali:
+
+| Lengan | Endpoint | Setelan |
+|---|---|---|
+| Aturan | `POST /triage/flows/infection/score?preview=true` | (tidak memakai model) |
+| AI tanpa RAG | `POST /api/v1/ai/score` | `TRIAGE_AI_SOURCES_PER_CANDIDATE_SINGLE=0` (mode `per_candidate`: `TRIAGE_AI_SOURCES_PER_CANDIDATE=0`), restart server |
+| AI + RAG | `POST /api/v1/ai/score` | setelan bawaan |
+
+Bandingkan `ranked`, `sources`, `latency_ms`, dan `fallback` per kasus. Pilih kasus yang membingungkan (mis. DBD vs chikungunya, amebiasis vs diare), bukan hanya yang aturannya sudah benar.
 
 ## Pengaturan lain
 

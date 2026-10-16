@@ -5,10 +5,7 @@ from sqlalchemy import Date, func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlmodel import Session, col
 
-from app.application.ports.outbound.screening_stat_repository import (
-    Period,
-    StatGroup,
-)
+from app.application.ports.outbound.screening_stat_repository import Period, StatGroup
 from app.domain.screening_stat import StatRecord
 from app.models import ScreeningStat
 
@@ -27,7 +24,7 @@ class SqlModelScreeningStatRepository:
             index_elements=["event_id"],
             set_={k: v for k, v in values.items() if k != "event_id"},
         )
-        self._session.execute(stmt)
+        self._session.exec(stmt)
         self._session.commit()
 
     def aggregate(
@@ -63,5 +60,5 @@ class SqlModelScreeningStatRepository:
             stmt = stmt.where(col(ScreeningStat.flow_id) == flow_id)
         return [
             StatGroup(p, prov, dis, route, n)
-            for p, prov, dis, route, n in self._session.execute(stmt).all()
+            for p, prov, dis, route, n in self._session.connection().execute(stmt).all()
         ]
