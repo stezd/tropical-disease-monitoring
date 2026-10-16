@@ -6,12 +6,19 @@ Config decisions (which engine) live here instead of leaking into domain modules
 
 from typing import Literal
 
+from sqlmodel import Session
+
 from app.adapters.outbound.json_files.content_repository import (
     JsonFilesContentRepository,
 )
+from app.adapters.outbound.sqlmodel.screening_stat_repository import (
+    SqlModelScreeningStatRepository,
+)
 from app.application.ports.outbound.content_repository import ContentRepository
 from app.application.ports.outbound.drug_recognizer import DrugRecognizer
+from app.application.use_cases.record_screening import RecordScreeningUseCase
 from app.application.use_cases.score_flow import ScoreFlowUseCase
+from app.application.use_cases.stats_summary import StatsSummaryUseCase
 from app.core.config import settings
 from app.triage.ai import get_ai_engine
 from app.triage.ai.drugs import get_drug_recognizer
@@ -57,3 +64,18 @@ def get_score_use_case(
         preview_engine=RuleEngine(),
         drugs=get_drug_recognizer_port() if drugs == "default" else drugs,
     )
+
+
+def get_record_screening_use_case(session: Session) -> RecordScreeningUseCase:
+    """Statistics recording: score again, keep whitelisted fields, upsert.
+
+    No drug recognizer: drug classes only feed pop-ups, never the route or the stat,
+    and a lookup could cost a second model call and a long wait for nothing.
+    """
+    return RecordScreeningUseCase(
+        get_score_use_case(drugs=None), SqlModelScreeningStatRepository(session)
+    )
+
+
+def get_stats_summary_use_case(session: Session) -> StatsSummaryUseCase:
+    return StatsSummaryUseCase(SqlModelScreeningStatRepository(session))

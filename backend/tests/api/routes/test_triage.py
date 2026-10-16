@@ -1,9 +1,13 @@
+import uuid
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
 from app.core.config import settings
-from app.models import Screening
+from app.models import Screening, ScreeningStat
 
 API = f"{settings.API_V1_STR}/triage"
 
@@ -130,3 +134,129 @@ def test_list_screenings_superuser_only(
     r = client.get(f"{API}/screenings", headers=superuser_token_headers)
     assert r.status_code == 200
     assert "count" in r.json()
+
+
+# --- statistics without direct identity -------------------------------------------
+
+
+def _stat_body(
+    event_id: uuid.UUID | None = None, **answers: object
+) -> dict[str, object]:
+    return {
+        "event_id": str(event_id or uuid.uuid4()),
+        "flow_id": "infection",
+        "answers": {**ANSWERS, **answers},
+    }
+
+
+def _rows(db: Session, event_id: str) -> list[ScreeningStat]:
+    db.expire_all()
+    return list(
+        db.exec(
+            select(ScreeningStat).where(ScreeningStat.event_id == uuid.UUID(event_id))
+        ).all()
+    )
+
+
+@pytest.fixture
+def rules_engine(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(settings, "TRIAGE_SCORING_ENGINE", "rules")
+
+
+@pytest.mark.usefixtures("clean_screening_stats", "rules_engine")
+def test_stats_guest_writes_one_row(client: TestClient, db: Session) -> None:
+    body = _stat_body(drugs="paracetamol RAHASIA", province="Papua")
+    r = client.post(f"{API}/stats", json=body)
+    assert r.status_code == 204
+    assert r.content == b""
+    (row,) = _rows(db, str(body["event_id"]))
+    assert row.top_disease == "malaria"
+    assert row.route == "yellow"
+    assert row.age_band == "25-44"
+    assert row.province == "Papua"
+    assert row.drugs_given is True
+    dump = repr(row.model_dump())
+    for needle in ("RAHASIA", "38.6", "'age'", "weight", "height"):
+        assert needle not in dump
+    assert row.day == datetime.now(ZoneInfo("Asia/Jakarta")).date()
+
+
+@pytest.mark.usefixtures("clean_screening_stats", "rules_engine")
+def test_stats_same_event_id_updates_row(client: TestClient, db: Session) -> None:
+    eid = uuid.uuid4()
+    assert client.post(f"{API}/stats", json=_stat_body(eid)).status_code == 204
+    assert (
+        client.post(f"{API}/stats", json=_stat_body(eid, province="Bali")).status_code
+        == 204
+    )
+    (row,) = _rows(db, str(eid))
+    assert row.province == "Bali"
+
+
+@pytest.mark.usefixtures("clean_screening_stats", "rules_engine")
+def test_stats_logged_in_user_is_not_linked(
+    client: TestClient,
+    db: Session,
+    normal_user_token_headers: dict[str, str],
+) -> None:
+    body = _stat_body()
+    r = client.post(f"{API}/stats", headers=normal_user_token_headers, json=body)
+    assert r.status_code == 204
+    (row,) = _rows(db, str(body["event_id"]))
+    assert "user_id" not in ScreeningStat.model_fields
+    assert not any(
+        "user" in k or "email" in k or "created" in k for k in row.model_dump()
+    )
+
+
+@pytest.mark.usefixtures("clean_screening_stats", "rules_engine")
+def test_stats_red_flag_is_red(client: TestClient, db: Session) -> None:
+    body = _stat_body(red_flags=["syok"])
+    assert client.post(f"{API}/stats", json=body).status_code == 204
+    (row,) = _rows(db, str(body["event_id"]))
+    assert row.route == "red"
+    assert row.red_flags == ["syok"]
+
+
+def test_stats_rejects_bad_input(client: TestClient) -> None:
+    assert (
+        client.post(f"{API}/stats", json={**_stat_body(), "event_id": "x"}).status_code
+        == 422
+    )
+    assert (
+        client.post(
+            f"{API}/stats", json={**_stat_body(), "flow_id": "nope"}
+        ).status_code
+        == 404
+    )
+
+
+@pytest.mark.usefixtures("clean_screening_stats", "rules_engine")
+def test_stats_summary_superuser_only_and_small_cells(
+    client: TestClient,
+    superuser_token_headers: dict[str, str],
+    normal_user_token_headers: dict[str, str],
+) -> None:
+    url = f"{API}/stats/summary"
+    assert client.get(url).status_code == 401
+    assert client.get(url, headers=normal_user_token_headers).status_code == 403
+
+    for _ in range(10):
+        assert (
+            client.post(f"{API}/stats", json=_stat_body(province="Papua")).status_code
+            == 204
+        )
+    for _ in range(3):
+        assert (
+            client.post(f"{API}/stats", json=_stat_body(province="Bali")).status_code
+            == 204
+        )
+    for period in ("day", "week"):
+        r = client.get(url, headers=superuser_token_headers, params={"period": period})
+        assert r.status_code == 200
+        data = r.json()
+        assert data["k"] == 10
+        by_province = {row["province"]: row["count"] for row in data["data"]}
+        assert by_province == {"Papua": 10, "Bali": None}
+    r = client.get(url, headers=superuser_token_headers, params={"period": "year"})
+    assert r.status_code == 422
