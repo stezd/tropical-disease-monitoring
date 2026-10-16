@@ -24,7 +24,7 @@ TropiCare adalah aplikasi web skrining awal penyakit tropis dan penyakit jangka 
         \item \textbf{Rute Merah (IGD Rumah Sakit \& 119):} Mengarahkan kondisi gawat darurat ke IGD rumah sakit terdekat atau Rabies Center.
         \item \textbf{Rute Kuning Khusus (Poli Program Puskesmas):} Mengarahkan dugaan penyakit program nasional (TBC, Kusta, Frambusia, Filariasis, Skistosomiasis, atau Campak) ke Puskesmas penyelenggara program.
         \item \textbf{Rute Kuning (Puskesmas / FKTP):} Mengarahkan pasien ke pemeriksaan dokter dan laboratorium; jalur kronis menyertakan instruksi puasa 10--12 jam (hanya minum air putih) sebelum cek gula darah dan kolesterol \citep{PERKENI2024}.
-        \item \textbf{Rute Hijau (Rawat Mandiri):} Memandu perawatan mandiri di rumah dan pemantauan gejala untuk keluhan ringan non-komplikasi.
+        \item \textbf{Rute Hijau (Rawat Mandiri):} Memandu perawatan mandiri di rumah dan pemantauan gejala untuk keluhan ringan non-komplikasi. Bila skor keyakinan perkiraan utama berada di bawah 80\%, aturan deterministik menaikkan Rute Hijau menjadi Rute Kuning disertai catatan agar pasien memeriksakan diri ke dokter.
     \end{itemize}
 \end{enumerate}
 
@@ -48,7 +48,7 @@ Sistem memisahkan pemrosesan di perangkat pasien, di peladen TropiCare, dan di l
 
     % Bottom pipeline
     \node[box, text width=4.3cm, below=0.7cm of input] (red) {\textbf{Layar MERAH + 119}\\Jalan langsung di browser walau peladen mati};
-    \node[box, text width=4.6cm, below=0.7cm of engine] (ai) {\textbf{Layanan AI (Gemma 4 / MedGemma)}\\Skor kecocokan + RAG 203 kutipan \& kenali teks obat};
+    \node[box, text width=4.6cm, below=0.7cm of engine] (ai) {\textbf{Layanan AI (Gemma 4 / MedGemma)}\\Skor kecocokan + RAG 350 potongan \& kenali teks obat};
     \node[box, text width=4.3cm, below=0.7cm of output] (qr) {\textbf{PostgreSQL \& Pemindai QR}\\Statistik tanpa identitas langsung; rangkuman dibuka petugas};
 
     % Arrows
@@ -69,7 +69,7 @@ Lima komponen teknis menjalankan alur tersebut:
     \item \textbf{Evaluasi Darurat di Peramban (\textit{Client-Side Safety Gate}):} Peramban ponsel menjalankan pemeriksaan 11 tanda bahaya darurat dan pembuatan kode QR. Saat tanda bahaya terpilih, layar darurat Merah dan tombol 119 langsung muncul walau koneksi internet atau peladen sedang terputus.
     \item \textbf{Privasi Terjaga (\textit{Zero-NIK} \& Lokasi di Perangkat):} Pengguna dapat menyelesaikan skrining sebagai tamu tanpa akun dan tanpa mengisi NIK atau nama. Peramban mengolah koordinat GPS bersama poligon batas wilayah di memori perangkat untuk menentukan provinsi dan menghitung jarak 5 faskes terdekat, lalu hanya mengirimkan nama provinsi ke peladen \citep{UUPDP2022}.
     \item \textbf{Mirror Lokal 13.930 Faskes \& Jembatan Mobile JKN:} Basis data peladen menyimpan mirror lokal 13.930 faskes resmi SATUSEHAT (10.374 Puskesmas dan 3.556 Rumah Sakit). Setiap kartu dari 5 faskes terdekat menyediakan tautan Google Maps, tombol kirim rangkuman via WhatsApp (atau panggilan telepon), dan tombol pembuka aplikasi Mobile JKN untuk pendaftaran janji dokter.
-    \item \textbf{Penalaran Gemma 4 / MedGemma + RAG Berpedoman Dokter:} Backend menganalisis jawaban menggunakan model keluarga Gemma (\textbf{Gemma 4 / MedGemma}) melalui penyedia kompatibel (OpenRouter, vLLM, atau Gemini) yang mengacu pada 203 kutipan literatur medis terverifikasi (KMK 1186/2022 dan pedoman penyakit tropis Kemenkes) via indeks leksikal BM25 pra-komputasi. Model AI juga mengenali nama obat ketikan bebas pasien, sedangkan aturan deterministik mengunci keputusan rute darurat dan ambang tanda vital.
+    \item \textbf{Penalaran Gemma 4 / MedGemma + RAG Berpedoman Dokter:} Backend menganalisis jawaban menggunakan model keluarga Gemma (\textbf{Gemma 4 / MedGemma}) melalui penyedia kompatibel (OpenRouter, vLLM, atau Gemini) yang mengacu pada 350 potongan literatur medis terverifikasi (KMK 1186/2022, Permenkes, dan pedoman penyakit tropis WHO) melalui indeks semantik pra-komputasi (EmbeddingGemma 2) yang memprioritaskan kartu gejala dan kriteria diagnosis. Model AI juga mengenali nama obat ketikan bebas pasien, sedangkan aturan deterministik mengunci keputusan rute darurat dan ambang tanda vital.
     \item \textbf{QR Rangkuman untuk Petugas Faskes:} Peramban mengodekan jawaban pasien ke dalam kode QR di layar ponsel tanpa menyimpan identitas di peladen. Saat petugas Puskesmas atau klinik memindai kode tersebut, peramban petugas menampilkan rangkuman keluhan, riwayat obat, dan saran pemeriksaan laboratorium sehingga petugas tidak perlu mengulang wawancara dari awal.
 \end{enumerate}
 

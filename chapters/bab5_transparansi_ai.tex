@@ -27,7 +27,7 @@ Sesuai standar integritas akademik dan aturan kompetisi JOINTS 2026, tim pengemb
 \midrule
 \textbf{Rekayasa Kode \& Otomasi Pengujian} & Generasi sintaksis berbantuan AI (Claude \& Gemini) untuk rute FastAPI, komponen web React, dan skema JSON. & Perancangan arsitektur domain mandiri, isolasi logika klinis, audit kode baris-demi-baris, serta 304 kasus uji otomatis dengan cakupan 96\% pada backend (\textit{pytest} \& \textit{golden snapshots}) untuk mencegah regresi logika. \\
 \midrule
-\textbf{Inferensi Klinis \& Pengenalan Obat} & Model keluarga Gemma (\textbf{Gemma 4 / MedGemma}) via OpenRouter / vLLM, dengan dukungan pertukaran penyedia (Gemini) lewat konfigurasi. & Pengambilan kutipan pedoman lewat indeks BM25 pra-komputasi atas 203 kutipan literatur medis (KMK 1186/2022), validasi skema JSON keluaran, serta pemutusan tanpa AI untuk kasus gawat darurat (\textit{Red Flags bypass}). \\
+\textbf{Inferensi Klinis \& Pengenalan Obat} & Model keluarga Gemma (\textbf{Gemma 4 / MedGemma}) via OpenRouter / vLLM, dengan dukungan pertukaran penyedia (Gemini) lewat konfigurasi. & Pengambilan kutipan pedoman lewat indeks semantik pra-komputasi (EmbeddingGemma 2) atas 350 potongan literatur medis (KMK 1186/2022, Permenkes, dan WHO), validasi skema JSON keluaran, serta pemutusan tanpa AI untuk kasus gawat darurat (\textit{Red Flags bypass}). \\
 \bottomrule
 \end{tabularx}
 \end{table}
