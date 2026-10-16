@@ -3,7 +3,7 @@ from pydantic import ValidationError
 
 from app.triage.advice import build_result
 from app.triage.content import FlowContent, get_content
-from app.triage.Gemma4 import (
+from app.triage.medgemma import (
     Candidate,
     Fact,
     Source,

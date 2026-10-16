@@ -27,7 +27,7 @@ from typing import Any
 
 from app.domain.answers import Answers
 from app.triage.content import NONE_ID, FlowContent, Option
-from app.triage.Gemma4 import Source
+from app.triage.medgemma import Source
 from app.triage.scoring import companion_shown, visible
 
 logger = logging.getLogger("app.triage.ai")
