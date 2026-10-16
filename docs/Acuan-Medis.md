@@ -72,6 +72,8 @@ Sudah diterapkan. Patokan dari DR; **teks yang tampil ke pasien/petugas masih pe
 | K22 | Ambang lingkar perut | `[B-T6]` menyebut lingkar perut "parameter wajib sindrom metabolik", tanpa angka batas. Gula darah sudah diputuskan (K22a). | dicatat, tidak dinilai |
 | K32 | Ambang asam urat dan kolesterol total | Belum ada patokan "tinggi" (misalnya beda laki-laki/perempuan untuk asam urat) | dicatat, tidak dinilai, tanpa label |
 | K33 | Teks baru yang perlu OK akhir | Catatan GDS ≥ 200 (`chronic/advice.json` `warnings.glucose_high`); label kategori tensi "normal / meningkat / tinggi / sangat tinggi" (`backend/app/domain/vitals.py`) | sudah tampil |
+| K34 | Teks catatan keyakinan rendah (`warnings.low_confidence` di `advice.json`) | Draf: "Perkiraan ini belum cukup meyakinkan ({pct}%). Sebaiknya periksakan ke dokter untuk memastikan." Perlu OK DR untuk teks, dan putusan apakah jalur kronis ikut aturan ini. | ikut di kedua jalur, teks draf |
+| K35 | Teks privasi baru (`Privacy.tsx`) | Bagian "Statistik tanpa identitas langsung" (apa yang dicatat dan tidak, tidak bisa dihapus per orang, hanya dibagikan sebagai agregat dengan kelompok < 10 orang disembunyikan), dan penyebutan OpenRouter dan Google sebagai tujuan data model (menggantikan kata "Gemini"). Sebaiknya juga ditinjau ahli hukum sebelum dipakai pasien sungguhan (UU PDP). | teks draf tampil, belum ada OK |
 
 ### Menunggu DR + ST
 
@@ -89,6 +91,7 @@ Sudah diterapkan. Patokan dari DR; **teks yang tampil ke pasien/petugas masih pe
 | K27 | Bobot provinsi endemis (§6). Daftar provinsi sudah ada `[J10]`. |
 | K28 | Bobot proksi suhu dan tensi, tensi (termasuk kategori meningkat/tinggi), gula darah sewaktu, asam urat, kolesterol total, lingkar perut, kehamilan, faktor risiko PTM, dan area sendi baru (lutut, siku, bahu). Sekarang semuanya 0 poin. |
 | K29 | Bobot jalur kronis, yang sekarang menyalin angka jalur infeksi. |
+| K36 | Nilai `refer_below_pct` = 80 pada persen teratas (`top.pct`), dan `softmax_temperature` (sekarang 20). Persen berasal dari softmax yang sama di kedua mesin. Dari 5 kasus golden, 4 berada di bawah 80 % (65, 51, 65, 60; hanya `systolic_above_160` = 88), jadi hampir semua HIJAU akan naik ke KUNING. ST perlu mengukur dampaknya pada kartu kasus DR. |
 
 ---
 

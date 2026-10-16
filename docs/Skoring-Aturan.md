@@ -65,8 +65,9 @@ Aturan dicek berurutan di `decide_route()`:
 
 1. **Ada tanda bahaya** (termasuk gejala penyerta bertanda `red_flag`, misalnya mata sangat kuning saat demam) → **MERAH**.
 2. **Skor teratas < 30** (`low_score_threshold`) → "belum dapat ditentukan", rute **KUNING**.
-3. **Selain itu**, rute mengikuti `route` milik penyakit teratas di `diseases.json`. Kalau rutenya **HIJAU**, naik ke **KUNING** bila suhu ≥ 39,5 °C (`high_fever_upgrade`) atau sistolik > 160 mmHg (`bp_upgrade_above`).
-4. **Tanda keparahan** pada opsi yang dipilih (`min_route`, misalnya Varicella dekat mata) bisa menaikkan rute lebih jauh.
+3. **Keyakinan rendah:** kalau persen teratas (`round(share × 100)`, tanpa batas 97 %) **< 80** (`refer_below_pct`) dan rute penyakit itu **HIJAU**, rute naik ke **KUNING** dengan catatan "periksakan ke dokter" (`warnings.low_confidence`). MERAH, KUNING KHUSUS, dan "belum dapat ditentukan" tidak berubah. Kalau `refer_below_pct` kosong, langkah ini mati.
+4. **Selain itu**, rute mengikuti `route` milik penyakit teratas di `diseases.json`. Kalau rutenya **HIJAU**, naik ke **KUNING** bila suhu ≥ 39,5 °C (`high_fever_upgrade`) atau sistolik > 160 mmHg (`bp_upgrade_above`).
+5. **Tanda keparahan** pada opsi yang dipilih (`min_route`, misalnya Varicella dekat mata) bisa menaikkan rute lebih jauh.
 
 ## Contoh hitungan
 
@@ -81,8 +82,11 @@ Jawaban rekaan: keluhan demam (A), pola "DBD", gejala penyerta "DBD", suhu 38,5 
 
 Hanya DBD yang share-nya ≥ 5 %, jadi maskot menulis "1 kemungkinan". Skor 75 ≥ 30, jadi rute mengikuti rute DBD di content.
 
+Contoh keyakinan rendah: DBD ≈ 74 % < 80. Kalau rute DBD di content HIJAU, hasilnya jadi KUNING dengan catatan "periksakan ke dokter"; perkiraan DBD tetap tampil. Mesin `ai` memakai softmax yang sama (`to_breakdown()` → `rank()`), jadi satu ambang berlaku untuk kedua mesin. Nilai 80 dan suhu softmax menunggu OK ST (K36), teks catatan menunggu OK DR (K34).
+
 ## Yang masih menunggu
 
+- ⏳ Nilai `refer_below_pct` = 80 dan `softmax_temperature` (ST, K36); teks catatan keyakinan rendah (DR, K34)
 - ⏳ Bobot provinsi endemis (DR + ST)
 - ⏳ Bobot proksi vital, tensi, gula darah, asam urat, kolesterol, dan lingkar perut (ST)
 - ⏳ Rumus skor CVD jalur kronis (`cvd_risk`, ST)

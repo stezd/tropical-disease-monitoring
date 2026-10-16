@@ -6,6 +6,10 @@ Semua angka adalah asumsi yang belum divalidasi. Uji dulu lewat survei harga dan
 - Skrining inti dan peringatan bahaya tetap gratis.
 - Tidak ada tawaran beli di layar MERAH atau saat hasil keluar.
 - Data skrining per individu tidak dijual.
+- Sumber data dasbor dan surveilans (ide 1 di bawah dan surveilans Dinkes): tabel `screening_stat`, satu baris tanpa identitas langsung per skrining selesai (tamu juga).
+- Aturan k = 10: kelompok kurang dari 10 orang disembunyikan di setiap agregat.
+- Data ini "tanpa identitas langsung", **bukan "anonim"**: kombinasi usia, jenis kelamin, provinsi, dan gejala secara teori masih bisa mengidentifikasi. UU PDP tetap berlaku (data kesehatan = data pribadi spesifik).
+- Sebelum dipakai pasien sungguhan, teks privasi perlu ditinjau DR dan sebaiknya ahli hukum.
 
 ---
 

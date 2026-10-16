@@ -90,12 +90,14 @@ GitHub · Railway · OpenRouter · domain · email `FIRST_SUPERUSER`
 | Ide | Pembeli | Isi |
 | --- | --- | --- |
 | 6. Dasbor Puskesmas/Klinik | Puskesmas, klinik | Scan QR → antrean pra-triase + statistik. Dasbor terpisah, bukan integrasi |
-| 7. Surveilans wilayah | Dinkes | Tren keluhan per provinsi. Agregat, anonim, ada batas minimal per sel |
+| 7. Surveilans wilayah | Dinkes | Tren keluhan per provinsi. Agregat dari data tanpa identitas langsung, ada batas minimal per sel |
 | 8. Skrining karyawan | Tambang/perkebunan endemis | Perusahaan hanya lihat agregat, tidak hasil individu |
 | 9. Paket UKS | Sekolah, yayasan | Skrining cacingan, kulit, demam + edukasi |
 | 10. White-label | LSM, program donor | Mesin + bank soal dengan merek mereka |
 
 - Semua butuh kontrak. Ide 7 dan 8 butuh klausul baru di teks consent.
+- Sumber data ide 6 sampai 8 (dasbor, surveilans): tabel `screening_stat`, satu baris tanpa identitas langsung per skrining selesai. Aturan k = 10: kelompok kurang dari 10 orang disembunyikan.
+- Data itu "tanpa identitas langsung", bukan "anonim"; UU PDP tetap berlaku. Teks privasi perlu ditinjau DR dan sebaiknya ahli hukum sebelum dipakai pasien sungguhan.
 - Asuransi tidak dimasukkan: data skrining tidak boleh menentukan premi atau klaim.
 
 ### 5.3 Urutan saran

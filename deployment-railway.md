@@ -143,7 +143,16 @@ Notes:
 | Restart policy | `ON_FAILURE` | Avoids a crash loop burning usage |
 | Domain port | leave default | The app reads Railway's injected `PORT` automatically and binds `0.0.0.0` |
 
-Port handling needs no configuration: `fastapi run` reads the `PORT` environment variable, and Railway injects it.
+Port handling needs no configuration: the server reads the `PORT` environment variable, and Railway injects it.
+
+### Logs and client IPs
+
+Every finished screening (guests too) adds a statistics row without direct identity, so client IPs must not end up in Railway logs.
+
+- The server runs **without the access log** (`--no-access-log`, set in `backend/scripts/start.sh`), so request lines with client IPs are not written.
+- No app code logs `request.client` or the `X-Forwarded-For` header. Keep it that way in review.
+- Set Railway log retention to the shortest the plan allows (Project settings).
+- After a deploy, check `railway logs`: no request lines with an IP address.
 
 ---
 
