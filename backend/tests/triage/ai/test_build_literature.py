@@ -29,7 +29,7 @@ def builder() -> ModuleType:
     return mod
 
 
-def fake_embed(texts: list[str], kind: str) -> np.ndarray:
+def fake_embed(texts: list[str], _kind: str) -> np.ndarray:
     """Hashed bag of words in 768 dimensions, normalised. Same words, same direction."""
     out = np.zeros((len(texts), 768), dtype=np.float32)
     for row, text in zip(out, texts, strict=True):
@@ -65,7 +65,9 @@ def test_build_writes_the_format_the_runtime_reads(
     data = builder.build("infection", ROWS, fake_embed)
     assert data["method"] == "embedding-v1"
     assert len(data["chunks"]) == 5  # rabies is not scored in the flow
-    assert any(c["citation"].endswith("Bab") for c in data["chunks"].values())  # no page
+    assert any(
+        c["citation"].endswith("Bab") for c in data["chunks"].values()
+    )  # no page
     path = tmp_path / "infection_literature.json"
     path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     lit = Literature.load(path)  # validates every chunk id
@@ -87,13 +89,14 @@ def test_ranking_is_per_disease_and_by_similarity(builder: ModuleType) -> None:
 
 def test_min_score_drops_weak_hits(builder: ModuleType) -> None:
     data = builder.build("infection", ROWS, fake_embed, min_score=0.99)
-    assert not any(s < 0.99 for per in data["options"].values()
-                   for r in per.values() for _, s in r)
+    assert not any(
+        s < 0.99 for per in data["options"].values() for r in per.values() for _, s in r
+    )
     assert set(data["default"]) == {"malaria", "dbd", "kusta"}  # default never empty
 
 
 def test_bad_vectors_are_refused(builder: ModuleType) -> None:
-    def nan_embed(texts: list[str], kind: str) -> np.ndarray:
+    def nan_embed(texts: list[str], _kind: str) -> np.ndarray:
         return np.full((len(texts), 768), np.nan, dtype=np.float32)
 
     with pytest.raises(ValueError, match="NaN"):

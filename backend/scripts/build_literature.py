@@ -110,7 +110,8 @@ def build(
         f"c{i:03d}": {
             "disease": str(r["disease"]),
             "citation": f"{SOURCE_TITLES.get(str(r['sumber']), f'Dokumen {r["sumber"]}')}"
-            f" · {r['judul_bab']}" + (f" · hlm. {r['halaman']}" if r["halaman"] else ""),
+            f" · {r['judul_bab']}"
+            + (f" · hlm. {r['halaman']}" if r["halaman"] else ""),
             "text": " ".join(str(r["teks"]).split()),
         }
         for i, r in enumerate(rows, start=1)
@@ -144,13 +145,18 @@ def build(
     options: dict[str, dict[str, list[list[object]]]] = {}
     seen: list[float] = []
     for key, vec in zip(qkeys, qvecs, strict=True):
-        per = {d: [[c, s] for c, s in r] for d in sorted(by_disease) if (r := ranked(vec, d))}
+        per = {
+            d: [[c, s] for c, s in r]
+            for d in sorted(by_disease)
+            if (r := ranked(vec, d))
+        }
         seen += [s for hits in per.values() for _, s in hits]
         if per:
             options[key] = per
     # No answer points anywhere: the disease's own name and the usual PPK headings.
     default = {
-        d: [c for c, _ in ranked(v, d)] or [ids[i] for i in by_disease[d][:TOP_PER_DISEASE]]
+        d: [c for c, _ in ranked(v, d)]
+        or [ids[i] for i in by_disease[d][:TOP_PER_DISEASE]]
         for d, v in zip(sorted(by_disease), dvecs, strict=True)
     }
     missing = sorted(scored - set(by_disease))
@@ -159,7 +165,9 @@ def build(
     if seen:
         p = np.percentile(seen, [5, 25, 50, 75, 95])
         sys.stderr.write(
-            "kept-hit cosine p5/p25/p50/p75/p95: " + " ".join(f"{x:.3f}" for x in p) + "\n"
+            "kept-hit cosine p5/p25/p50/p75/p95: "
+            + " ".join(f"{x:.3f}" for x in p)
+            + "\n"
         )
     return {
         "version": FORMAT_VERSION,
