@@ -6,31 +6,31 @@
 
 \subsection{Deskripsi Solusi dan Alur Klinis Berjenjang}
 
-TropiCare adalah aplikasi web skrining awal penyakit tropis dan penyakit jangka panjang (PTM) yang mudah diakses tanpa instalasi dan tanpa kewajiban membuat akun. Seluruh logika medis berpedoman pada Keputusan Menteri Kesehatan RI No. HK.01.07/MENKES/1186/2022 tentang Panduan Praktik Klinis bagi Dokter di FKTP \citep{Kemenkes2022a} serta Permenkes No. 3 Tahun 2026 tentang Penanggulangan Penyakit \citep{Permenkes2026}. Sistem bekerja dalam waktu sekitar 3 menit melalui empat lapisan penapisan:
+TropiCare adalah aplikasi web skrining awal penyakit tropis dan penyakit jangka panjang (PTM) yang berjalan di peramban ponsel tanpa instalasi dan tanpa kewajiban membuat akun. Tim menyusun logika medis berdasarkan Keputusan Menteri Kesehatan RI No. HK.01.07/MENKES/1186/2022 tentang Panduan Praktik Klinis bagi Dokter di FKTP \citep{Kemenkes2022a} dan Permenkes No. 3 Tahun 2026 tentang Penanggulangan Penyakit \citep{Permenkes2026}. Pengguna menyelesaikan skrining dalam waktu sekitar 3 menit melalui empat tahapan:
 
 \begin{enumerate}
     \item \textbf{Gerbang Privasi, Data Diri, \& Deteksi Cepat 11 Tanda Bahaya (\textit{Red Flags}):} 
-    Setelah memilih jalur skrining (infeksi akut atau risiko jangka panjang) dan mencentang persetujuan privasi, pengguna mengisi data diri dasar (usia, jenis kelamin, dan status kehamilan) lalu sistem langsung memeriksa 11 kondisi gawat darurat: (1) muntah hebat atau tangan-kaki dingin (syok dengue), (2) perdarahan sulit berhenti atau batuk darah banyak, (3) tidak buang air kecil $>6\text{--}8$ jam atau urin gelap (gagal ginjal akut), (4) sesak napas sangat berat, (5) penurunan kesadaran atau kejang, (6) sangat lemas dan mata cekung (dehidrasi berat), (7) luka gigitan hewan penular rabies, (8) nyeri dada kiri menjalar (serangan jantung), (9) tanda stroke mendadak (SeGeRa Ke RS), (10) krisis darah tinggi, serta (11) tanda koma diabetes \citep{Kemenkes2022a}. Satu saja tanda bahaya terpilih (atau muncul mata/kulit sangat kuning saat demam pada gejala penyerta), kuesioner langsung berhenti dan layar berubah menjadi Rute Merah tenang tanpa animasi yang menampilkan tombol telepon 119, nomor darurat 119/112 yang dapat disalin, serta panduan pertolongan pertama (\textit{DO} dan \textit{DON'T}) sambil menuju rumah sakit. Deteksi ini dieksekusi di peramban ponsel dalam $<500\text{ ms}$ walau peladen sedang mati.
+    Setelah memilih jalur skrining (infeksi akut atau risiko jangka panjang) dan mencentang persetujuan privasi, pengguna mengisi usia, jenis kelamin, dan status kehamilan. Peramban kemudian memeriksa 11 kondisi gawat darurat: (1) muntah terus-menerus atau tangan dan kaki dingin (syok dengue), (2) perdarahan sulit berhenti atau batuk darah banyak, (3) tidak buang air kecil $>6\text{--}8$ jam atau urin berwarna gelap (gagal ginjal akut), (4) sesak napas berat, (5) penurunan kesadaran atau kejang, (6) tubuh lemas disertai mata cekung (dehidrasi berat), (7) luka gigitan hewan penular rabies, (8) nyeri dada kiri menjalar (serangan jantung), (9) tanda stroke mendadak (SeGeRa Ke RS), (10) krisis tekanan darah tinggi, serta (11) tanda koma diabetes \citep{Kemenkes2022a}. Bila pengguna memilih satu tanda bahaya (atau melaporkan mata dan kulit menguning saat demam pada tahap gejala penyerta), kuesioner berhenti dan peramban membuka layar Rute Merah tanpa animasi. Layar ini menampilkan tombol panggilan 119, nomor darurat 119/112 yang dapat disalin, serta langkah pertolongan pertama (\textit{DO} dan \textit{DON'T}) selama perjalanan ke rumah sakit. Peramban mengeksekusi pemeriksaan ini dalam $<500\text{ ms}$ walau peladen sedang mati.
 
     \item \textbf{Kuesioner Adaptif, Peta Ekologi (\textit{One Health}), \& Peta Nyeri:} 
-    Jika tidak ada tanda bahaya, pertanyaan menyesuaikan jawaban sebelumnya ke dalam 5 klaster infeksi tropis (demam, napas, pencernaan, kulit, bengkak) untuk 20 penyakit tropis atau 3 klaster penyakit kronis (gula \& saraf, tekanan \& kepala, sendi) untuk 6 kondisi PTM \citep{PERKENI2024}. Sistem menggali riwayat lingkungan 1--4 bulan terakhir (daerah endemis malaria di NTT/Papua atau skistosomiasis di Sulawesi Tengah, genangan banjir leptospirosis, kontak TBC, lingkungan padat skabies) \citep{Permenkes2026}, dilengkapi peta nyeri tubuh interaktif dan skala nyeri 0--10 berbasis wajah.
+    Jika tanda bahaya tidak ditemukan, sistem menyesuaikan pertanyaan berikutnya ke dalam 5 klaster infeksi tropis (demam, napas, pencernaan, kulit, bengkak) untuk 20 penyakit tropis atau 3 klaster penyakit kronis (gula \& saraf, tekanan \& kepala, sendi) untuk 6 kondisi PTM \citep{PERKENI2024}. Kuesioner menggali riwayat lingkungan 1--4 bulan terakhir (riwayat tinggal atau berkunjung ke wilayah endemis malaria di NTT/Papua dan skistosomiasis di Sulawesi Tengah, paparan genangan banjir leptospirosis, kontak serumah dengan pasien TBC, serta hunian padat skabies) \citep{Permenkes2026}, dilengkapi peta nyeri tubuh interaktif dan skala nyeri 0--10 berbasis ekspresi wajah.
 
     \item \textbf{Pemeriksaan Keamanan Obat \& Proksi Fisik Tanpa Alat Medis:} 
-    Saat pengguna mengetik atau memilih obat yang sudah diminum, sistem memeriksa keamanan obat (4 aturan intervensi aktif ditambah 3 skema kewaspadaan komorbid dengue). Suspek demam berdarah yang meminum NSAID (Ibuprofen, Aspirin, Asam Mefenamat) langsung mendapat peringatan kritis merah untuk menghentikannya demi mencegah perdarahan lambung \citep{Alam2022,Mohiuddin2023,Tovar2024}; penggunaan obat penahan diare (Loperamide) pada diare berdarah memicu peringatan kuning \citep{Koo2007,Schiller2020}; sedangkan bengkak kaki akibat Amlodipine dan batuk kering akibat Captopril diberi catatan informasi biru agar tidak disalahartikan sebagai filariasis atau TBC \citep{Liang2022,Savage2020,Sica2003,Dicpinigaitis2014}. Bagi rumah tangga tanpa termometer atau timbangan \citep{Kemenkes2024}, tersedia pertanyaan pengganti (menggigil hebat, nadi cepat saat istirahat, dan perubahan kelonggaran pakaian) serta input tanda vital yang otomatis menaikkan rute ke Kuning bila suhu $\ge 39,5^\circ\text{C}$ atau tensi sistolik $>160\text{ mmHg}$ \citep{PERKENI2024}.
+    Saat pengguna mengetik atau memilih obat yang sudah diminum, sistem menjalankan pemeriksaan keamanan obat (4 aturan intervensi aktif dan 3 skema kewaspadaan komorbid dengue). Pasien suspek demam berdarah yang mengonsumsi NSAID (Ibuprofen, Aspirin, Asam Mefenamat) menerima peringatan merah untuk menghentikan obat guna mencegah perdarahan lambung \citep{Alam2022,Mohiuddin2023,Tovar2024}. Penggunaan obat penahan diare (Loperamide) pada diare berdarah memicu peringatan kuning \citep{Koo2007,Schiller2020}, sedangkan bengkak kaki akibat Amlodipine dan batuk kering akibat Captopril menampilkan catatan informasi biru agar pasien dan petugas membedakannya dari filariasis atau TBC \citep{Liang2022,Savage2020,Sica2003,Dicpinigaitis2014}. Bagi rumah tangga tanpa termometer atau timbangan \citep{Kemenkes2024}, kuesioner menyediakan pertanyaan pengganti (menggigil disertai keringat dingin, nadi cepat saat istirahat, dan perubahan kelonggaran pakaian) serta kolom tanda vital yang menaikkan hasil ke Rute Kuning bila suhu $\ge 39,5^\circ\text{C}$ atau tensi sistolik $>160\text{ mmHg}$ \citep{PERKENI2024}.
 
-    \item \textbf{Orkestrasi 4 Rute Layanan \& Tindak Lanjut Faskes:} 
-    Hasil skrining menyajikan satu perkiraan utama beserta skor kecocokan (atau \textit{``belum dapat ditentukan''} yang diarahkan ke Rute Kuning bila skor $<30\%$), tiga kemungkinan lain, alasan \textit{``Kenapa aku menebak ini?''}, serta satu dari empat rute layanan:
+    \item \textbf{Penentuan 4 Rute Layanan \& Tindak Lanjut Faskes:} 
+    Layar hasil menampilkan satu perkiraan utama beserta skor kecocokan (atau status \textit{``belum dapat ditentukan''} yang mengarahkan pasien ke Rute Kuning bila skor $<30\%$), tiga kemungkinan lain, penjelasan \textit{``Kenapa aku menebak ini?''}, serta satu dari empat rute layanan:
     \begin{itemize}
-        \item \textbf{Rute Merah (IGD Rumah Sakit \& 119):} Kondisi darurat diarahkan langsung ke IGD RS terdekat atau Rabies Center.
-        \item \textbf{Rute Kuning Khusus (Poli Program Puskesmas):} Dugaan penyakit program nasional (TBC, Kusta, Frambusia, Filariasis, Skistosomiasis, atau Campak) diarahkan ke Puskesmas penyelenggara program.
-        \item \textbf{Rute Kuning (Puskesmas / FKTP):} Perlu pemeriksaan dokter dan laboratorium; pada jalur kronis dilengkapi instruksi wajib puasa 10--12 jam (hanya minum air putih) sebelum cek gula darah dan kolesterol \citep{PERKENI2024}.
-        \item \textbf{Rute Hijau (Rawat Mandiri):} Gejala ringan non-komplikasi dipandu perawatan mandiri di rumah dan apotek terdekat.
+        \item \textbf{Rute Merah (IGD Rumah Sakit \& 119):} Mengarahkan kondisi gawat darurat ke IGD rumah sakit terdekat atau Rabies Center.
+        \item \textbf{Rute Kuning Khusus (Poli Program Puskesmas):} Mengarahkan dugaan penyakit program nasional (TBC, Kusta, Frambusia, Filariasis, Skistosomiasis, atau Campak) ke Puskesmas penyelenggara program.
+        \item \textbf{Rute Kuning (Puskesmas / FKTP):} Mengarahkan pasien ke pemeriksaan dokter dan laboratorium; jalur kronis menyertakan instruksi puasa 10--12 jam (hanya minum air putih) sebelum cek gula darah dan kolesterol \citep{PERKENI2024}.
+        \item \textbf{Rute Hijau (Rawat Mandiri):} Memandu perawatan mandiri di rumah dan pemantauan gejala untuk keluhan ringan non-komplikasi.
     \end{itemize}
 \end{enumerate}
 
-\subsection{Arsitektur Sistem dan Alur Data Transparan}
+\subsection{Arsitektur Sistem dan Alur Data}
 
-Alur kerja sistem dari perangkat pasien hingga layanan faskes dirancang secara transparan dengan memisahkan pemrosesan di perangkat, di peladen TropiCare, dan di layanan AI eksternal (Gambar~\ref{fig:arsitektur}).
+Sistem memisahkan pemrosesan di perangkat pasien, di peladen TropiCare, dan di layanan AI eksternal (Gambar~\ref{fig:arsitektur}).
 
 \begin{figure}[H]
 \centering
@@ -64,18 +64,18 @@ Alur kerja sistem dari perangkat pasien hingga layanan faskes dirancang secara t
 \label{fig:arsitektur}
 \end{figure}
 
-Keunggulan rekayasa produk TropiCare bertumpu pada lima pilar teknis:
+Lima komponen teknis menjalankan alur tersebut:
 \begin{enumerate}
-    \item \textbf{Evaluasi Darurat di Peramban (\textit{Client-Side Safety Gate}):} Pemeriksaan 11 tanda bahaya darurat dan pembuatan kode QR berjalan langsung di peramban ponsel. Jika tanda bahaya terpilih, layar darurat Merah dan tombol 119 aktif seketika meskipun koneksi internet atau peladen sedang mati.
-    \item \textbf{Privasi Terjaga (\textit{Zero-NIK} \& Lokasi di Perangkat):} Pengguna dapat menyelesaikan skrining sebagai tamu tanpa akun dan tanpa pernah dimintai NIK atau nama. Koordinat GPS hanya diolah di memori peramban bersama poligon batas wilayah untuk mengenali provinsi dan mengurutkan jarak 5 faskes terdekat; hanya nama provinsi yang dikirim ke peladen \citep{UUPDP2022}.
-    \item \textbf{Mirror Lokal 13.930 Faskes \& Jembatan Mobile JKN:} Peladen memuat mirror lokal 13.930 faskes resmi SATUSEHAT (10.374 Puskesmas dan 3.556 Rumah Sakit). Daftar 5 faskes terdekat dilengkapi tautan Google Maps, tombol kirim rangkuman via WhatsApp (atau telepon), serta tombol pembuka aplikasi Mobile JKN untuk pendaftaran janji dokter.
-    \item \textbf{Penalaran Gemma 4 / MedGemma + RAG yang Terikat Pedoman Dokter:} Jawaban dianalisis menggunakan model keluarga Gemma (\textbf{Gemma 4 / MedGemma}) atau penyedia kompatibel (OpenRouter, vLLM, maupun Gemini) yang diikat pada 203 kutipan literatur medis terverifikasi (KMK 1186/2022 dan pedoman penyakit tropis Kemenkes) melalui indeks leksikal BM25 pra-komputasi. AI juga membantu mengenali nama obat ketikan pasien, sedangkan keputusan rute darurat dan ambang vital tetap dikunci oleh aturan deterministik.
-    \item \textbf{QR Rangkuman untuk Petugas Faskes:} Jawaban pasien dikodekan secara ringkas ke dalam kode QR di layar ponsel tanpa menyimpan identitas di peladen. Saat dipindai petugas Puskesmas/klinik, rangkuman kondisi, riwayat obat, dan saran pemeriksaan laboratorium langsung terbuka di peramban petugas tanpa perlu wawancara ulang dari nol.
+    \item \textbf{Evaluasi Darurat di Peramban (\textit{Client-Side Safety Gate}):} Peramban ponsel menjalankan pemeriksaan 11 tanda bahaya darurat dan pembuatan kode QR. Saat tanda bahaya terpilih, layar darurat Merah dan tombol 119 langsung muncul walau koneksi internet atau peladen sedang terputus.
+    \item \textbf{Privasi Terjaga (\textit{Zero-NIK} \& Lokasi di Perangkat):} Pengguna dapat menyelesaikan skrining sebagai tamu tanpa akun dan tanpa mengisi NIK atau nama. Peramban mengolah koordinat GPS bersama poligon batas wilayah di memori perangkat untuk menentukan provinsi dan menghitung jarak 5 faskes terdekat, lalu hanya mengirimkan nama provinsi ke peladen \citep{UUPDP2022}.
+    \item \textbf{Mirror Lokal 13.930 Faskes \& Jembatan Mobile JKN:} Basis data peladen menyimpan mirror lokal 13.930 faskes resmi SATUSEHAT (10.374 Puskesmas dan 3.556 Rumah Sakit). Setiap kartu dari 5 faskes terdekat menyediakan tautan Google Maps, tombol kirim rangkuman via WhatsApp (atau panggilan telepon), dan tombol pembuka aplikasi Mobile JKN untuk pendaftaran janji dokter.
+    \item \textbf{Penalaran Gemma 4 / MedGemma + RAG Berpedoman Dokter:} Backend menganalisis jawaban menggunakan model keluarga Gemma (\textbf{Gemma 4 / MedGemma}) melalui penyedia kompatibel (OpenRouter, vLLM, atau Gemini) yang mengacu pada 203 kutipan literatur medis terverifikasi (KMK 1186/2022 dan pedoman penyakit tropis Kemenkes) via indeks leksikal BM25 pra-komputasi. Model AI juga mengenali nama obat ketikan bebas pasien, sedangkan aturan deterministik mengunci keputusan rute darurat dan ambang tanda vital.
+    \item \textbf{QR Rangkuman untuk Petugas Faskes:} Peramban mengodekan jawaban pasien ke dalam kode QR di layar ponsel tanpa menyimpan identitas di peladen. Saat petugas Puskesmas atau klinik memindai kode tersebut, peramban petugas menampilkan rangkuman keluhan, riwayat obat, dan saran pemeriksaan laboratorium sehingga petugas tidak perlu mengulang wawancara dari awal.
 \end{enumerate}
 
 \subsection{Perbandingan dengan Alternatif yang Ada}
 
-TropiCare dirancang untuk \textbf{melengkapi, bukan menggantikan} layanan resmi seperti Mobile JKN: setelah tahu harus ke mana dari hasil skrining TropiCare, pasien langsung menekan tombol Mobile JKN untuk mendaftar antrean dokter. Perbandingan fitur disajikan pada Tabel~\ref{tab:keunggulan}.
+TropiCare bekerja berdampingan dengan aplikasi resmi Mobile JKN: setelah memperoleh rute layanan dari hasil skrining TropiCare, pasien menekan tombol Mobile JKN untuk mengambil antrean dokter di faskes tujuan. Tabel~\ref{tab:keunggulan} membandingkan cakupan fungsi kedua aplikasi beserta aplikasi global Ada Health.
 
 \begin{table}[H]
 \centering
@@ -86,7 +86,7 @@ TropiCare dirancang untuk \textbf{melengkapi, bukan menggantikan} layanan resmi 
 \toprule
 \textbf{Aspek Pembanding} & \textbf{TropiCare} & \textbf{Mobile JKN (BPJS)} & \textbf{Ada Health} \\
 \midrule
-\textbf{Skrining Gejala Infeksi Tropis} & \textbf{Ya (20 penyakit tropis Indonesia)} & Tidak tersedia & Umum, tidak khusus penyakit tropis Indonesia \\
+\textbf{Skrining Gejala Infeksi Tropis} & \textbf{Ya (20 penyakit tropis Indonesia)} & Tidak tersedia & Umum, belum mengkhususkan penyakit tropis Indonesia \\
 \midrule
 \textbf{Skrining Risiko Kronis (PTM)} & \textbf{Ya (6 kondisi PTM + proksi fisik)} & Ya (47 pertanyaan tetap, dibatasi $1\times$/tahun) & Umum \\
 \midrule

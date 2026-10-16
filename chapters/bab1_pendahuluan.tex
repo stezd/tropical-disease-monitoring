@@ -6,42 +6,42 @@
 
 \subsection{Latar Belakang dan Urgensi Permasalahan}
 
-Transformasi layanan kesehatan primer di Indonesia menghadapi tantangan geografis dan sistemik yang kompleks. Survei Kesehatan Indonesia \citep{Kemenkes2024} mencatat beban ganda kesehatan nasional yang nyata: persistensi 20 penyakit tropis endemis dan terabaikan (\textit{Neglected Tropical Diseases} / NTD), yang terjadi bersamaan dengan lonjakan prevalensi Penyakit Tidak Menular (PTM) seperti hipertensi, diabetes melitus, dan penyakit kardiovaskular. Di tingkat komunitas hingga Fasilitas Pelayanan Kesehatan Tingkat Pertama (FKTP / Puskesmas), terdapat empat simpul permasalahan struktural:
+Survei Kesehatan Indonesia \citep{Kemenkes2024} mencatat beban ganda pada layanan kesehatan primer nasional: 20 penyakit tropis endemis dan terabaikan (\textit{Neglected Tropical Diseases} / NTD) masih bertahan di tengah kenaikan prevalensi Penyakit Tidak Menular (PTM) seperti hipertensi, diabetes melitus, dan penyakit kardiovaskular. Dari lingkungan rumah tangga hingga Fasilitas Pelayanan Kesehatan Tingkat Pertama (FKTP / Puskesmas), pasien dan tenaga kesehatan menghadapi empat masalah utama:
 
 \begin{enumerate}
-    \item \textbf{Penumpukan Antrean dan Inefisiensi Alur FKTP:} Puskesmas kerap kewalahan menghadapi antrean panjang akibat masuknya kasus ringan tanpa komplikasi (Tingkat Kemampuan 4A Standar Kompetensi Dokter Indonesia / SKDI) yang seharusnya dapat tuntas melalui perawatan mandiri teredukasi di rumah \citep{Kemenkes2022a}. Di sisi lain, ribuan pasien PTM/lansia membatalkan pemeriksaan laboratorium karena datang dalam kondisi tidak berpuasa (\textit{post-prandial}), padahal uji glukosa darah puasa dan profil lipid mewajibkan puasa 10--12 jam sebelumnya \citep{PERKENI2024}.
+    \item \textbf{Antrean Puskesmas Padat dan Gagal Periksa Laboratorium:} Kasus ringan tanpa komplikasi (Tingkat Kemampuan 4A Standar Kompetensi Dokter Indonesia / SKDI) memadati antrean loket Puskesmas, padahal kondisi tersebut dapat ditangani lewat perawatan mandiri di rumah \citep{Kemenkes2022a}. Pada jalur penyakit kronis, banyak pasien lansia batal menjalani pemeriksaan laboratorium karena datang sesudah makan (\textit{post-prandial}), sedangkan uji glukosa darah puasa dan profil lipid mewajibkan puasa 10--12 jam sebelumnya \citep{PERKENI2024}.
     
-    \item \textbf{Kendala Akses Transportasi dan Risiko Salah Rujukan di Wilayah Kepulauan/Pedalaman:} Masyarakat di wilayah pedalaman dan kepulauan menghadapi kendala jarak dan biaya logistik tinggi. Warga di daerah endemis (seperti Papua, Maluku, dan NTT) sering kali menempuh perjalanan jauh menuju fasilitas kesehatan, namun mendapati bahwa faskes tujuan tidak memiliki stok obat program pemerintah (seperti OAT untuk TBC, MDT Kusta, atau Praziquantel untuk Skistosomiasis).
+    \item \textbf{Jarak Tempuh Jauh dan Salah Tujuan Faskes di Daerah Kepulauan:} Warga di daerah endemis seperti Papua, Maluku, Sulawesi Tengah, dan NTT menempuh perjalanan jauh dengan biaya tinggi menuju fasilitas kesehatan, tetapi sering mendapati faskes tujuan tidak menyediakan obat program pemerintah (OAT untuk TBC, MDT Kusta, atau Praziquantel untuk Skistosomiasis).
     
-    \item \textbf{Rendahnya Skrining Mandiri Usia Produktif Tanpa Alat Medis Rumah Tangga:} Kelompok usia produktif jarang memeriksakan diri secara berkala. Laporan SKI 2023 membuktikan bahwa 80,8\% penduduk dewasa tidak pernah mengukur lingkar perut dan 62,6\% tidak pernah memeriksa kadar gula darah \citep{Kemenkes2024}, diperparah dengan tidak tersedianya alat ukur medis (tensimeter, timbangan presisi) di mayoritas rumah tangga.
+    \item \textbf{Minimnya Pemeriksaan Mandiri Tanpa Alat Ukur di Rumah:} Sebagian besar warga usia produktif belum memeriksakan faktor risiko kronisnya. Laporan SKI 2023 mencatat 80,8\% penduduk dewasa belum pernah mengukur lingkar perut dan 62,6\% belum pernah memeriksa kadar gula darah \citep{Kemenkes2024}. Ketiadaan termometer, tensimeter, dan timbangan di rumah tangga memperbesar hambatan ini.
     
-    \item \textbf{Bahaya Swamedikasi Obat Mandiri dan Keterlambatan Tanggap Darurat:} Swamedikasi obat bebas yang keliru kerap memicu perburukan fatal. Pada demam berdarah dengue (DBD), fase kritis terjadi pada hari ke-3 hingga hari ke-7; bila ditangani tepat waktu angka kematian berada di bawah 0,5\%, namun konsumsi NSAID (Ibuprofen/Aspirin) memicu risiko perdarahan saluran cerna masif \citep{Alam2022,Mohiuddin2023}. Serupa dengan itu, konsumsi antimotilitas (Loperamide) pada disentri memicu \textit{toxic megacolon} \citep{Koo2007,Schiller2020}, sementara bengkak kaki akibat Amlodipine atau batuk kering akibat Captopril kerap disalahartikan sebagai penyakit infeksi \citep{Liang2022,Dicpinigaitis2014}.
+    \item \textbf{Risiko Salah Obat Bebas dan Keterlambatan Penanganan Darurat:} Penggunaan obat bebas tanpa skrining awal sering memperburuk kondisi pasien. Pada demam berdarah dengue (DBD), fase kritis berlangsung pada hari ke-3 hingga hari ke-7; penanganan tepat waktu menekan angka kematian di bawah 0,5\%, tetapi konsumsi NSAID (Ibuprofen atau Aspirin) memicu perdarahan saluran cerna masif \citep{Alam2022,Mohiuddin2023}. Konsumsi obat penahan diare (Loperamide) pada disentri memicu \textit{toxic megacolon} \citep{Koo2007,Schiller2020}, sedangkan bengkak kaki akibat Amlodipine atau batuk kering akibat Captopril sering disangka sebagai gejala filariasis atau TBC \citep{Liang2022,Dicpinigaitis2014}.
 \end{enumerate}
 
 \subsection{Rumusan Masalah}
 
-Berdasarkan latar belakang tersebut, rumusan masalah dalam inovasi ini adalah:
+Inovasi ini menjawab tiga pertanyaan rekayasa dan klinis:
 \begin{enumerate}
-    \item Bagaimana merancang sistem triase mandiri berbasis \textit{Evidence-Grounded Medical Large Language Model} yang terikat pada pedoman klinis resmi guna memilah tingkat keparahan kondisi pasien secara akurat tanpa halusinasi medis?
-    \item Bagaimana mengintegrasikan direktori faskes nasional SATUSEHAT \textit{Master Sarana Index} (MSI) dan sistem rujukan instan ke faskes terdekat berbasis privasi tanpa mengumpulkan data kependudukan sensitif?
-    \item Bagaimana menyediakan modul \textit{farmakovigilans} aktif dan proksi antropometri fisik tanpa instrumen medis untuk mencegah komplikasi swamedikasi obat pada masyarakat?
+    \item Bagaimana merancang sistem skrining awal berbasis \textit{Retrieval-Augmented Large Language Model} yang terikat pada pedoman klinis resmi untuk memilah tingkat keparahan gejala pasien dan mencegah halusinasi medis?
+    \item Bagaimana menghubungkan pasien ke faskes terdekat menggunakan mirror direktori SATUSEHAT \textit{Master Sarana Index} (MSI) tanpa mengumpulkan Nomor Induk Kependudukan (NIK) atau menyimpan titik koordinat pengguna di peladen?
+    \item Bagaimana memeriksa keamanan obat yang sedang diminum pasien serta menyediakan pertanyaan pengganti (proksi fisik) bagi rumah tangga yang tidak memiliki termometer atau timbangan?
 \end{enumerate}
 
 \subsection{Tujuan Inovasi}
 
-Tujuan pengembangan TropiCare adalah:
+Tim mengembangkan TropiCare untuk mencapai tiga tujuan:
 \begin{enumerate}
-    \item Mewujudkan platform triase mandiri pra-hospital 4 rute klinis berjenjang (Merah, Kuning Khusus, Kuning, Hijau) berstandar KMK No. HK.01.07/\allowbreak MENKES/\allowbreak 1186/\allowbreak 2022 tentang PPK Dokter di FKTP \citep{Kemenkes2022a}.
-    \item Mengoptimalkan navigasi rujukan ke faskes terdekat ber-WhatsApp dan transmisi ringkasan klinis terkode ringkas (\textit{QR Code} Rangkuman Pasien tanpa simpan identitas di peladen) guna mereduksi antrean loket Puskesmas.
-    \item Memberikan edukasi keamanan konsumsi obat bebas serta panduan persiapan kepatuhan puasa pra-laboratorium bagi pasien secara presisi.
+    \item Menyediakan aplikasi web skrining awal 4 rute layanan (Merah, Kuning Khusus, Kuning, Hijau) berdasarkan KMK No. HK.01.07/\allowbreak MENKES/\allowbreak 1186/\allowbreak 2022 tentang PPK Dokter di FKTP \citep{Kemenkes2022a}.
+    \item Mempercepat rujukan pasien ke 5 faskes terdekat (dilengkapi tautan Google Maps, kontak WhatsApp/telepon, dan pembuka Mobile JKN) serta mengirimkan kode QR rangkuman pasien untuk memangkas waktu wawancara awal di loket Puskesmas.
+    \item Memberikan peringatan bahaya interaksi obat bebas dan instruksi puasa 10--12 jam sebelum pemeriksaan laboratorium PTM.
 \end{enumerate}
 
 \subsection{Landasan Regulasi dan Kepatuhan Mediko-Legal}
 
-Operasionalisasi TropiCare berpijak pada regulasi kesehatan dan hukum nasional:
+Perancangan TropiCare mengacu pada empat regulasi nasional:
 \begin{itemize}
-    \item \textbf{UU RI No. 17 Tahun 2023 tentang Kesehatan:} Pemanfaatan teknologi kecerdasan buatan dan telemedisin untuk kesinambungan perawatan masyarakat \citep{UUKesehatan2023}.
-    \item \textbf{Permenkes No. 3 Tahun 2026 tentang Penanggulangan Penyakit:} Konsolidasi tata kelola penyakit menular tular vektor/zoonosis dan pendekatan \textit{One Health} \citep{Permenkes2026}.
-    \item \textbf{KMK No. HK.01.07/MENKES/1186/2022 tentang PPK Dokter di FKTP:} Standar acuan kompetensi klinis SKDI bagi 20 penyakit tropis dan sindrom metabolik \citep{Kemenkes2022a}.
-    \item \textbf{UU RI No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP):} Penerapan prinsip minimasi data dan arsitektur \textit{Zero-NIK} tanpa penyimpanan data pribadi sensitif di peladen \citep{UUPDP2022}.
+    \item \textbf{UU RI No. 17 Tahun 2023 tentang Kesehatan:} Pemanfaatan teknologi informasi dan telekesehatan untuk mendukung layanan kesehatan primer \citep{UUKesehatan2023}.
+    \item \textbf{Permenkes No. 3 Tahun 2026 tentang Penanggulangan Penyakit:} Integrasi penanggulangan penyakit menular tular vektor/zoonosis dan faktor risiko lingkungan (\textit{One Health}) \citep{Permenkes2026}.
+    \item \textbf{KMK No. HK.01.07/MENKES/1186/2022 tentang PPK Dokter di FKTP:} Acuan kriteria gejala dan kompetensi klinis SKDI bagi 20 penyakit tropis dan penyakit kronis \citep{Kemenkes2022a}.
+    \item \textbf{UU RI No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP):} Penerapan prinsip minimasi data dan arsitektur \textit{Zero-NIK} tanpa penyimpanan identitas kependudukan di peladen \citep{UUPDP2022}.
 \end{itemize}

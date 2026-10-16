@@ -6,10 +6,10 @@
 
 \subsection{Pernyataan Transparansi AI dalam Siklus Pengembangan}
 
-Sejalan dengan standar integritas akademik dan regulasi kompetisi JOINTS 2026, tim pengembang menyatakan secara terbuka pemanfaatan kecerdasan buatan pada dua ranah:
+Sesuai standar integritas akademik dan aturan kompetisi JOINTS 2026, tim pengembang merinci pemanfaatan kecerdasan buatan pada dua ranah:
 \begin{enumerate}
-    \item \textbf{Akselerasi Rekayasa Kode (\textit{AI-assisted coding}):} Sebagian besar penulisan basis kode purwarupa dikembangkan berbantuan model Claude dan Gemini. Akselerasi sintaksis ini diimbangi disiplin rekayasa yang ketat: \textbf{304 kasus uji} dengan cakupan uji (\textit{test coverage}) \textbf{96\% pada backend}, pengujian regresi kasus emas (\textit{golden test snapshots}), serta pola arsitektur \textit{ports and adapters} guna menjamin keandalan sistem tetap terverifikasi.
-    \item \textbf{Model Inferensi Triase pada Purwarupa:} Penalaran gejala kompleks dan pengenalan nama obat dilayani model keluarga Gemma (\textbf{Gemma 4 / MedGemma}) melalui antarmuka \textit{Ports and Adapters} yang mendukung penyedia OpenRouter, peladen mandiri (vLLM), maupun Google Gemini melalui konfigurasi tanpa mengubah kode aplikasi (Tabel~\ref{tab:transparansi_ai}).
+    \item \textbf{Akselerasi Rekayasa Kode (\textit{AI-assisted coding}):} Tim menulis sebagian besar basis kode purwarupa berbantuan model Claude dan Gemini. Untuk menjaga kualitas rekayasa, tim menerapkan \textbf{304 kasus uji otomatis} dengan cakupan uji (\textit{test coverage}) \textbf{96\% pada backend}, pengujian regresi kasus emas (\textit{golden test snapshots}), serta pola arsitektur \textit{ports and adapters}.
+    \item \textbf{Model Inferensi Triase pada Purwarupa:} Backend menggunakan model keluarga Gemma (\textbf{Gemma 4 / MedGemma}) untuk menalar gejala kompleks dan mengenali nama obat ketikan pasien. Melalui antarmuka \textit{Ports and Adapters}, administrator dapat mengganti penyedia inferensi antara OpenRouter, peladen mandiri (vLLM), dan Google Gemini lewat berkas konfigurasi tanpa mengubah kode aplikasi (Tabel~\ref{tab:transparansi_ai}).
 \end{enumerate}
 
 \begin{table}[H]
@@ -21,9 +21,9 @@ Sejalan dengan standar integritas akademik dan regulasi kompetisi JOINTS 2026, t
 \toprule
 \textbf{Fase Aktivitas} & \textbf{Alat Bantu \& Model AI} & \textbf{Verifikasi \& Disiplin Mutu Tim} \\
 \midrule
-\textbf{Perancangan Ide \& Konsep} & Eksplorasi skenario risiko (\textit{edge-cases}) dan simulasi variasi kosakata awam berbasis LLM. & Seleksi kritis oleh tim berdasarkan realitas faskes primer Indonesia dan keselarasan dengan regulasi Kemenkes RI. \\
+\textbf{Perancangan Ide \& Konsep} & Eksplorasi skenario risiko (\textit{edge-cases}) dan simulasi variasi kosakata awam berbasis LLM. & Seleksi oleh tim berdasarkan alur kerja Puskesmas di Indonesia dan aturan Kemenkes RI. \\
 \midrule
-\textbf{Penyusunan Proposal} & Perumusan draf awal kalimat, perbaikan tata bahasa formal, dan penataan struktur tabel komparasi. & Penyuntingan substansial, verifikasi silang dokumen regulasi (UU PDP, UU Kesehatan, KMK PPK FKTP), dan penulisan ulang analisis kausal oleh tim. \\
+\textbf{Penyusunan Proposal} & Perumusan draf awal kalimat, perbaikan tata bahasa formal, dan penataan struktur tabel komparasi. & Penyuntingan substansial, verifikasi silang dokumen regulasi (UU PDP, UU Kesehatan, KMK PPK FKTP), dan penulisan analisis teknis oleh tim. \\
 \midrule
 \textbf{Rekayasa Kode \& Otomasi Pengujian} & Generasi sintaksis berbantuan AI (Claude \& Gemini) untuk rute FastAPI, komponen web React, dan skema JSON. & Perancangan arsitektur domain mandiri, isolasi logika klinis, audit kode baris-demi-baris, serta 304 kasus uji otomatis dengan cakupan 96\% pada backend (\textit{pytest} \& \textit{golden snapshots}) untuk mencegah regresi logika. \\
 \midrule
@@ -34,17 +34,17 @@ Sejalan dengan standar integritas akademik dan regulasi kompetisi JOINTS 2026, t
 
 \subsection{Batasan Sistem dan Pengawasan Manusia (\textit{Human-in-the-Loop})}
 
-Tim TropiCare menegaskan bahwa kecerdasan buatan hanyalah alat bantu (\textit{assistive tool}), bukan pengambil keputusan klinis otonom. Model AI bekerja berbasis probabilitas statistik dan rentan halusinasi jika tidak dibatasi. Oleh karena itu, TropiCare menerapkan tiga pilar pengawasan manusia:
+Tim TropiCare memosisikan model kecerdasan buatan sebagai alat bantu skrining awal di bawah kendali aturan klinis dokter. Karena model bahasa bekerja berbasis probabilitas statistik dan dapat menghasilkan halusinasi jika tidak dibatasi, tim menerapkan tiga mekanisme pengawasan manusia:
 
 \begin{enumerate}
-    \item \textbf{Validasi Medis oleh Kolaborator Klinis:} Seluruh logika pohon keputusan klinis, pembagian 20 penyakit tropis, penetapan 11 kriteria tanda bahaya (\textit{Red Flags}), dan alur rujukan dikurasi langsung oleh kolaborator mahasiswa kedokteran berdasarkan KMK No. HK.01.07/MENKES/1186/2022 \citep{Kemenkes2022a} dan KMK No. HK.01.07/MENKES/1936/2022 \citep{Kemenkes2022b}. Hal ini menjamin kepatuhan pada Standar Kompetensi Dokter Indonesia \citep{KKI2012}.
-    \item \textbf{Rekayasa Perangkat Lunak Terkendali \& Uji Regresi Backend:} Meskipun sintaksis kode dipercepat menggunakan generator AI, struktur arsitektur dikendalikan penuh oleh tim manusia melalui pola \textit{Ports and Adapters} (arsitektur heksagonal). Logika inti diproteksi oleh skema validasi Pydantic v2 yang ketat dan 304 pengujian otomatis dengan cakupan 96\%, menjamin tidak ada kode yang berjalan di luar kendali (\textit{uncontrolled behavior}).
-    \item \textbf{Keputusan Etis Pembatasan Fitur:} Tim secara sadar menghapus fitur kamera ruam kulit demi mematuhi UU Pelindungan Data Pribadi No. 27/2022 \citep{UUPDP2022} mengenai data biometrik sensitif dan mencegah bias warna kulit sawo matang/gelap, serta menolak penyimpanan nomor KTP/NIK di server demi keamanan privasi masyarakat.
+    \item \textbf{Validasi Medis oleh Kolaborator Klinis:} Kolaborator mahasiswa kedokteran menyusun dan memeriksa alur pertanyaan klinis, pengelompokan 20 penyakit tropis dan 6 kondisi PTM, 11 kriteria tanda bahaya (\textit{Red Flags}), serta aturan rujukan berdasarkan KMK No. HK.01.07/MENKES/1186/2022 \citep{Kemenkes2022a} dan KMK No. HK.01.07/MENKES/1936/2022 \citep{Kemenkes2022b}. Pemeriksaan ini menjaga kesesuaian rekomendasi dengan Standar Kompetensi Dokter Indonesia \citep{KKI2012}.
+    \item \textbf{Rekayasa Perangkat Lunak Terkendali \& Uji Regresi Backend:} Tim mengendalikan arsitektur perangkat lunak melalui pola \textit{Ports and Adapters} (arsitektur heksagonal). Skema validasi Pydantic v2 dan 304 pengujian otomatis dengan cakupan 96\% menguji logika rute, peringatan tanda vital, dan keamanan obat pada setiap perubahan kode.
+    \item \textbf{Keputusan Etis Pembatasan Fitur:} Tim menghapus fitur foto ruam kulit pada tanggal 15 Oktober 2026 untuk mematuhi UU Pelindungan Data Pribadi No. 27/2022 \citep{UUPDP2022} terkait data sensitif dan menghindari bias warna kulit sawo matang/gelap. Tim juga tidak meminta atau menyimpan NIK pengguna di peladen.
 \end{enumerate}
 
 \subsection{Keselarasan dengan Panduan Etika AI Kemenkes RI dan UNESCO}
 
-Operasionalisasi TropiCare berpedoman teguh pada empat pilar etika kecerdasan buatan Kemenkes RI \citep{KemenkesDTO2024} dan rekomendasi UNESCO \citep{UNESCO2021} (Tabel~\ref{tab:etika_ai}).
+Perancangan TropiCare mengikuti empat prinsip etika kecerdasan buatan Kemenkes RI \citep{KemenkesDTO2024} dan rekomendasi UNESCO \citep{UNESCO2021} (Tabel~\ref{tab:etika_ai}).
 
 \begin{table}[H]
 \centering
@@ -55,13 +55,13 @@ Operasionalisasi TropiCare berpedoman teguh pada empat pilar etika kecerdasan bu
 \toprule
 \textbf{Prinsip Etika} & \textbf{Mandat Regulasi} & \textbf{Implementasi Konkret pada TropiCare} \\
 \midrule
-\textbf{Transparansi \& Keterjelasan (\textit{Explainability})} & AI medis tidak boleh bersifat kotak hitam (\textit{black-box}); penalaran sistem harus dapat diaudit. & Fitur \textbf{``Kenapa aku menebak ini?''} yang menjabarkan silang banding gejala dan rujukan kriteria klinis KMK 1186/2022 secara transparan bagi pengguna awam. \\
+\textbf{Transparansi \& Keterjelasan (\textit{Explainability})} & Penalaran sistem kesehatan berbasis AI harus dapat diperiksa oleh pengguna dan tenaga medis. & Bagian \textbf{``Kenapa aku menebak ini?''} menampilkan jawaban penentu skor dan perbandingan penyakit yang gejalanya mirip berdasarkan KMK 1186/2022. \\
 \midrule
-\textbf{Akuntabilitas Mediko-Legal} & Batasan tegas fungsi perangkat lunak dengan wewenang diagnosis dokter berlisensi. & Sistem dibatasi murni pada \textbf{triase pra-hospital non-diagnosis}; sistem tidak pernah meresepkan antibiotik mandiri (mencegah resistensi kuman). \\
+\textbf{Akuntabilitas Mediko-Legal} & Batasan tegas antara perangkat lunak skrining awal dan wewenang diagnosis dokter. & Setiap halaman hasil mencantumkan penafian bahwa hasil adalah skrining, bukan diagnosis dokter; sistem tidak meresepkan antibiotik. \\
 \midrule
-\textbf{Keamanan Pasien (\textit{Safety-First})} & Pencegahan keterlambatan penanganan akibat kegagalan komputasi. & Deteksi 11 \textit{Red Flags} di peramban yang melompat langsung ke rute darurat IGD/119 dalam $<500\text{ ms}$ tanpa menunggu server. \\
+\textbf{Keamanan Pasien (\textit{Safety-First})} & Pencegahan keterlambatan penanganan darurat akibat gangguan jaringan atau peladen. & Peramban memeriksa 11 \textit{Red Flags} di perangkat dan langsung membuka layar darurat IGD/119 dalam $<500\text{ ms}$ tanpa menunggu peladen. \\
 \midrule
-\textbf{Pelindungan Privasi (\textit{Privacy-by-Design})} & Penghormatan kedaulatan individu atas data kesehatan pribadi. & Arsitektur \textbf{Zero-NIK}, persetujuan privasi wajib di awal, koordinat GPS tetap di perangkat (hanya provinsi ke peladen), serta QR rangkuman tanpa simpan identitas di peladen. \\
+\textbf{Pelindungan Privasi (\textit{Privacy-by-Design})} & Penghormatan hak warga atas kerahasiaan data kesehatan pribadi. & Arsitektur \textbf{Zero-NIK}, centang persetujuan privasi wajib sebelum pertanyaan pertama, koordinat GPS tetap di perangkat (hanya provinsi dikirim ke peladen), dan QR rangkuman tanpa simpan identitas di peladen. \\
 \bottomrule
 \end{tabularx}
 \end{table}

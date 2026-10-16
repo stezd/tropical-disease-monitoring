@@ -6,22 +6,22 @@
 
 \subsection{Arsitektur Skalabilitas Tiga Dimensi (Teknis, Konten, dan Jangkauan)}
 
-Agar dapat tumbuh dari purwarupa fungsional menjadi layanan yang melayani ribuan pengguna di seluruh Indonesia tanpa membebani infrastruktur, TropiCare dirancang dengan skalabilitas pada tiga dimensi utama:
+Tim merancang arsitektur TropiCare agar dapat diperluas pada tiga dimensi:
 
 \begin{enumerate}
     \item \textbf{Skalabilitas Teknis (\textit{Stateless \& Modular}):} 
-    Endpoint skoring pada backend FastAPI bersifat \textit{stateless} sehingga dapat direplikasi secara horizontal dengan mudah. Arsitektur menggunakan pola \textit{Ports and Adapters} (heksagonal): mesin skoring aturan deterministik maupun penyedia model AI (Gemma 4 / MedGemma via OpenRouter, vLLM mandiri, atau Gemini) dipasang pada lapisan komposisi (\textit{composition root}) dan dapat diganti hanya melalui konfigurasi tanpa mengubah logika bisnis. Selain itu, deteksi 11 tanda bahaya darurat dijalankan sepenuhnya di peramban pasien (biaya komputasi server nol), dan pratinjau skor selama pengisian kuis memakai mesin aturan lokal serta \textit{cache} memori 24 jam sehingga pemanggilan LLM hanya terjadi satu kali di akhir sesi skrining non-darurat.
+    Endpoint skoring pada backend FastAPI berjalan secara \textit{stateless} sehingga administrator dapat menambah replika kontainer sesuai lonjakan trafik. Kode backend menerapkan pola \textit{Ports and Adapters} (heksagonal): tim memasang mesin skoring aturan maupun penyedia model AI (Gemma 4 / MedGemma via OpenRouter, vLLM mandiri, atau Gemini) pada lapisan komposisi (\textit{composition root}), sehingga penyedia AI dapat diganti lewat berkas konfigurasi tanpa mengubah logika domain. Peramban ponsel mengeksekusi pemeriksaan 11 tanda bahaya darurat di sisi klien (beban peladen nol), sedangkan pratinjau skor selama pengisian kuis memakai mesin aturan lokal dan \textit{cache} memori 24 jam agar pemanggilan LLM hanya terjadi satu kali di akhir sesi skrining non-darurat.
 
     \item \textbf{Skalabilitas Konten Klinis (\textit{Data-Driven JSON}):} 
-    Seluruh pertanyaan, opsi jawaban, aturan peringatan obat, dan bobot penyakit disimpan dalam berkas konfigurasi JSON terstruktur yang terpisah dari kode antarmuka React. Dokter dan statistisi dapat menambahkan penyakit baru, memperbarui bobot gejala, atau menyesuaikan profil endemisitas wilayah secara langsung tanpa perlu memodifikasi kode tampilan frontend. Setiap perubahan teks medis dan aturan klinis dikendalikan melalui persetujuan kolaborator dokter.
+    Tim menyimpan seluruh daftar pertanyaan, opsi jawaban, aturan peringatan obat, dan bobot penyakit di dalam berkas JSON terstruktur yang terpisah dari kode antarmuka React. Kolaborator dokter dan statistisi dapat menambahkan penyakit baru, memperbarui bobot gejala, atau menyesuaikan profil endemisitas wilayah pada berkas JSON tersebut tanpa menyentuh kode tampilan frontend. Setiap perubahan teks medis dan aturan klinis memerlukan persetujuan kolaborator dokter sebelum diaktifkan.
 
     \item \textbf{Skalabilitas Jangkauan \& Surveilans Berprivasi:} 
-    Ekspansi layanan dirancang melalui lima tahap berurutan: \textbf{(1) Validasi Klinis} $\rightarrow$ \textbf{(2) Pilot Klinik \& Puskesmas} $\rightarrow$ \textbf{(3) TropiCare Plus (Pemantauan PTM)} $\rightarrow$ \textbf{(4) White-label untuk LSM Kesehatan} $\rightarrow$ \textbf{(5) API Mitra \& Surveilans Dinas Kesehatan}. Untuk mendukung Dinas Kesehatan tanpa melanggar privasi warga, statistik wilayah disajikan murni dari agregat tanpa identitas langsung dengan aturan privasi ketat: \textbf{kelompok agregat dengan jumlah kasus $<10$ disembunyikan} guna mencegah pelacakan balik individu.
+    Tim memperluas jangkauan layanan melalui lima tahap berurutan: \textbf{(1) Validasi Klinis} $\rightarrow$ \textbf{(2) Pilot Klinik \& Puskesmas} $\rightarrow$ \textbf{(3) TropiCare Plus (Pemantauan PTM)} $\rightarrow$ \textbf{(4) White-label untuk LSM Kesehatan} $\rightarrow$ \textbf{(5) API Mitra \& Surveilans Dinas Kesehatan}. Untuk mendukung pemantauan wilayah oleh Dinas Kesehatan sekaligus menjaga privasi warga, peladen menyajikan statistik dari agregat tanpa identitas langsung dan \textbf{menyembunyikan kelompok agregat dengan jumlah kasus $<10$} guna mencegah pelacakan balik individu.
 \end{enumerate}
 
 \subsection{Analisis Kelayakan Finansial (\textit{Feasibility}) dan Ekonomi Unit}
 
-Keunggulan utama desain arsitektur ringan TropiCare adalah biaya operasional bulanan yang sangat rendah, sehingga layanan ini dapat bertahan hidup secara mandiri tanpa harus menunggu anggaran pengadaan pemerintah yang panjang. Rincian perhitungan biaya infrastruktur bulanan dan model keberlanjutan disajikan pada Tabel~\ref{tab:feasibility}.
+Arsitektur ringan TropiCare menekan biaya operasional bulanan hingga Rp295.280, sehingga layanan dapat beroperasi mandiri dari pendapatan langganan mitra sejak tahap pilot tanpa bergantung pada anggaran pengadaan pemerintah. Tabel~\ref{tab:feasibility} merinci perhitungan biaya infrastruktur bulanan dan skema pendapatan pendukung.
 
 \begin{table}[H]
 \centering
@@ -36,11 +36,11 @@ Keunggulan utama desain arsitektur ringan TropiCare adalah biaya operasional bul
 \midrule
 \textbf{Server \& Basis Data\newline(\textit{Railway Hobby Plan})} & \textbf{Rp90.000 / bulan} & Menjalankan kontainer backend FastAPI \textit{stateless} dan basis data PostgreSQL (menyimpan 13.930 mirror faskes, riwayat akun opsional, dan agregat statistik). \\
 \midrule
-\textbf{Inferensi AI\newline(\textit{OpenRouter API})} & \textbf{Rp180.280 / bulan} & Melayani panggilan tunggal terstruktur (\textit{single-call JSON}) model keluarga Gemma + pengenalan obat. Dengan $\sim 1.550$ token/skrining dan \textit{cache} 24 jam, anggaran ini mencukupi $\sim \mathbf{15.000\text{--}20.000}$ skrining penuh/bulan ($\approx \text{Rp}9\text{--}\text{Rp}12$ per pasien). \\
+\textbf{Inferensi AI\newline(\textit{OpenRouter API})} & \textbf{Rp180.280 / bulan} & Melayani panggilan tunggal terstruktur (\textit{single-call JSON}) model keluarga Gemma dan pengenalan obat. Dengan $\sim 1.550$ token/skrining dan \textit{cache} 24 jam, anggaran ini mencukupi $\sim \mathbf{15.000\text{--}20.000}$ skrining penuh/bulan ($\approx \text{Rp}9\text{--}\text{Rp}12$ per pasien). \\
 \midrule
 \textbf{Domain \& DNS Resmi} & \textbf{Rp25.000 / bulan} & Biaya tahunan nama domain resmi (\text{Rp}300.000/tahun) dibagi rata per bulan. \\
 \midrule
-\textbf{Total Biaya Server} & \textbf{Rp295.280 / bulan} & \textbf{Titik Impas (\textit{Break-Even}): Cukup 1 langganan klinik mitra (Rp400.000/bulan) sudah menutup seluruh biaya server sebulan penuh.} \\
+\textbf{Total Biaya Server} & \textbf{Rp295.280 / bulan} & \textbf{Titik Impas (\textit{Break-Even}): Satu langganan klinik mitra (Rp400.000/bulan) sudah menutup seluruh biaya server sebulan penuh.} \\
 \midrule
 \multicolumn{3}{l}{\textbf{B. Skema Keberlanjutan Pendapatan (Skrining Inti Masyarakat Tetap Gratis)}} \\
 \midrule
@@ -55,7 +55,7 @@ Keunggulan utama desain arsitektur ringan TropiCare adalah biaya operasional bul
 
 \subsection{Peta Jalan Pengembangan 5 Tahap, Mitigasi Risiko, dan Indikator Kinerja (KPI)}
 
-Berangkat dari fondasi purwarupa (MVP) yang telah berjalan saat ini---mencakup kuesioner adaptif 20 infeksi tropis dan 6 kondisi PTM, 11 tanda bahaya di peramban, penalaran Gemma 4 / MedGemma + RAG 203 kutipan, QR rangkuman pasien, mirror 13.930 faskes, penyimpanan riwayat akun, serta 304 pengujian otomatis backend (cakupan 96\%)---pengembangan menuju skala penuh dilaksanakan melalui \textbf{lima tahap ekspansi} selama 12 bulan (Tabel~\ref{tab:roadmap}) dengan indikator kinerja terukur (Tabel~\ref{tab:kpi}).
+Purwarupa (MVP) TropiCare saat ini telah mengoperasikan kuesioner adaptif 20 infeksi tropis dan 6 kondisi PTM, evaluasi 11 tanda bahaya di peramban, penalaran Gemma 4 / MedGemma + RAG 203 kutipan, kode QR rangkuman pasien, mirror 13.930 faskes, penyimpanan riwayat akun, serta 304 pengujian otomatis backend (cakupan 96\%). Tim melanjutkan pengembangan selama 12 bulan melalui \textbf{lima tahap ekspansi} (Tabel~\ref{tab:roadmap}) dengan indikator kinerja terukur (Tabel~\ref{tab:kpi}).
 
 \begin{table}[H]
 \centering
@@ -72,9 +72,9 @@ Berangkat dari fondasi purwarupa (MVP) yang telah berjalan saat ini---mencakup k
 \midrule
 \textbf{Tahap 3: TropiCare Plus\newline(Bulan 6--8)} & Pemantauan PTM \& Kepatuhan Privasi & Peluncuran fitur opsional \textit{TropiCare Plus} (grafik tren tensi dan gula darah jangka panjang di atas modul riwayat akun); audit kepatuhan UU PDP No. 27/2022 (Zero-NIK, lokasi tetap di perangkat) \citep{UUPDP2022}. & Modul grafik tren PTM beroperasi; kepatuhan puasa pra-lab 10--12 jam meningkat di faskes pilot. \\
 \midrule
-\textbf{Tahap 4: White-Label\newline(Bulan 9--10)} & Kemitraan LSM \& Kapasitas Infrastruktur & Penyediaan kustomisasi \textit{white-label} berbasis JSON bagi LSM kesehatan (eliminasi TBC, Kusta, NTD); replikasi kontainer \textit{stateless} yang dibiayai otomatis dari pendapatan langganan mitra (\textit{self-funding scaling}). & Kemitraan \textit{white-label} LSM berjalan; kapasitas peladen meningkat proporsional tanpa subsidi silang. \\
+\textbf{Tahap 4: White-Label\newline(Bulan 9--10)} & Kemitraan LSM \& Kapasitas Infrastruktur & Penyediaan kustomisasi \textit{white-label} berbasis JSON bagi LSM kesehatan (eliminasi TBC, Kusta, NTD); replikasi kontainer \textit{stateless} yang dibiayai dari pendapatan langganan mitra (\textit{self-funding scaling}). & Kemitraan \textit{white-label} LSM berjalan; kapasitas peladen meningkat proporsional tanpa subsidi silang. \\
 \midrule
-\textbf{Tahap 5: API Mitra\newline(Bulan 11--12)} & Surveilans Wilayah \& Pencegahan Re-identifikasi & Pembukaan endpoint API agregat tren penyakit per wilayah bagi Dinkes/institusi riset tanpa identitas langsung (tanpa push FHIR pasien demi menjaga prinsip Zero-NIK), dengan penyembunyian otomatis kelompok berjumlah $<10$. & API agregat wilayah dan sinkronisasi berkala mirror faskes SATUSEHAT beroperasi penuh. \\
+\textbf{Tahap 5: API Mitra\newline(Bulan 11--12)} & Surveilans Wilayah \& Pencegahan Re-identifikasi & Pembukaan endpoint API agregat tren penyakit per wilayah bagi Dinkes/institusi riset tanpa identitas langsung (tanpa push FHIR pasien demi menjaga prinsip Zero-NIK), disertai penyembunyian kelompok berjumlah $<10$. & API agregat wilayah dan sinkronisasi berkala mirror faskes SATUSEHAT beroperasi. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -88,7 +88,7 @@ Berangkat dari fondasi purwarupa (MVP) yang telah berjalan saat ini---mencakup k
 \toprule
 \textbf{Kode} & \textbf{Indikator Kinerja} & \textbf{Target} & \textbf{Metode Pengukuran \& Verifikasi} \\
 \midrule
-\textbf{KPI-1} & Kesesuaian Triase Kartu Kasus & $\mathbf{\ge 90\%}$ (\textbf{0\%} darurat lolos) & Uji kesesuaian rute pada kartu kasus klinis dokter (\textit{vignettes}), dengan syarat mutlak tidak ada kondisi gawat darurat yang terlewat. \\
+\textbf{KPI-1} & Kesesuaian Triase Kartu Kasus & $\mathbf{\ge 90\%}$ (\textbf{0\%} darurat lolos) & Uji kesesuaian rute pada kartu kasus klinis dokter (\textit{vignettes}), dengan syarat seluruh kondisi gawat darurat terdeteksi. \\
 \midrule
 \textbf{KPI-2} & Respon Deteksi Tanda Bahaya & $\mathbf{<500\text{ ms}}$ & Waktu respon peramban dari ketukan tanda bahaya hingga layar Rute Merah dan tombol 119 tampil di ponsel pasien tanpa menunggu server. \\
 \midrule
@@ -96,7 +96,7 @@ Berangkat dari fondasi purwarupa (MVP) yang telah berjalan saat ini---mencakup k
 \midrule
 \textbf{KPI-4} & Efisiensi Pra-Triase \& Kesiapan Lab & $\mathbf{\ge 40\%}$ lebih cepat & Pengurangan waktu wawancara awal di loket faskes pilot lewat pemindaian QR rangkuman dan instruksi puasa 10--12 jam pra-lab PTM. \\
 \midrule
-\textbf{KPI-5} & Efisiensi Biaya \& Titik Impas & $\mathbf{\ge 1}$ \textbf{Klinik Mitra} & Biaya inferensi rata-rata $\le \text{Rp}15$/skrining; biaya dasar peladen (Rp295,28 rb/bulan) tertutup penuh sejak 1 klinik mitra aktif. \\
+\textbf{KPI-5} & Efisiensi Biaya \& Titik Impas & $\mathbf{\ge 1}$ \textbf{Klinik Mitra} & Biaya inferensi rata-rata $\le \text{Rp}15$/skrining; biaya dasar peladen (Rp295,28 rb/bulan) tertutup sejak 1 klinik mitra aktif. \\
 \bottomrule
 \end{tabularx}
 \end{table}
