@@ -1,5 +1,7 @@
 # Integrasi SATUSEHAT — TropiCare
 
+> **Status 16 Okt 2026: tim memutuskan tidak mengintegrasikan SATUSEHAT lebih lanjut.** Dokumen ini hanya mencatat apa yang sudah dibangun. Kode mirror faskes (`backend/scripts/sync_facilities.py`, tabel `facility`, `/facilities`) masih ada dan dipakai fitur "faskes terdekat"; itu perlu diputuskan: dipertahankan (butuh kredensial SATUSEHAT untuk sinkronisasi) atau diganti sumber lain. Jangan membangun fitur baru di atasnya sebelum diputuskan.
+
 Status per Oktober 2026: **Tier 1 (Master Sarana Index / MSI) disepakati & tervalidasi via probe; tahap implementasi endpoint & mirror.** Tier 2 (push FHIR Patient/Encounter/Condition) sengaja tidak dilakukan demi prinsip privasi dan batas etika skrining medis.
 
 ---

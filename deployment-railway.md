@@ -231,7 +231,7 @@ Rates: RAM $10/GB/month, CPU $20/vCPU/month, egress $0.05/GB. **Builds are free.
 
 - No BPJS API, telemedicine, or faskes integrations — plain links only (Google Maps search, opening Mobile JKN).
 - No photo feature: it was removed by team decision on 2026-10-15, so no images are uploaded or stored.
-- Screening text may be sent to the Gemini API for AI scoring (stated in the consent text). SATUSEHAT integration is under consideration and not covered by this rule.
+- Screening answers (no identity) may be sent to OpenRouter and Google for AI scoring (stated in the consent text). SATUSEHAT integration was dropped (team decision, 16 Oct 2026); the existing facility mirror still runs.
 
 See `AGENTS.md` for the full "Must not break" list.
 

@@ -131,6 +131,53 @@ Semua angka adalah asumsi yang belum divalidasi. Uji dulu lewat survei harga dan
 
 ---
 
+## Opsi tambahan: API untuk Mitra
+
+Belum masuk 5 rencana utama: volume awal kecil dan risikonya lebih banyak. Versi ringan dari White-label.
+
+**Masalah**
+- Aplikasi mitra (telemedisin, vendor rekam medis klinik, aplikasi kesehatan karyawan, LSM) butuh skrining tapi tidak punya bank soal dan aturan rute yang disetujui dokter.
+- Membangun sendiri mahal dan butuh DR dan ST.
+
+**Solusi: 3 produk API**
+- **Skoring** (`POST /flows/{id}/score`): jawaban masuk, perkiraan + rute + peringatan keluar. Endpoint ini sudah stateless ("nothing is saved").
+- **Konten**: bank soal dan opsi (`GET /flows/{id}`) tanpa bobot, supaya mitra memakai kuesioner yang sama.
+- **Statistik agregat**: tren per wilayah untuk Dinkes dan peneliti (dari `screening_stat`). Hanya agregat, kelompok < 10 disembunyikan.
+- **Tidak dijual:** baris per orang (`screening_stat` mentah), data faskes turunan SATUSEHAT (syarat lisensi belum jelas).
+
+**Pagar privasi (wajib)**
+- TropiCare = pemroses data, mitra = pengendali data. Perlu DPA. Persetujuan pengguna ada di sisi mitra.
+- Skema API menolak nama, NIK, nomor telepon, dan koordinat. Kolom teks bebas obat dimatikan di jalur API.
+- Mode **aturan saja** (tanpa model AI luar): data tidak keluar dari server TropiCare. Mode AI hanya bila mitra setuju data ke OpenRouter/Google.
+- Isi permintaan tidak disimpan dan tidak masuk log. Hanya hitungan per klien per hari.
+- Statistik: kelompok < 10 disembunyikan, rentang tanggal dibatasi ke minggu penuh, kuota kueri per klien, supaya selisih dua kueri tidak membuka kelompok kecil.
+- Kontrak: dilarang mencocokkan keluaran API dengan identitas untuk keputusan kerja, asuransi, atau kredit.
+- Penafian "skrining, bukan diagnosis" wajib tampil di aplikasi mitra.
+
+**Yang dibangun**
+- Tabel klien API (kunci disimpan sebagai hash), kuota per paket, penghitung pemakaian tanpa isi permintaan.
+- Dependency kunci API + batas laju per klien, awalan `/partner/v1`, versi API.
+- Sandbox (kunci uji, mode aturan) dan dokumentasi dari OpenAPI.
+- Penagihan manual (invoice) dulu. Gateway pembayaran menyusul.
+
+**Pricing (asumsi)**
+- Sandbox gratis: 1.000 panggilan/bulan, mode aturan.
+- Biaya platform Rp1–2 jt/bulan per mitra.
+- Per panggilan: aturan Rp50–100, AI Rp300 (biaya AI ≈ Rp20–30 per skrining, jadi margin ≥ 10×).
+- Statistik agregat: lisensi tahunan, Rp15–40 jt per wilayah (digabung dengan ide Surveilans).
+- Contoh: 5 mitra × (Rp1,5 jt + 20.000 panggilan × Rp100) ≈ Rp3,5 jt/bulan ≈ **Rp42 jt/tahun**. Tidak dihitung di proyeksi utama.
+
+**Risiko**
+- **Tanggung jawab medis:** keluaran dipakai di produk pihak lain. Perlu penafian, batas penggunaan di kontrak, dan OK DR. Bisa memperbesar pertanyaan izin alat kesehatan (tanya Kemenkes dulu).
+- **Rantai persetujuan:** bila mitra tidak meminta persetujuan pengguna, risiko hukum ikut ke kita.
+- **Lisensi:** kode MIT, jadi mitra boleh menjalankan sendiri. Yang dijual layanan dan bank soal. Lisensi isi medis perlu diputuskan (lihat feasibility.md bagian 3).
+- **Biaya AI melonjak:** pasang kuota dan harga per panggilan, jangan paket tak terbatas.
+- **Beban dukungan:** batasi jumlah mitra awal.
+
+**Penilaian:** layak setelah ada 1–2 mitra yang nyata. Mulai dengan Skoring mode aturan, karena privasinya paling kuat dan biayanya paling kecil. Statistik agregat menyusul bersama ide Surveilans, setelah aturan selisih kueri diuji.
+
+---
+
 ## Proyeksi Tahun ke-3 (moderat)
 
 | Rencana | Asumsi | Pendapatan |
@@ -153,9 +200,10 @@ Semua angka adalah asumsi yang belum divalidasi. Uji dulu lewat survei harga dan
 3. **Pilot** Dasbor Klinik dan Skrining Karyawan (tagih manual).
 4. **Plus**, setelah payment gateway ada.
 5. **White-label**, bila ada klien.
+6. **API untuk Mitra**, setelah ada 1–2 mitra nyata (mulai dari Skoring mode aturan).
 
 ## Perlu diputuskan
 
 - **Tim:** monetisasi atau tidak, bentuk badan hukum.
-- **DR:** teks Plus (label, peringatan), klausul medis white-label.
+- **DR:** teks Plus (label, peringatan), klausul medis white-label dan API (batas penggunaan, penafian).
 - **ST:** survei harga dan asumsi proyeksi.

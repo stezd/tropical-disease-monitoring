@@ -81,7 +81,7 @@ bun run lint && bun test                 # from repo root
 - **Quiz content lives in JSON**, not React. DR and ST edit it without FE. Option IDs are shared by FE, BE, and scoring; rename all three together.
 - **API** (`/api/v1`): `GET /triage/flows/{flow_id}` · `POST /triage/flows/{flow_id}/score`
 - **Emergency check runs in the browser.** Any danger sign → MERAH screen right away, even if the server is down.
-- **Data may leave our server** (e.g. to the Gemini API for AI scoring); say so in the consent text.
+- **Data may leave our server** (e.g. to OpenRouter and Google for AI scoring); say so in the consent text.
 - **Login is optional.** Guests can do the whole quiz, but personal history is not saved for them; the result page invites them to create an account. Signed-in users (email + password, or "Masuk dengan Google") can save a screening to their history (`/riwayat`) and delete it. Google sign-in is a normal login, not an integration that needs an agreement.
 - **Statistics without direct identity (all users, guests too).** Every finished screening adds one row to `screening_stat`, separate from personal history. Fields enter only through an explicit whitelist in `backend/app/domain/screening_stat.py` (a new `Answers` field is not stored automatically). Never stored: user id, IP, exact age, raw vital numbers, drug text, coordinates, clock time. Aggregates hide groups < 10. Never call this data "anonim"; say "tanpa identitas langsung" (UU PDP still applies).
 - **Location stays in the browser.** Coordinates (asked after the privacy tick) are used on the device for the province and the nearest facilities (up to 5); only the province goes to the server. Denied → the patient may pick a province, and the result page can ask again.
@@ -130,7 +130,7 @@ bun run lint && bun test                 # from repo root
 - [ ] Tampilan enak di HP
 - [ ] Pertanyaan lengkap
 - [ ] Pemindai QR diarahkan ke halaman rangkuman yang ringkas, jelas, menarik, dan sederhana tanpa mengorbankan kualitas
-- [ ] Integrasi SATUSEHAT Master Sarana Index (MSI): desain & probe sudah tervalidasi, mirror faskes + endpoint sedang dikerjakan. Rencana: routing faskes terverifikasi (Puskesmas/RS/Apotek) dengan koordinat presisi via batch mirror lokal. Push FHIR pasien sengaja dihindari demi privasi (no-NIK) dan prinsip skrining non-diagnosis. Detail: [docs/SATUSEHAT.md](docs/SATUSEHAT.md).
+- [ ] ~~Integrasi SATUSEHAT Master Sarana Index (MSI)~~ Tidak dilanjutkan (keputusan tim 16 Okt 2026). Mirror faskes yang sudah ada masih dipakai fitur "faskes terdekat"; nasibnya perlu diputuskan. Catatan teknis: [docs/SATUSEHAT.md](docs/SATUSEHAT.md).
 
 ## Fitur (in Indonesian)
 
@@ -212,7 +212,7 @@ Blueprint dan jawaban dokter sudah digabung di [docs/Acuan-Medis.md](docs/Acuan-
 
 ## Remember (in Indonesian)
 
-- **Jujur soal "AI".** Model yang dipakai: **MedGemma** (large multimodal model) + **RAG** atas sumber literatur yang disetujui DR. Tidak memakai XGBoost. Model boleh dipanggil lewat API pihak luar (sekarang Gemini) atau dijalankan di server sendiri; data boleh keluar server, sebutkan di teks persetujuan. Hasil diuji dengan kartu kasus dokter. Fitur foto dihapus (keputusan tim 15 Okt 2026).
+- **Jujur soal "AI".** Model yang dipakai: **MedGemma** (large multimodal model) + **RAG** atas sumber literatur yang disetujui DR. Tidak memakai XGBoost. Model boleh dipanggil lewat API pihak luar (Gemini atau OpenRouter/Gemma) atau dijalankan di server sendiri; data boleh keluar server, sebutkan di teks persetujuan. Hasil diuji dengan kartu kasus dokter. Fitur foto dihapus (keputusan tim 15 Okt 2026).
 - **Rute MERAH tetap tanpa animasi dan suara** (keputusan tim; Blueprint sudah disesuaikan).
 - **Tetap aturan tetap, bukan model:** pemeriksaan tanda bahaya di browser, naik ke KUNING bila suhu ≥ 39,5 °C, skor rendah → KUNING, dan keyakinan teratas < 80 % (`refer_below_pct`) menaikkan HIJAU ke KUNING dengan catatan periksa ke dokter (nilai: ST, teks: DR). Pembagian tugas MedGemma dan skor aturan: ST.
 - **Uji coba pakai kartu kasus,** bukan data kesehatan asli peserta. Peserta mengisi survei kemudahan pakai (SUS).

@@ -18,9 +18,9 @@
 - ✅ Keluaran MedGemma → skor dan alasan → hasil (rute tetap dari aturan)
 
 **Belum ada**
-- ⏳ Memanggil MedGemma di server (ST)
-- ⏳ `ModelEngine` + kembali ke `RuleEngine` kalau model gagal (ST)
-- ⏳ Literatur RAG: sumber dipilih DR, korpus dibuat ST. Usul: kueri pencarian memakai fakta pasien, termasuk provinsi, supaya potongan tentang daerah endemis ikut terambil
+- ✅ Memanggil model di server: `backend/app/triage/ai` (Gemini, atau API kompatibel OpenAI seperti OpenRouter)
+- ✅ Engine AI kembali ke `RuleEngine` kalau model gagal atau kuota habis (`TRIAGE_SCORING_ENGINE=ai`)
+- 🔧 Literatur RAG: ada pembangun sementara (BM25 per penyakit); sumber final dipilih DR, korpus final dibuat ST. Usul: kueri pencarian memakai fakta pasien, termasuk provinsi, supaya potongan tentang daerah endemis ikut terambil
 - ✅ Hasil skor (`ScoreResult`) membawa `engine` (`ai` / `rules` / `model`) dan `fallback`; skrining tersimpan mencatat engine yang benar-benar dipakai
 - ✅ Hasil AI yang sukses dicache di memori per jawaban, supaya simpan skrining dan halaman QR tidak memanggil model lagi; pratinjau di tengah kuis (`?preview=true`) selalu memakai aturan
 - ⏳ BE: meter maskot tetap pakai aturan; catat versi model
@@ -170,7 +170,7 @@ Literatur:
 | `facts[].id` | `F1`..`Fn` | berurutan, tanpa loncat |
 | `facts[].label`, `text` | label dan teks satu baris | teks pilihan, bukan ID |
 | `facts[].reason` | teks alasan untuk pasien, atau `null` | **tidak dikirim ke model** |
-| `drugs` | teks bebas pasien | ≤ 500 karakter; `<`, `>`, baris baru dibuang |
+| `drugs` | teks bebas pasien | ≤ 500 karakter; `<`, `>`, baris baru dibuang. **Di engine saat ini dikosongkan sebelum panggilan skor** (`backend/app/triage/ai/engine.py`); teks obat hanya dikirim terpisah ke pengenal obat bila ada nama yang tidak dikenal |
 | `candidates[]` | `id` + `name` dari `diseases.json` | tidak dobel; tanpa `rabies` |
 | `sources[]` | `S1`..`Sk`, kutipan, teks potongan | berurutan; boleh `[]` |
 
